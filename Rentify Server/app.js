@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // connect
 app.use('/', indexRouter);
-app.use('/api', api)
+app.use('/api', api);
 database.connect();
 
 // catch 404 and forward to error handler

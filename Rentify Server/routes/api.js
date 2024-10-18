@@ -7,8 +7,11 @@ var router = express.Router();
 
 //============================================
 
-const userApi = require('./userRouter')
-//
-router.use('', userApi)
+const userApi = require('./userRouter');
+const adminApi = require('./adminRouter');
 
-module.exports  = router
+
+router.use('/', userApi);
+router.use('/admin', adminApi);
+
+module.exports = router; 
