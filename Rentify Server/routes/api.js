@@ -8,10 +8,10 @@ var router = express.Router();
 //============================================
 
 const userApi = require('./userRouter');
-const adminApi = require('./adminRouter');
+
 
 
 router.use('/', userApi);
-router.use('/admin', adminApi);
+
 
 module.exports = router; 
