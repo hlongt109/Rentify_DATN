@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Support = new Schema({  // bảng hỏng hóc 
-    user_id: { type: String, require: false },
-    room_id: { type: String, require: false },
+    user_id: { type: String, require: true },
+    room_id: { type: String, require: true },
     title_support: { type: String, require: true },
     content_support: { type: String, require: true },
-    image: { type: String, require: true },
+    image: { type: String },
     status: { type: String, require: true },
-    created_at: { type: String, require: false },
-    updated_at: { type: String, require: false }
+    created_at: { type: String },
+    updated_at: { type: String }
 })
 module.exports = mongoose.model("Support", Support);

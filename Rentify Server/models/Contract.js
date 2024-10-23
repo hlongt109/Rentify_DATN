@@ -7,6 +7,6 @@ const Contract = new Schema({
     start_date: { type: String, require: true },
     end_date: { type: String, require: true },
     status: { type: String, require: true },
-    created_at: { type: String, require: false }
+    created_at: { type: String }
 })
 module.exports = mongoose.model("Contract", Contract);

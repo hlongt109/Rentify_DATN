@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Request = new Schema({
-   user_id: {type: String},
-   room_id: {type: String},
+   user_id: {type: String, require: true},
+   room_id: {type: String, require: true},
    request_type: {type: String},
    description: {type: String},
    status: {type: Number},
