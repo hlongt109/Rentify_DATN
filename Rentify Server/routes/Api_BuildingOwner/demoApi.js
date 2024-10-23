@@ -4,8 +4,8 @@ var router = express.Router();
 const User = require("../../models/User")
 // send email service
 const transporter = require("../../config/common/mailer")
-// upload file (image, video)
-const uploadFile = require("../../config/common/multer")
+// upload file (image,images, video)
+const uploadFile = require("../../config/common/upload")
 
 
 // apis
