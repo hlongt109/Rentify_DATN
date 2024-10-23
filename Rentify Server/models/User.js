@@ -10,7 +10,7 @@ const User = new Schema({
     dob: { type: String, require: true },// ngày sinh
     gender: { type: String, require: true },//giới tính
     address: { type: String, require: true },
-    profile_picture_url: { type: String, require: true },
+    profile_picture_url: { type: String },
     created_at: { type: String, require: false },
     updated_at: { type: String, require: false }
 })
