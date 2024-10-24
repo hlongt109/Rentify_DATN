@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
 
 const JWT_SECRET = 'your_jwt_secret_key';
-// #1 . đăng ký tài khoản 
+// #1 . đăng ký tài khoản POST : http://localhost:3000/api/register
 router.post('/register', async (req, res) => {
     const { username, password, email, phoneNumber, name, dob, gender, address } = req.body;
 
@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-//#2. đăng nhập tài khoản 
+//#2. đăng nhập tài khoản POST : http://localhost:3000/api/login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -66,7 +66,7 @@ module.exports = router;
 
 
 // kiểm thử postman:
-// datakiemthu: 
+
 // {
 //   "username": "chutoa",
 //   "password": "1",
@@ -77,6 +77,3 @@ module.exports = router;
 //   "gender": "nam",
 //   "address": "Nam Tu Liem, Ha Noi"
 // }
-
-// đăng ký : http://localhost:3000/api/register
-// đăng nhập :http://localhost:3000/api/login

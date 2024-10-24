@@ -1,15 +1,16 @@
 var express = require('express');
 var router = express.Router();
 
-// Ví dụ
-// const tenRouter = require("./fileRouter")
-// router.use('',tentenRouter)
-
-//============================================
-const userApi = require('./Api_Admin/demoApi');
 const UserManage=require("./Api_BuildingOwner/UserManageApi")
+const PostManage= require("./Api_BuildingOwner/PostManageApi")
+// const PaymentManage= require("./Api_BuildingOwner/PaymentManageApi")
+// const ContractManage= require("./Api_BuildingOwner/ContractManageApi")
+// const BuildingManage= require("./Api_BuildingOwner/BuildingManageApi")
 // nối 
-router.use('/', userApi);
 router.use('/',UserManage)
+router.use('/',PostManage)
+// router.use('/',PaymentManage)
+// router.use('/',ContractManage)
+// router.use('/',BuildingManage)
 
 module.exports = router; 
