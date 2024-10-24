@@ -5,11 +5,10 @@ const Post = new Schema({
     title: { type: String, require: true },
     content: { type: String, require: true },
     status: { type: String, require: true },
-    video: { type: String, require: true },
-    photo: { type: String, require: true },
-    created_at: { type: String, require: false },
-    updated_at: { type: String, require: false }
+    video: { type: Array },
+    photo: { type: Array },
+    created_at: { type: String },
+    updated_at: { type: String }
 
 })
 module.exports = mongoose.model("Post", Post);
-// test nhánh 

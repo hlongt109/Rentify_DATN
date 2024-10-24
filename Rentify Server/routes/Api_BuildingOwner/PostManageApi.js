@@ -1,0 +1,1 @@
+// quản lí bài đăng (chủ tòa)

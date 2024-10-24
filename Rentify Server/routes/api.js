@@ -6,12 +6,10 @@ var router = express.Router();
 // router.use('',tentenRouter)
 
 //============================================
-
-const userApi = require('./userRouter');
-const adminApi = require('./adminRouter');
-
-
+const userApi = require('./Api_Admin/demoApi');
+const UserManage=require("./Api_BuildingOwner/UserManageApi")
+// nối 
 router.use('/', userApi);
-router.use('/admin', adminApi);
+router.use('/',UserManage)
 
 module.exports = router; 
