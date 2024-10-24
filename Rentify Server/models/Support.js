@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Support = new Schema({
+const Support = new Schema({  // bảng hỏng hóc 
     user_id: { type: String, require: false },
     room_id: { type: String, require: false },
     title_support: { type: String, require: true },
