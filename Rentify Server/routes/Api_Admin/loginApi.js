@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 // model
 const User = require("../../models/User");
+const Post = require("../../models/Post");
 // send email service
 const transporter = require("../../config/common/mailer")
 // upload file (image,images, video)
@@ -29,6 +30,9 @@ router.post("/admin/login", async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: 'Tài khoản không tồn tại' });
         }
+        if (user.role !== 'admin') {
+            return res.status(401).json({ message: 'Bạn không có quyền truy cập!' });
+        }
         // Tạo JWT
         const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
             expiresIn: '1h',
@@ -51,6 +55,7 @@ router.post("/admin/register", async (req, res) => {
             if (existingUser) {
                 return res.status(400).json({ error: 'Username đã tồn tại. Vui lòng chọn username khác.' });
             }
+
             let objAccount = new User({
                 username: username,
                 password: password,
@@ -61,6 +66,7 @@ router.post("/admin/register", async (req, res) => {
                 dob: dob,
                 gender: gender,
                 address: address,
+                profile_picture_url: profile_picture_url,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
             });
@@ -76,5 +82,16 @@ router.post("/admin/register", async (req, res) => {
         return res.status(500).send('Lỗi server rồi');
     }
 });
+//Lấy danh sách Post
+router.get("/post/list", async (req, res) => {
+    try {
+        const showList = await Post.find();
+        return res.json({ message: "Danh sách bài đăng", showList });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Lỗi server');
+    }
+});
+
 
 module.exports = router
