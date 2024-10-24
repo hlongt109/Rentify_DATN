@@ -14,7 +14,7 @@ const Room = new Schema({
     amenities: {type: Array},
     service_fees: {type: Array},
     limit_person: { type: Number, require: true },
-    created_at: { type: String, require: false },
-    updated_at: { type: String, require: false }
+    created_at: { type: String },
+    updated_at: { type: String }
 })
 module.exports = mongoose.model("Room", Room);

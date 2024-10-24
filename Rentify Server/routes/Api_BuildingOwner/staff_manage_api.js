@@ -3,20 +3,11 @@ var router = express.Router();
 
 const Staff = require("../../models/User")
 const uploadFile = require("../../config/common/upload");
+const handleServerError = require("../../utils/errorHandle")
+const { getFormattedDate } = require('../../utils/dateUtils');
 
-const now = new Date();
-// Định dạng giờ và ngày tháng
-const options = {
-    hour: '2-digit',
-    minute: '2-digit',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-};
-const formattedDate = new Intl.DateTimeFormat('vi-VN', options).format(now);
-
-// api
-router.post("/api/staffs", async (req, res) => {
+// add 
+router.post("/api/staffs", uploadFile.single('image'), async (req, res) => {
     try {
         const data = req.body;
         const { file } = req
@@ -39,7 +30,7 @@ router.post("/api/staffs", async (req, res) => {
             gender: data.gender,
             address: data.address,
             profile_picture_url: avatar,
-            created_at: formattedDate,
+            created_at: getFormattedDate(),
             updated_at: ""
         })
 
@@ -58,15 +49,10 @@ router.post("/api/staffs", async (req, res) => {
             });
         }
     } catch (error) {
-        console.error("Error: " + error);
-        res.status(500).json({
-            "status": 500,
-            "message": "Server error",
-            "error": error.message
-        });
+        handleServerError(res, error);
     }
 })
-
+// update
 router.put("/api/staffs/:id", uploadFile.single("image"), async (req, res) => {
     try {
         const { id } = req.params;
@@ -101,7 +87,7 @@ router.put("/api/staffs/:id", uploadFile.single("image"), async (req, res) => {
         staffUpdate.address = data.address ?? staffUpdate.address;
         staffUpdate.profile_picture_url = avatar;
         staffUpdate.created_at = staffUpdate.created_at
-        staffUpdate.updated_at = formattedDate;
+        staffUpdate.updated_at = getFormattedDate();
 
         const result = await staffUpdate.save()
 
@@ -120,11 +106,89 @@ router.put("/api/staffs/:id", uploadFile.single("image"), async (req, res) => {
         }
 
     } catch (error) {
-        console.error("Error: " + error);
-        res.status(500).json({
-            "status": 500,
-            "message": "Server error",
-            "error": error.message
-        });
+        handleServerError(res, error);
     }
 })
+// delete
+router.delete("/api/staffs/:id", async (req, res) => {
+    try {
+        const { id } = req.params
+        const result = await Staff.findByIdAndDelete(id);
+        if (result) {
+            res.json({
+                "status": 200,
+                "messenger": "staff deleted successfully",
+                "data": result
+            })
+        } else {
+            res.json({
+                "status": 400,
+                "messenger": "Error, staff deletion failed",
+                "data": []
+            })
+        }
+    } catch (error) {
+        handleServerError(res, error);
+    }
+})
+// staff list
+router.get("/api/staffs", async (req, res) => {
+    try {
+        const data = await Staff.find();
+        if (data) {
+            res.status(200).send(data)
+        } else {
+            res.json({
+                "status": 400,
+                "messenger": "Get staff list failed",
+                "data": []
+            })
+        }
+    } catch (error) {
+        handleServerError(res, error);
+    }
+})
+// get details
+router.get("/api/staffs/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await Staff.findById(id);
+        if (!result) {
+            return res.status(404).json({
+                status: 404,
+                messenger: 'Staff not found'
+            });
+        }
+        res.status(200).send(result)
+    } catch (error) {
+        handleServerError(res, error);
+    }
+})
+// search 
+router.get("/api/staffs", async (req, res) => {
+    try {
+        const { name } = req.query;
+
+        const result = await Staff.find({
+            name: { $regex: new RegExp(name, "i") } // Tìm kiếm theo tên không phân biệt hoa thường
+        }) // không giới hạn kết quả 
+        // .limit(10); // Giới hạn 10 kết quả
+        if (result.length > 0) {
+            res.status(200).json({
+                status: 200,
+                message: "Staff search successful",
+                data: result
+            });
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: "No staff found",
+                data: []
+            });
+        }
+    } catch (error) {
+        handleServerError(res, error);
+    }
+})
+
+module.exports = router;
