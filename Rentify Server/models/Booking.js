@@ -6,6 +6,6 @@ const Booking = new Schema({
     check_in_date: { type: String, require: true },
     check_out_date: { type: String, require: true },
     status: { type: String, require: true },
-    created_at: { type: String, require: false }
+    created_at: { type: String }
 })
 module.exports = mongoose.model("Booking", Booking);
