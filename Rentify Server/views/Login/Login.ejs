@@ -52,11 +52,11 @@
                     localStorage.setItem('token', token);
 
                     //chuyển sang màn tiếp theo khi đã đăng nhập thành công
-                    fetchData("api/post/list");
+                    // fetchData("api/post/list");
                     window.location.href = '/api/post/list';
                 } else {
                     console.error('Đăng nhập thất bại');
-                    alert("Ban khong co quyen truy cap")
+                    alert("Bạn không có quyền truy cập")
                 }
             } catch (error) {
                 console.error("Lỗi khi đăng nhập: ", error);
@@ -65,7 +65,7 @@
         async function fetchData(link) {
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('No token found, please log in first.');
+                alert('Không có token, hãy kiểm tra đăng nhập.');
                 return;
             }
 
@@ -79,7 +79,7 @@
                 const htmlContent = await response.text();
                 document.querySelector("body").innerHTML = htmlContent;
             } else {
-                alert('Failed to fetch data');
+                alert('Lỗi khi kiểm tra dữ liệu');
             }
         }
         document.getElementById('loginForm').addEventListener('submit', login);

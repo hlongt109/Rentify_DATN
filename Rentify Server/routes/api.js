@@ -1,18 +1,32 @@
 var express = require('express');
 var router = express.Router();
 
-const adminApi = require('./Api_Admin/loginApi');
+
 const supportManageApi = require("./Api_BuildingOwner/support_manage_api")
 const staffManageApi = require("./Api_BuildingOwner/staff_manage_api")
 const serviceManageApi = require("./Api_BuildingOwner/services_manage_api")
-// nối 
-router.use('', adminApi);
+
 router.use('', supportManageApi);
 router.use('', staffManageApi);
 router.use('', serviceManageApi);
 
 //============================================
 //const userApi = require('./Api_Admin/demoApi');
+
+//admin
+const adminApi = require('./Api_Admin/loginApi');
+const postAdmin = require('./Api_Admin/postApi');
+const userAdmin = require('./Api_Admin/userApi'); //user ở đây là model chứ không phải role
+// nối 
+router.use('', adminApi);
+router.use('', userAdmin);
+//============================================
+
+//Chủ nhà
+
+//Nối
+
+//============================================
 
 
 //NhanVien
@@ -32,6 +46,12 @@ router.use('/staff/notifications', notification_staffApi); // Đổi đường d
 router.use('/staff/rooms', room_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use('/staff/invoices', invoice_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use('/staff/requests', request_staffApi); // Đổi đường dẫn cho contract_staffApi
+
+//User
+
+//Nối
+
+//==========================================
 
 
 module.exports = router; 

@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 
 // model
 const User = require("../../models/User");
-const Post = require("../../models/Post");
+
 // send email service
 const transporter = require("../../config/common/mailer")
 // upload file (image,images, video)
@@ -33,13 +33,16 @@ router.post("/admin/login", async (req, res) => {
         if (user.role !== 'admin') {
             return res.status(401).json({ message: 'Bạn không có quyền truy cập!' });
         }
+        if (user.role == 'ban') {
+            return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
+        }
         // Tạo JWT
         const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
             expiresIn: '1h',
         });
         console.log("Token: ", token);
 
-        res.json({ message: "Dang nhap thanh cong", token });
+        res.json({ message: "Đăng nhập thành công", token });
     } catch (error) {
         console.error(error, " Password: " + req.body.password);
         return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
@@ -75,21 +78,38 @@ router.post("/admin/register", async (req, res) => {
             console.log(msg);
             return res.json(msg);
         } else {
-            return res.status(400).send('Khong hop le');
+            return res.status(400).send('Không hợp lệ');
         }
     } catch (error) {
         console.error(error);
         return res.status(500).send('Lỗi server rồi');
     }
 });
-//Lấy danh sách Post
-router.get("/post/list", async (req, res) => {
+//Login thường
+router.post("/login", async (req, res) => {
     try {
-        const showList = await Post.find();
-        return res.json({ message: "Danh sách bài đăng", showList });
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Thiếu username hoặc password' });
+        }
+        // Tìm người dùng trong cơ sở dữ liệu
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(401).json({ message: 'Tài khoản không tồn tại' });
+        }
+        if (user.role == 'ban') {
+            return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN, vui lòng liên hệ với ADMIN để giải quyết.' });
+        }
+        // Tạo JWT
+        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
+            expiresIn: '1h',
+        });
+        console.log("Token: ", token);
+
+        res.json({ message: "Đăng nhập thành công", token });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Lỗi server');
+        console.error(error, " Password: " + req.body.password);
+        return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
     }
 });
 
