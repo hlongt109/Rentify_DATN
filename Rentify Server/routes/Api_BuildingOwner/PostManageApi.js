@@ -78,6 +78,42 @@ router.delete('/posts/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete post.' });
     }
 });
+// #5. Tìm kiếm bài đăng GET: http://localhost:3000/api/posts/search?query={keyword}
+router.get('/posts/search', async (req, res) => {
+    const { query } = req.query; // Lấy từ query string
+
+    try {
+        const posts = await Post.find({
+            $or: [
+                { title: { $regex: query, $options: 'i' } }, // Tìm kiếm theo tiêu đề
+                { content: { $regex: query, $options: 'i' } } // Tìm kiếm theo nội dung
+            ]
+        });
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to search posts.' });
+    }
+});
+
+// #6. Xem chi tiết bài đăng GET: http://localhost:3000/api/posts/{id}
+router.get('/posts/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const post = await Post.findById(id);
+        
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found.' });
+        }
+
+        res.status(200).json(post);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to retrieve post.' });
+    }
+});
+
 
 module.exports = router;
 
