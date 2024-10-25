@@ -1,1 +1,0 @@
-// quản lý tòa nhà (chủ tòa)
