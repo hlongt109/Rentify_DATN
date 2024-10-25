@@ -49,8 +49,8 @@ router.post("/admin/login", async (req, res) => {
     }
 });
 
-//dang ky
-router.post("/admin/register", async (req, res) => {
+//đăng ký thường
+router.post("/register", async (req, res) => {
     try {
         if (req.method === "POST") {
             const { username, password, email, phoneNumber, role, name, dob, gender, address, profile_picture_url } = req.body;
@@ -58,7 +58,6 @@ router.post("/admin/register", async (req, res) => {
             if (existingUser) {
                 return res.status(400).json({ error: 'Username đã tồn tại. Vui lòng chọn username khác.' });
             }
-
             let objAccount = new User({
                 username: username,
                 password: password,
@@ -112,6 +111,4 @@ router.post("/login", async (req, res) => {
         return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
     }
 });
-
-
 module.exports = router

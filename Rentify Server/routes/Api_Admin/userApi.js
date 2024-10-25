@@ -17,7 +17,7 @@ router.get("/user/list", async (req, res) => {
     }
 });
 
-//sửa người dùng
+//sửa role người dùng
 router.put("/user/update/:id", async (req, res) => {
     try {
         const findID = req.params.id;
@@ -25,7 +25,7 @@ router.put("/user/update/:id", async (req, res) => {
 
         const upDB = await User.findByIdAndUpdate(
             findID,
-            { role },
+            { role },// thứ cần sửa ở đây
             { new: true, runValidators: true } // new: true để trả về đối tượng cập nhật, runValidators: true để chạy các validators
         );
 
