@@ -19,6 +19,7 @@ const postAdmin = require('./Api_Admin/postApi');
 const userAdmin = require('./Api_Admin/userApi'); //user ở đây là model chứ không phải role
 // nối 
 router.use('', adminApi);
+router.use('', postAdmin);
 router.use('', userAdmin);
 //============================================
 
