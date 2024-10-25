@@ -1,4 +1,4 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
 // Ví dụ
@@ -6,10 +6,10 @@ var router = express.Router();
 // router.use('',tentenRouter)
 
 //============================================
-const userApi = require('./Api_Admin/demoApi');
+// const userApi = require("./Api_Admin/demoApi");
+const apiUser = require("./Api_User/UserApi");
+// nối
+// router.use("/", userApi);
+router.use("/", apiUser);
 
-// nối 
-router.use('/', userApi);
-
-
-module.exports = router; 
+module.exports = router;
