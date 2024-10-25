@@ -1,17 +1,17 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const User = new Schema({
-    username: { type: String, require: true },
-    password: { type: String, require: true },
-    email: { type: String, require: true },
-    phoneNumber: { type: String, require: true },
+    username: { type: String },
+    password: { type: String },
+    email: { type: String },
+    phoneNumber: { type: String },
     role: { type: String, enum: ['admin', 'landlord', 'staffs', 'user'], default: 'user' },
-    name: { type: String, require: true },
-    dob: { type: String, require: true },// ngày sinh
-    gender: { type: String, require: true },//giới tính
-    address: { type: String, require: true },
-    profile_picture_url: { type: String },
-    created_at: { type: String, require: false },
-    updated_at: { type: String, require: false }
+    name: { type: String },
+    dob: { type: String },// ngày sinh
+    gender: { type: String },//giới tính
+    address: { type: String },
+    profile_picture_url: { type: String},
+    created_at: { type: String },
+    updated_at: { type: String }
 })
 module.exports = mongoose.model("User", User);

@@ -17,12 +17,7 @@ router.get("/api/support-customer", async (req, res) => {
             })
         }
     } catch (error) {
-        console.log("Error: " + error);
-        res.status(500).json({
-            "status": 500,
-            "message": "Server error",
-            "error": error.message
-        })
+        handleServerError(res, error);
     }
 })
 
@@ -54,8 +49,8 @@ router.put("/api/support-customer/{id}", async (req, res) => {
         supportUpdate.content_support = data.content_support ?? supportUpdate.content_support;
         supportUpdate.image = imageNew;
         supportUpdate.status = data.status ?? supportUpdate.status;
-        supportUpdate.created_at = data.created_at ?? supportUpdate.created_at;
-        supportUpdate.updated_at = data.updated_at ?? supportUpdate.updated_at;
+        supportUpdate.created_at = supportUpdate.created_at;
+        supportUpdate.updated_at = getFormattedDate();
 
         const result = await supportUpdate.save()
 
@@ -73,12 +68,7 @@ router.put("/api/support-customer/{id}", async (req, res) => {
             });
         }
     } catch (error) {
-        console.error("Error: " + error);
-        res.status(500).json({
-            "status": 500,
-            "message": "Server error",
-            "error": error.message
-        });
+        handleServerError(res, error);
     }
 })
 
@@ -95,12 +85,7 @@ router.get("/api/support-customer/:id", async (req, res) => {
         }
         res.status(200).send(support)
     } catch (error) {
-        console.error("Error: " + error);
-        res.status(500).json({
-            "status": 500,
-            "message": "Server error",
-            "error": error.message
-        });
+        handleServerError(res, error);
     }
 })
 module.exports = router;

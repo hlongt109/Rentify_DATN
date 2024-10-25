@@ -7,8 +7,8 @@ const Post = new Schema({
     status: { type: String, require: true },
     video: { type: Array },
     photo: { type: Array },
-    created_at: { type: String, require: false },
-    updated_at: { type: String, require: false }
+    created_at: { type: String },
+    updated_at: { type: String }
 
 })
 module.exports = mongoose.model("Post", Post);
