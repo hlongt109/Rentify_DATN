@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Post = new Schema({
-    user_id: { type: String, require: true },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     title: { type: String, require: true },
     content: { type: String, require: true },
-    status: { type: String, require: true },
+    status: { type: Int, require: true },
     video: { type: Array },
     photo: { type: Array },
+    post_type: { type: String, enum: ['roomate', 'rent'], require: true },
     created_at: { type: String },
     updated_at: { type: String }
 
