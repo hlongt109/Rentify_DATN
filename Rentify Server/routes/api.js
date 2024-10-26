@@ -1,4 +1,4 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
 // Ví dụ
@@ -17,6 +17,7 @@ const staffManageApi = require("./Api_BuildingOwner/staff_manage_api")
 const serviceManageApi = require("./Api_BuildingOwner/services_manage_api")
 const statisticApi = require("./Api_BuildingOwner/statistic_api")
 const paymentApi = require("./Api_BuildingOwner/payment_api")
+const apiUser = require("./Api_User/UserApi");
 
 // nối 
 router.use('/', userApi);
@@ -31,5 +32,6 @@ router.use('', serviceManageApi);
 router.use('', statisticApi);
 router.use('', paymentApi);
 router.use('', notificationApi);
+router.use("/", apiUser);
 
-module.exports = router; 
+module.exports = router;
