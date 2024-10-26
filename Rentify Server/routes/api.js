@@ -18,6 +18,9 @@ const serviceManageApi = require("./Api_BuildingOwner/services_manage_api")
 const statisticApi = require("./Api_BuildingOwner/statistic_api")
 const paymentApi = require("./Api_BuildingOwner/payment_api")
 const apiUser = require("./Api_User/UserApi");
+const adminApi = require('./Api_Admin/loginApi');
+const postAdmin = require('./Api_Admin/postApi');
+const userAdmin = require('./Api_Admin/userApi');
 
 // nối 
 router.use('/', userApi);
@@ -33,5 +36,8 @@ router.use('', statisticApi);
 router.use('', paymentApi);
 router.use('', notificationApi);
 router.use("/", apiUser);
+router.use('', adminApi);
+router.use('', postAdmin);
+router.use('', userAdmin);
 
 module.exports = router;
