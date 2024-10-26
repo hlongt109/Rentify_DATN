@@ -6,20 +6,29 @@ var router = express.Router();
 // router.use('',tentenRouter)
 
 //============================================
-const serviceApi = require('./Api_User/serviceApi')
-const roomApi = require('./Api_User/roomApi')
-const invoiceApi = require('./Api_User/invoiceApi')
-const reportApi = require('./Api_User/reportApi')
-const paymentApi = require('./Api_User/paymentApi')
+const adminApi = require('./Api_Admin/loginApi');
+const postAdmin = require('./Api_Admin/postApi');
+const userAdmin = require('./Api_Admin/userApi');
+// building_owner
 const supportManageApi = require("./Api_BuildingOwner/support_manage_api")
 const staffManageApi = require("./Api_BuildingOwner/staff_manage_api")
 const serviceManageApi = require("./Api_BuildingOwner/services_manage_api")
 const statisticApi = require("./Api_BuildingOwner/statistic_api")
 const paymentApi_BuildingOwner = require("./Api_BuildingOwner/payment_api")
+const notificationApi = require('./Api_BuildingOwner/notification_api');
+const UserManage=require("./Api_BuildingOwner/UserManageApi")
+const PostManage= require("./Api_BuildingOwner/PostManageApi")
+const PaymentManage= require("./Api_BuildingOwner/PaymentManageApi")
+const ContractManage= require("./Api_BuildingOwner/ContractManageApi")
+const BuildingManage= require("./Api_BuildingOwner/BuildingManageApi")
+// user
+const roomApi = require('./Api_User/roomApi')
+const invoiceApi = require('./Api_User/invoiceApi')
+const reportApi = require('./Api_User/reportApi')
+const paymentApi = require('./Api_User/paymentApi')
+const serviceApi = require('./Api_User/serviceApi')
 const apiUser = require("./Api_User/UserApi");
-const adminApi = require('./Api_Admin/loginApi');
-const postAdmin = require('./Api_Admin/postApi');
-const userAdmin = require('./Api_Admin/userApi');
+// staff
 const post_staffApi = require('./Api_Staff/Post');
 const contract_staffApi = require('./Api_Staff/Contract');
 const payment_staffApi = require('./Api_Staff/Payment');
@@ -27,12 +36,6 @@ const notification_staffApi = require('./Api_Staff/Notification');
 const room_staffApi = require('./Api_Staff/Room');
 const invoice_staffApi = require('./Api_Staff/Invoice');
 const request_staffApi = require('./Api_Staff/Request');
-const UserManage=require("./Api_BuildingOwner/UserManageApi")
-const PostManage= require("./Api_BuildingOwner/PostManageApi")
-const PaymentManage= require("./Api_BuildingOwner/PaymentManageApi")
-const ContractManage= require("./Api_BuildingOwner/ContractManageApi")
-const BuildingManage= require("./Api_BuildingOwner/BuildingManageApi")
-const notificationApi = require('./Api_BuildingOwner/notification_api');
 
 // nối 
 router.use('/', serviceApi)
