@@ -8,8 +8,7 @@ const Notification = new Schema({
     },
     title: {type: String},
     content: { type: String },
-    status: {type: Number},
-    read_status: { type: String },
+    read_status: { type: String, enum: ['unread', 'read'] },
     created_at: { type: String }
 })
 module.exports = mongoose.model("Notification", Notification)

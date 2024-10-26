@@ -13,6 +13,7 @@ const Invoice = new Schema({
     },
     description: { type: Array },
     amount: { type: Number, require: true }, // số tien
+    transaction_type: { type: String, enum: ['income', 'expense'], require: true },
     due_date: { type: String }, // hạn chót
     payment_status: { type: String },
     created_at: { type: String }

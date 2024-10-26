@@ -14,6 +14,7 @@ const Payment = new Schema({
     amount: { type: Number, require: true }, // số tiền 
     payment_date: { type: String, enum: ['transfer', 'cash'], require: true },
     payment_method: { type: String, require: true },
+    status: { type: Number }, // 0 chưa thánh toán, 1 đã thanh toán
     created_at: { type: String }
 })
 module.exports = mongoose.model("Payment", Payment);
