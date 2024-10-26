@@ -5,8 +5,9 @@ const Invoice = new Schema({
     room_id: { type: String, require: true },
     description: { type: Array },
     amount: { type: Number, require: true }, // số tien
+    transaction_type: { type: String, enum: ['income', 'expense'], require: true },
     due_date: { type: String}, // hạn chót
-    payment_status: { type: String},
+    payment_status: { type: String, enum: ['paid', 'unpaid', 'pending'] },
     created_at: { type: String }
 })
 module.exports = mongoose.model("Invoice", Invoice);

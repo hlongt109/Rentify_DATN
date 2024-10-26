@@ -146,7 +146,8 @@ router.delete("/api/services/:id", async (req, res) => {
                 "status": 200,
                 "messenger": "service deleted successfully",
                 "data": result
-            })
+            })  
+
         } else {
             res.json({
                 "status": 400,

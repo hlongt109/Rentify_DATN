@@ -6,6 +6,5 @@ const Payment = new Schema({
     amount: { type: Number, require: true }, // số tiền 
     payment_date: { type: String, require: true },
     payment_method: { type: String, require: true },
-    created_at: { type: String }
 })
 module.exports = mongoose.model("Payment", Payment);
