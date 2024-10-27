@@ -9,6 +9,9 @@ var router = express.Router();
 const adminApi = require('./Api_Admin/loginApi');
 const postAdmin = require('./Api_Admin/postApi');
 const userAdmin = require('./Api_Admin/userApi');
+const nofAdmin = require('./Api_Admin/nofApi');
+const spAdmin = require('./Api_Admin/spApi');
+const statAdmin = require('./Api_Admin/statsApi');
 // building_owner
 const supportManageApi = require("./Api_BuildingOwner/support_manage_api")
 const staffManageApi = require("./Api_BuildingOwner/staff_manage_api")
@@ -53,6 +56,9 @@ router.use("/", apiUser);
 router.use('', adminApi);
 router.use('', postAdmin);
 router.use('', userAdmin);
+router.use('', nofAdmin);
+router.use('', spAdmin);
+router.use('', statAdmin);
 router.use('/staff/posts', post_staffApi); // Đổi đường dẫn cho post_staffApi
 router.use('/staff/contracts', contract_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use('/staff/payments', payment_staffApi); // Đổi đường dẫn cho contract_staffApi
