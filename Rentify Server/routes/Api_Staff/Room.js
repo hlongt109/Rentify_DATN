@@ -22,6 +22,7 @@ router.post('/add', upload.fields([{ name: 'video_room' }, { name: 'photos_room'
         description: req.body.description,
         price: req.body.price,
         size: req.body.size,
+        status: req.body.status,
         availability_status: req.body.availability_status,
         video_room: req.files['video_room'] ? req.files['video_room'][0].path.replace('public/', '') : '', // Lưu đường dẫn video
         photos_room: req.files['photos_room'] ? req.files['photos_room'].map(file => file.path.replace('public/', '')) : [], // Lưu mảng đường dẫn hình ảnh
@@ -52,6 +53,7 @@ router.put('/update/:id', upload.fields([{ name: 'video_room' }, { name: 'photos
                 description: req.body.description,
                 price: req.body.price,
                 size: req.body.size,
+                status: req.body.status,
                 availability_status: req.body.availability_status,
                 video_room: req.files['video_room'] ? req.files['video_room'][0].path.replace('public/', '') : req.body.video_room, // Giữ nguyên nếu không cập nhật
                 photos_room: req.files['photos_room'] ? req.files['photos_room'].map(file => file.path.replace('public/', '')) : req.body.photos_room, // Giữ nguyên nếu không cập nhật

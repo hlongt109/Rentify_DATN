@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Contract = require("../../models/Contract");
 
-// Lấy danh sách tất cả hợp đồng
+// Lấy danh sách tất cả hợp đồng 
 router.get('/list', async (req, res) => {
     try {
         const contracts = await Contract.find(); // Lấy tất cả hợp đồng từ DB
@@ -12,7 +12,7 @@ router.get('/list', async (req, res) => {
     }
 });
 
-// Tìm kiếm hợp đồng
+// Tìm kiếm hợp đồng 
 router.get('/search', async (req, res) => {
     const { user_id, room_id } = req.query;
 
@@ -28,7 +28,7 @@ router.get('/search', async (req, res) => {
     }
 });
 
-// Xem chi tiết hợp đồng theo ID
+// Xem chi tiết hợp đồng theo ID http://localhost:3000/api/staff/contracts/detail/
 router.get('/detail/:id', async (req, res) => {
     try {
         const contract = await Contract.findById(req.params.id);

@@ -20,8 +20,10 @@ router.post('/add', upload.fields([{ name: 'video' }, { name: 'photo' }]), async
         title: req.body.title,
         content: req.body.content,
         status: req.body.status,
+        post_type: req.body.post_type,
         video: req.files['video'] ? req.files['video'].map(file => file.path.replace('public/', '')) : [], // Chỉ lưu lại đường dẫn tương đối
         photo: req.files['photo'] ? req.files['photo'].map(file => file.path.replace('public/', '')) : [], // Chỉ lưu lại đường dẫn tương đối
+      
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     });
@@ -47,7 +49,8 @@ router.put("/update/:id", upload.fields([{ name: 'video' }, { name: 'photo' }]),
         existingPost.title = req.body.title || existingPost.title;
         existingPost.content = req.body.content || existingPost.content;
         existingPost.status = req.body.status || existingPost.status;
-
+  existingPost.post_type= req.body.post_type||existingPost.post_type;
+       
         // Cập nhật video và photo
         if (req.files['video']) {
             existingPost.video = req.files['video'].map(file => file.path);
@@ -55,8 +58,7 @@ router.put("/update/:id", upload.fields([{ name: 'video' }, { name: 'photo' }]),
         if (req.files['photo']) {
             existingPost.photo = req.files['photo'].map(file => file.path);
         }
-
-        existingPost.updated_at = new Date().toISOString();
+       existingPost.updated_at = new Date().toISOString();
 
         const updatedPost = await existingPost.save();
         res.json(updatedPost); // Trả về bài viết đã được cập nhật
