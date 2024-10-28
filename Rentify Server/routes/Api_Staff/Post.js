@@ -82,5 +82,32 @@ router.delete("/delete/:id", async (req, res) => {
         res.status(500).json({ message: error.message }); // Xử lý lỗi
     }
 });
+router.get('/search', async (req, res) => {
+    try {
+        const { query } = req.query; // Lấy từ khóa tìm kiếm từ query string
 
+        // Kiểm tra xem từ khóa tìm kiếm có được cung cấp không
+        if (!query) {
+            return res.status(400).json({ message: 'Từ khóa tìm kiếm không được cung cấp' });
+        }
+
+        // Tìm kiếm bài đăng dựa trên tiêu đề hoặc nội dung
+        const posts = await Post.find({
+            $or: [
+                { title: { $regex: query, $options: 'i' } }, // Tìm kiếm không phân biệt chữ hoa chữ thường
+                { content: { $regex: query, $options: 'i' } }
+            ]
+        });
+
+        // Kiểm tra xem có bài đăng nào được tìm thấy không
+        if (posts.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy bài đăng nào' });
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+});
 module.exports = router;
