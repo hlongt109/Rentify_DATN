@@ -27,6 +27,7 @@ const notification_staffApi = require('./Api_Staff/Notification');
 const room_staffApi = require('./Api_Staff/Room');
 const invoice_staffApi = require('./Api_Staff/Invoice');
 const request_staffApi = require('./Api_Staff/Request');
+const login_staffApi = require('./Api_Staff/login');
 const UserManage=require("./Api_BuildingOwner/UserManageApi")
 const PostManage= require("./Api_BuildingOwner/PostManageApi")
 const PaymentManage= require("./Api_BuildingOwner/PaymentManageApi")
@@ -57,6 +58,7 @@ router.use('/staff/notifications', notification_staffApi); // Đổi đường d
 router.use('/staff/rooms', room_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use('/staff/invoices', invoice_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use('/staff/requests', request_staffApi); // Đổi đường dẫn cho contract_staffApi
+router.use('/staff/logins', login_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use('/',UserManage)
 router.use('/',PostManage)
 router.use('/',PaymentManage)
