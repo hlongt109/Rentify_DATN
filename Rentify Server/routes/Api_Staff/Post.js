@@ -35,7 +35,18 @@ router.post('/add', upload.fields([{ name: 'video' }, { name: 'photo' }]), async
         res.status(400).json({ message: error.message });
     }
 });
-
+router.get('/detail/:id', async (req, res) => {
+    try {
+        const post = await Post.findById( req.params.id);
+        if (!post) {
+            return res.status(404).json({ message: 'Bài đăng không tìm thấy' });
+        }
+        res.status(200).json(post);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+});
 // Sửa bài viết theo ID
 router.put("/update/:id", upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
     try {
