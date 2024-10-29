@@ -30,7 +30,7 @@ router.get('/list', async (req, res) => {
 //     }
 // });
 // Xem chi tiết hóa đơn theo ID
-router.get('detail/:id', async (req, res) => {
+router.get('/detail/:id', async (req, res) => {
     try {
         const invoice = await Invoice.findById(req.params.id);
         if (!invoice) {

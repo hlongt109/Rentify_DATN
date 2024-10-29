@@ -3,15 +3,23 @@ const router = express.Router();
 const Notification = require("../../models/Notification");
 
 // Lấy danh sách tất cả thông báo
-router.get('/list', async (req, res) => {
+router.get("/list/:user_id", async(req, res) => {
     try {
-        const notifications = await Notification.find(); // Lấy tất cả thông báo từ DB
-        res.json(notifications);
+        const { user_id } = req.params; 
+        const data = await Notification.find({ user_id });
+        if(data){
+            res.status(200).send(data)
+        }else{
+            res.json({
+                "status": 400,
+                "messenger": "Get notification list failed",
+                "data": []
+            })
+        }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        handleServerError(req, res)
     }
-});
-
+})
 router.post('/add', async (req, res) => {
     console.log(req.body); // Kiểm tra dữ liệu nhận được
 
