@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.homeScreen
+package com.rentify.user.app.view.userScreens.rentScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,17 +12,18 @@ import androidx.navigation.compose.rememberNavController
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun HomeScreen() {
-    LayoutHome(navController = rememberNavController())
+fun RentScreen() {
+    LayoutRent(navController= rememberNavController())
 }
 
 @Composable
-fun LayoutHome(navController: NavHostController) {
+fun LayoutRent(navController: NavHostController) {
+
     Column (
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
     ){
-        Text(text = "LayoutHome")
+        Text(text = "LayoutRent")
     }
 }
