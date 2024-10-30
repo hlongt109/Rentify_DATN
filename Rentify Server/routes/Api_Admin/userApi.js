@@ -6,11 +6,12 @@ const User = require("../../models/User");
 router.get("/user/list", async (req, res) => {
     try {
         const find = await User.find();
-        return res.status(200).json({
-            status: 200,
-            message: "Lấy dữ liệu thành công",
-            find
-        });
+        res.render('Accounts/listAccount', { showList: find });
+        // return res.status(200).json({
+        //     status: 200,
+        //     message: "Lấy dữ liệu thành công",
+        //     find
+        // });
     } catch (error) {
         console.error(error);
         res.status(500).send('Lỗi server');

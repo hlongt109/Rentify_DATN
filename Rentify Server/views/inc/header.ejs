@@ -14,11 +14,12 @@
         }
 
         header {
-            background-color: #ee660b;
+            background-color: #f28d4e;
             color: #ddd;
             padding: 15px 0;
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
+            /* Điều chỉnh cho không gian giữa logo và nav */
             align-items: center;
             flex-wrap: wrap;
         }
@@ -34,7 +35,6 @@
             margin: 0;
             display: flex;
             gap: 20px;
-            margin: 0 auto;
         }
 
         .header-nav a {
@@ -46,6 +46,30 @@
 
         .header-nav a:hover {
             color: #1abc9c;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-container input[type="text"] {
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .search-container button {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #1abc9c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .search-container button:hover {
+            background-color: #16a085;
         }
 
         .social-icons {
@@ -71,22 +95,25 @@
     <!-- Header -->
     <header>
         <div class="header-logo">
-            <img src="/public/image/logo.png" alt="Logo" />
+            <img src="/public/image/logo.png" height="100px" width="100px" />
         </div>
 
         <ul class="header-nav">
-            <li><a href="#">Trang Chủ</a></li>
-            <li><a href="#">Giới Thiệu</a></li>
-            <li><a href="#">Dịch Vụ</a></li>
-            <li><a href="#">Liên Hệ</a></li>
+            <li><a href="/api/post/list">Bài đăng</a></li>
+            <li><a href="/api/user/list">Người dùng</a></li>
+            <li><a href="/api/staff/rooms/list">Danh sách phòng</a></li>
+            <li><a href="/api/admin/login">Đăng xuất</a></li>
         </ul>
-        <div class="social-icons">
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+
+        <div class="search-container">
+            <form action="/api/search" method="GET">
+                <input type="text" name="query" placeholder="Tìm kiếm..." required>
+                <button type="submit">Tìm</button>
+            </form>
         </div>
+
     </header>
+
 </body>
 
 </html>

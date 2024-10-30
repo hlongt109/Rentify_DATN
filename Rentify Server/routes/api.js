@@ -6,11 +6,12 @@ var router = express.Router();
 // router.use('',tentenRouter)
 
 //============================================
+//admin
 const adminApi = require('./Api_Admin/loginApi');
 const postAdmin = require('./Api_Admin/postApi');
 const userAdmin = require('./Api_Admin/userApi');
 const nofAdmin = require('./Api_Admin/nofApi');
-const spAdmin = require('./Api_Admin/spApi');
+const spAdmin = require('./Api_Admin/supportApi');
 const statAdmin = require('./Api_Admin/statsApi');
 // building_owner
 const supportManageApi = require("./Api_BuildingOwner/support_manage_api")
@@ -19,11 +20,11 @@ const serviceManageApi = require("./Api_BuildingOwner/services_manage_api")
 const statisticApi = require("./Api_BuildingOwner/statistic_api")
 const paymentApi_BuildingOwner = require("./Api_BuildingOwner/payment_api")
 const notificationApi = require('./Api_BuildingOwner/notification_api');
-const UserManage=require("./Api_BuildingOwner/UserManageApi")
-const PostManage= require("./Api_BuildingOwner/PostManageApi")
-const PaymentManage= require("./Api_BuildingOwner/PaymentManageApi")
-const ContractManage= require("./Api_BuildingOwner/ContractManageApi")
-const BuildingManage= require("./Api_BuildingOwner/BuildingManageApi")
+const UserManage = require("./Api_BuildingOwner/UserManageApi")
+const PostManage = require("./Api_BuildingOwner/PostManageApi")
+const PaymentManage = require("./Api_BuildingOwner/PaymentManageApi")
+const ContractManage = require("./Api_BuildingOwner/ContractManageApi")
+const BuildingManage = require("./Api_BuildingOwner/BuildingManageApi")
 // user
 const roomApi = require('./Api_User/roomApi')
 const invoiceApi = require('./Api_User/invoiceApi')
@@ -66,10 +67,10 @@ router.use('/staff/notifications', notification_staffApi); // Đổi đường d
 router.use('/staff/rooms', room_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use('/staff/invoices', invoice_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use('/staff/requests', request_staffApi); // Đổi đường dẫn cho contract_staffApi
-router.use('/',UserManage)
-router.use('/',PostManage)
-router.use('/',PaymentManage)
-router.use('/',ContractManage)
-router.use('/',BuildingManage)
+router.use('/', UserManage)
+router.use('/', PostManage)
+router.use('/', PaymentManage)
+router.use('/', ContractManage)
+router.use('/', BuildingManage)
 
 module.exports = router;

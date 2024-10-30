@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Payment = new Schema({
-    user_id: { 
-        type: mongoose.Schema.Types.ObjectId, 
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        require: true 
+        require: true
     },
-    invoice_id: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Invoice",    
-        require: true 
+    invoice_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Invoice",
+        require: true
     },
     amount: { type: Number, require: true }, // số tiền 
     payment_date: { type: String, require: true },

@@ -238,6 +238,6 @@ router.post("/new-booking", verifyToken, async (req, res) => {
     const existingBooking = await Booking.findOne({
       roomId,
     });
-  } catch (error) {}
+  } catch (error) { }
 });
 module.exports = router;

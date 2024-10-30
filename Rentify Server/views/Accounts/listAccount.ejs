@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách người dùng</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <%- include('../inc/header') %>
+
+        <h2 class="text-center" style="color: rgb(254, 177, 110);">Danh sách người dùng</h2>
+
+        <div class="container mb-4">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="/api/post/add" class="btn btn-danger">Thêm bài đăng</a>
+            </div>
+
+            <div class="row">
+                <% showList.forEach((find)=> { %>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <img src="../../<%= find.profile_picture_url %>" class="card-img-top" alt="Avatar">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%= find.name %>
+                                </h5>
+                                <p class="card-text"><strong>ID:</strong>
+                                    <%= find._id %>
+                                </p>
+                                <p class="card-text"><strong>Username:</strong>
+                                    <%= find.username %>
+                                </p>
+                                <p class="card-text"><strong>Email:</strong>
+                                    <%= find.email %>
+                                </p>
+                                <p class="card-text"><strong>Phone Number:</strong>
+                                    <%= find.phoneNumber %>
+                                </p>
+                                <p class="card-text"><strong>Role:</strong>
+                                    <%= find.role %>
+                                </p>
+                                <p class="card-text"><strong>DOB:</strong>
+                                    <%= find.dob %>
+                                </p>
+                                <p class="card-text"><strong>Gender:</strong>
+                                    <%= find.gender %>
+                                </p>
+                                <p class="card-text"><strong>Address:</strong>
+                                    <%= find.address %>
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="/api/post/update/<%= find._id %>" class="btn btn-warning">Sửa</a>
+                                    <a href="/api/post/delete/<%= find._id %>" class="btn btn-danger"
+                                        onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
+
+        <%- include('../inc/footer') %>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', async () => {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch('/api/post/list', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.status === 401 || response.status === 403) {
+                        alert('Invalid or expired token, please log in again.');
+                        window.location.href = "/api/admin/login"; // Chuyển hướng đến trang đăng nhập
+                    } else {
+                        const data = await response.json();
+                        const productList = document.getElementById('listPost');
+                        data.products.forEach(product => {
+                            const productItem = document.createElement('div');
+                            productItem.innerText = product.name;
+                            productList.appendChild(productItem);
+                        });
+                    }
+                });
+            </script>
+</body>
+
+</html>
