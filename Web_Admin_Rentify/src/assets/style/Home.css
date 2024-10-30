@@ -1,0 +1,7 @@
+/* src/assets/style/Home.css */
+.home-container {
+    background-color: #fafafb;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+}
