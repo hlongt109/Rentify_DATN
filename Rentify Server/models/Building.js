@@ -1,7 +1,16 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Building = new Schema({
-    landlord_id: { type: String, require: true },
+    landlord_id: { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Landlord',
+        required: true
+    },
+    lmanager_id: { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Manager',
+        required: true
+    },
     address: { type: String },
     description: { type: String }, 
     number_of_floors: { type: Number},

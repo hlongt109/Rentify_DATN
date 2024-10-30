@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <title>Đăng nhập </title>
+</head>
+
+<body>
+    <div class="row ">
+        <div class="w-100 h-100 bg-white p-5 card ">
+            <div class="text-center fs-5 fw-bold ">
+                <h2 style="color: rgb(255, 157, 0);">Đăng nhập</h2>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="Username">
+                </div>
+                <div class="mb-3 d-grid">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password">
+                </div>
+                <div class="mb-3 d-flex justify-content-center">
+                    <button class="btn btn-warning osition-relative" style="color: white;" type="submit">Đăng
+                        nhập</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        async function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                // Gửi yêu cầu đăng nhập đến API
+                const response = await fetch('http://localhost:3000/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const token = data.token;
+
+                    localStorage.setItem('token', token);
+
+                    //chuyển sang màn tiếp theo khi đã đăng nhập thành công
+                    // fetchData("api/post/list");
+                    window.location.href = '/api/post/list';
+                } else {
+                    console.error('Đăng nhập thất bại');
+                    alert("Bạn không có quyền truy cập")
+                }
+            } catch (error) {
+                console.error("Lỗi khi đăng nhập: ", error);
+            }
+        }
+        async function fetchData(link) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Không có token, hãy kiểm tra đăng nhập.');
+                return;
+            }
+
+            const response = await fetch(`${link}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const htmlContent = await response.text();
+                document.querySelector("body").innerHTML = htmlContent;
+            } else {
+                alert('Lỗi khi kiểm tra dữ liệu');
+            }
+        }
+        document.getElementById('loginForm').addEventListener('submit', login);
+
+    </script>
+</body>
+
+</html>
