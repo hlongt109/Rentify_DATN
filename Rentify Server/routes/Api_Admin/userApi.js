@@ -38,9 +38,10 @@ router.post("/user/update/:id", async (req, res) => {
         if (!upDB) {
             return res.status(404).json({ message: 'Không tìm thấy tàn khoản' });
         }
-        let msg = 'Sửa thành công id: ' + findID;
-        console.log(msg);
-        return res.status(200).json({ message: 'Cập nhật thành công' });
+        // let msg = 'Sửa thành công id: ' + findID;
+        // console.log(msg);
+        // return res.status(200).json({ message: 'Cập nhật thành công' });
+        res.redirect("/api/user/list");
     } catch (error) {
         smg = "Lỗi: " + error.message;
         return res.status(500).json({ message: smg });

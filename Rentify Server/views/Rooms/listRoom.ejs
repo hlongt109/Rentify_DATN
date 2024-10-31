@@ -11,19 +11,15 @@
 <body>
     <%- include('../inc/header') %>
 
-        <h2 class="text-center" style="color: rgb(254, 177, 110);">Danh sách bài đăng</h2>
+        <h2 class="text-center" style="color: rgb(254, 177, 110);">Danh sách phòng</h2>
 
         <div class="container mb-4">
-            <div class="d-flex justify-content-end mb-3">
-                <a href="/api/post/add" class="btn btn-danger">Thêm bài đăng</a>
-            </div>
-
             <div class="row">
                 <% listData.forEach((rooms)=> { %>
                     <div class="col-md-4 mb-3">
                         <div class="card">
                             <div class="card-body">
-                                <p class="card-text"><strong> Kieu phong:</strong>
+                                <p class="card-text"><strong> Kiểu phòng:</strong>
                                     <%= rooms.room_type %>
                                 </p>
 
@@ -33,16 +29,16 @@
                                 <p class="card-text"><strong>ID Người tạo:</strong>
                                     <%= rooms.landlord_id %>
                                 </p>
-                                <p class="card-text"><strong>Dess:</strong>
+                                <p class="card-text"><strong>Mô tả:</strong>
                                     <%= rooms.description %>
                                 </p>
-                                <p class="card-text"><strong>Giá:</strong>
+                                <p class="card-text"><strong>Giá cả:</strong>
                                     <%= rooms.price %>
                                 </p>
                                 <p class="card-text"><strong>Kích thước:</strong>
                                     <%= rooms.size %>
                                 </p>
-                                <p class="card-text"><strong>Service:</strong>
+                                <p class="card-text"><strong>Dịch vụ:</strong>
                                     <%= rooms.service_ids %>
                                 </p>
                                 <p class="card-text"><strong>Amenities:</strong>

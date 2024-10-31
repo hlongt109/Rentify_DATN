@@ -15,14 +15,14 @@
 
         <div class="container mb-4">
             <div class="d-flex justify-content-end mb-3">
-                <a href="/api/post/add" class="btn btn-danger">Thêm bài đăng</a>
+                <a href="/api/post/add" class="btn btn-danger">Thêm tài khoản</a>
             </div>
 
             <div class="row">
                 <% showList.forEach((find)=> { %>
                     <div class="col-md-4 mb-3">
                         <div class="card">
-                            <img src="../../<%= find.profile_picture_url %>" class="card-img-top" alt="Avatar">
+
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <%= find.name %>

@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang với Header </title>
+    <title>Trang với Header</title>
     <style>
+        /* Các kiểu cơ bản */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -17,7 +18,6 @@
             background-color: #f28d4e;
             color: #ddd;
             padding: 15px 20px;
-            /* Thêm khoảng cách bên trái và bên phải */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -46,6 +46,11 @@
 
         .header-nav a:hover {
             color: #1abc9c;
+        }
+
+        /* Thêm màu đỏ cho liên kết hiện tại */
+        .header-nav a.active {
+            color: red;
         }
 
         .search-container {
@@ -95,14 +100,17 @@
     <!-- Header -->
     <header>
         <div class="header-logo" aria-label="Logo">
-            <img src="/public/image/logo.png" alt="Logo" />
+            <a href="/api/post/list">
+                <img src="/public/image/logo.png" alt="Logo" />
+            </a>
         </div>
 
         <nav aria-label="Main Navigation">
             <ul class="header-nav">
                 <li><a href="/api/post/list">Bài đăng</a></li>
                 <li><a href="/api/user/list">Người dùng</a></li>
-                <li><a href="/api/staff/rooms/list">Danh sách phòng</a></li>
+                <li><a href="/api/staff/rooms/list">Phòng</a></li>
+                <li><a href="/api/api/services">Dịch vụ</a></li>
                 <li><a href="/api/admin/login">Đăng xuất</a></li>
             </ul>
         </nav>
@@ -114,6 +122,15 @@
             </form>
         </div>
     </header>
+
+    <script>
+        // JavaScript để đổi màu liên kết hiện tại
+        document.querySelectorAll('.header-nav a').forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
 
 </body>
 

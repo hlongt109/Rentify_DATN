@@ -121,9 +121,7 @@ router.post("/post/update/:id", async (req, res) => {
         const findID = req.params.id;
         let { status } = req.body;
         status = Number(status);
-        if (status !== 0 && status !== 1) {
-            return res.status(400).json({ message: 'Status chỉ có thể là số 0 hoặc là số 1' });
-        }
+
         const upDB = await Post.findByIdAndUpdate(
             findID,
             {
