@@ -89,6 +89,9 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
     implementation("com.google.firebase:firebase-analytics")
+
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.7.0")
 }
 // Allow references to generated code
 kapt {
