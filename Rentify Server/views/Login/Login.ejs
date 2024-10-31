@@ -58,7 +58,7 @@
         </form>
     </div>
 
-    <script>
+    <!-- <script>
         async function login(event) {
             event.preventDefault();
             const username = document.getElementById('username').value;
@@ -113,6 +113,59 @@
             }
         }
         document.getElementById('loginForm').addEventListener('submit', login);
+    </script> -->
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("http://localhost:3000/api/admin/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const token = data.token;
+
+                    // Lưu token vào localStorage để sử dụng sau
+                    localStorage.setItem("token", token);
+                    console.log("token da luu: ", token);
+
+                    alert("Đăng nhập thành công!");
+
+                    // Chuyển hướng hoặc thực hiện hành động khác
+                    window.location.href = "/api/post/list";
+                } else {
+                    alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.");
+                }
+            } catch (error) {
+                console.error("Lỗi:", error);
+                alert("Đã xảy ra lỗi trong quá trình đăng nhập.");
+            }
+        });
+
+        // Hàm để gửi yêu cầu với token cho các API yêu cầu xác thực
+        async function fetchWithAuth(url) {
+            const token = localStorage.getItem("token");
+            console.log("token hien tai: ", token);
+
+
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            return response;
+        }
     </script>
 </body>
 

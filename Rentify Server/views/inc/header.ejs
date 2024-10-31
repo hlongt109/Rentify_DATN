@@ -16,17 +16,17 @@
         header {
             background-color: #f28d4e;
             color: #ddd;
-            padding: 15px 0;
+            padding: 15px 20px;
+            /* Thêm khoảng cách bên trái và bên phải */
             display: flex;
             justify-content: space-between;
-            /* Điều chỉnh cho không gian giữa logo và nav */
             align-items: center;
             flex-wrap: wrap;
         }
 
-        .header-logo {
-            font-size: 24px;
-            color: #fff;
+        .header-logo img {
+            height: 100px;
+            width: 100px;
         }
 
         .header-nav {
@@ -94,24 +94,25 @@
 
     <!-- Header -->
     <header>
-        <div class="header-logo">
-            <img src="/public/image/logo.png" height="100px" width="100px" />
+        <div class="header-logo" aria-label="Logo">
+            <img src="/public/image/logo.png" alt="Logo" />
         </div>
 
-        <ul class="header-nav">
-            <li><a href="/api/post/list">Bài đăng</a></li>
-            <li><a href="/api/user/list">Người dùng</a></li>
-            <li><a href="/api/staff/rooms/list">Danh sách phòng</a></li>
-            <li><a href="/api/admin/login">Đăng xuất</a></li>
-        </ul>
+        <nav aria-label="Main Navigation">
+            <ul class="header-nav">
+                <li><a href="/api/post/list">Bài đăng</a></li>
+                <li><a href="/api/user/list">Người dùng</a></li>
+                <li><a href="/api/staff/rooms/list">Danh sách phòng</a></li>
+                <li><a href="/api/admin/login">Đăng xuất</a></li>
+            </ul>
+        </nav>
 
-        <div class="search-container">
+        <div class="search-container" aria-label="Search Form">
             <form action="/api/search" method="GET">
                 <input type="text" name="query" placeholder="Tìm kiếm..." required>
                 <button type="submit">Tìm</button>
             </form>
         </div>
-
     </header>
 
 </body>

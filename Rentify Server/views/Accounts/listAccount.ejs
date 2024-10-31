@@ -52,9 +52,9 @@
                                     <%= find.address %>
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <a href="/api/post/update/<%= find._id %>" class="btn btn-warning">Sửa</a>
-                                    <a href="/api/post/delete/<%= find._id %>" class="btn btn-danger"
-                                        onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</a>
+                                    <a href="/api/user/update1/<%= find._id %>" class="btn btn-warning">Sửa</a>
+                                    <button class="btn btn-danger"
+                                        onclick="confirmDelete('<%= find._id %>')">Xóa</button>
                                 </div>
                             </div>
                         </div>
@@ -66,28 +66,28 @@
         <%- include('../inc/footer') %>
 
             <script>
-                document.addEventListener('DOMContentLoaded', async () => {
-                    const token = localStorage.getItem('token');
-                    const response = await fetch('/api/post/list', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (response.status === 401 || response.status === 403) {
-                        alert('Invalid or expired token, please log in again.');
-                        window.location.href = "/api/admin/login"; // Chuyển hướng đến trang đăng nhập
-                    } else {
-                        const data = await response.json();
-                        const productList = document.getElementById('listPost');
-                        data.products.forEach(product => {
-                            const productItem = document.createElement('div');
-                            productItem.innerText = product.name;
-                            productList.appendChild(productItem);
-                        });
+                //xoa
+                function confirmDelete(id) {
+                    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                        fetch(`/api/user/delete/${id}`, {
+                            method: 'DELETE'
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Xóa không thành công');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                alert(data.message || 'Xóa thành công');
+                                window.location.href = '/api/user/list'; // Quay lại trang danh sách bài đăng
+                            })
+                            .catch(error => {
+                                console.error(error);
+                                alert('Đã xảy ra lỗi khi xóa');
+                            });
                     }
-                });
+                }
             </script>
 </body>
 

@@ -6,17 +6,19 @@ const Post = require("../../models/Post");
 const User = require("../../models/User");
 
 const upload = require('../../config/common/upload');
-const { token } = require('morgan');
 
-const cookieParser = require('cookie-parser');
-const { assign } = require('nodemailer/lib/shared');
 
 const verifyRole = (allowedRoles) => {
     return async (req, res, next) => {
         try {
             const authHeader = req.headers['authorization'];
             console.log("Authorization header:", authHeader); // Log header
-            const token = authHeader?.split(' ')[1];
+            if (!authHeader) {
+                return res.status(401).json({ message: "Bạn chưa đăng nhập" });
+            }
+            const token = authHeader.split(' ')[1]; // Giả sử định dạng là "Bearer token"
+            console.log("Token:", token); // Log token
+
             if (!token) {
                 return res.status(401).json({ message: "Bạn chưa đăng nhập" });
             }
@@ -27,6 +29,11 @@ const verifyRole = (allowedRoles) => {
                 }
                 console.log("Token decoded payload:", decoded); // Kiểm tra payload
                 req.user = decoded;
+
+                // Kiểm tra vai trò
+                if (!allowedRoles.includes(req.user.role)) {
+                    return res.status(403).json({ message: "Không có quyền truy cập" });
+                }
                 next();
             });
         } catch (error) {
@@ -34,6 +41,7 @@ const verifyRole = (allowedRoles) => {
         }
     }
 };
+
 
 //Lấy danh sách Post
 router.get("/post/list", async (req, res) => {
@@ -64,25 +72,26 @@ router.get('/api/search', (req, res) => {
     res.json({ posts: postResults, users: userResults }); // Trả về cả bài đăng và người dùng
 });
 //Add post
-router.get('/post/add1', async (req, res) => {
+router.get('/post/add1', verifyRole(['admin']), async (req, res) => {
     res.render('Posts/AddPost');
 })
 router.post('/post/add', verifyRole(['admin']), upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
-    let { title, content, status } = req.body;
+    let { title, content, status, post_type } = req.body;
     // let image = req.file ? req.file.filename : null;
     // let video = req.file ? req.file.filename : null;
-    console.log(req.file);
+    //console.log(req.file);
 
     // if (!req.file) {
     //     return res.status(400).json({ message: 'Image hoac video không được trống' });
     // }
     const post = new Post({
-        user_id: req.user._id,
+        user_id: req.user.id,
         title,
         content,
         status,
-        //image,
-        //video,
+        post_type,
+        // image,
+        // video,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     });
@@ -102,8 +111,6 @@ router.get("/post/update1/:id", async (req, res) => {
         if (!upDB) {
             return res.status(404).json({ message: 'Bài đăng không tồn tại' });
         }
-
-        // Render trang updatePost.ejs và truyền biến upDB vào
         return res.render('Posts/updatePost', { upDB });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -113,12 +120,10 @@ router.post("/post/update/:id", async (req, res) => {
     try {
         const findID = req.params.id;
         let { status } = req.body;
-        // Convert status to a number and check if it is 0 or 1
         status = Number(status);
         if (status !== 0 && status !== 1) {
             return res.status(400).json({ message: 'Status chỉ có thể là số 0 hoặc là số 1' });
         }
-
         const upDB = await Post.findByIdAndUpdate(
             findID,
             {
@@ -140,7 +145,6 @@ router.post("/post/update/:id", async (req, res) => {
 });
 
 //delete post
-
 router.delete("/post/delete/:id", async (req, res) => {
     try {
         const id = req.params.id;
