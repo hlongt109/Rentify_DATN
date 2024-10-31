@@ -16,9 +16,9 @@ class SplashActivity : ComponentActivity() {
             SplashScreen()
         }
         lifecycleScope.launch {
-            delay(2000) // Delay for 2 seconds (adjust as needed)
+            delay(1500)
             startActivity(Intent(this@SplashActivity, IntroActivity::class.java))
-            finish() // Finish the splash activity
+            finish()
         }
     }
 }
