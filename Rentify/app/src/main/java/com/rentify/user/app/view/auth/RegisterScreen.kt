@@ -1,7 +1,9 @@
 package com.rentify.user.app.view.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -43,11 +46,18 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.R
+import com.rentify.user.app.network.ApiClient
+import com.rentify.user.app.network.RegisterRequest
+import com.rentify.user.app.network.RegisterResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
-
+    val context = LocalContext.current
+    var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repassword by remember { mutableStateOf("") }
@@ -120,8 +130,8 @@ fun RegisterScreen(navController: NavHostController) {
 
         ) {
             TextField(
-                value = "",
-                onValueChange = {  },
+                value = username,
+                onValueChange = {  username=it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
@@ -161,32 +171,7 @@ fun RegisterScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth()
 
         ) {
-//            BasicTextField(
-//                value = email,
-//                onValueChange = { email = it },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(47.dp) // Chiều cao nhỏ hơn
-//                    .background(Color.White, RoundedCornerShape(8.dp))
-//                    .padding(horizontal = 8.dp, vertical = 8.dp), // Thêm padding để đảm bảo văn bản không bị cắt
-//                singleLine = true,
-//                textStyle = TextStyle(
-//                    color = Color.Black,
-//                    fontSize = 15.sp,
-//                    fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                ),
-//                decorationBox = { innerTextField ->
-//                    if (email.isEmpty()) {
-//                        Text(
-//                            text = "Enter your email",
-//                            color = Color.Gray,
-//                            fontSize = 15.sp,
-//                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                        )
-//                    }
-//                    innerTextField() // Hiển thị nội dung nhập của người dùng
-//                }
-//            )
+
             TextField(
                 value = email,
                 onValueChange = { email = it },
@@ -327,8 +312,47 @@ fun RegisterScreen(navController: NavHostController) {
 //đăng ký
 
         Button(
-            onClick = { /*TODO*/ }, modifier = Modifier
+            onClick = {
+                // Kiểm tra các trường không được để trống
+                if (username.isBlank() || email.isBlank() || password.isBlank() || repassword.isBlank()) {
+                    Toast.makeText(context, "Vui lòng điền đầy đủ thông tin đăng ký.", Toast.LENGTH_SHORT).show()
+                } else if (password != repassword) {
+                    Toast.makeText(context, "Mật khẩu và mật khẩu nhập lại không khớp.", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Thực hiện đăng ký khi các trường hợp lệ và mật khẩu khớp
+                    val registerRequest = RegisterRequest(
+                        username = username,
+                        email = email,
+                        password = password
+                    )
 
+                    ApiClient.apiService.registerUser(registerRequest).enqueue(object : Callback<RegisterResponse> {
+                        override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+//                            val responseBody = response.body()
+//                            println("Phản hồi đăng ký: $responseBody")
+                            if (response.isSuccessful) {
+                                // Xử lý khi đăng ký thành công
+                                val user = response.body()?.user
+                                // Chuyển hướng hoặc thông báo cho người dùng
+                              //  Toast.makeText(context, "Đăng ký thành công: ${user?.username}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+                            } else {
+                                // Xử lý khi có lỗi
+                                println("Lỗi đăng ký: ${response.message()}")
+                                Toast.makeText(context, "Lỗi đăng ký: ${response.message()}", Toast.LENGTH_SHORT).show()
+
+                            }
+                        }
+
+                        override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                            // Xử lý lỗi kết nối
+                            Toast.makeText(context, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
+
+                        }
+                    })
+                }
+            },
+            modifier = Modifier
                 .fillMaxWidth(),
             //  .background(Color(0xffFE724C), RoundedCornerShape(25.dp)), // Bo tròn 12.dp
 
@@ -356,7 +380,13 @@ fun RegisterScreen(navController: NavHostController) {
             Text(
                 text = "Đăng nhập",
                 fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                color = Color(0xff209FA8)
+                color = Color(0xff209FA8),
+                        modifier = Modifier
+                        .clickable {
+                    // Hành động khi người dùng nhấp vào nút
+                    // Ví dụ: chuyển đến trang đăng ký
+                  //  navController.navigate("register")
+                }
             )
 
         }
@@ -367,3 +397,29 @@ fun RegisterScreen(navController: NavHostController) {
 fun GreetingGetLayoutRegisterScreen() {
     RegisterScreen(navController = rememberNavController())
 }
+//            BasicTextField(
+//                value = email,
+//                onValueChange = { email = it },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(47.dp) // Chiều cao nhỏ hơn
+//                    .background(Color.White, RoundedCornerShape(8.dp))
+//                    .padding(horizontal = 8.dp, vertical = 8.dp), // Thêm padding để đảm bảo văn bản không bị cắt
+//                singleLine = true,
+//                textStyle = TextStyle(
+//                    color = Color.Black,
+//                    fontSize = 15.sp,
+//                    fontFamily = FontFamily(Font(R.font.cairo_regular))
+//                ),
+//                decorationBox = { innerTextField ->
+//                    if (email.isEmpty()) {
+//                        Text(
+//                            text = "Enter your email",
+//                            color = Color.Gray,
+//                            fontSize = 15.sp,
+//                            fontFamily = FontFamily(Font(R.font.cairo_regular))
+//                        )
+//                    }
+//                    innerTextField() // Hiển thị nội dung nhập của người dùng
+//                }
+//            )

@@ -89,6 +89,7 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3") // Kiểm tra phiên bản mới nhất
 
 }
 // Allow references to generated code
