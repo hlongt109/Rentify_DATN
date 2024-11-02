@@ -127,7 +127,7 @@ fun LayoutSearch() {
                         onClick = { statusType = type.type },
                         modifier = Modifier
                             .background(
-                                color = if (statusType == type.type) Color(0xff84d8ff) else Color.White,
+                                color = if (statusType == type.type) Color.White else Color.White,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .padding(8.dp)

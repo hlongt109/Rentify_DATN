@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.userScreens.serviceScreen.components.ItemComponent
+import com.rentify.user.app.view.userScreens.serviceScreen.components.MenuComponent
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -30,10 +31,10 @@ val scrollState= rememberScrollState()
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 50.dp)
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
+        MenuComponent()
         ItemComponent()
     }
 }
