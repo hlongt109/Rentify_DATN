@@ -51,6 +51,7 @@ import com.rentify.user.app.ui.theme.greenInput
 import com.rentify.user.app.ui.theme.textFieldBackgroundColor
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.auth.components.HeaderComponent
+import com.rentify.user.app.view.auth.components.TextFieldComponent
 import com.rentify.user.app.viewModel.LoginViewModel
 
 
@@ -137,31 +138,42 @@ class LoginScreen : ComponentActivity() {
                     )
                     Spacer(modifier = Modifier.padding(top = 30.dp))
                     //email
-                    TextField(
+
+                    TextFieldComponent(
                         value = username,
-                        onValueChange = { newText ->
-                            username = newText
-                            loginViewModel.clearEmailError() // Reset thông báo lỗi khi người dùng nhập lại
+                        onValueChange = {
+                            newText -> username = newText
+                            loginViewModel.clearEmailError()
                         },
-                        placeholder = { Text(text = "Email") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 10.dp)
-                            .border(
-                                width = 1.dp,
-                                color = if (isFocusedEmail) greenInput else colorInput,
-                                shape = RoundedCornerShape(15.dp)
-                            )
-                            .focusable()
-                            .onFocusChanged { focusState -> isFocusedEmail = focusState.isFocused },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = textFieldBackgroundColor,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            cursorColor = greenInput
-                        ),
-                        shape = RoundedCornerShape(20.dp),
+                        placeholder = "Email",
+                        isFocused = remember { mutableStateOf(isFocusedEmail) },
                     )
+
+//                    TextField(
+//                        value = username,
+//                        onValueChange = { newText ->
+//                            username = newText
+//                            loginViewModel.clearEmailError() // Reset thông báo lỗi khi người dùng nhập lại
+//                        },
+//                        placeholder = { Text(text = "Email") },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(bottom = 10.dp)
+//                            .border(
+//                                width = 1.dp,
+//                                color = if (isFocusedEmail) greenInput else colorInput,
+//                                shape = RoundedCornerShape(15.dp)
+//                            )
+//                            .focusable()
+//                            .onFocusChanged { focusState -> isFocusedEmail = focusState.isFocused },
+//                        colors = TextFieldDefaults.textFieldColors(
+//                            containerColor = textFieldBackgroundColor,
+//                            focusedIndicatorColor = Color.Transparent,
+//                            unfocusedIndicatorColor = Color.Transparent,
+//                            cursorColor = greenInput
+//                        ),
+//                        shape = RoundedCornerShape(20.dp),
+//                    )
                     //loi cho email
                     errorEmail?.let { ShowReport.ShowError(message = it) }
 
