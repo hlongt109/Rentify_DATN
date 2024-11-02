@@ -1,7 +1,9 @@
 package com.rentify.user.app.network
 
-import com.rentify.user.app.repository.LoginRequest
-import com.rentify.user.app.repository.LoginResponse
+import com.rentify.user.app.repository.LoginRepository.ApiResponse
+import com.rentify.user.app.repository.LoginRepository.LoginRequest
+import com.rentify.user.app.repository.LoginRepository.LoginResponse
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -9,6 +11,6 @@ import retrofit2.http.POST
 interface APIService {
 
     // dang nhap
-    @POST("login")
-    suspend fun LoginUser(@Body loginRequest: LoginRequest): LoginResponse
+    @POST("login-user")
+    suspend fun LoginUser(@Body loginRequest: LoginRequest): Response<ApiResponse>
 }

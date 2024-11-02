@@ -3,6 +3,7 @@ package com.rentify.user.app.view.auth
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,7 +23,6 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,12 +31,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.rentify.user.app.repository.LoginRepository
+import com.rentify.user.app.network.APIService
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.colorText
@@ -56,11 +55,13 @@ import com.rentify.user.app.viewModel.LoginViewModel
 
 
 class LoginScreen : ComponentActivity() {
-//    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var loginViewModel: LoginViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             //view model
+            // Khởi tạo LoginRepository
+
             LoginScreenApp()
         }
     }
@@ -68,7 +69,9 @@ class LoginScreen : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun LoginScreenApp() {
-        val loginViewModel: LoginViewModel = viewModel()
+        val apiService =  RetrofitService()
+        val userRepository = LoginRepository(apiService)
+        loginViewModel = ViewModelProvider(this, LoginViewModel.LoginViewModelFactory(userRepository)).get(LoginViewModel::class.java)
         // Khai báo biến để lưu thông tin đăng nhập
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
@@ -88,9 +91,6 @@ class LoginScreen : ComponentActivity() {
                 navigateToHome(it) // Định nghĩa hàm này để chuyển đến màn hình chính
             }
         }
-        // Hiển thị thông báo lỗi
-
-
         Box(
             modifier = Modifier
                 .background(color = Color.White)
@@ -264,6 +264,7 @@ class LoginScreen : ComponentActivity() {
             }
         }
     }
+
     // Hàm chuyển màn
     private fun navigateToHome(role: String) {
         // Thực hiện chuyển màn ở đây (ví dụ sử dụng NavController hoặc Intent)
