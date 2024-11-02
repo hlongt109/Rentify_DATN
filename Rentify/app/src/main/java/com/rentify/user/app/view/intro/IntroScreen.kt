@@ -1,7 +1,6 @@
 package com.rentify.user.app.view.intro
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.ButtonDefaults
@@ -43,29 +41,35 @@ fun IntroScreen() {
         )
         Spacer(modifier = Modifier.height(50.dp))
         Text(
-            text = "New Place, New Home!",
+            text = "NƠI MỚI, NHÀ MỚI !",
             style = MaterialTheme.typography.h5,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             fontWeight = FontWeight.Bold
             )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Are you ready to uproot and start over in a new area?",
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        Text(
-            text = "Rentify will help you on your journey!",
+            text = "Chào mừng bạn đến với Rentify. Cùng bắt đầu nào!",
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(30.dp))
 
-        Button(onClick = { /*TODO*/ },
+        ElevatedButton(
+            onClick = { /*TODO*/ },
+            colors = ButtonDefaults.elevatedButtonColors(
+                containerColor = Color(color = 0xFF8BC34A), // Set the container color to green
+                contentColor = Color.Black // Set the text color to black
+            ),
             modifier = Modifier
                 .size(width = 300.dp, height = 50.dp)
-                .clip(RoundedCornerShape(30.dp))
-                .background(Color.White)) {
-            Text(text = "Login")
+                .clip(RoundedCornerShape(15.dp))
 
+        ) {
+            Text(
+                text = "ĐĂNG NHẬP",
+                style = MaterialTheme.typography.button,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
         }
         Spacer(modifier = Modifier.height(15.dp))
 
@@ -77,13 +81,18 @@ fun IntroScreen() {
             ),
             modifier = Modifier
                 .size(width = 300.dp, height = 50.dp)
-                .clip(RoundedCornerShape(30.dp))
+                .clip(RoundedCornerShape(15.dp))
                 .border(
                     width = 1.dp,
                     color = Color.Black,
                     shape = RoundedCornerShape(30.dp))
         ) {
-            Text("Sign Up")
+            Text(
+                text = "ĐĂNG KÝ",
+                style = MaterialTheme.typography.button,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
         }
     }
 
