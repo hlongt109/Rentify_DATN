@@ -1,6 +1,7 @@
 package com.rentify.user.app.repository
 
 import com.rentify.user.app.network.APIService
+import com.rentify.user.app.network.RetrofitService
 
 data class LoginRequest(
     val username: String,
@@ -25,8 +26,9 @@ data class LoginResponse(
     val updatedAt: String
 )
 
-class LoginRepository(private val api: APIService){
+class LoginRepository(){
     //goi api dang nhap
+    private val api: APIService = RetrofitService().ApiService
     suspend fun Login(username: String, password: String): LoginResponse{
         val loginRequest = LoginRequest(username, password)
         return api.LoginUser(loginRequest)

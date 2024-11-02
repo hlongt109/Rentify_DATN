@@ -9,8 +9,8 @@ import com.rentify.user.app.repository.LoginRepository
 import com.rentify.user.app.utils.CheckUnit
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val userRepository: LoginRepository) : ViewModel() {
-
+class LoginViewModel() : ViewModel() {
+    private val userRepository: LoginRepository = LoginRepository()
     // LiveData cho thông báo lỗi
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
@@ -30,9 +30,9 @@ class LoginViewModel(private val userRepository: LoginRepository) : ViewModel() 
 
         if (username.isEmpty() || password.isEmpty()) {
             when {
-                username.isEmpty() -> _errorEmail.value = "Vui lòng nhập email"
-                !CheckUnit.isValidEmail(username) -> _errorEmail.value = "Email không hợp lệ"
-                password.isEmpty() -> _errorPass.value = "Vui lòng nhập mật khẩu"
+                username.isEmpty() -> _errorEmail.postValue("Vui lòng nhập email")
+                !CheckUnit.isValidEmail(username) -> _errorEmail.postValue("Email không hợp lệ")
+                password.isEmpty() -> _errorPass.postValue("Vui lòng nhập mật khẩu")
             }
             return
         }
@@ -40,25 +40,25 @@ class LoginViewModel(private val userRepository: LoginRepository) : ViewModel() 
         viewModelScope.launch {
             try {
                 val response = userRepository.Login(username, password)
-
+                Log.d("Login", "login: $response")
                 // Kiểm tra xem tài khoản đã được xác minh chưa
-                if (response.verified) {
+                if (response.verified == true) {
                     // Nếu tài khoản đã được xác minh, kiểm tra xem thông tin đăng nhập có đúng không
                     if (response.username == username && response.password == password) {
                         // Đăng nhập thành công
-                        _successMessage.value = response.role // Gửi thông báo thành công
-                        Log.d("UserData", "login: ${response}")
+                        _successMessage.postValue( response.role )// Gửi thông báo thành công
+                        Log.e("UserData", "login: $response")
                     } else {
                         // Tài khoản hoặc mật khẩu không đúng
-                        _errorMessage.value = "Tài khoản hoặc mật khẩu không đúng."
+                        _errorMessage.postValue("Tài khoản hoặc mật khẩu không đúng.")
                     }
                 } else {
                     // Tài khoản chưa được xác minh
-                    _errorMessage.value = "Tài khoản chưa được xác minh. Vui lòng kiểm tra email để xác minh tài khoản của bạn."
+                    _errorMessage.postValue("Tài khoản chưa được xác minh. Vui lòng kiểm tra email để xác minh tài khoản của bạn.")
                 }
             } catch (e: Exception) {
                 Log.e("ErrorApi", "Login: ${e}")
-                _errorMessage.value = "Đăng nhập thất bại. Vui lòng thử lại."
+                _errorMessage.postValue("Đăng nhập thất bại. Vui lòng thử lại.")
             }
         }
     }

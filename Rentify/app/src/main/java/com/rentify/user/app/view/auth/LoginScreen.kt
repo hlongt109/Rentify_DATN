@@ -56,19 +56,19 @@ import com.rentify.user.app.viewModel.LoginViewModel
 
 
 class LoginScreen : ComponentActivity() {
-    private lateinit var loginViewModel: LoginViewModel
+//    private lateinit var loginViewModel: LoginViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
-            var loginViewModel: LoginViewModel = ViewModelProvider(this, LoginViewModel::class.java)
-            LoginScreenApp(loginViewModel)
+            //view model
+            LoginScreenApp()
         }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun LoginScreenApp(loginViewModel: LoginViewModel) {
+    fun LoginScreenApp() {
+        val loginViewModel: LoginViewModel = viewModel()
         // Khai báo biến để lưu thông tin đăng nhập
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
@@ -209,7 +209,9 @@ class LoginScreen : ComponentActivity() {
                     //button dang nhap
                     Spacer(modifier = Modifier.padding(top = 50.dp))
                     Button(
-                        onClick = {},
+                        onClick = {
+                            loginViewModel.login(username, password)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(color = greenInput, shape = RoundedCornerShape(20.dp))
