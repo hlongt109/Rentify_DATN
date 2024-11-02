@@ -32,7 +32,7 @@ data class TypeProduct(val type: String, val icon: Int)
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun Search() {
+fun SearchComponent() {
     LayoutSearch()
 }
 
@@ -57,7 +57,7 @@ fun LayoutSearch() {
         modifier = Modifier
             .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
             .shadow(
-                elevation = 8.dp,
+                elevation = 9.dp,
                 shape = RoundedCornerShape(20.dp)
             )
             .background(color = Color.White, shape = RoundedCornerShape(20.dp))
