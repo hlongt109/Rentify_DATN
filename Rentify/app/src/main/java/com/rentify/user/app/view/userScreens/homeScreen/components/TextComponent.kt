@@ -53,7 +53,7 @@ fun LayotDoitac() {
             contentDescription ="" ,
             modifier = Modifier.size(20.dp)
         )
-        Text(text = "Đối tác",
+        Text(text = "Đối tác Rentify",
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 5.dp),
             fontSize = 20.sp

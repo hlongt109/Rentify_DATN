@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun VideoComponent() {
     LayoutVideo()
