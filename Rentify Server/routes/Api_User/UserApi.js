@@ -50,27 +50,31 @@ router.post("/login", async (req, res) => {
     const user = await Account.findOne({ username: username });
     if (user) {
       const match = await bcrypt.compare(password, user.password);
-      if (match) {
-        //token
-        const token = jwt.sign({ id: user._id }, key, {
-          expiresIn: "1d",
-        });
-        //khi token hết hạn, người dùng sẽ call 1 api khác để lấy token mới
-        //Lúc này người dùng sẽ truyền refreshToken lên để nhận về 1 cặp token, refershToken mới
-        //Nếu cả 2 token đều hết hạn người dùng sẽ phải thoát app và đăng nhập lại
-        const refreshToken = jwt.sign({ id: user._id }, key, {
-          expiresIn: "1d",
-        });
-        return res.json({
-          status: 200,
-          message: "login success",
-          data: user,
-          token: token,
-          refreshToken: refreshToken,
-        });
+      if (user.verified) {
+        if (match) {
+          //token
+          const token = jwt.sign({ id: user._id }, key, {
+            expiresIn: "1d",
+          });
+          //khi token hết hạn, người dùng sẽ call 1 api khác để lấy token mới
+          //Lúc này người dùng sẽ truyền refreshToken lên để nhận về 1 cặp token, refershToken mới
+          //Nếu cả 2 token đều hết hạn người dùng sẽ phải thoát app và đăng nhập lại
+          const refreshToken = jwt.sign({ id: user._id }, key, {
+            expiresIn: "1d",
+          });
+          return res.json({
+            status: 200,
+            message: "login success",
+            data: user,
+            token: token,
+            refreshToken: refreshToken,
+          });
+        } else {
+          // Trả về khi mật khẩu không khớp
+          return res.status(400).send("Mật khẩu không khớp");
+        }
       } else {
-        // Trả về khi mật khẩu không khớp
-        return res.status(400).send("Mật khẩu không khớp");
+        return res.status(400).send("Ta khoan chua duoc xac minh");
       }
     } else {
       return res.status(400).send("Tài khoản không tồn tại");
