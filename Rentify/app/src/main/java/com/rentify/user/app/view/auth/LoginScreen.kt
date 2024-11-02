@@ -50,8 +50,10 @@ import com.rentify.user.app.ui.theme.colorText
 import com.rentify.user.app.ui.theme.greenInput
 import com.rentify.user.app.ui.theme.textFieldBackgroundColor
 import com.rentify.user.app.utils.ShowReport
+import com.rentify.user.app.view.auth.components.GoToRegister
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.auth.components.TextFieldComponent
+import com.rentify.user.app.view.auth.components.TextLoginContent
 import com.rentify.user.app.viewModel.LoginViewModel
 
 
@@ -70,9 +72,12 @@ class LoginScreen : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun LoginScreenApp() {
-        val apiService =  RetrofitService()
+        val apiService = RetrofitService()
         val userRepository = LoginRepository(apiService)
-        loginViewModel = ViewModelProvider(this, LoginViewModel.LoginViewModelFactory(userRepository)).get(LoginViewModel::class.java)
+        loginViewModel =
+            ViewModelProvider(this, LoginViewModel.LoginViewModelFactory(userRepository)).get(
+                LoginViewModel::class.java
+            )
         // Khai báo biến để lưu thông tin đăng nhập
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
@@ -104,27 +109,10 @@ class LoginScreen : ComponentActivity() {
             ) {
                 Spacer(modifier = Modifier.padding(top = 30.dp))
                 HeaderComponent(backgroundColor = Color.White, title = "")
-
                 Spacer(modifier = Modifier.padding(top = 50.dp))
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding()
-                ) {
-                    Text(
-                        text = "Chào mừng quay trở lại !",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.padding(top = 15.dp))
-                    Text(
-                        text = "Hãy đăng nhập vào tài khoản của bạn để bắt đầu nào ! ",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal
-                    )
-
-                }
-
+               //text chao mung
+                TextLoginContent()
+                //
                 Spacer(modifier = Modifier.padding(top = 70.dp))
                 Column(
                     modifier = Modifier
@@ -141,73 +129,28 @@ class LoginScreen : ComponentActivity() {
 
                     TextFieldComponent(
                         value = username,
-                        onValueChange = {
-                            newText -> username = newText
+                        onValueChange = { newText ->
+                            username = newText
                             loginViewModel.clearEmailError()
                         },
                         placeholder = "Email",
                         isFocused = remember { mutableStateOf(isFocusedEmail) },
                     )
-
-//                    TextField(
-//                        value = username,
-//                        onValueChange = { newText ->
-//                            username = newText
-//                            loginViewModel.clearEmailError() // Reset thông báo lỗi khi người dùng nhập lại
-//                        },
-//                        placeholder = { Text(text = "Email") },
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(bottom = 10.dp)
-//                            .border(
-//                                width = 1.dp,
-//                                color = if (isFocusedEmail) greenInput else colorInput,
-//                                shape = RoundedCornerShape(15.dp)
-//                            )
-//                            .focusable()
-//                            .onFocusChanged { focusState -> isFocusedEmail = focusState.isFocused },
-//                        colors = TextFieldDefaults.textFieldColors(
-//                            containerColor = textFieldBackgroundColor,
-//                            focusedIndicatorColor = Color.Transparent,
-//                            unfocusedIndicatorColor = Color.Transparent,
-//                            cursorColor = greenInput
-//                        ),
-//                        shape = RoundedCornerShape(20.dp),
-//                    )
                     //loi cho email
                     errorEmail?.let { ShowReport.ShowError(message = it) }
-
                     Spacer(modifier = Modifier.padding(top = 30.dp))
                     //password
-                    TextField(
+                    TextFieldComponent(
                         value = password,
                         onValueChange = { newText ->
                             password = newText
                             loginViewModel.clearPasswordError()
                         },
-                        placeholder = { Text(text = "Password") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 10.dp)
-                            .border(
-                                width = 1.dp,
-                                color = if (isFocusedPass) greenInput else colorInput,
-                                shape = RoundedCornerShape(15.dp)
-                            )
-                            .focusable()
-                            .onFocusChanged { focusState -> isFocusedPass = focusState.isFocused },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = textFieldBackgroundColor,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            cursorColor = greenInput
-                        ),
-                        shape = RoundedCornerShape(20.dp),
+                        placeholder = "Password",
+                        isFocused = remember { mutableStateOf(isFocusedPass) },
                     )
                     //loi cho password
                     errorPass?.let { ShowReport.ShowError(message = it) }
-
-
                     //quen mat khau
 
                     Text(
@@ -246,37 +189,12 @@ class LoginScreen : ComponentActivity() {
 
                     //chua co tai khoan
                     Spacer(modifier = Modifier.padding(top = 50.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Chưa có tài khoản ?",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = ColorBlack
-                        )
-                        Text(
-                            text = "Đăng ký",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = greenInput,
-                            modifier = Modifier
-                                .padding(start = 10.dp)
-                                .clickable {
-                                    //chuyen sang man hinh dang ky
-
-                                }
-                        )
-
-                    }
-
+                    GoToRegister()
                 }
 
             }
         }
     }
-
     // Hàm chuyển màn
     private fun navigateToHome(role: String) {
         // Thực hiện chuyển màn ở đây (ví dụ sử dụng NavController hoặc Intent)
