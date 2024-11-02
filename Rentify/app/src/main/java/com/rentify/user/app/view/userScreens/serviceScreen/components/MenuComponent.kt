@@ -57,7 +57,7 @@ fun LayoutMenu() {
     var statusType by remember { mutableStateOf(listTypeProduct.first().type) }
     Column(
         modifier = Modifier
-            .padding(9.dp)
+            .padding(start = 9.dp, end = 9.dp, bottom = 9.dp)
             .shadow(
                 elevation = 9.dp,
                 shape = RoundedCornerShape(20.dp)
