@@ -31,10 +31,9 @@ const reportApi = require("./Api_User/reportApi");
 const paymentApi = require("./Api_User/paymentApi");
 const serviceApi = require("./Api_User/serviceApi");
 const apiUser = require("./Api_User/UserApi");
-const findPostApi = require("./Api_User/findPostApi");
 const personalContractApi = require("./Api_User/personalContractApi");
-const roomBookingApi = require("./Api_User/RoomBookingApi");
-
+const bookingApi = require("./Api_User/RoomBookingApi");
+const findPostApi = require("./Api_User/findPostApi");
 // staff
 const post_staffApi = require("./Api_Staff/Post");
 const contract_staffApi = require("./Api_Staff/Contract");
@@ -58,7 +57,10 @@ router.use("", statisticApi);
 router.use("", paymentApi_BuildingOwner);
 router.use("", UserManage);
 router.use("", notificationApi);
-router.use("/", apiUser);
+router.use("", apiUser);
+router.use("", personalContractApi);
+router.use("", bookingApi);
+router.use("", findPostApi);
 router.use("", adminApi);
 router.use("", postAdmin);
 router.use("", userAdmin);
@@ -78,8 +80,5 @@ router.use("/", PostManage);
 router.use("/", PaymentManage);
 router.use("/", ContractManage);
 router.use("/", BuildingManage);
-router.use("/", findPostApi);
-router.use("/", personalContractApi);
-router.use("/", roomBookingApi);
 
 module.exports = router;
