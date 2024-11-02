@@ -20,7 +20,7 @@ const bcrypt = require("bcrypt");
 const verifiedEmail = require("../../config/common/mailer");
 const Booking = require("../../models/Booking");
 //url
-const url = "http://localhost:3000/api/confirm/";
+const url = "http://localhost:3000/api/confirm-email/";
 
 // routers
 
@@ -76,10 +76,11 @@ router.post("/login-user", async (req, res) => {
 });
 
 //active account
-router.get("/confirm/:userId", async (req, res) => {
+router.get("/confirm-email/:userId", async (req, res) => {
   try {
+    console.log("Requesting userId:", req.params.userId); // Log ID
     const user = await Account.findOne({
-      id: req.params.userId,
+      _id: req.params.userId,
     });
 
     if (!user) {
@@ -87,6 +88,8 @@ router.get("/confirm/:userId", async (req, res) => {
     }
 
     await Account.updateOne({ _id: user._id }, { $set: { verified: true } });
+    console.log("log thu user", user);
+
     res.send("Email verified");
   } catch (error) {
     console.error("An error occurred:", error);
@@ -112,7 +115,7 @@ router.post("/register-user", async (req, res) => {
     const result = await user.save();
     console.log(result);
     await verifiedEmail(user.email, url + user._id);
-    console.log(user.email);
+    console.log(verifiedEmail(user.email, url + user._id));
 
     res.status(200).send({
       message: "Register success",
