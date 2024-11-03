@@ -3,60 +3,62 @@ var router = express.Router();
 
 const Payment = require("../../models/Payment");
 const handleServerError = require("../../utils/errorHandle");
-const { getFormattedDate } = require('../../utils/dateUtils');
+const getFormattedDate = require('../../utils/dateUtils');
 
 // create payment
-router.post("/api/payments", async(req, res) => {
+router.post("/api/payments", async (req, res) => {
     try {
         const data = req.body;
-        
+
+        const date = await getFormattedDate()
+        console.log(date)
+
         const newPayment = new Payment({
-            user_id: data.user_id,
-            invoice_id: data.invoice_id,
-            amount: data.amount, 
-            payment_date: getFormattedDate(),
+            user_id: mongoose.Types.ObjectId(data.user_id),
+            invoice_id: mongoose.Types.ObjectId(data.invoice_id),
+            amount: data.amount,
+            payment_date: date,
             payment_method: data.payment_method,
         })
-
         const result = await newPayment.save();
-        if(result){
+        if (result) {
             res.json({
                 "status": 200,
                 "message": "Create payment successfully",
                 "data": result
             });
-        }else{
+        } else {
             res.json({
                 "status": 400,
                 "message": "Error, Create payment failed",
                 "data": []
             });
         }
-        
+
     } catch (error) {
         handleServerError(req, res)
     }
 })
 // list
-router.get("/api/payments/:user_id", async(req, res) => {
+router.get("/api/payments/:user_id", async (req, res) => {
     try {
-        const { user_id } = req.params; 
+        const { user_id } = req.params;
+
         const data = await Payment.find({ user_id });
-        if(data){
-            res.status(200).send(data)
-        }else{
-            res.json({
-                "status": 400,
-                "messenger": "Get payment list failed",
-                "data": []
-            })
+
+        if (data.length > 0) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json({
+                message: "Payments not found for the specified user ID",
+            });
         }
     } catch (error) {
         handleServerError(req, res)
     }
 })
 // details
-router.get("/api/payments/:id", async(req, res) => {
+router.get("/api/payments/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const result = await Payment.findById(id);
