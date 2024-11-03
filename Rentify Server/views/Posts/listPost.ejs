@@ -3,154 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <title>Document</title>
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" href="../../assets/style/UserManagement.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+<style>
+    .container {
+        max-width: 100%; /* Đảm bảo container không vượt quá 100% */
+        overflow-x: auto; /* Thêm thanh cuộn ngang nếu cần thiết */
+        padding: 20px; /* Thêm padding cho container */
+    }
+
+    .table {
+    width: 100%; 
+    border-collapse: collapse; 
+    table-layout: fixed; /* Thay đổi thành fixed */
+    max-width: 100%; /* Giữ bảng bên trong container */
+}
+
+
+.table thead {
+    background-color: #f9f9f9;
+    text-align: left;
+}
+
+.table td:first-child,
+.table th:first-child {
+    width: 50px;
+}
+
+.table th,
+.table td {
+    padding: 15px;
+    border: none;
+    width: 100%;
+    vertical-align: middle; /* Đảm bảo căn giữa theo chiều dọc */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: none; /* Loại bỏ giới hạn chiều rộng tối đa cho các cột */
+    border: none !important; /* Loại bỏ tất cả các đường viền */
+    box-shadow: none !important; /* Đảm bảo không có đường viền hoặc bóng đổ */
+}
+
+.table th {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: normal;
+    color: rgb(3, 2, 41);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.table td {
+    font-size: 0.75rem;
+    font-family: Nunito, sans-serif;
+    line-height: 1.66;
+    font-weight: 600;
+}
+
+.label-left {
+    text-align: left;
+}
+
+    .table th:nth-child(1), .table td:nth-child(1) { /* Cột ID Người tạo */
+        width: 200px; /* Chiều rộng tối đa cho cột này */
+        text-align: center; /* Canh giữa nội dung */
+        padding: 10px; /* Thêm khoảng cách cho ô */
+    }
+
+    .table th:nth-child(4), .table td:nth-child(4) {
+        width: 150px; /* Đặt chiều rộng cho cột Trạng thái */
+        text-align: center; /* Canh giữa nội dung nếu cần */
+    }
+</style>
+
 <body>
-    
-        <h2 class="text-center" style="color: rgb(254, 177, 110);">Danh sách bài đăng</h2>
+    <h2 class="text-center" style="color: rgb(254, 177, 110);">Danh sách bài đăng</h2>
+    <div class="container mb-4">
+        <a href="/api/post/add1">
+            <button type="submit" class="btn btn-danger w-20" style="margin-left: 10px;">Thêm bài đăng</button>
+        </a>
 
-        <div class="container mb-4">
-            <a href="/api/post/add1">
-                <button type="submit" class="btn btn-danger w-20" style="margin-left: 10px;">Thêm bài
-                    đăng</button>
-            </a>
-
-            <table class="table table-striped">
-                <thead>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>ID Người tạo</th>
+                    <th>Nội dung</th>
+                    <th>Trạng thái</th>
+                    <th>Loại</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% list.forEach((showList)=> { %>
                     <tr>
-                        <th>Tiêu đề</th>
-                        <th>ID bài đăng</th>
-                        <th>ID Người tạo</th>
-                        <th>Nội dung</th>
-                        <th>Trạng thái</th>
-                        <th>Loại</th>
-                        <th>Hành động</th>
+                        <td><%= showList.title %></td>
+                        <td><%= showList.user_id %></td>
+                        <td><%= showList.content %></td>
+                        <td><%= showList.status %></td>
+                        <td><%= showList.post_type %></td>
+                        <td>
+                            <div class="d-flex justify-content-between">
+                                <a href="/api/post/update1/<%= showList._id %>" class="btn btn-danger">Sửa</a>
+                                <button class="btn btn-primary" data-show-list='<%- JSON.stringify(showList) %>' onclick="openDetailModal(this)">Xem chi tiết</button>
+                                <button class="btn btn-danger" onclick="confirmDelete('<%= showList._id %>')">Xóa</button>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <% list.forEach((showList)=> { %>
-                        <tr>
-                            <td>
-                                <%= showList.title %>
-                            </td>
-                            <td>
-                                <%= showList._id %>
-                            </td>
-                            <td>
-                                <%= showList.user_id %>
-                            </td>
-                            <td>
-                                <%= showList.content %>
-                            </td>
-                            <td>
-                                <%= showList.status %>
-                            </td>
-                            <td>
-                                <%= showList.post_type %>
-                            </td>
-                            <td>
-                                <div class="d-flex justify-content-between">
-                                    <a href="/api/post/update1/<%= showList._id %>" class="btn btn-danger">Sửa</a>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // xem chi tiết
+        function openDetailModal(button) {
+            const showList = JSON.parse(button.getAttribute('data-show-list'));
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = ''; // Xóa nội dung cũ
 
-                                    <button class="btn btn-primary" data-show-list='<%- JSON.stringify(showList) %>'
-                                        onclick="openDetailModal(this)">Xem chi tiết</button>
-                                    <button class="btn btn-danger"
-                                        onclick="confirmDelete('<%= showList._id %>')">Xóa</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <% }) %>
-                </tbody>
-            </table>
-        </div>
+            // Hiện ảnh
+            if (showList.photo && showList.photo.length > 0) {
+                const photoSection = document.createElement('div');
+                photoSection.innerHTML = '<h3>Ảnh</h3>';
+                showList.photo.forEach(photo => {
+                    const img = document.createElement('img');
+                    img.src = `/public/uploads/${photo}`;
+                    img.alt = 'Ảnh';
+                    img.className = 'img-fluid mb-2'; // Thêm class để responsive
+                    photoSection.appendChild(img);
+                });
+                modalContent.appendChild(photoSection);
+            }
 
-        <!-- Modal for displaying details -->
-        <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="detailModalLabel">Chi tiết bài đăng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" id="modalBody">
-                        <div id="modalContent"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            // Hiện video
+            if (showList.video && showList.video.length > 0) {
+                const videoSection = document.createElement('div');
+                videoSection.innerHTML = '<h3>Video</h3>';
+                showList.video.forEach(video => {
+                    const videoElement = document.createElement('video');
+                    videoElement.controls = true;
+                    videoElement.className = 'w-100 mb-3';
+                    const source = document.createElement('source');
+                    source.src = `/public/uploads/${video}`;
+                    source.type = 'video/mp4';
+                    videoElement.appendChild(source);
+                    videoSection.appendChild(videoElement);
+                });
+                modalContent.appendChild(videoSection);
+            }
 
-    
+            const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
+            detailModal.show();
+        }
 
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-            <script>
-                //xem chi tiet
-                function openDetailModal(button) {
-                    const showList = JSON.parse(button.getAttribute('data-show-list'));
-
-                    const modalContent = document.getElementById('modalContent');
-                    modalContent.innerHTML = ''; // Xóa nội dung cũ
-
-                    // Hiện ảnh
-                    if (showList.photo && showList.photo.length > 0) {
-                        const photoSection = document.createElement('div');
-                        photoSection.innerHTML = '<h3>Ảnh</h3>';
-                        showList.photo.forEach(photo => {
-                            const img = document.createElement('img');
-                            img.src = `/public/uploads/${photo}`;
-                            img.alt = 'Ảnh';
-                            img.className = 'img-fluid mb-2'; // Thêm class để responsive
-                            photoSection.appendChild(img);
-                        });
-                        modalContent.appendChild(photoSection);
+        // xóa
+        function confirmDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                fetch(`/api/post/delete/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Xóa không thành công');
                     }
-
-                    // Hiện video
-                    if (showList.video && showList.video.length > 0) {
-                        const videoSection = document.createElement('div');
-                        videoSection.innerHTML = '<h3>Video</h3>';
-                        showList.video.forEach(video => {
-                            const videoElement = document.createElement('video');
-                            videoElement.controls = true;
-                            videoElement.className = 'w-100 mb-3';
-                            const source = document.createElement('source');
-                            source.src = `/public/uploads/${video}`;
-                            source.type = 'video/mp4';
-                            videoElement.appendChild(source);
-                            videoSection.appendChild(videoElement);
-                        });
-                        modalContent.appendChild(videoSection);
-                    }
-
-                    const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
-                    detailModal.show();
-                }
-                //xoa
-                function confirmDelete(id) {
-                    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                        fetch(`/api/post/delete/${id}`, {
-                            method: 'DELETE'
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Xóa không thành công');
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                alert(data.message || 'Xóa thành công');
-                                window.location.href = '/api/post/list'; // Quay lại trang danh sách bài đăng
-                            })
-                            .catch(error => {
-                                console.error(error);
-                                alert('Đã xảy ra lỗi khi xóa');
-                            });
-                    }
-                }
-
-            </script>
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message || 'Xóa thành công');
+                    window.location.href = '/api/post/list'; // Quay lại trang danh sách bài đăng
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Đã xảy ra lỗi khi xóa');
+                });
+            }
+        }
+    </script>
 </body>
 </html>
