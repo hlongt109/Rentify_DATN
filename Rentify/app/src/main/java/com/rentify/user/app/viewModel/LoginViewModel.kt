@@ -46,32 +46,62 @@ class LoginViewModel(private val userRepository: LoginRepository) : ViewModel() 
         viewModelScope.launch {
             try {
                 val response = userRepository.login(email, password)
-                if(response.isSuccessful){
-                    if(response.body() != null){
-                        val result = response.body()?.data!!
-                        Log.d("UserData", "login: ${response.body()}")
-                        // Kiểm tra xem tài khoản đã được xác minh chưa
-                        if (result.verified == true) {
-                            // Nếu tài khoản đã được xác minh, kiểm tra xem thông tin đăng nhập có đúng không
-                            if (result.email == email && result.password == password) {
-                                // Đăng nhập thành công
-                                _userData.postValue(result)
-                                Log.d("UserData", "login: $_userData")
-                                _successMessage.postValue(result.role)// Gửi thông báo thành công
 
-                            } else {
-                                // Tài khoản hoặc mật khẩu không đúng
-                                _errorMessage.postValue("Tài khoản hoặc mật khẩu không đúng.")
+                // Log toàn bộ response để debug
+                Log.d("LoginDebug", "Response: $response")
+                Log.d("LoginDebug", "Response body: ${response.body()}")
+
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        val result = responseBody.data
+                        if (result != null) {
+                            // Log chi tiết thông tin user
+                            Log.d(
+                                "LoginDebug", """
+                                User Info:
+                                Email: ${result.email}
+                                Verified: ${result.verified}
+                                Role: ${result.role}
+                            """.trimIndent()
+                            )
+
+                            when {
+                                result.verified != true -> {
+                                    _errorMessage.postValue("Tài khoản chưa được xác minh. Vui lòng kiểm tra email để xác minh tài khoản của bạn.")
+                                }
+
+                                result.email != email  && result.password != password-> {
+                                    _errorMessage.postValue("Tài khoản hoặc mật khẩu không đúng.")
+                                }
+
+                                else -> {
+                                    // Đăng nhập thành công
+                                    _userData.postValue(result)
+                                    result.role?.let { role ->
+                                        _successMessage.postValue(role)
+                                        Log.d("LoginSuccess", "Role: $role")
+                                    } ?: run {
+                                        Log.e("LoginError", "Role is null")
+                                        _errorMessage.postValue("Không thể xác định vai trò người dùng")
+                                    }
+                                }
                             }
                         } else {
-                            // Tài khoản chưa được xác minh
-                            _errorMessage.postValue("Tài khoản chưa được xác minh. Vui lòng kiểm tra email để xác minh tài khoản của bạn.")
+                            Log.e("LoginError", "Response data is null")
+                            _errorMessage.postValue("Không thể lấy thông tin người dùng")
                         }
+                    } else {
+                        Log.e("LoginError", "Response body is null")
+                        _errorMessage.postValue("Không thể lấy dữ liệu đăng nhập")
                     }
+                } else {
+                    Log.e("LoginError", "Response not successful: ${response.code()}")
+                    _errorMessage.postValue("Đăng nhập thất bại. Mã lỗi: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("ErrorApi", "Login: ${e}")
-                _errorMessage.postValue("Đăng nhập thất bại. Vui lòng thử lại.")
+                Log.e("LoginError", "Exception during login", e)
+                _errorMessage.postValue("Đăng nhập thất bại: ${e.message}")
             }
         }
     }
@@ -83,9 +113,11 @@ class LoginViewModel(private val userRepository: LoginRepository) : ViewModel() 
     fun clearPasswordError() {
         _errorPass.value = null
     }
-    class LoginViewModelFactory(private val userRepository: LoginRepository) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>) : T{
-            if(modelClass.isAssignableFrom(LoginViewModel::class.java)){
+
+    class LoginViewModelFactory(private val userRepository: LoginRepository) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
                 return LoginViewModel(userRepository) as T
             }

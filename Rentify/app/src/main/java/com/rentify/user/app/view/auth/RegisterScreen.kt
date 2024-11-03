@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
+import com.rentify.user.app.MainActivity.ROUTER
 import com.rentify.user.app.R
 import com.rentify.user.app.network.ApiClient
 import com.rentify.user.app.network.RegisterRequest
@@ -383,9 +384,7 @@ fun RegisterScreen(navController: NavHostController) {
                 color = Color(0xff209FA8),
                         modifier = Modifier
                         .clickable {
-                    // Hành động khi người dùng nhấp vào nút
-                    // Ví dụ: chuyển đến trang đăng ký
-                  //  navController.navigate("register")
+                        navController.navigate(ROUTER.LOGIN.name)
                 }
             )
 

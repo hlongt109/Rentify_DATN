@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.view.auth.LoginScreenApp
+import com.rentify.user.app.view.auth.RegisterScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
 import com.rentify.user.app.view.userScreens.messengerScreem.LayoutMessenger
@@ -27,7 +29,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
+        NavHost(navController = navController, startDestination = ROUTER.LOGIN.name) {
             composable(ROUTER.HOME.name) {
                 AppNavigation(navController)
             }
@@ -43,6 +45,12 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.PERSONAL.name) {
                 LayoutPersonal(navController = navController)
             }
+            composable(ROUTER.LOGIN.name) {
+                LoginScreenApp(navController)
+            }
+            composable(ROUTER.REGISTER.name) {
+                RegisterScreen(navController)
+            }
         }
     }
 
@@ -52,5 +60,7 @@ class MainActivity : ComponentActivity() {
         RENT,
         MESSENGER,
         PERSONAL,
+        LOGIN,
+        REGISTER
     }
 }
