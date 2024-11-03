@@ -7,7 +7,7 @@ class LoginRepository(private val apiService: RetrofitService){
     //goi api dang nhap
     suspend fun login(email: String, password: String): Response<ApiResponse>{
         val loginRequest = LoginRequest(email, password)
-        return apiService.ApiService.LoginUser(loginRequest)
+        return apiService.apiService.LoginUser(loginRequest)
     }
 
 }
