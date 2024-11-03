@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <title>Đăng nhập </title>
+    <style>
+        body {
+            background-image: url('https://res.cloudinary.com/dzkzilpxs/image/upload/v1730381493/efp2ue2rkhgch2buflh9.jpg');
+            /* Đường dẫn đến ảnh nền */
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* justify-content: center; */
+            margin: 0;
+        }
+
+        .welcome-card {
+            background-color: rgba(255, 255, 255);
+            width: 100%;
+            margin-left: 2rem;
+            margin-right: 2rem;
+        }
+
+
+        .login-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            /* Make the form slightly transparent */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 70px;
+        }
+
+        .logo {
+            max-width: 70px;
+            /* Adjust the logo size as necessary */
+            margin-right: 1rem;
+            padding: 10px;
+            /* background-color: white;  */
+            /* border-radius: 35px;  */
+            /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+        }
+
+        .sign-in-text {
+            margin-top: 1rem;
+            /* Khoảng cách từ "Sign In" đến phần trên */
+        }
+
+        .form-label {
+            text-align: left;
+            color: #363636;
+            font-weight: bold;
+            /* Font đậm */
+            display: block;
+            /* Đảm bảo label chiếm toàn bộ chiều ngang */
+            width: 100%;
+        }
+
+        .forgot-password {
+            color: #209FA8;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .btn-custom {
+            color: white;
+            background-color: #209FA8;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="welcome-card mb-4">
+        <div class="text-center d-flex align-items-center">
+            <img src="https://res.cloudinary.com/dzkzilpxs/image/upload/v1730381491/jxa9tvds6jrldadauq93.png" alt="Logo"
+                class="logo"> <!-- Đường dẫn đến logo -->
+            <h2 class="fw-bold ms-3" style="color: #000000 ">Rentify Management</h2>
+        </div>
+    </div>
+
+    <div class="login-card">
+        <h2 class="fw-bold text-center mb-4">Đăng Nhập</h2>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label class="form-label">Tên đăng nhập</label>
+                <input type="text" class="form-control" id="username" placeholder="Nhập tên đăng nhập">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu">
+                <div class="text-end mt-1">
+                    <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                </div>
+            </div>
+            <div class="d-grid">
+                <button class="btn btn-custom" type="submit">Đăng Nhập</button>
+            </div>
+        </form>
+        <div class="text-center mt-4 ">
+            <a href="#" style="color: #363636; text-decoration: none; font-size: 0.9rem; padding-right: 5px;">Chưa có
+                tài khoản?</a>
+            <a href="#" class="forgot-password" onclick="clickToRegister()">Đăng ký</a>
+        </div>
+    </div>
+    <script>
+        async function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                // Gửi yêu cầu đăng nhập đến API
+                const response = await fetch('http://localhost:3000/api/rentify/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const token = data.token;
+                    const userData = data.data;
+                    const role = userData.role;
+
+                    // Lưu token và thông tin người dùng vào localStorage
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('data', JSON.stringify(userData));
+
+                    // fetchData("api/post/list");
+                    // Phân quyền role
+                    console.log("Role:", role);
+                    if (role === 'admin') {
+                        window.location.href = '/';
+                    } else if (role === 'landlord') {
+                        window.location.href = '/api/post/list';
+                    } else {
+                        alert('Bạn không có quyền truy cập vào trang này.');
+                    }                  
+                } else {
+                    if (response.status === 401) {
+                        // Kiểm tra và hiển thị thông báo từ `data.message`
+                        if (data.message === 'Tài khoản không tồn tại') {
+                            alert('Tên đăng nhập hoặc mật khẩu không đúng');
+                        } else if (data.message === 'Bạn không có quyền truy cập!') {
+                            alert('Bạn không có quyền truy cập!');
+                        } else if (data.message === 'Tài khoản của bạn đã bị khóa bởi ADMIN') {
+                            alert('Tài khoản của bạn đã bị khóa bởi ADMIN');
+                        }
+                    } else if (response.status === 400) {
+                        if (data.message === 'Thiếu username hoặc password') {
+                            alert('Vui lòng nhập đủ thông tin đăng nhập');
+                        }
+                    }else if (response.status === 500){
+                        alert("Lỗi kết nốu với máy chủ, vui lòng thử lại")
+                    }
+                }
+            } catch (error) {
+                console.error("Lỗi khi đăng nhập: ", error);
+                alert('Đã xảy ra lỗi, vui lòng thử lại.');
+            }
+        }
+        function clickToRegister(){
+            window.location.href = '/api/rentify/register'
+        }
+        // async function fetchData(link) {
+        //     const token = localStorage.getItem('token');
+        //     if (!token) {
+        //         alert('Không có token, hãy kiểm tra đăng nhập.');
+        //         return;
+        //     }
+
+        //     const response = await fetch(`${link}`, {
+        //         headers: {
+        //             'Authorization': `Bearer ${token}`
+        //         }
+        //     });
+
+        //     if (response.ok) {
+        //         const htmlContent = await response.text();
+        //         document.querySelector("body").innerHTML = htmlContent;
+        //     } else {
+        //         alert('Lỗi khi kiểm tra dữ liệu');
+        //     }
+        // }
+        document.getElementById('loginForm').addEventListener('submit', login);
+
+    </script>
+</body>
+
+</html>
