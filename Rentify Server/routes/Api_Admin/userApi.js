@@ -35,7 +35,6 @@ router.get("/user/update1/:id", async (req, res) => {
 
     res.render("Accounts/updateAccount", { upDB });
 })
-router.post("/user/update/:id", async (req, res) => {
 // Sửa role người dùng
 router.put("/user/update/:id", async (req, res) => {
     try {
@@ -47,8 +46,6 @@ router.put("/user/update/:id", async (req, res) => {
             findID,
             { role },// thứ cần sửa ở đây
             { new: true, runValidators: true }
-            { role }, // Chỉ cập nhật trường role
-            { new: true, runValidators: true } // new: true để trả về đối tượng cập nhật, runValidators: true để chạy các validators
         );
 
         if (!upDB) {
