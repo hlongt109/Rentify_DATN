@@ -14,7 +14,7 @@ const Support = new Schema({  // bảng hỏng hóc
     title_support: { type: String, require: true },
     content_support: { type: String, require: true },
     image: { type: Array },
-    status: { type: Number, require: true },
+    status: { type: Number, enum: [0, 1], default: 1 },
     created_at: { type: String },
     updated_at: { type: String }
 })

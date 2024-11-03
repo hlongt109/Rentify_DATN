@@ -71,6 +71,24 @@
             </div>
         </form>
     </div>
+    <script>
+        const token = "hoan"; // Thay thế bằng token của bạn
+        fetch('http://localhost:3000/api/posts/add', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${token}` // Gửi token trong header        
+            },
+            body: JSON.stringify({
+                title,
+                content,
+                status,
+                post_type,
+                user_id: userId, // Gửi user_id ở đây
+            }),
+        });
+
+    </script>
 </body>
 
 </html>

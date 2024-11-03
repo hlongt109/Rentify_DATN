@@ -18,6 +18,7 @@ const uploadFile = require("../../config/common/upload")
 router.get("/admin/login", (req, res) => {
     res.render('Login/Login');
 });
+
 router.post("/admin/login", async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -38,8 +39,10 @@ router.post("/admin/login", async (req, res) => {
         // Tạo JWT
         const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1w' });
         console.log("Generated token:", token); // Kiểm tra token được tạo
+        const userID = user._id;
+        console.log(user._id);
 
-        res.json({ message: "Đăng nhập thành công", token, data: user });
+        res.json({ message: "Đăng nhập thành công", token, data: user, userID });
     } catch (error) {
         console.error(error, " Password: " + req.body.password);
         return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
@@ -99,7 +102,7 @@ router.post("/login", async (req, res) => {
         if (user.role == 'ban') {
             return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN, vui lòng liên hệ với ADMIN để giải quyết.' });
         }
-        // Tạo JWT
+        // // Tạo JWT
 
         const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
             expiresIn: '1y',

@@ -1,12 +1,22 @@
 <form action="/api/post/update/<%= upDB._id %>" method="POST" onsubmit="return validateForm(event)">
     <table>
         <tr>
+            <h3>Lưu ý:</h3>
+            <p>Trạng thái 1 là đang hiện</p>
+            <p>Trạng thái 0 là đã bị ẩn</p>
+        </tr>
+        <tr>
             <th><label for="id">ID bài viết</label></th>
             <td><input type="text" id="id" name="id" value="<%= upDB._id %>" readonly /></td>
         </tr>
         <tr>
             <th><label for="status">Trạng thái</label></th>
-            <td><input type="text" id="status" name="status" value="<%= upDB.status %>" required /></td>
+            <td>
+                <select id="status" name="status" required>
+                    <option value="0" <%=(upDB.status=='0' ) ? 'selected' : '' %>>0</option>
+                    <option value="1" <%=(upDB.status=='1' )? 'selected' : '' %>>1</option>
+                </select>
+            </td>
         </tr>
         <tr>
             <td colspan="2">
@@ -25,6 +35,7 @@
         }
         return true;
     }
+
 </script>
 <style>
     table {
@@ -42,17 +53,13 @@
     }
 
     input[type="text"],
-    textarea {
+    select {
         font-size: 18px;
         padding: 10px;
         width: 100%;
         border-radius: 5px;
         border: 1px solid #ccc;
         box-sizing: border-box;
-    }
-
-    textarea {
-        height: 100px;
     }
 
     .btn {

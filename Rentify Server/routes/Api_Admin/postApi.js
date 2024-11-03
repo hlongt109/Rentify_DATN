@@ -7,41 +7,19 @@ const User = require("../../models/User");
 
 const upload = require('../../config/common/upload');
 
-
-const verifyRole = (allowedRoles) => {
-    return async (req, res, next) => {
-        try {
-            const authHeader = req.headers['authorization'];
-            console.log("Authorization header:", authHeader); // Log header
-            if (!authHeader) {
-                return res.status(401).json({ message: "Bạn chưa đăng nhập" });
-            }
-            const token = authHeader.split(' ')[1]; // Giả sử định dạng là "Bearer token"
-            console.log("Token:", token); // Log token
-
-            if (!token) {
-                return res.status(401).json({ message: "Bạn chưa đăng nhập" });
-            }
-            jwt.verify(token, 'hoan', (err, decoded) => {
-                if (err) {
-                    console.log("Token verification failed:", err);
-                    return res.status(403).json({ message: "Invalid token" });
-                }
-                console.log("Token decoded payload:", decoded); // Kiểm tra payload
-                req.user = decoded;
-
-                // Kiểm tra vai trò
-                if (!allowedRoles.includes(req.user.role)) {
-                    return res.status(403).json({ message: "Không có quyền truy cập" });
-                }
-                next();
-            });
-        } catch (error) {
-            return res.status(401).json({ message: "Lỗi xác thực", error: error.message });
-        }
+const verifyToken = (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) {
+        return res.status(403).send("Không có token, quyền truy cập bị từ chối!");
     }
+    jwt.verify(token, 'hoan', (err, user) => {
+        if (err) {
+            return res.status(403).send("Token không hợp lệ!");
+        }
+        req.user = user; // Gán thông tin người dùng vào req.user
+        next();
+    });
 };
-
 
 //Lấy danh sách Post
 router.get("/post/list", async (req, res) => {
@@ -72,32 +50,37 @@ router.get('/api/search', (req, res) => {
     res.json({ posts: postResults, users: userResults }); // Trả về cả bài đăng và người dùng
 });
 //Add post
-router.get('/post/add1', verifyRole(['admin']), async (req, res) => {
+router.get('/post/add1', async (req, res) => {
+
     res.render('Posts/AddPost');
 })
-router.post('/post/add', verifyRole(['admin']), upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
-    let { title, content, status, post_type } = req.body;
-    // let image = req.file ? req.file.filename : null;
-    // let video = req.file ? req.file.filename : null;
-    //console.log(req.file);
+router.post('/post/add', verifyToken, upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
+    let { title, content, status, post_type, } = req.body;
+    // let photo = req.files['photo'] ? req.files['photo'].map(file => file.filename) : [];
+    // let video = req.files['video'] ? req.files['video'].map(file => file.filename) : [];
 
-    // if (!req.file) {
-    //     return res.status(400).json({ message: 'Image hoac video không được trống' });
+    // if (!req.files['photo'] && !req.files['video']) {
+    //     return res.status(400).json({ message: 'Ít nhất một ảnh hoặc video không được trống' });
     // }
+
+    // Lấy ID người dùng từ token
+
+    const userId = data.user._id; // Giả sử bạn đã lưu ID người dùng trong req.user khi xác thực
+    console.log(data);
     const post = new Post({
-        user_id: req.user.id,
+        user_id: userId,
         title,
         content,
         status,
         post_type,
-        // image,
+        //photo,
         // video,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     });
     try {
         const savedPost = await post.save();
-        res.status(201).json(savedPost);
+        res.redirect("/api/post/list");
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

@@ -136,14 +136,14 @@
 
                     // Lưu token vào localStorage để sử dụng sau
                     localStorage.setItem("token", token);
-                    console.log("token da luu: ", token);
 
                     alert("Đăng nhập thành công!");
 
                     // Chuyển hướng hoặc thực hiện hành động khác
                     window.location.href = "/api/post/list";
                 } else {
-                    alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.");
+                    const errorData = await response.json();
+                    alert(`Đăng nhập thất bại: ${errorData.error}`);
                 }
             } catch (error) {
                 console.error("Lỗi:", error);

@@ -4,71 +4,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách bài đăng</title>
+    <title>Danh sách hỗ trợ yêu cầu</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 
 <body>
     <%- include('../inc/header') %>
 
-        <h2 class="text-center" style="color: rgb(254, 177, 110);">Danh sách bài đăng</h2>
+        <h2 class="text-center" style="color: rgb(254, 177, 110);">Danh sách dịch vụ</h2>
 
         <div class="container mb-4">
-            <a href="/api/post/add1">
-                <button type="submit" class="btn btn-danger w-20" style="margin-left: 10px;">Thêm bài
-                    đăng</button>
-            </a>
+            <div class="row">
+                <% data.forEach((data)=> { %>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text"><strong> ID phiên yêu cầu:</strong>
+                                    <%= data.id %>
+                                </p>
+                                <p class="card-text"><strong> ID room:</strong>
+                                    <%= data.room_id %>
+                                </p>
+                                <p class="card-text"><strong>ID người yêu cầu:</strong>
+                                    <%= data.user_id %>
+                                </p>
+                                <p class="card-text"><strong>Kiểu:</strong>
+                                    <%= data.title_support %>
+                                </p>
+                                <p class="card-text"><strong> Mô tả:</strong>
+                                    <%= data.content_support %>
+                                </p>
+                                <p class="card-text"><strong>Trạng thái:</strong>
+                                    <%= data.status %>
+                                </p>
 
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Tiêu đề</th>
-                        <th>ID bài đăng</th>
-                        <th>ID Người tạo</th>
-                        <th>Nội dung</th>
-                        <th>Trạng thái</th>
-                        <th>Loại</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% list.forEach((showList)=> { %>
-                        <tr>
-                            <td>
-                                <%= showList.title %>
-                            </td>
-                            <td>
-                                <%= showList._id %>
-                            </td>
-                            <td>
-                                <%= showList.user_id %>
-                            </td>
-                            <td>
-                                <%= showList.content %>
-                            </td>
-                            <td>
-                                <%= showList.status %>
-                            </td>
-                            <td>
-                                <%= showList.post_type %>
-                            </td>
-                            <td>
                                 <div class="d-flex justify-content-between">
-                                    <a href="/api/post/update1/<%= showList._id %>" class="btn btn-danger">Sửa</a>
-
-
-                                    <button class="btn btn-primary" data-show-list='<%- JSON.stringify(showList) %>'
+                                    <button class="btn btn-primary" data-show-list='<%- JSON.stringify(data) %>'
                                         onclick="openDetailModal(this)">Xem chi tiết</button>
+                                    <a href="/api/api/services1/<%= data._id %>" class="btn btn-danger">Sửa</a>
                                     <button class="btn btn-danger"
-                                        onclick="confirmDelete('<%= showList._id %>')">Xóa</button>
+                                        onclick="confirmDelete('<%= data._id %>')">Xóa</button>
                                 </div>
-                            </td>
-                        </tr>
-                        <% }) %>
-                </tbody>
-            </table>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
         </div>
-
         <!-- Modal for displaying details -->
         <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -85,7 +67,6 @@
         </div>
 
         <%- include('../inc/footer') %>
-
             <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -98,43 +79,26 @@
                     modalContent.innerHTML = ''; // Xóa nội dung cũ
 
                     // Hiện ảnh
-                    if (showList.photo && showList.photo.length > 0) {
+                    if (showList.image && showList.image.length > 0) {
                         const photoSection = document.createElement('div');
                         photoSection.innerHTML = '<h3>Ảnh</h3>';
-                        showList.photo.forEach(photo => {
+                        showList.image.forEach(photo => {
                             const img = document.createElement('img');
-                            img.src = `/public/uploads/${photo}`;
+                            img.src = `/${photo}`;
                             img.alt = 'Ảnh';
                             img.className = 'img-fluid mb-2'; // Thêm class để responsive
                             photoSection.appendChild(img);
                         });
                         modalContent.appendChild(photoSection);
                     }
-
-                    // Hiện video
-                    if (showList.video && showList.video.length > 0) {
-                        const videoSection = document.createElement('div');
-                        videoSection.innerHTML = '<h3>Video</h3>';
-                        showList.video.forEach(video => {
-                            const videoElement = document.createElement('video');
-                            videoElement.controls = true;
-                            videoElement.className = 'w-100 mb-3';
-                            const source = document.createElement('source');
-                            source.src = `/public/uploads/${video}`;
-                            source.type = 'video/mp4';
-                            videoElement.appendChild(source);
-                            videoSection.appendChild(videoElement);
-                        });
-                        modalContent.appendChild(videoSection);
-                    }
-
                     const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
                     detailModal.show();
                 }
+
                 //xoa
                 function confirmDelete(id) {
                     if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                        fetch(`/api/post/delete/${id}`, {
+                        fetch(`/api/api/services1/${id}`, {
                             method: 'DELETE'
                         })
                             .then(response => {
@@ -145,7 +109,7 @@
                             })
                             .then(data => {
                                 alert(data.message || 'Xóa thành công');
-                                window.location.href = '/api/post/list'; // Quay lại trang danh sách bài đăng
+                                window.location.href = '/api/api/services'; // Quay lại trang danh sách bài đăng
                             })
                             .catch(error => {
                                 console.error(error);
@@ -153,7 +117,6 @@
                             });
                     }
                 }
-
             </script>
 </body>
 
