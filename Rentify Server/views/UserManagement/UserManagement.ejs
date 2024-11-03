@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" href="../../assets/style/UserManagement.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="table-container">
+            <h4>Quản lý người dùng</h4>
+            <div class="search-input-container1">
+                <div class="search-input-container">
+                    <input type="text" id="search-input" placeholder="Search here ..." class="search-input" />
+                    <span class="search-icon">&#128269;</span> <!-- Biểu tượng tìm kiếm -->
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th style="width: 100px;">Role</th>
+                        <th style="width: 100px;">Act</th>
+                    </tr>
+                </thead>
+                <tbody id="user-table-body">
+                    <!-- Dữ liệu người dùng sẽ được thêm vào đây -->
+                </tbody>
+            </table>
+            <div class="pagination" id="pagination">
+                <!-- Dữ liệu phân trang sẽ được thêm vào đây -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h4>Xác nhận cập nhật vai trò</h4>
+            <p>Bạn có chắc chắn muốn chuyển tài khoản này sang vai trò mới không?</p>
+            <div class="modal-buttons">
+                <button id="confirm-update" class="btn btn-primary">Xác nhận</button>
+                <button id="cancel-update" class="btn btn-secondary">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/UserManagement.js"></script>
+</body>
+
+</html>
