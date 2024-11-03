@@ -79,7 +79,7 @@ fun LayoutSearch() {
                     .padding(horizontal = 10.dp, vertical = 15.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.map), // Icon vị trí
+                    painter = painterResource(id = R.drawable.dc), // Icon vị trí
                     contentDescription = "Location Icon",
                     modifier = Modifier.size(20.dp)
                 )
