@@ -2,10 +2,23 @@ var express = require('express');
 var router = express.Router();
 
 const Invoice = require("../../models/Invoice")
+const User = require("../../models/User");
+
 const handleServerError = require("../../utils/errorHandle");
 
+router.get("/stats/sum", async (req, res) => {
+    try {
+        const totalAccounts = await User.countDocuments();
+        console.log(`Tổng số tài khoản: ${totalAccounts}`);
+        res.render("Stats/listStats", { totalAccounts });
+    } catch (error) {
+        console.error('Lỗi khi đếm số tài khoản:', error);
+    }
+})
+
+
 // helper function
-const getAggregateData = async(fromDate, toDate, transactionType) => {
+const getAggregateData = async (fromDate, toDate, transactionType) => {
     return await Invoice.aggregate([
         {
             $match: {
@@ -23,9 +36,9 @@ const getAggregateData = async(fromDate, toDate, transactionType) => {
     ])
 }
 // doanh thu theo tháng
-router.get("/api/invoices/month", async(req, res) => {
+router.get("/api/invoices/month", async (req, res) => {
     try {
-        const {from, to} = req.query;
+        const { from, to } = req.query;
         const data = await getAggregateData(from, to, "income");
         if (data && data.length > 0) {
             res.json({ revenue: data[0].totalAmount });

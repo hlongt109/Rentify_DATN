@@ -6,7 +6,15 @@
         </tr>
         <tr>
             <th><label for="role">Role</label></th>
-            <td><input type="text" id="role" name="role" value="<%= upDB.role %>" required /></td>
+            <td>
+                <select name="role" id="role" required>
+                    <option value="admin" <%=(upDB.role=='admin' ) ? 'selected' :'' %>>admin</option>
+                    <option value="landlord" <%=(upDB.role=='landlord' ) ? 'selected' :'' %>>landlord</option>
+                    <option value="staff" <%=(upDB.role=='staff' ) ? 'selected' : '' %>>staff</option>
+                    <option value="user" <%=(upDB.role=='user' ) ? 'selected' : '' %>>user</option>
+                    <option value="ban" <%=(upDB.role=='ban' ) ? 'selected' : '' %>>ban</option>
+                </select>
+            </td>
         </tr>
         <tr>
             <td colspan="2">
@@ -32,7 +40,7 @@
     }
 
     input[type="text"],
-    textarea {
+    select {
         font-size: 18px;
         padding: 10px;
         width: 100%;
@@ -41,9 +49,6 @@
         box-sizing: border-box;
     }
 
-    textarea {
-        height: 100px;
-    }
 
     .btn {
         display: inline-block;
