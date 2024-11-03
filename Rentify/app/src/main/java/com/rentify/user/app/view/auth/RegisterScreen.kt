@@ -385,7 +385,7 @@ fun RegisterScreen(navController: NavHostController) {
                         .clickable {
                     // Hành động khi người dùng nhấp vào nút
                     // Ví dụ: chuyển đến trang đăng ký
-                  //  navController.navigate("register")
+                    navController.navigate("register")
                 }
             )
 

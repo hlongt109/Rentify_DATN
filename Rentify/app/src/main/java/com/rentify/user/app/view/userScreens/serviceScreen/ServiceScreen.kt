@@ -33,7 +33,7 @@ val scrollState= rememberScrollState()
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         BannerComponent()
-        ItemNameComponent()
+        ItemNameComponent(navController)
         MenuComponent()
         ItemSComponent()
     }

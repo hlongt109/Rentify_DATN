@@ -10,9 +10,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import com.rentify.user.app.view.navigator.AppNavigation
-import com.rentify.user.app.view.userScreens.messengerScreem.LayoutMessenger
+import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
+import com.rentify.user.app.view.userScreens.roomdetailsScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 
 class MainActivity : ComponentActivity() {
@@ -43,6 +44,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.PERSONAL.name) {
                 LayoutPersonal(navController = navController)
             }
+            composable(ROUTER.ROOMDETAILS.name) {
+                LayoutRoomdetails(navController = navController)
+            }
         }
     }
 
@@ -52,5 +56,6 @@ class MainActivity : ComponentActivity() {
         RENT,
         MESSENGER,
         PERSONAL,
+        ROOMDETAILS,
     }
 }

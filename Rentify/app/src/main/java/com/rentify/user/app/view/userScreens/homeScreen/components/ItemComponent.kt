@@ -25,16 +25,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ItemHomeComponent() {
-    LayoutItemHome()
+fun ItemHomeComponent(navController: NavHostController) {
+    LayoutItemHome(navController)
 }
 
 @Composable
-fun LayoutItemHome() {
+fun LayoutItemHome(navController: NavHostController) {
     Spacer(modifier = Modifier.height(20.dp))
     Box(
         modifier = Modifier
@@ -54,7 +54,9 @@ fun LayoutItemHome() {
                     color = Color(0xFFfafafa),
                     shape = RoundedCornerShape(12.dp)
                 )
-                .clickable { }
+                .clickable {
+                    navController.navigate("ROOMDETAILS")
+                }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.iconproduct),

@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.messengerScreem
+package com.rentify.user.app.view.userScreens.messengerScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
