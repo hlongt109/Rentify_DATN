@@ -1,5 +1,6 @@
 let users = []; // Khai báo mảng người dùng rỗng
 let search = '';
+let selectedRole = ''; // Vai trò hiện đang được chọn
 let currentPage = 1;
 const itemsPerPage = 5;
 let editingUserId = null; // Trạng thái ID user đang chỉnh sửa
@@ -83,10 +84,22 @@ const toggleEditForm = (userId) => {
     renderTable(); // Rerender bảng để hiển thị form
 };
 
+const selectRole = (role) => {
+    document.getElementById('roleDropdownButton').innerText = role === 'Vai trò' ? 'Vai trò' : role; // Hiển thị 'All Users' khi chọn 'All'
+    selectedRole = role;
+    
+    // Lấy màu nền theo vai trò và áp dụng cho button
+    const button = document.getElementById('roleDropdownButton');
+    button.style.backgroundColor = getRoleColor(role);
+    
+    renderTable(); // Rerender bảng khi chọn vai trò mới
+};
+
 const renderTable = () => {
-    const filteredUsers = users.filter(user =>
+    const filteredUsers = users.filter(user => 
         user.username &&
-        removeAccents(user.username.toLowerCase()).includes(removeAccents(search.toLowerCase()))
+        removeAccents(user.username.toLowerCase()).includes(removeAccents(search.toLowerCase())) &&
+        (selectedRole === '' || selectedRole === 'Vai trò' || user.role === selectedRole) // Kiểm tra vai trò
     );
 
     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
@@ -256,6 +269,8 @@ document.getElementById('search-input').addEventListener('input', (event) => {
 
 document.getElementById('confirm-update').onclick = confirmUpdateRole;
 document.getElementById('cancel-update').onclick = closeConfirmModal;
+
+
 
 // Khởi tạo bảng khi trang được tải
 window.onload = init;
