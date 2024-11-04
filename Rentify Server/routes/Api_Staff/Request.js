@@ -11,12 +11,12 @@ router.get('/list', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-// 2. Thêm yêu cầu mới
+// 2
 router.post('/add', async (req, res) => {
     const request = new Request({
-        user_id: req.body.user_id,
-        room_id: req.body.room_id,
-        request_type: req.body.request_type,
+        user_id: req.body.user_id, // Đảm bảo rằng user_id là hợp lệ
+        room_id: req.body.room_id, // Đảm bảo rằng room_id là hợp lệ
+        request_type: req.body.request_type, // Thêm loại yêu cầu nếu cần
         description: req.body.description,
         status: req.body.status || 0, // Mặc định là 0
         created_at: new Date().toISOString(),

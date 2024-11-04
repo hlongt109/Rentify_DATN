@@ -52,7 +52,7 @@ router.get('/search-room', async (req, res) => {
             });
 
         // Lọc bỏ các phòng không có địa chỉ phù hợp
-        const filteredRooms = rooms.filter(room => 
+        const filteredRooms = rooms.filter(room =>
             room.building_id && room.building_id.address.match(new RegExp(address.trim(), 'i'))
         );
         console.log("Filtered rooms:", filteredRooms)

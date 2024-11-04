@@ -1,0 +1,65 @@
+<form action="/api/user/update/<%= upDB._id %>" method="POST">
+    <table>
+        <tr>
+            <th><label for="id">ID bài viết</label></th>
+            <td><input type="text" id="id" name="id" value="<%= upDB._id %>" readonly /></td>
+        </tr>
+        <tr>
+            <th><label for="role">Role</label></th>
+            <td>
+                <select name="role" id="role" required>
+                    <option value="admin" <%=(upDB.role=='admin' ) ? 'selected' :'' %>>admin</option>
+                    <option value="landlord" <%=(upDB.role=='landlord' ) ? 'selected' :'' %>>landlord</option>
+                    <option value="staff" <%=(upDB.role=='staff' ) ? 'selected' : '' %>>staff</option>
+                    <option value="user" <%=(upDB.role=='user' ) ? 'selected' : '' %>>user</option>
+                    <option value="ban" <%=(upDB.role=='ban' ) ? 'selected' : '' %>>ban</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit" class="btn">Cập nhật bài viết</button>
+                <a href="/api/user/list" class="btn">Trở lại danh sách</a>
+            </td>
+        </tr>
+    </table>
+</form>
+<style>
+    table {
+        width: 50%;
+        border-collapse: collapse;
+    }
+
+    td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    input[type="text"],
+    select {
+        font-size: 18px;
+        padding: 10px;
+        width: 100%;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #2ba8ca;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+</style>
