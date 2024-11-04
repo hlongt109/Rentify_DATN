@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,35 +18,67 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rentify.user.app.R
 
 
-@Preview (showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun IntroScreen() {
 
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Spacer(modifier = Modifier.height(20.dp))
+        Image(
+            painterResource(R.drawable.g),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                // Workaround to enable alpha compositing
+                .graphicsLayer(alpha = 0.99f)
+                .drawWithContent {
+                    val colors = listOf(
+                        Color.Black,
+                        Color.Transparent
+                    )
+                    drawContent()
+                    drawRect(
+                        brush = Brush.verticalGradient(startY = size.height - 120.dp.toPx(), endY = size.height, colors = colors),
+                        blendMode = BlendMode.DstIn
+                    )
+
+                }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Bottom
+
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.a),
-            contentDescription = "Intro Screen",
-            modifier = Modifier.size(300.dp)
-        )
-        Spacer(modifier = Modifier.height(50.dp))
         Text(
             text = "NƠI MỚI, NHÀ MỚI !",
             style = MaterialTheme.typography.h5,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             fontWeight = FontWeight.Bold
-            )
+        )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Chào mừng bạn đến với Rentify. Cùng bắt đầu nào!",
@@ -56,44 +89,49 @@ fun IntroScreen() {
         ElevatedButton(
             onClick = { /*TODO*/ },
             colors = ButtonDefaults.elevatedButtonColors(
-                containerColor = Color(color = 0xFF8BC34A), // Set the container color to green
-                contentColor = Color.Black // Set the text color to black
+                containerColor = Color(color = 0xFF209FA8)
             ),
             modifier = Modifier
                 .size(width = 300.dp, height = 50.dp)
-                .clip(RoundedCornerShape(15.dp))
+                .clip(RoundedCornerShape(30.dp))
 
         ) {
             Text(
                 text = "ĐĂNG NHẬP",
                 style = MaterialTheme.typography.button,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = Color.White,
+                fontSize = 16.sp
             )
         }
+
         Spacer(modifier = Modifier.height(15.dp))
 
         ElevatedButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+            },
             colors = ButtonDefaults.elevatedButtonColors(
                 containerColor = Color.White, // Set the container color to green
-                contentColor = Color.Black // Set the text color to black
             ),
             modifier = Modifier
                 .size(width = 300.dp, height = 50.dp)
-                .clip(RoundedCornerShape(15.dp))
+                .clip(RoundedCornerShape(30.dp))
                 .border(
                     width = 1.dp,
                     color = Color.Black,
-                    shape = RoundedCornerShape(30.dp))
+                    shape = RoundedCornerShape(30.dp)
+                )
         ) {
             Text(
                 text = "ĐĂNG KÝ",
                 style = MaterialTheme.typography.button,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Color.Black,
+                fontSize = 16.sp
             )
         }
+        Spacer(modifier = Modifier.height(25.dp))
+
     }
 
 

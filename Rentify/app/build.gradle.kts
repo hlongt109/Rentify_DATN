@@ -92,6 +92,9 @@ dependencies {
 
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.0")
+
+    // SplashScreen
+    implementation("androidx.core:core-splashscreen:1.0.0")
 }
 // Allow references to generated code
 kapt {
