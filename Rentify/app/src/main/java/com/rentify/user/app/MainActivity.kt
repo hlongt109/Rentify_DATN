@@ -6,8 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.ui.theme.RentifyTheme
+import com.rentify.user.app.view.auth.LoginScreen
 import com.rentify.user.app.view.auth.RegisterScreen
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.userScreens.postmanageScreens.CategoryPostScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 class MainActivity : ComponentActivity() {
@@ -16,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RentifyTheme {
-                RegisterScreen(navController = rememberNavController())
+                LoginScreen(navController = rememberNavController())
             }
         }
     }

@@ -328,14 +328,14 @@ fun RegisterScreen(navController: NavHostController) {
 
                     ApiClient.apiService.registerUser(registerRequest).enqueue(object : Callback<RegisterResponse> {
                         override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-//                            val responseBody = response.body()
-//                            println("Phản hồi đăng ký: $responseBody")
+                           val responseBody = response.body()
+                           println("Phản hồi đăng ký: $responseBody")
                             if (response.isSuccessful) {
                                 // Xử lý khi đăng ký thành công
                                 val user = response.body()?.user
                                 // Chuyển hướng hoặc thông báo cho người dùng
-                              //  Toast.makeText(context, "Đăng ký thành công: ${user?.username}", Toast.LENGTH_SHORT).show()
-                                Toast.makeText(context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Đăng ký thành công: ${user?.username}", Toast.LENGTH_SHORT).show()
+                               // Toast.makeText(context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
                             } else {
                                 // Xử lý khi có lỗi
                                 println("Lỗi đăng ký: ${response.message()}")
