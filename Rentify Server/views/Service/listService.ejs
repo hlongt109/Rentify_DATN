@@ -9,110 +9,108 @@
 </head>
 
 <body>
-    <%- include('../inc/header') %>
 
-        <h2 class="text-center" style="color: rgb(254, 177, 110);">Danh sách dịch vụ</h2>
 
-        <div class="container mb-4">
-            <div class="d-flex justify-content-end mb-3">
-                <a href="/api/api/services1" class="btn btn-danger">Thêm dịch vụ</a>
-            </div>
+    <h2 class="text-center" style="color: rgb(0, 0, 0);">Danh sách dịch vụ</h2>
 
-            <div class="row">
-                <% data.forEach((data)=> { %>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text"><strong> Dịch vụ:</strong>
-                                    <%= data.name %>
-                                </p>
-                                <p class="card-text"><strong>Mô tả:</strong>
-                                    <%= data.description %>
-                                </p>
-                                <p class="card-text"><strong>Giá tiền:</strong>
-                                    <%= data.price %>
-                                </p>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-primary" data-show-list='<%- JSON.stringify(data) %>'
-                                        onclick="openDetailModal(this)">Xem chi tiết</button>
-                                    <a href="/api/api/services1/<%= data._id %>" class="btn btn-danger">Sửa</a>
-                                    <button class="btn btn-danger"
-                                        onclick="confirmDelete('<%= data._id %>')">Xóa</button>
+    <div class="container mb-4">
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/api/api/services1" class="btn btn-danger">Thêm dịch vụ</a>
+        </div>
 
-                                </div>
+        <div class="row">
+            <% data.forEach((data)=> { %>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text"><strong> Dịch vụ:</strong>
+                                <%= data.name %>
+                            </p>
+                            <p class="card-text"><strong>Mô tả:</strong>
+                                <%= data.description %>
+                            </p>
+                            <p class="card-text"><strong>Giá tiền:</strong>
+                                <%= data.price %>
+                            </p>
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-primary" data-show-list='<%- JSON.stringify(data) %>'
+                                    onclick="openDetailModal(this)">Xem chi tiết</button>
+                                <a href="/api/api/services1/<%= data._id %>" class="btn btn-danger">Sửa</a>
+                                <button class="btn btn-danger" onclick="confirmDelete('<%= data._id %>')">Xóa</button>
+
                             </div>
                         </div>
                     </div>
-                    <% }) %>
-            </div>
+                </div>
+                <% }) %>
         </div>
-        <!-- Modal for displaying details -->
-        <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="detailModalLabel">Chi tiết bài đăng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" id="modalBody">
-                        <div id="modalContent"></div>
-                    </div>
+    </div>
+    <!-- Modal for displaying details -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">Chi tiết bài đăng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <div id="modalContent"></div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <%- include('../inc/footer') %>
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-            <script>
-                //xem chi tiet
-                function openDetailModal(button) {
-                    const showList = JSON.parse(button.getAttribute('data-show-list'));
+    <script>
+        //xem chi tiet
+        function openDetailModal(button) {
+            const showList = JSON.parse(button.getAttribute('data-show-list'));
 
-                    const modalContent = document.getElementById('modalContent');
-                    modalContent.innerHTML = ''; // Xóa nội dung cũ
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = ''; // Xóa nội dung cũ
 
-                    // Hiện ảnh
-                    if (showList.photos && showList.photos.length > 0) {
-                        const photoSection = document.createElement('div');
-                        photoSection.innerHTML = '<h3>Ảnh</h3>';
-                        showList.photos.forEach(photo => {
-                            const img = document.createElement('img');
-                            img.src = `/public/uploads/${photo}`;
-                            img.alt = 'Ảnh';
-                            img.className = 'img-fluid mb-2'; // Thêm class để responsive
-                            photoSection.appendChild(img);
-                        });
-                        modalContent.appendChild(photoSection);
-                    }
-                    const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
-                    detailModal.show();
-                }
+            // Hiện ảnh
+            if (showList.photos && showList.photos.length > 0) {
+                const photoSection = document.createElement('div');
+                photoSection.innerHTML = '<h3>Ảnh</h3>';
+                showList.photos.forEach(photo => {
+                    const img = document.createElement('img');
+                    img.src = `/public/uploads/${photo}`;
+                    img.alt = 'Ảnh';
+                    img.className = 'img-fluid mb-2'; // Thêm class để responsive
+                    photoSection.appendChild(img);
+                });
+                modalContent.appendChild(photoSection);
+            }
+            const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
+            detailModal.show();
+        }
 
-                //xoa
-                function confirmDelete(id) {
-                    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                        fetch(`/api/api/services1/${id}`, {
-                            method: 'DELETE'
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Xóa không thành công');
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                alert(data.message || 'Xóa thành công');
-                                window.location.href = '/api/api/services'; // Quay lại trang danh sách bài đăng
-                            })
-                            .catch(error => {
-                                console.error(error);
-                                alert('Đã xảy ra lỗi khi xóa');
-                            });
-                    }
-                }
-            </script>
+        //xoa
+        function confirmDelete(id) {
+            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                fetch(`/api/api/services1/${id}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Xóa không thành công');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert(data.message || 'Xóa thành công');
+                        window.location.href = '/api/api/services'; // Quay lại trang danh sách bài đăng
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert('Đã xảy ra lỗi khi xóa');
+                    });
+            }
+        }
+    </script>
 </body>
 
 </html>
