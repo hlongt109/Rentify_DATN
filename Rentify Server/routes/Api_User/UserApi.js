@@ -100,35 +100,35 @@ router.get("/confirm/:userId", async (req, res) => {
   }
 });
 //dang ky
-router.post("/register", async (req, res) => {
-  try {
-    const data = req.body;
-    let user = await Account.findOne({ email: data.email });
-    if (user) {
-      return res.status(400).send("Email đã tồn tại");
-    }
-    const hashPassword = await bcrypt.hash(data.password, 10);
-    user = Account({
-      email: data.email,
-      username: data.username,
-      password: hashPassword,
-      name: data.name,
-    });
+// router.post("/register", async (req, res) => {
+//   try {
+//     const data = req.body;
+//     let user = await Account.findOne({ email: data.email });
+//     if (user) {
+//       return res.status(400).send("Email đã tồn tại");
+//     }
+//     const hashPassword = await bcrypt.hash(data.password, 10);
+//     user = Account({
+//       email: data.email,
+//       username: data.username,
+//       password: hashPassword,
+//       name: data.name,
+//     });
 
-    const result = await user.save();
-    console.log(result);
-    await verifiedEmail(user.email, url + user._id);
-    console.log(user.email);
+//     const result = await user.save();
+//     console.log(result);
+//     await verifiedEmail(user.email, url + user._id);
+//     console.log(user.email);
 
-    res.status(200).send({
-      message: "Register success",
-      user: result,
-    });
-  } catch (error) {
-    console.error("Registration failed:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
+//     res.status(200).send({
+//       message: "Register success",
+//       user: result,
+//     });
+//   } catch (error) {
+//     console.error("Registration failed:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 
 //danh sach phong tro
 router.get("/list-post-rooms", verifyToken, async (req, res) => {

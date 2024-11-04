@@ -55,7 +55,7 @@ router.delete("/user/delete/:id", async (req, res) => {
             return res.status(404).json({ message: "Khong tim thay tai khoan" });
 
         }
-        return res.status(200).json({ message: "Xoa tai khoan thanh cong" });
+        return res.status(200).json({ message: "Xóa thành công" });
     } catch (error) {
         return res.status(500).json({ message: 'Loi ' + error.message });
 

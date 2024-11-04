@@ -22,11 +22,13 @@ router.get("/admin/login", (req, res) => {
 router.post("/admin/login", async (req, res) => {
     try {
         const { username, password } = req.body;
+        console.log(req.body);
+
         if (!username || !password) {
             return res.status(400).json({ message: 'Thiếu username hoặc password' });
         }
         // Tìm người dùng trong cơ sở dữ liệu
-        const user = await User.findOne({ username: username });
+        const user = await User.findOne({ username: username, password: password });
         if (!user) {
             return res.status(401).json({ message: 'Tài khoản không tồn tại' });
         }

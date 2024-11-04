@@ -9,34 +9,34 @@ const User = require('../../models/User');
 
 const JWT_SECRET = 'your_jwt_secret_key';
 // #1 . đăng ký tài khoản POST : http://localhost:3000/api/register
-router.post('/register', async (req, res) => {
-    const { username, password, email, phoneNumber, name, dob, gender, address } = req.body;
+// router.post('/register', async (req, res) => {
+//     const { username, password, email, phoneNumber, name, dob, gender, address } = req.body;
 
-    try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ error: 'User already exists with this email.' });
-        }
+//     try {
+//         const existingUser = await User.findOne({ email });
+//         if (existingUser) {
+//             return res.status(400).json({ error: 'User already exists with this email.' });
+//         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
-            username,
-            password: hashedPassword,
-            email,
-            phoneNumber,
-            name,
-            dob,
-            gender,
-            address,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        });
-        await newUser.save();
-        res.status(201).json({ message: 'User registered successfully!' });
-    } catch (error) {
-        res.status(500).json({ error: 'Registration failed.' });
-    }
-});
+//         const hashedPassword = await bcrypt.hash(password, 10);
+//         const newUser = new User({
+//             username,
+//             password: hashedPassword,
+//             email,
+//             phoneNumber,
+//             name,
+//             dob,
+//             gender,
+//             address,
+//             created_at: new Date().toISOString(),
+//             updated_at: new Date().toISOString()
+//         });
+//         await newUser.save();
+//         res.status(201).json({ message: 'User registered successfully!' });
+//     } catch (error) {
+//         res.status(500).json({ error: 'Registration failed.' });
+//     }
+// });
 
 //#2. đăng nhập tài khoản POST : http://localhost:3000/api/login
 router.post('/login', async (req, res) => {
