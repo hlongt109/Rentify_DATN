@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/api/home', (req, res) => {
-  res.render('UserManagement/test', (err, html) => {
+  res.render('UserManagement/UserManagement', (err, html) => {
     if (err) {
       return res.status(500).send(err);
     }
