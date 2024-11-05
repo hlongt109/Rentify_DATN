@@ -27,15 +27,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun ItemComponentPreview(){
-    ItemComponent()
+    ItemComponent(navController= rememberNavController())
 }
 @Composable
-fun ItemComponent(){
+fun ItemComponent(navController: NavHostController){
     Row {
         Box(
             modifier = Modifier
@@ -83,6 +85,9 @@ fun ItemComponent(){
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
+                .clickable {
+
+                }
         ) {
             Column(
                 modifier = Modifier
@@ -94,7 +99,9 @@ fun ItemComponent(){
                         color = Color(0xFFfafafa),
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .clickable { },
+                    .clickable {
+                        navController.navigate("LAUDRY")
+                    },
                 verticalArrangement = Arrangement.Center, // Center items vertically
                 horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
             ) {
