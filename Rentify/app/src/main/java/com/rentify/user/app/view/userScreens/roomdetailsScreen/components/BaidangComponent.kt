@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -309,69 +311,111 @@ fun Layoutbaidang(){
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp),
-        horizontalArrangement = Arrangement.Center
+            .padding(top = 10.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly // Căn giữa các phần tử
     ) {
-        // First Row Item
-        Row(
+        // Báo cáo
+        Box(
             modifier = Modifier
-                .height(50.dp)
-                .width(100.dp)
-                .background(color = Color(0xffd9d9d9))
-                .padding(horizontal = 8.dp), // Add horizontal padding
-            verticalAlignment = Alignment.CenterVertically, // Center content vertically
-            horizontalArrangement = Arrangement.Center
+                .width(130.dp)
+                .padding(16.dp)
+                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(12.dp))
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.error),
-                contentDescription = "",
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp)) // Add space between image and text
-            Text(text = "Báo cáo")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFfafafa))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFfafafa),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable { },
+                verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.error),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(5.dp)
+                        .clip(CircleShape),
+                )
+                Text(
+                    text = "Báo cáo",
+                )
+            }
+        }
+        // Tin nhắn
+        Box(
+            modifier = Modifier
+                .width(130.dp)
+                .padding(16.dp)
+                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(12.dp))
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFfafafa))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFfafafa),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable { },
+                verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.tinnhan),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(5.dp)
+                        .clip(CircleShape),
+                )
+                Text(
+                    text = "Tin nhắn",
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.width(16.dp)) // Space between items
-
-        // Second Row Item
-        Row(
+        // Gọi điện
+        Box(
             modifier = Modifier
-                .height(50.dp)
-                .width(100.dp)
-                .background(color = Color(0xffd9d9d9))
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+                .width(130.dp)
+                .padding(16.dp)
+                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(12.dp))
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.tinnhan),
-                contentDescription = "",
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(text = "Tin nhắn")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFfafafa))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFfafafa),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable { },
+                verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.phone),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(5.dp)
+                        .clip(CircleShape),
+                )
+                Text(
+                    text = "Gọi điện",
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.width(16.dp)) // Space between items
 
-        // Third Row Item
-        Row(
-            modifier = Modifier
-                .height(50.dp)
-                .width(100.dp)
-                .background(color = Color(0xffd9d9d9))
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.phone),
-                contentDescription = "",
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(text = "Gọi điện")
-        }
     }
 
 

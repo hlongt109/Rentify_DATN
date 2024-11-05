@@ -17,6 +17,7 @@ import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
 import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
+import com.rentify.user.app.view.userScreens.profilescreen.ProfileScreen
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
 import com.rentify.user.app.view.userScreens.roomdetailsScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
+        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -67,6 +68,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ROOMDETAILS.name) {
                 LayoutRoomdetails(navController = navController)
             }
+            composable(ROUTER.PROFILE.name) {
+                ProfileScreen(navController = navController)
+            }
         }
     }
 
@@ -82,5 +86,6 @@ class MainActivity : ComponentActivity() {
         RESGITER,
         LOGIN,
         FORGOTPASS,
+        PROFILE,
     }
 }

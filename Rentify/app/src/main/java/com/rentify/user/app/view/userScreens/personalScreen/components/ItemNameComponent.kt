@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.serviceScreen.components
+package com.rentify.user.app.view.userScreens.personalScreen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,7 +46,7 @@ fun LayoutItemName(navController: NavHostController) {
                     color = Color(0xFFfafafa),
                     shape = RoundedCornerShape(12.dp)
                 ).clickable {
-                    navController.navigate("PERSONAL")
+                    navController.navigate("PROFILE")
                 }
         ) {
             Image(
