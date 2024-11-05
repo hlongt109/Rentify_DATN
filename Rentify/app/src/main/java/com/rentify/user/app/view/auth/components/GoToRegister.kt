@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.greenInput
 
@@ -34,7 +36,6 @@ fun GoToRegister(){
             modifier = Modifier
                 .padding(start = 10.dp)
                 .clickable {
-                    //chuyen sang man hinh dang ky
 
                 }
         )

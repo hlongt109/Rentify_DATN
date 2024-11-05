@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.ButtonDefaults
@@ -30,16 +32,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigator
+import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun IntroScreenPreview(){
-    IntroScreen()
+    IntroScreen(navController= rememberNavController())
 }
 @Composable
-fun IntroScreen() {
+fun IntroScreen(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -61,7 +66,11 @@ fun IntroScreen() {
                     )
                     drawContent()
                     drawRect(
-                        brush = Brush.verticalGradient(startY = size.height - 120.dp.toPx(), endY = size.height, colors = colors),
+                        brush = Brush.verticalGradient(
+                            startY = size.height - 120.dp.toPx(),
+                            endY = size.height,
+                            colors = colors
+                        ),
                         blendMode = BlendMode.DstIn
                     )
 
@@ -89,7 +98,9 @@ fun IntroScreen() {
         Spacer(modifier = Modifier.height(30.dp))
 
         ElevatedButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                navController.navigate("LOGIN")
+            },
             colors = ButtonDefaults.elevatedButtonColors(
                 containerColor = Color(color = 0xFF209FA8)
             ),
@@ -111,6 +122,7 @@ fun IntroScreen() {
 
         ElevatedButton(
             onClick = {
+                navController.navigate("RESGITER")
             },
             colors = ButtonDefaults.elevatedButtonColors(
                 containerColor = Color.White, // Set the container color to green

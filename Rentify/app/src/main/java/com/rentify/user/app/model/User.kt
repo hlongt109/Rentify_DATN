@@ -1,5 +1,7 @@
 package com.rentify.user.app.model
 
+import com.rentify.user.app.viewModel.LoginViewModel
+
 data class User(
     val _id: String,
     val username: String,
@@ -16,3 +18,4 @@ data class User(
     val createdAt: String,
     val updatedAt: String
 )
+
