@@ -164,8 +164,7 @@ router.post("/api/services/update/:id", async (req, res) => {
         servicePut.name = data.name ?? servicePut.name;
         servicePut.description = data.description ?? servicePut.description;
         servicePut.price = data.price ?? servicePut.price;
-        servicePut.created_at = servicePut.created_at;
-        servicePut.updated_at = getFormattedDate();
+        servicePut.updated_at = new Date().toISOString()
 
         const result = await servicePut.save()
 
