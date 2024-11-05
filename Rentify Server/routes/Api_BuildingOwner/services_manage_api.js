@@ -11,7 +11,8 @@ router.get("/api/services", async (req, res) => {
     try {
         const data = await Service.find();
         if (data) {
-            res.status(200).send(data);
+            //res.status(200).send(data);
+            res.render("Service/listService", { data });
         } else {
             res.json({
                 "status": 400,
@@ -65,42 +66,92 @@ router.get("/api/services", async (req, res) => {
     }
 })
 // add 
-router.post("/api/services", async (req, res) => {
-    try {
-        const data = req.body;
+router.get("/api/services1", async (req, res) => {
+    res.render("Service/addService");
+})
+// router.post("/api/services/add", async (req, res) => {
+//     try {
+//         const data = req.body;
 
-        const newService = new Service({
-            name: data.name,
-            description: data.description,
-            price: data.price,
-            created_at: getFormattedDate(),
-            updated_at: ""
-        })
-        const result = await newService.save()
-        if (result) {
-            res.json({
-                "status": 200,
-                "message": "Add service successfully",
-                "data": result
+//         const newService = new Service({
+//             name: data.name,
+//             description: data.description,
+//             price: data.price,
+//             created_at: getFormattedDate(),
+//             updated_at: ""
+//         })
+//         const result = await newService.save()
+//         if (result) {
+//             res.json({
+//                 "status": 200,
+//                 "message": "Add service successfully",
+//                 "data": result
+//             });
+//         } else {
+//             res.json({
+//                 "status": 400,
+//                 "message": "Error, Add service failed",
+//                 "data": []
+//             });
+//         }
+//     } catch (error) {
+//         handleServerError(res, error);
+//     }
+// })
+
+router.post("/api/services/add", uploadFile.array('photos'), async (req, res) => {
+    try {
+        if (req.method == 'POST') {
+            const { name, description, price } = req.body;
+            let photos = req.files.map(file => file.filename);
+
+            if (photos.length === 0) {
+                return res.status(400).json({ message: 'Image hoặc video không được trống' });
+            }
+
+            let objService = new Service({
+                photos,
+                name,
+                description,
+                price,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             });
-        } else {
-            res.json({
-                "status": 400,
-                "message": "Error, Add service failed",
-                "data": []
-            });
+            await objService.save();
+            let msg = 'Thêm thành công id mới: ' + objService._id;
+            console.log(msg);
+            res.redirect('/api/api/services');
         }
     } catch (error) {
-        handleServerError(res, error);
+        console.error(error);
+        return res.status(500).send('Lỗi server rồi');
     }
 })
+
 // update 
-router.put("/api/services/:id", async (req, res) => {
+router.get("/api/services1/:id", async (req, res) => {
+    try {
+        const findID = req.params.id;
+
+        if (!findID) {
+            return res.status(400).json({ message: "ID không hợp lệ hoặc không được cung cấp" });
+        }
+
+        const showID = await Service.findById(findID);
+        if (!showID) {
+            return res.status(404).json({ message: 'Dịch vụ không tồn tại' });
+        }
+        res.render("Service/updateService", { showID });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+})
+router.post("/api/services/update/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;
 
-        const servicePut = await Service.findById(id);
+        const servicePut = await Service.findByIdAndUpdate(id);
 
         if (!servicePut) {
             return res.status(404).json({
@@ -113,17 +164,17 @@ router.put("/api/services/:id", async (req, res) => {
         servicePut.name = data.name ?? servicePut.name;
         servicePut.description = data.description ?? servicePut.description;
         servicePut.price = data.price ?? servicePut.price;
-        servicePut.created_at = servicePut.created_at;
-        servicePut.updated_at = getFormattedDate();
+        servicePut.updated_at = new Date().toISOString()
 
         const result = await servicePut.save()
 
         if (result) {
-            res.json({
-                status: 200,
-                messenger: 'service update successfully',
-                data: result
-            });
+            // res.json({
+            //     status: 200,
+            //     messenger: 'service update successfully',
+            //     data: result
+            // });
+            res.redirect("/api/api/services");
         } else {
             res.json({
                 status: 400,
@@ -137,16 +188,16 @@ router.put("/api/services/:id", async (req, res) => {
     }
 })
 // delete 
-router.delete("/api/services/:id", async (req, res) => {
+router.delete("/api/services1/:id", async (req, res) => {
     try {
-        const {id} = req.params
+        const { id } = req.params
         const result = await Service.findByIdAndDelete(id);
         if (result) {
             res.json({
                 "status": 200,
                 "messenger": "service deleted successfully",
                 "data": result
-            })  
+            })
 
         } else {
             res.json({

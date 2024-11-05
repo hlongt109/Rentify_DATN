@@ -18,15 +18,15 @@ const uploadFile = require("../../config/common/upload")
 router.get("/admin/login", (req, res) => {
     res.render('Login/Login');
 });
+
 router.post("/admin/login", async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
             return res.status(400).json({ message: 'Thiếu username hoặc password' });
         }
-
         // Tìm người dùng trong cơ sở dữ liệu
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ username: username });
         if (!user) {
             return res.status(401).json({ message: 'Tài khoản không tồn tại' });
         }
@@ -37,12 +37,12 @@ router.post("/admin/login", async (req, res) => {
             return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
         }
         // Tạo JWT
-        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
-            expiresIn: '1h',
-        });
-        console.log("Token: ", token);
+        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1w' });
+        console.log("Generated token:", token); // Kiểm tra token được tạo
+        const userID = user._id;
+        console.log(user._id);
 
-        res.json({ message: "Đăng nhập thành công", token });
+        res.json({ message: "Đăng nhập thành công", token, data: user, userID });
     } catch (error) {
         console.error(error, " Password: " + req.body.password);
         return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
@@ -50,6 +50,9 @@ router.post("/admin/login", async (req, res) => {
 });
 
 //đăng ký thường
+router.get("/register1", async (req, res) => {
+    res.render("Login/Register");
+})
 router.post("/register", async (req, res) => {
     try {
         if (req.method === "POST") {
@@ -99,12 +102,12 @@ router.post("/login", async (req, res) => {
         if (user.role == 'ban') {
             return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN, vui lòng liên hệ với ADMIN để giải quyết.' });
         }
-        // Tạo JWT
-        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
-            expiresIn: '1h',
-        });
-        console.log("Token: ", token);
+        // // Tạo JWT
 
+        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
+            expiresIn: '1y',
+        });
+        console.log("token khi dang nhap: ", token)
         res.json({ message: "Đăng nhập thành công", token });
     } catch (error) {
         console.error(error, " Password: " + req.body.password);
