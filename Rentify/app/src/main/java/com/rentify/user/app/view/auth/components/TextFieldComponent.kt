@@ -42,7 +42,7 @@ fun TextFieldComponent(
             .focusable()
             .onFocusChanged {focusState -> isFocused.value = focusState.isFocused},
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = textFieldBackgroundColor,
+            containerColor = colorInput,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             cursorColor = greenInput

@@ -14,6 +14,7 @@ val ColorBlack = Color(0xFF000000)
 val greenInput = Color(0xFF209FA8)
 val textFieldBackgroundColor = Color(0xFFfafafa)
 val colorInput = Color(0xFFE3E3E7)
+val colorInput_2 = Color(0xFFE3E3E7)
 val colorText = Color(0xFF7D7F88)
 
 val colorHeaderSearch = Color(0xFF84D8FF)

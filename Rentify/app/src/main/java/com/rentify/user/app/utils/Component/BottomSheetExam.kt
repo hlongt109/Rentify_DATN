@@ -5,6 +5,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -66,11 +68,14 @@ fun BottomSheetExample() {
 @Composable
 fun BottomSheetContent(
     onDismiss: () -> Unit,
-    content: @Composable () -> Unit) {
+    content: @Composable () -> Unit,
+    maxHeight: Float) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxHeight(maxHeight)
+            .padding(16.dp)
+            .clip(shape = RoundedCornerShape(15.dp)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Handle or Drag indicator
@@ -81,70 +86,11 @@ fun BottomSheetContent(
                 .padding(bottom = 16.dp)
                 .background(
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(2.dp)
+                    shape = RoundedCornerShape(10.dp)
                 )
         )
         //hien thi noi dung duoc truyen vao
         content()
-    }
-}
-
-@Composable
-fun BottomSheetLocation(onDismiss: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .fillMaxHeight(0.6f),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Handle or Drag indicator
-        Box(
-            modifier = Modifier
-                .width(40.dp)
-                .height(4.dp)
-                .padding(bottom = 16.dp)
-                .background(
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(2.dp)
-                )
-        )
-
-        // Content
-        Text(
-            text = "Bottom Sheet Title",
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        Text(
-            text = "This is the content of the bottom sheet. You can add any composable here.",
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Example buttons
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(
-                onClick = { /* Handle action */ },
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.primary
-                )
-            ) {
-                Text("Confirm")
-            }
-
-            OutlinedButton(
-                onClick = onDismiss
-            ) {
-                Text("Cancel")
-            }
-        }
     }
 }
 
