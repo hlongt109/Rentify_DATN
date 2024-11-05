@@ -1,5 +1,6 @@
 package com.rentify.user.app
 
+import MyScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,7 @@ import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.userScreens.SearchRoomScreen.ListPostRoomScreen
 import com.rentify.user.app.view.userScreens.messengerScreem.LayoutMessenger
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
@@ -22,7 +24,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainNavigation()
+//            MainNavigation()
+//            MyScreen()
+            ListPostRoomScreen(navController = rememberNavController())
         }
     }
 
