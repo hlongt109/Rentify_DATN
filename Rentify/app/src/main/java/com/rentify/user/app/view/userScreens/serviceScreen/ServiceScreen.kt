@@ -18,6 +18,8 @@ import com.rentify.user.app.view.userScreens.homeScreen.components.BannerCompone
 import com.rentify.user.app.view.userScreens.personalScreen.components.ItemNameComponent
 import com.rentify.user.app.view.userScreens.personalScreen.components.ItemSComponent
 import com.rentify.user.app.view.userScreens.personalScreen.components.MenuComponent
+import com.rentify.user.app.view.userScreens.serviceScreen.components.ItemComponent
+import com.rentify.user.app.view.userScreens.serviceScreen.components.TeudeComponent
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -33,6 +35,7 @@ fun LayoutService(navController: NavHostController) {
             .fillMaxWidth()
             .fillMaxHeight()
     ){
-        Text(text = "LayoutService")
+        TeudeComponent()
+        ItemComponent()
     }
 }
