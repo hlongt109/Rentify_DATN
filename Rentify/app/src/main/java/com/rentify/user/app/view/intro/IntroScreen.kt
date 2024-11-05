@@ -33,11 +33,13 @@ import androidx.compose.ui.unit.sp
 import com.rentify.user.app.R
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun IntroScreenPreview(){
+    IntroScreen()
+}
 @Composable
 fun IntroScreen() {
-
-
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
