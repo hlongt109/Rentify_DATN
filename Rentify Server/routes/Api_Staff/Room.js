@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Room = require('../../models/Room');
-const upload = require('../../config/common/upload'); 
+const upload = require('../../config/common/upload');
 
 // Lấy danh sách phòng
 router.get('/list', async (req, res) => {
     try {
         const rooms = await Room.find();
-        res.json(rooms);
+        //res.json(rooms);
+        res.render('Rooms/listRoom', { listData: rooms })
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -90,11 +91,11 @@ router.get('/search', async (req, res) => {
         if (availability_status) {
             query.availability_status = availability_status;
         }
-        
+
         const rooms = await Room.find(query);
         res.json(rooms);
         console.log(rooms);
-        
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

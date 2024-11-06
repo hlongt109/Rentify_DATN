@@ -1,10 +1,18 @@
 package com.rentify.user.app.model
 
-// User.kt
 data class User(
-  val id: String,
-  val username: String,
-  val email: String,
-  val password: String,
-  val name: String? = null
+    val _id: String,
+    val username: String,
+    val password: String,
+    val email: String,
+    val phoneNumber: String,
+    val role: String, // vai trò (admin, user, nhan vien, . ..)
+    val name: String,
+    val dob: String, // ngày sinh
+    val gender: String, // giới tính
+    val address: String,
+    val profilePictureUrl: String,
+    val verified: Boolean,
+    val createdAt: String,
+    val updatedAt: String
 )
