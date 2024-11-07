@@ -44,9 +44,9 @@ fun ProfileComponent(navController: NavHostController) {
             painter = painterResource(id = R.drawable.back),
             contentDescription = "back",
             modifier = Modifier
-                .width(50.dp)
-                .height(50.dp)
-                .padding(5.dp)
+                .width(40.dp)
+                .height(40.dp)
+                .padding(top = 10.dp)
                 .clip(CircleShape)
                 .clickable {
                     navController.popBackStack()

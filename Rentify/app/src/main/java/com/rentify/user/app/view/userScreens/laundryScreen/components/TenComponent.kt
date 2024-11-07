@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
@@ -40,15 +42,17 @@ fun TenComponent(navController: NavHostController) {
                 painter = painterResource(id = R.drawable.back),
                 contentDescription = "Back",
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(start = 12.dp, top = 12.dp)
+                    .size(30.dp)
                     .clickable {
                         navController.popBackStack()
                     },
             )
             Text(
                 text = "Giặt là ",
-                modifier = Modifier.padding(12.dp),
-                fontWeight = FontWeight.Bold
+                modifier = Modifier.padding(top = 15.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
             )
         }
     }

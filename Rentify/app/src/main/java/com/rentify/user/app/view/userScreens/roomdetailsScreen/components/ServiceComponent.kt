@@ -65,7 +65,7 @@ fun LayoutService() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(10.dp)
+            .height(30.dp)
     ) {
     }
     Row(
@@ -231,7 +231,12 @@ fun LayoutService() {
             }
         }
     }
-
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+    ) {
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()

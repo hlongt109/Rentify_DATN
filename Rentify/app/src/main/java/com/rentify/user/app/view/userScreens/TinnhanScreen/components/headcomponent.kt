@@ -2,6 +2,7 @@ package com.rentify.user.app.view.userScreens.TinnhanScreen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
@@ -38,20 +40,24 @@ fun headcomponent(navController: NavHostController){
     ) {
         Image(
             painter = painterResource(id = R.drawable.back),
-            contentDescription = "",
-            modifier = Modifier.size(24.dp) // Adjust size as needed
+            contentDescription = "Back",
+            modifier = Modifier.size(34.dp)
+                .clickable {
+                    navController.popBackStack()
+                }
         )
         Spacer(modifier = Modifier.width(8.dp)) // Adds space between images and text
         Image(
             painter = painterResource(id = R.drawable.user),
             contentDescription = "",
-            modifier = Modifier.size(24.dp) // Adjust size as needed
+            modifier = Modifier.size(34.dp) // Adjust size as needed
         )
         Spacer(modifier = Modifier.width(8.dp)) // Adds space between images and text
         Text(
             text = "Vũ Văn Phúc",
             modifier = Modifier.padding(12.dp),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
         )
     }
 }

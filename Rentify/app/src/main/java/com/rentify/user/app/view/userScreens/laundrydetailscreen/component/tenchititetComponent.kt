@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -41,9 +42,8 @@ fun tenchitietComponent (navController: NavHostController){
             painter = painterResource(id = R.drawable.back),
             contentDescription = "back",
             modifier = Modifier
-                .width(50.dp)
-                .height(50.dp)
-                .padding(5.dp)
+                .size(40.dp)
+                .padding(top = 10.dp)
                 .clip(CircleShape)
                 .clickable {
                     navController.popBackStack()
@@ -51,12 +51,12 @@ fun tenchitietComponent (navController: NavHostController){
         )
         Column(
             modifier = Modifier
-                .padding(top = 10.dp)
+                .padding(top = 15.dp)
                 .weight(1f) // Cho phép cột chiếm không gian còn lại
         ) {
             Text(
                 text = "Chi tiết sản phẩm ",
-                fontSize = 25.sp,
+                fontSize = 20.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold
             )

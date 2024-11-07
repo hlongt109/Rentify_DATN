@@ -397,29 +397,3 @@ fun RegisterScreen(navController: NavHostController) {
 fun GreetingGetLayoutRegisterScreen() {
     RegisterScreen(navController = rememberNavController())
 }
-//            BasicTextField(
-//                value = email,
-//                onValueChange = { email = it },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(47.dp) // Chiều cao nhỏ hơn
-//                    .background(Color.White, RoundedCornerShape(8.dp))
-//                    .padding(horizontal = 8.dp, vertical = 8.dp), // Thêm padding để đảm bảo văn bản không bị cắt
-//                singleLine = true,
-//                textStyle = TextStyle(
-//                    color = Color.Black,
-//                    fontSize = 15.sp,
-//                    fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                ),
-//                decorationBox = { innerTextField ->
-//                    if (email.isEmpty()) {
-//                        Text(
-//                            text = "Enter your email",
-//                            color = Color.Gray,
-//                            fontSize = 15.sp,
-//                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                        )
-//                    }
-//                    innerTextField() // Hiển thị nội dung nhập của người dùng
-//                }
-//            )

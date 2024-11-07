@@ -41,7 +41,7 @@ fun LayoutInterior(){
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(20.dp)
+            .height(30.dp)
     ) {
     }
     Row(
@@ -64,7 +64,7 @@ fun LayoutInterior(){
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(10.dp)
+            .height(30.dp)
     ) {
     }
     Row(
@@ -203,6 +203,12 @@ fun LayoutInterior(){
                 )
             }
         }
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+    ) {
     }
     Row(
         modifier = Modifier

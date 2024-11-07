@@ -21,24 +21,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
-
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun NameComponent (navController: NavHostController){
-    LayoutNameComponent(navController)
+fun NameComponent() {
+    LayoutNameComponent(navController= rememberNavController())
 }
 @Composable
 fun LayoutNameComponent (navController: NavHostController){
     Row (
-        modifier = Modifier.fillMaxWidth().height(50.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
     ){
         Image(
             painter = painterResource(id = R.drawable.back),
             contentDescription = "back",
             modifier = Modifier
-                .width(50.dp)
-                .height(50.dp)
+                .width(40.dp)
+                .height(40.dp)
                 .padding(5.dp)
                 .clip(CircleShape)
                 .clickable {
@@ -52,7 +55,7 @@ fun LayoutNameComponent (navController: NavHostController){
         ) {
             Text(
                 text = "Chi tiết phòng",
-                fontSize = 25.sp,
+                fontSize = 20.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold
             )

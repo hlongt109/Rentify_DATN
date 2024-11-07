@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
@@ -36,7 +37,8 @@ fun headcomponent(navController: NavHostController){
         Text(
             text = "Tin nhắn ",
             modifier = Modifier.padding(12.dp),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
         )
         Spacer(modifier = Modifier.weight(1f)) // This will take up the remaining space
         Image(

@@ -29,6 +29,12 @@ fun LaundryScreen(navController: NavHostController){
             .fillMaxWidth()
             .fillMaxHeight()
     ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+        }
         TenComponent(navController)
         ItemgiatComponent(navController)
     }

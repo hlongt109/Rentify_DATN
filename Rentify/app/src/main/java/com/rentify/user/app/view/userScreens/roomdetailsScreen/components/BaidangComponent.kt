@@ -41,6 +41,12 @@ fun baidangPreview(){
 @Composable
 fun Layoutbaidang(){
     Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+    ) {
+    }
+    Row(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(

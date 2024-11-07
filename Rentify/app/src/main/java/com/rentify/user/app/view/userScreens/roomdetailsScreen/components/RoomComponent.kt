@@ -202,7 +202,7 @@ fun ProductTypeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(10.dp)
+            .height(30.dp)
     ) {
     }
     Row(
@@ -235,7 +235,7 @@ fun ProductTypeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(10.dp)
+            .height(30.dp)
     ) {
     }
     Row(

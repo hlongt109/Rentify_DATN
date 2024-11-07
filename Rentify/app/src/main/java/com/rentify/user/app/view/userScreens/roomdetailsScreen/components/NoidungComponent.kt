@@ -106,6 +106,12 @@ fun LayoutNoidung(){
         }
         Row(
             modifier = Modifier
+                .fillMaxWidth()
+                .height(30.dp)
+        ) {
+        }
+        Row(
+            modifier = Modifier
                 .height(50.dp)
                 .fillMaxWidth()
                 .padding(start = 15.dp, end = 15.dp, top = 10.dp)

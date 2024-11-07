@@ -30,7 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun NoiDcomponentPreview() {
     NoiDcomponent(navController = rememberNavController())
@@ -49,7 +49,7 @@ fun NoiDcomponent(navController: NavHostController) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
                 fontSize = 20.sp,
-                color = Color(0xff84d8ff)
+                color = Color.Black
             )
         }
 
@@ -164,7 +164,7 @@ fun NoiDcomponent(navController: NavHostController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(10.dp)
+                .height(30.dp)
         ) {
         }
         Row(
@@ -177,6 +177,12 @@ fun NoiDcomponent(navController: NavHostController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(30.dp)
+        ) {
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(start = 15.dp)
         ) {
             Text(
@@ -184,7 +190,7 @@ fun NoiDcomponent(navController: NavHostController) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
                 fontSize = 20.sp,
-                color = Color(0xff84d8ff)
+                color = Color.Black
             )
         }
 
@@ -245,7 +251,7 @@ fun NoiDcomponent(navController: NavHostController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(10.dp)
+                .height(30.dp)
         ) {
         }
         Row(
@@ -258,6 +264,12 @@ fun NoiDcomponent(navController: NavHostController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(30.dp)
+        ) {
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(start = 15.dp)
         ) {
             Text(
@@ -265,7 +277,7 @@ fun NoiDcomponent(navController: NavHostController) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
                 fontSize = 20.sp,
-                color = Color(0xff84d8ff)
+                color = Color.Black
             )
             Spacer(modifier = Modifier.width(150.dp))
             Row(
