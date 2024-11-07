@@ -24,12 +24,6 @@ fun TinnhanScreen(navController: NavHostController) {
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-        }
         headcomponent(navController)
         tinnhanComponent(messages)
         sentComponent { message ->

@@ -49,116 +49,159 @@ fun NoiDcomponent(navController: NavHostController) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
                 fontSize = 20.sp,
+                color = Color(0xff122457)
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, top = 10.dp)
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.sinh),
+                contentDescription = "",
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = "Ngày sinh:",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "14/02/2004",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
         }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 15.dp)
+                .padding(start = 15.dp, top = 10.dp)
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.lich),
+                painter = painterResource(id = R.drawable.duccai),
                 contentDescription = "",
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Ngày sinh: 14/02/2004",
+                text = "Giới tính:",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
-                color = Color(0xff777777)
+                fontSize = 15.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Nam",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 15.dp)
+                .padding(start = 15.dp, top = 10.dp)
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.n),
+                painter = painterResource(id = R.drawable.email),
                 contentDescription = "",
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Giới tính: Nam",
+                text = "Email:",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
-                color = Color(0xff777777)
+                fontSize = 15.sp,
+                color = Color.Black
+            )
+            Text(
+                text = " hoanhlongtran109@gmail.com",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 15.dp)
+                .padding(start = 15.dp, top = 10.dp)
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.gmail),
+                painter = painterResource(id = R.drawable.didong),
                 contentDescription = "",
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Email: hoanhlongtran109@gmail.com",
+                text = "Số điện thoại:",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
-                color = Color(0xff777777)
+                fontSize = 15.sp,
+                color = Color.Black
+            )
+            Text(
+                text = " 0339160077",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 15.dp)
+                .padding(start = 15.dp, top = 10.dp)
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.phone),
+                painter = painterResource(id = R.drawable.mapp),
                 contentDescription = "",
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Số điện thoại: 0339160077",
+                text = "Địa chỉ thường trú:",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
-                color = Color(0xff777777)
+                fontSize = 15.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Thành Phố Hà Nội ",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                color = Color.Black,
+                fontWeight=FontWeight.Bold
             )
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 15.dp)
+                .padding(start = 15.dp, top = 10.dp)
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.map),
+                painter = painterResource(id = R.drawable.mapp),
                 contentDescription = "",
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Địa chỉ thường trú: Khu 2 Hoàng Cương, Thanh Ba, Phú Thọ",
+                text = "Địa chỉ hiện tại:",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
+                fontSize = 15.sp,
                 color = Color(0xff777777)
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 15.dp)
-        ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.map),
-                contentDescription = "",
-                modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Địa chỉ hiện tại:  Khu 2 Hoàng Cương, Thanh Ba, Phú Thọ",
+                text = "Nam Từ Liêm, Hà Nội",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
-                color = Color(0xff777777)
+                fontSize = 15.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
             )
         }
         Row(
@@ -186,66 +229,87 @@ fun NoiDcomponent(navController: NavHostController) {
                 .padding(start = 15.dp)
         ) {
             Text(
-                text = "Thông tin thuê trọ",
+                text = "Thông tin thuê trọ  ",
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
                 fontSize = 20.sp,
+                color = Color(0xff122457)
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, top = 10.dp)
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.nn),
+                contentDescription = "",
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = "Phòng thuê hiện tại:",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
                 color = Color.Black
             )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 15.dp)
-        ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.home),
-                contentDescription = "",
-                modifier = Modifier.size(20.dp)
-            )
             Text(
-                text = "Phòng thuê hiện tại: P202 , nhà số 9, ngõ 103 đường Phương Canh",
+                text = "Nam Từ Liêm Hà Nội",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
-                color = Color(0xff777777)
+                fontSize = 15.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 15.dp)
+                .padding(start = 15.dp, top = 10.dp)
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.oclock),
+                painter = painterResource(id = R.drawable.timee),
                 contentDescription = "",
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Thời hạn hợp đồng: 10/10/2023 - 10/10/2024",
+                text = "Thời hạn hợp đồng:",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
-                color = Color(0xff777777)
+                fontSize = 15.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "10/10/2023 - 10/10/2024",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 15.dp)
+                .padding(start = 15.dp, top = 10.dp)
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.hdong),
+                painter = painterResource(id = R.drawable.nguoii),
                 contentDescription = "",
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Trạng thái hợp đồng: Sắp hết hạn",
+                text = "Trạng thái hợp đồng: ",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
-                color = Color(0xff777777)
+                fontSize = 15.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Sắp hết hạn",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
             )
         }
         Row(
@@ -267,6 +331,7 @@ fun NoiDcomponent(navController: NavHostController) {
                 .height(30.dp)
         ) {
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -277,7 +342,7 @@ fun NoiDcomponent(navController: NavHostController) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
                 fontSize = 20.sp,
-                color = Color.Black
+                color = Color(0xff122457)
             )
             Spacer(modifier = Modifier.width(150.dp))
             Row(
@@ -308,25 +373,39 @@ fun NoiDcomponent(navController: NavHostController) {
                 modifier = Modifier.size(100.dp)
             )
             Column {
-                Text(
-                    text = "Thời gian: 10/10/2022 - 10/10/2023",
-                    modifier = Modifier.padding(start = 5.dp),
-                    fontSize = 15.sp,
-                    color = Color(0xff777777)
-                )
-                Text(
-                    text = "Phòng S1.12345, Tòa 3B, chung ...",
-                    modifier = Modifier.padding(start = 5.dp),
-                    fontSize = 15.sp,
-                    color = Color(0xff777777)
-                )
-                Text(
-                    text = "Căn hộ 70m2 với 2 phòng ngủ, 2 phòng...",
-                    modifier = Modifier.padding(start = 5.dp),
-                    fontSize = 15.sp,
-                    color = Color(0xff777777)
-                )
+                Row {
+                    Text(
+                        text = "Thời gian: ",
+                        modifier = Modifier.padding(start = 5.dp),
+                        fontSize = 15.sp,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "10/10/2022 - 10/10/2023",
+                        modifier = Modifier.padding(start = 5.dp),
+                        fontSize = 15.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                    Text(
+                        text = "Phòng S1.12345, Tòa 3B, chung ...",
+                        modifier = Modifier.padding(start = 10.dp),
+                        fontSize = 15.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+
+
+                    Text(
+                        text = "Căn hộ 70m2 với 2 phòng ngủ, 2 phòng...",
+                        modifier = Modifier.padding(start =10.dp),
+                        fontSize = 15.sp,
+                        color = Color.Black,
+                    )
+
                 Row(
+                    modifier = Modifier.padding(start = 10.dp)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.dola),

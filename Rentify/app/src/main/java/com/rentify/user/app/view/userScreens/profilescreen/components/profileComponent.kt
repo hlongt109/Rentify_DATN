@@ -41,7 +41,7 @@ fun ProfileComponent(navController: NavHostController) {
             .height(50.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.back),
+            painter = painterResource(id = R.drawable.trove),
             contentDescription = "back",
             modifier = Modifier
                 .width(40.dp)

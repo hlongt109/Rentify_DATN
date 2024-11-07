@@ -38,7 +38,7 @@ fun ProfileScreen(navController: NavHostController){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(20.dp)
         ) {
         }
         NoiDcomponent(navController)
