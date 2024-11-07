@@ -56,7 +56,7 @@ fun AppNavigation(navHostController: NavHostController) {
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.White,
-                modifier = Modifier.height(200.dp)
+                modifier = Modifier.height(100.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -111,27 +111,28 @@ fun AppNavigation(navHostController: NavHostController) {
                         )
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .offset(y = (-40).dp)
-                            .size(70.dp)
-                            .background(Color(0xFF059BEE), shape = CircleShape)
-                            .shadow(30.dp, shape = CircleShape)
-                            .clickable {
-                                isSelected = ROUTER.RENT.name
-                                navController.navigate(ROUTER.RENT.name) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        inclusive = true
-                                    }
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(painter = rememberImagePainter(data = R.drawable.rent),
-                            contentDescription = "",
-                            modifier = Modifier.size(25.dp)
+                    NavigationBarItem(
+                        selected = isSelected == ROUTER.RENT.name,
+                        onClick = {
+                            isSelected = ROUTER.RENT.name
+                            navController.navigate(ROUTER.RENT.name) {
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            }
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.rent),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp)
+                            )
+                        },
+                        label = { Text(text = "Service",color = if (isSelected == ROUTER.SERVICE.name) Color(0xFF059BEE) else Color(color = 0xFFb7b7b7))},
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color(0xFF059BEE),
+                            unselectedIconColor = Color(color = 0xFFb7b7b7),
+                            indicatorColor = Color.White
                         )
-                    }
+                    )
 
                     // Tin nhắn
                     NavigationBarItem(
