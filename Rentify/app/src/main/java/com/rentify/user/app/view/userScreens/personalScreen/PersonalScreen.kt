@@ -36,7 +36,7 @@ fun LayoutPersonal(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         BannerComponent()
-        ItemNameComponent(navController)
+        ItemNameComponent()
         MenuComponent()
         ItemSComponent()
     }

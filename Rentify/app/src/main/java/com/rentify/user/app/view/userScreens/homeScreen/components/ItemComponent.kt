@@ -35,7 +35,7 @@ fun ItemHomeComponent(navController: NavHostController) {
 
 @Composable
 fun LayoutItemHome(navController: NavHostController) {
-    Spacer(modifier = Modifier.height(20.dp))
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,6 +119,5 @@ fun LayoutItemHome(navController: NavHostController) {
             }
 
         }
-        Spacer(modifier = Modifier.height(20.dp))
     }
 }

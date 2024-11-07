@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.userScreens.personalScreen.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,23 +58,16 @@ fun LayoutMenu() {
     var statusType by remember { mutableStateOf(listTypeProduct.first().type) }
     Column(
         modifier = Modifier
-            .padding(start = 9.dp, end = 9.dp, bottom = 9.dp)
-            .shadow(
-                elevation = 9.dp,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(20.dp))
+            .padding(9.dp)
+            .border(width = 1.dp, color = Color(0xffdddddd), shape = RoundedCornerShape(20.dp))
     ) {
-        // Thanh tìm kiếm với icon và chữ "Hà Nội"
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
                 .padding(horizontal = 12.dp, vertical = 4.dp)
         ) {
         }
-        // Thanh cuộn ngang với các loại sản phẩm
         Row(
             modifier = Modifier
                 .fillMaxWidth()

@@ -34,333 +34,338 @@ fun LayoutItems() {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-//        1
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
+                .padding(9.dp)
+//                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+//                .clip(RoundedCornerShape(12.dp))
+                .border(width = 1.dp, color = Color(0xffdddddd), shape = RoundedCornerShape(20.dp))
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(color = Color(0xFFfafafa))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color.White)
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.qlbaidang),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
                     )
-                    .clickable { }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.qlbaidang),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    text = "Quản lý bài đăng ",
-                    fontSize = 20.sp,
-                    color = Color(0xFF909191),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(color = Color(0xFFfafafa))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+                    Text(
+                        text = "Quản lý bài đăng ",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
                     )
-                    .clickable { }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.qldonhang),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    text = "Quản lý quản lí đơn hàng dịch vụ ",
-                    fontSize = 20.sp,
-                    color = Color(0xFF909191),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-//3
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(color = Color(0xFFfafafa))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
                     )
-                    .clickable { }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lich),
-                    contentDescription = null,
+                }
+                Row(
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    text = "Lịch hẹn xem phòng ",
-                    fontSize = 20.sp,
-                    color = Color(0xFF909191),
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-//4
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(color = Color(0xFFfafafa))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.qldonhang),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
                     )
-                    .clickable { }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.bill),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    text = "hóa đơn ",
-                    fontSize = 20.sp,
-                    color = Color(0xFF909191),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-//5
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(color = Color(0xFFfafafa))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+                    Text(
+                        text = "Quản lý dịch vụ ",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
                     )
-                    .clickable { }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.hdong),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    text = "Hợp đồng",
-                    fontSize = 20.sp,
-                    color = Color(0xFF909191),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-//6
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(color = Color(0xFFfafafa))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
                     )
-                    .clickable { }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.postyt),
-                    contentDescription = null,
+                }
+                Row(
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    text = "Bài đăng yêu thích ",
-                    fontSize = 20.sp,
-                    color = Color(0xFF909191),
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-//7
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(color = Color(0xFFfafafa))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.lich),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
                     )
-                    .clickable { }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.dkhoan),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    text = "Điều khoản và chính sách ",
-                    fontSize = 20.sp,
-                    color = Color(0xFF909191),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-//8
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(color = Color(0xFFfafafa))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+                    Text(
+                        text = "Lịch hẹn xem phòng ",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
                     )
-                    .clickable { }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.baocao),
-                    contentDescription = null,
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+                Row(
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    text = "báo cáo sự cố ",
-                    fontSize = 20.sp,
-                    color = Color(0xFF909191),
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.bill),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
+                    )
+                    Text(
+                        text = "hóa đơn ",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.hdong),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
+                    )
+                    Text(
+                        text = "Hợp đồng",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.postyt),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
+                    )
+                    Text(
+                        text = "Bài đăng yêu thích ",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.dkhoan),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
+                    )
+                    Text(
+                        text = "Điều khoản và chính sách ",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.baocao),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
+                    )
+                    Text(
+                        text = "báo cáo sự cố ",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
             }
-        }
-        Spacer(modifier = Modifier.height(20.dp))
 
+        }
     }
 }
