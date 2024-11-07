@@ -4,6 +4,7 @@ var router = express.Router();
 const Post = require('../models/Post')
 const Service = require('../models/Service');
 const User = require('../models/User');
+const Report = require('../models/Report');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -81,6 +82,16 @@ router.get('/api/stats/sum', async (req, res) => {
     });
   });
 })
-
-
+// report
+router.get("/api/reports/list", async (req, res) => {
+  res.render("Reports/ReportManager", (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Quản lý báo cáo',
+      body: html
+    });
+  })
+})
 module.exports = router;

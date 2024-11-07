@@ -7,7 +7,28 @@ const Room = require("../../models/Room");
 const Service = require("../../models/Service");
 const handleServerError = require("../../utils/errorHandle");
 
-router.get("/api/get_report_details/:id", async (req, res) => {
+// get all 
+router.get("/reports_all", async(req, res) => {
+    try {
+        const data = await Report.find().populate('user_id', 'name');
+        if (data) {
+            res.status(200).send(data)
+            console.log(data)
+        } else {
+            res.status(400).json({
+                "status": 400,
+                "messenger": "Get report list failed",
+                "data": []
+            })
+        }
+    } catch (error) {
+        console.log("Error: ", error);
+        handleServerError(res, error);
+    }
+})
+
+// get detail
+router.get("/get_report_details/:id", async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {
@@ -50,7 +71,8 @@ router.get("/api/get_report_details/:id", async (req, res) => {
     }
 });
 
-router.put("/api/report:id", async(req, res) => {
+// update status
+router.put("/report:id", async(req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;
