@@ -53,6 +53,9 @@ import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.auth.components.TextFieldComponent
 import com.rentify.user.app.view.auth.components.TextLoginContent
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
+import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
+import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.viewModel.LoginViewModel
 
 
@@ -63,8 +66,8 @@ class LoginScreen : ComponentActivity() {
         setContent {
             //view model
             // Khởi tạo LoginRepository
-
-          LoginScreenApp()
+            SearchPostRoonmScreen(navController = rememberNavController())
+           // LoginScreenApp()
         }
     }
 

@@ -145,6 +145,6 @@ fun CategoryPostScreen(navController: NavHostController) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingLayoutQuanLyScreen() {
+fun GreetingLayoutCategoryPostScreen() {
     CategoryPostScreen(navController = rememberNavController())
 }

@@ -33,20 +33,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -56,13 +52,10 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.flowlayout.FlowRow
-import com.rentify.user.app.network.ApiClient
-import com.rentify.user.app.network.RegisterRequest
-import com.rentify.user.app.network.RegisterResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,6 +68,14 @@ fun AddPostScreen(navController: NavHostController) {
     var selectedGender by remember { mutableStateOf("Nhập giới tính") }
     val genderOptions = listOf("Nam", "Nữ", "Giới tính thứ 3")
     val scrollState = rememberScrollState()
+    var postTitle by remember { mutableStateOf("") }
+    var numberOfRoommates by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    var currentPeopleCount by remember { mutableStateOf("") }
+    var area by remember { mutableStateOf("") }
+    var floor by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var roomPrice by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -127,28 +128,22 @@ fun AddPostScreen(navController: NavHostController) {
                 .background(color = Color(0xfff7f7f7))
                 .padding(15.dp)
         ) {
-            // tiêu fefe bài đăng
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
             ) {
                 Text(
-                    text = "Tiêu đề bài đăng *",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color(0xFF7c7b7b),
-                    //  fontWeight = FontWeight(700),
-                    fontSize = 13.sp,
-
-                    )
+                    text = "Tiêu đề bài đăng *", color = Color(0xFF7c7b7b), fontSize = 13.sp
+                )
                 TextField(
-                    value = "",
-                    onValueChange = {  /* */ },
+                    value = postTitle,
+                    onValueChange = { newText -> postTitle = newText },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Gray,
@@ -169,28 +164,24 @@ fun AddPostScreen(navController: NavHostController) {
                     )
                 )
             }
-            // Tim người ở ghép
+
+// TextField cho số người tìm ghép
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
             ) {
                 Text(
-                    text = "Số người tìm ghép *",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color(0xFF7c7b7b),
-                    //  fontWeight = FontWeight(700),
-                    fontSize = 13.sp,
-
-                    )
+                    text = "Số người tìm ghép *", color = Color(0xFF7c7b7b), fontSize = 13.sp
+                )
                 TextField(
-                    value = "",
-                    onValueChange = {  /* */ },
+                    value = numberOfRoommates,
+                    onValueChange = { newText -> numberOfRoommates = newText },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Gray,
@@ -216,13 +207,11 @@ fun AddPostScreen(navController: NavHostController) {
             Row(
                 modifier = Modifier
                     .border(
-                        width = 2.dp,
-                        color = Color(0xFFeeeeee),
-                        shape = RoundedCornerShape(9.dp)
+                        width = 2.dp, color = Color(0xFFeeeeee), shape = RoundedCornerShape(9.dp)
                     )
                     .padding(5.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                ) {
+            ) {
 
                 Image(
                     painter = painterResource(id = R.drawable.roomtype),
@@ -242,11 +231,9 @@ fun AddPostScreen(navController: NavHostController) {
                     )
             }
             Row(
-                modifier = Modifier.padding(5.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically
             ) {
-                RoomTypeOption(
-                    text = "Phòng trọ",
+                RoomTypeOption(text = "Phòng trọ",
                     isSelected = selectedRoomTypes.contains("Phòng trọ"),
                     onClick = {
                         selectedRoomTypes = if (selectedRoomTypes.contains("Phòng trọ")) {
@@ -254,13 +241,11 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedRoomTypes + "Phòng trọ" // Tạo bản sao mới khi thêm phần tử
                         }
-                    }
-                )
+                    })
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                RoomTypeOption(
-                    text = "Nguyên căn",
+                RoomTypeOption(text = "Nguyên căn",
                     isSelected = selectedRoomTypes.contains("Nguyên căn"),
                     onClick = {
                         selectedRoomTypes = if (selectedRoomTypes.contains("Nguyên căn")) {
@@ -268,13 +253,11 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedRoomTypes + "Nguyên căn"
                         }
-                    }
-                )
+                    })
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                RoomTypeOption(
-                    text = "Chung cư",
+                RoomTypeOption(text = "Chung cư",
                     isSelected = selectedRoomTypes.contains("Chung cư"),
                     onClick = {
                         selectedRoomTypes = if (selectedRoomTypes.contains("Chung cư")) {
@@ -282,15 +265,13 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedRoomTypes + "Chung cư"
                         }
-                    }
-                )
+                    })
             }
             //ảnh
             Row(
-                modifier = Modifier
-                    .padding(5.dp),
+                modifier = Modifier.padding(5.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                ) {
+            ) {
                 Row(
                     modifier = Modifier
 
@@ -344,9 +325,7 @@ fun AddPostScreen(navController: NavHostController) {
                     .shadow(6.dp, shape = RoundedCornerShape(10.dp))
                     .background(color = Color(0xFFffffff))
                     .border(
-                        width = 0.dp,
-                        color = Color(0xFFEEEEEE),
-                        shape = RoundedCornerShape(10.dp)
+                        width = 0.dp, color = Color(0xFFEEEEEE), shape = RoundedCornerShape(10.dp)
                     )
                     .padding(25.dp),
 
@@ -384,18 +363,18 @@ fun AddPostScreen(navController: NavHostController) {
 
                     )
                 TextField(
-                    value = "",
-                    onValueChange = {  /* */ },
+                    value = address,
+                    onValueChange = { address = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Gray,
                         unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color.White
+                        focusedContainerColor = Color(0xFFf7f7f7),
                     ),
                     placeholder = {
                         Text(
@@ -426,13 +405,13 @@ fun AddPostScreen(navController: NavHostController) {
 
                     )
                 TextField(
-                    value = "",
-                    onValueChange = {  /* */ },
+                    value = currentPeopleCount,
+                    onValueChange = { currentPeopleCount = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Gray,
@@ -460,7 +439,7 @@ fun AddPostScreen(navController: NavHostController) {
                     .padding(5.dp)
             ) {
                 Text(
-                    text = "Diện tích *",
+                    text = "Diện tích(m2) *",
                     //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                     color = Color(0xFF7c7b7b),
                     //  fontWeight = FontWeight(700),
@@ -468,13 +447,13 @@ fun AddPostScreen(navController: NavHostController) {
 
                     )
                 TextField(
-                    value = "",
-                    onValueChange = {  /* */ },
+                    value = area,
+                    onValueChange = { area = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Gray,
@@ -510,13 +489,13 @@ fun AddPostScreen(navController: NavHostController) {
 
                     )
                 TextField(
-                    value = "",
-                    onValueChange = {  /* */ },
+                    value = floor,
+                    onValueChange = { floor = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Gray,
@@ -552,13 +531,13 @@ fun AddPostScreen(navController: NavHostController) {
 
                     )
                 TextField(
-                    value = "",
-                    onValueChange = {  /* */ },
+                    value = phoneNumber,
+                    onValueChange = { phoneNumber = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Gray,
@@ -586,14 +565,10 @@ fun AddPostScreen(navController: NavHostController) {
                     .padding(5.dp)
             ) {
                 Text(
-                    text = "Giới tính *",
-                    color = Color(0xFF7c7b7b),
-                    fontSize = 13.sp
+                    text = "Giới tính *", color = Color(0xFF7c7b7b), fontSize = 13.sp
                 )
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
-                ) {
+                ExposedDropdownMenuBox(expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }) {
                     TextField(
                         value = selectedGender,
                         onValueChange = { /* Không cần thay đổi giá trị ở đây */ },
@@ -614,34 +589,26 @@ fun AddPostScreen(navController: NavHostController) {
                             Text(
                                 text = "Nhập giới tính",
                                 fontSize = 13.sp,
-                                color = Color(0xFF898888),
+                                color = Color(0xFFcecece),
                                 fontFamily = FontFamily(Font(R.font.cairo_regular))
                             )
                         },
                         shape = RoundedCornerShape(size = 8.dp),
                         trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
+                            Icon(imageVector = Icons.Default.ArrowDropDown,
                                 contentDescription = null,
-                                Modifier.clickable { expanded = !expanded }
-                            )
+                                Modifier.clickable { expanded = !expanded })
                         },
                         textStyle = TextStyle(
                             color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
                         )
                     )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         genderOptions.forEach { gender ->
-                            DropdownMenuItem(
-                                text = { Text(gender) },
-                                onClick = {
-                                    selectedGender = gender
-                                    expanded = false
-                                }
-                            )
+                            DropdownMenuItem(text = { Text(gender) }, onClick = {
+                                selectedGender = gender
+                                expanded = false
+                            })
                         }
                     }
                 }
@@ -658,15 +625,15 @@ fun AddPostScreen(navController: NavHostController) {
                     color = Color(0xFF7c7b7b),
                     //  fontWeight = FontWeight(700),
                     fontSize = 13.sp,
-                    )
+                )
                 TextField(
-                    value = "",
-                    onValueChange = {  /* */ },
+                    value = roomPrice,
+                    onValueChange = { roomPrice = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(53.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Gray,
@@ -678,7 +645,7 @@ fun AddPostScreen(navController: NavHostController) {
                             text = "Nhập giá phòng",
                             fontSize = 13.sp,
                             color = Color(0xFF898888),
-                         //   fontFamily = FontFamily(Font(R.font.cairo_regular))
+                            //   fontFamily = FontFamily(Font(R.font.cairo_regular))
                         )
                     },
                     shape = RoundedCornerShape(size = 8.dp),
@@ -692,13 +659,11 @@ fun AddPostScreen(navController: NavHostController) {
             Row(
                 modifier = Modifier
                     .border(
-                        width = 2.dp,
-                        color = Color(0xFFeeeeee),
-                        shape = RoundedCornerShape(9.dp)
+                        width = 2.dp, color = Color(0xFFeeeeee), shape = RoundedCornerShape(9.dp)
                     )
                     .padding(5.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                ) {
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.comfortable),
                     contentDescription = null,
@@ -710,15 +675,14 @@ fun AddPostScreen(navController: NavHostController) {
                     color = Color.Black,
                     // fontWeight = FontWeight(700),
                     fontSize = 13.sp,
-                    )
+                )
             }
             FlowRow(
                 modifier = Modifier.padding(5.dp),
                 mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
                 crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
             ) {
-                ComfortableOption(
-                    text = "Vẹ sinh khép kín",
+                ComfortableOption(text = "Vẹ sinh khép kín",
                     isSelected = selectedComfortable.contains("Vẹ sinh khép kín"),
                     onClick = {
                         selectedComfortable =
@@ -727,10 +691,8 @@ fun AddPostScreen(navController: NavHostController) {
                             } else {
                                 selectedComfortable + "Vẹ sinh khép kín" // Tạo bản sao mới khi thêm phần tử
                             }
-                    }
-                )
-                ComfortableOption(
-                    text = "Gác xép",
+                    })
+                ComfortableOption(text = "Gác xép",
                     isSelected = selectedComfortable.contains("Gác xép"),
                     onClick = {
                         selectedComfortable = if (selectedComfortable.contains("Gác xép")) {
@@ -738,10 +700,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedComfortable + "Gác xép"
                         }
-                    }
-                )
-                ComfortableOption(
-                    text = "Ra vào vân tay",
+                    })
+                ComfortableOption(text = "Ra vào vân tay",
                     isSelected = selectedComfortable.contains("Ra vào vân tay"),
                     onClick = {
                         selectedComfortable = if (selectedComfortable.contains("Ra vào vân tay")) {
@@ -749,10 +709,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedComfortable + "Ra vào vân tay"
                         }
-                    }
-                )
-                ComfortableOption(
-                    text = "Ban công",
+                    })
+                ComfortableOption(text = "Ban công",
                     isSelected = selectedComfortable.contains("Ban công"),
                     onClick = {
                         selectedComfortable = if (selectedComfortable.contains("Ban công")) {
@@ -760,10 +718,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedComfortable + "Ban công"
                         }
-                    }
-                )
-                ComfortableOption(
-                    text = "Nuôi pet",
+                    })
+                ComfortableOption(text = "Nuôi pet",
                     isSelected = selectedComfortable.contains("Nuôi pet"),
                     onClick = {
                         selectedComfortable = if (selectedComfortable.contains("Nuôi pet")) {
@@ -771,10 +727,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedComfortable + "Nuôi pet"
                         }
-                    }
-                )
-                ComfortableOption(
-                    text = "Không chung chủ",
+                    })
+                ComfortableOption(text = "Không chung chủ",
                     isSelected = selectedComfortable.contains("Không chung chủ"),
                     onClick = {
                         selectedComfortable = if (selectedComfortable.contains("Không chung chủ")) {
@@ -782,21 +736,18 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedComfortable + "Không chung chủ"
                         }
-                    }
-                )
+                    })
             }
             // dịch vụ
             Spacer(modifier = Modifier.height(10.dp))
             Row(
                 modifier = Modifier
                     .border(
-                        width = 2.dp,
-                        color = Color(0xFFeeeeee),
-                        shape = RoundedCornerShape(9.dp)
+                        width = 2.dp, color = Color(0xFFeeeeee), shape = RoundedCornerShape(9.dp)
                     )
                     .padding(5.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                ) {
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.service),
                     contentDescription = null,
@@ -808,15 +759,14 @@ fun AddPostScreen(navController: NavHostController) {
                     color = Color.Black,
                     // fontWeight = FontWeight(700),
                     fontSize = 13.sp,
-                    )
+                )
             }
             FlowRow(
                 modifier = Modifier.padding(5.dp),
                 mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
                 crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
             ) {
-                ServiceOption(
-                    text = "Điều hoà",
+                ServiceOption(text = "Điều hoà",
                     isSelected = selectedService.contains("Điều hoà"),
                     onClick = {
                         selectedService = if (selectedService.contains("Điều hoà")) {
@@ -824,10 +774,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedService + "Điều hoà" // Tạo bản sao mới khi thêm phần tử
                         }
-                    }
-                )
-                ServiceOption(
-                    text = "Kệ bếp",
+                    })
+                ServiceOption(text = "Kệ bếp",
                     isSelected = selectedService.contains("Kệ bếp"),
                     onClick = {
                         selectedService = if (selectedService.contains("Kệ bếp")) {
@@ -835,10 +783,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedService + "Kệ bếp"
                         }
-                    }
-                )
-                ServiceOption(
-                    text = "Tủ lạnh",
+                    })
+                ServiceOption(text = "Tủ lạnh",
                     isSelected = selectedService.contains("Tủ lạnh"),
                     onClick = {
                         selectedService = if (selectedService.contains("Tủ lạnh")) {
@@ -846,10 +792,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedService + "Tủ lạnh"
                         }
-                    }
-                )
-                ServiceOption(
-                    text = "Bình nóng lạnh",
+                    })
+                ServiceOption(text = "Bình nóng lạnh",
                     isSelected = selectedService.contains("Bình nóng lạnh"),
                     onClick = {
                         selectedService = if (selectedService.contains("Bình nóng lạnh")) {
@@ -857,10 +801,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedService + "Bình nóng lạnh"
                         }
-                    }
-                )
-                ServiceOption(
-                    text = "Máy giặt",
+                    })
+                ServiceOption(text = "Máy giặt",
                     isSelected = selectedService.contains("Máy giặt"),
                     onClick = {
                         selectedService = if (selectedService.contains("Máy giặt")) {
@@ -868,10 +810,8 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedService + "Máy giặt"
                         }
-                    }
-                )
-                ServiceOption(
-                    text = "Bàn ghế",
+                    })
+                ServiceOption(text = "Bàn ghế",
                     isSelected = selectedService.contains("Bàn ghế"),
                     onClick = {
                         selectedService = if (selectedService.contains("Bàn ghế")) {
@@ -879,14 +819,10 @@ fun AddPostScreen(navController: NavHostController) {
                         } else {
                             selectedService + "Bàn ghế"
                         }
-                    }
-                )
+                    })
             }
             Button(
-                onClick = {
-                },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                onClick = {}, modifier = Modifier.fillMaxWidth(),
                 //  .background(Color(0xffFE724C), RoundedCornerShape(25.dp)), // Bo tròn 12.dp
 
                 shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
@@ -903,27 +839,20 @@ fun AddPostScreen(navController: NavHostController) {
         }
     }
 }
+
 @Composable
 fun RoomTypeOption(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
+    text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .clickable(
-                onClick = onClick,
-                indication = null, // Bỏ hiệu ứng tối khi nhấn
-                interactionSource = remember { MutableInteractionSource() }
-            )
-            .shadow(10.dp, shape = RoundedCornerShape(10.dp))
-            .border(
-                width = 2.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-                shape = RoundedCornerShape(9.dp)
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(modifier = Modifier
+        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
+            interactionSource = remember { MutableInteractionSource() })
+        .shadow(10.dp, shape = RoundedCornerShape(10.dp))
+        .border(
+            width = 2.dp,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
+            shape = RoundedCornerShape(9.dp)
+        ), verticalAlignment = Alignment.CenterVertically) {
         Text(
             modifier = Modifier
                 .background(color = Color(0xFFeeeeee))
@@ -937,25 +866,17 @@ fun RoomTypeOption(
 
 @Composable
 fun ComfortableOption(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
+    text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .clickable(
-                onClick = onClick,
-                indication = null, // Bỏ hiệu ứng tối khi nhấn
-                interactionSource = remember { MutableInteractionSource() }
-            )
-            .shadow(10.dp, shape = RoundedCornerShape(10.dp))
-            .border(
-                width = 2.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-                shape = RoundedCornerShape(9.dp)
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(modifier = Modifier
+        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
+            interactionSource = remember { MutableInteractionSource() })
+        .shadow(10.dp, shape = RoundedCornerShape(10.dp))
+        .border(
+            width = 2.dp,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
+            shape = RoundedCornerShape(9.dp)
+        ), verticalAlignment = Alignment.CenterVertically) {
         Text(
             modifier = Modifier
                 .background(color = Color(0xFFeeeeee))
@@ -969,25 +890,17 @@ fun ComfortableOption(
 
 @Composable
 fun ServiceOption(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
+    text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .clickable(
-                onClick = onClick,
-                indication = null, // Bỏ hiệu ứng tối khi nhấn
-                interactionSource = remember { MutableInteractionSource() }
-            )
-            .shadow(10.dp, shape = RoundedCornerShape(10.dp))
-            .border(
-                width = 2.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-                shape = RoundedCornerShape(9.dp)
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(modifier = Modifier
+        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
+            interactionSource = remember { MutableInteractionSource() })
+        .shadow(10.dp, shape = RoundedCornerShape(10.dp))
+        .border(
+            width = 2.dp,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
+            shape = RoundedCornerShape(9.dp)
+        ), verticalAlignment = Alignment.CenterVertically) {
         Text(
             modifier = Modifier
                 .background(color = Color(0xFFeeeeee))
@@ -998,8 +911,8 @@ fun ServiceOption(
         )
     }
 }
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun GreetingLayoutQuanLyScreen() {
-//    AddPostScreen(navController = rememberNavController())
-//}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun GreetingLayoutAddPostScreen() {
+    AddPostScreen(navController = rememberNavController())
+}

@@ -5,11 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +50,7 @@ fun SearchPostRoonmScreen(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(   modifier = Modifier.width(100.dp), onClick = { /*TODO*/ }) {
                         Image(
                             painter = painterResource(id = R.drawable.back),
                             contentDescription = null,
@@ -58,14 +60,14 @@ fun SearchPostRoonmScreen(navController: NavHostController) {
                     }
 
                     Text(
-                        text = "Quản lý bài đăng",
+                        text = "Bài đăng tìm phòng",
                         //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         color = Color.Black,
                         fontWeight = FontWeight(700),
                         fontSize = 17.sp,
 
                         )
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton( modifier = Modifier.width(100.dp), onClick = { /*TODO*/ }) {
                         Image(
                             painter = painterResource(id = R.drawable.addr),
                             contentDescription = null,
@@ -76,14 +78,15 @@ fun SearchPostRoonmScreen(navController: NavHostController) {
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = "Đang chờ duyệt",
                      //   fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         color = Color(0xff44ACFE),
                         modifier = Modifier
+                            .width(100.dp)
                             .clickable {
                                 // Hành động khi người dùng nhấp vào nút
                                 // Ví dụ: chuyển đến trang đăng ký
@@ -95,23 +98,27 @@ fun SearchPostRoonmScreen(navController: NavHostController) {
                         //   fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         color = Color(0xff13CA5C),
                         modifier = Modifier
+
                             .clickable {
                                 // Hành động khi người dùng nhấp vào nút
                                 // Ví dụ: chuyển đến trang đăng ký
                                 //  navController.navigate("register")
                             }
                     )
-                    Text(
-                        text = "Đã bị ẩn",
-                        //   fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffFF1B1B),
-                        modifier = Modifier
-                            .clickable {
+                    Row(
+                        modifier = Modifier.width(100.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Đã bị ẩn",
+                            color = Color(0xffFF1B1B),
+                            modifier = Modifier.clickable {
                                 // Hành động khi người dùng nhấp vào nút
                                 // Ví dụ: chuyển đến trang đăng ký
-                                //  navController.navigate("register")
+                                // navController.navigate("register")
                             }
-                    )
+                        )
+                    }
                 }
             }
 
@@ -124,6 +131,6 @@ fun SearchPostRoonmScreen(navController: NavHostController) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingLayoutQuanLyScreen() {
+fun GreetingLayoutSearchPostRoonmScreen() {
     SearchPostRoonmScreen(navController = rememberNavController())
 }
