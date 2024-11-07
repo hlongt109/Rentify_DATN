@@ -58,7 +58,7 @@ fun MessengerComponent(navController: NavHostController) {
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable {
-                        // Thêm xử lý khi nhấp vào hộp thoại
+                        navController.navigate("TINNHAN")
                     }
             ) {
                 Image(
@@ -115,7 +115,7 @@ fun MessengerComponent(navController: NavHostController) {
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable {
-                        // Thêm xử lý khi nhấp vào hộp thoại
+                        navController.navigate("TINNHAN")
                     }
             ) {
                 Image(

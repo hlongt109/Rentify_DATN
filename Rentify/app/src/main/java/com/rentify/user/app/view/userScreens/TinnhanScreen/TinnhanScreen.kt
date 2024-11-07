@@ -3,25 +3,28 @@ package com.rentify.user.app.view.userScreens.TinnhanScreen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.view.userScreens.TinnhanScreen.components.headcomponent
+import com.rentify.user.app.view.userScreens.TinnhanScreen.components.sentComponent
+import com.rentify.user.app.view.userScreens.TinnhanScreen.components.tinnhanComponent
 
-@Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun TinnhanScreenPreview(){
-    TinnhanScreen(navController= rememberNavController())
-}
-@Composable
-fun TinnhanScreen(navController: NavHostController){
-    Column (
+fun TinnhanScreen(navController: NavHostController) {
+    val messages = remember { mutableStateListOf<String>() }
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-    ){
-        Text(text = "tin nhắn ")
+    ) {
+        headcomponent(navController)
+        tinnhanComponent(messages)
+        sentComponent { message ->
+            messages.add(message)
+        }
     }
 }
