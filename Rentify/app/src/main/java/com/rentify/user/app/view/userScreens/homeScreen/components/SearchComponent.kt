@@ -55,7 +55,7 @@ fun LayoutSearch() {
 
     Column(
         modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
+            .padding(9.dp)
             .shadow(
                 elevation = 9.dp,
                 shape = RoundedCornerShape(20.dp)
@@ -68,15 +68,14 @@ fun LayoutSearch() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
-                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .background(Color(0xFFF5F5F5), RoundedCornerShape(16.dp))
         ) {
             // Vùng chứa biểu tượng và chữ "Hà Nội"
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .background(Color(0xFFB3E5FC), RoundedCornerShape(16.dp))
-                    .padding(horizontal = 10.dp, vertical = 15.dp)
+                    .padding(horizontal = 25.dp, vertical = 18.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.dc), // Icon vị trí
@@ -114,13 +113,13 @@ fun LayoutSearch() {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(vertical = 16.dp, horizontal = 8.dp)
+                .padding(vertical = 2.dp, horizontal = 0.dp)
         ) {
             listTypeProduct.forEach { type ->
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(horizontal = 10.dp)
+                        .padding(horizontal = 0.dp)
                         .width(80.dp)
                 ) {
                     IconButton(
@@ -128,14 +127,14 @@ fun LayoutSearch() {
                         modifier = Modifier
                             .background(
                                 color = if (statusType == type.type) Color.White else Color.White,
-                                shape = RoundedCornerShape(8.dp)
+                                shape = RoundedCornerShape(20.dp)
                             )
-                            .padding(8.dp)
+                            .padding(2.dp)
                     ) {
                         Image(
                             painter = painterResource(id = type.icon),
-                            contentDescription = null,
-                            modifier = Modifier.size(26.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                     Text(

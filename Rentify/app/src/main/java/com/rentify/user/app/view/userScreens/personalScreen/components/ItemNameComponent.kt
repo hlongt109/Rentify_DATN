@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,8 +34,6 @@ fun LayoutItemName(navController: NavHostController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(9.dp)
-//            .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-//            .clip(RoundedCornerShape(12.dp))
             .border(width = 1.dp, color = Color(0xffdddddd), shape = RoundedCornerShape(20.dp))
     ) {
         Row(
@@ -44,7 +41,7 @@ fun LayoutItemName(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(70.dp)
-                .background(color = Color(0xFFfafafa))
+                .background(color = Color.White)
                 .border(
                     width = 1.dp,
                     color = Color(0xFFfafafa),

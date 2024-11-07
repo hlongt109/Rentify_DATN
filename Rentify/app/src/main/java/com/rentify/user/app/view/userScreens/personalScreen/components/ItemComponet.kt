@@ -81,6 +81,7 @@ fun LayoutItems() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
                         .background(color = Color(0xff8c8c8c))
                 ) {
                 }
@@ -122,6 +123,7 @@ fun LayoutItems() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
                         .background(color = Color(0xff8c8c8c))
                 ) {
                 }
@@ -163,6 +165,7 @@ fun LayoutItems() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
                         .background(color = Color(0xff8c8c8c))
                 ) {
                 }
@@ -204,6 +207,7 @@ fun LayoutItems() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
                         .background(color = Color(0xff8c8c8c))
                 ) {
                 }
@@ -245,6 +249,7 @@ fun LayoutItems() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
                         .background(color = Color(0xff8c8c8c))
                 ) {
                 }
@@ -286,6 +291,7 @@ fun LayoutItems() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
                         .background(color = Color(0xff8c8c8c))
                 ) {
                 }
@@ -327,6 +333,7 @@ fun LayoutItems() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
                         .background(color = Color(0xff8c8c8c))
                 ) {
                 }

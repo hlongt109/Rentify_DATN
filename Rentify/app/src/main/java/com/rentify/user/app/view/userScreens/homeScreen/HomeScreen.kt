@@ -21,6 +21,7 @@ import com.rentify.user.app.view.userScreens.homeScreen.components.BannerCompone
 import com.rentify.user.app.view.userScreens.homeScreen.components.DoitacComponent
 import com.rentify.user.app.view.userScreens.homeScreen.components.ItemHomeComponent
 import com.rentify.user.app.view.userScreens.homeScreen.components.KhamPhaComponent
+import com.rentify.user.app.view.userScreens.homeScreen.components.LayoutItemHome
 import com.rentify.user.app.view.userScreens.homeScreen.components.SearchComponent
 import com.rentify.user.app.view.userScreens.homeScreen.components.VideoComponent
 
@@ -58,8 +59,8 @@ fun LayoutHome(navController: NavHostController) {
         KhamPhaComponent()
         VideoComponent()
         DoitacComponent()
-        ItemHomeComponent(navController)
-        ItemHomeComponent(navController)
-        ItemHomeComponent(navController)
+        LayoutItemHome(navController)
+        LayoutItemHome(navController)
+        LayoutItemHome(navController)
     }
 }

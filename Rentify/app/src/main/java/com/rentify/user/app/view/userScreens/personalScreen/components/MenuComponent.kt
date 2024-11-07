@@ -72,13 +72,12 @@ fun LayoutMenu() {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(vertical = 16.dp, horizontal = 8.dp)
+                .padding(vertical = 5.dp, horizontal = 10.dp)
         ) {
             listTypeProduct.forEach { type ->
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(horizontal = 10.dp)
                         .width(80.dp)
                 ) {
                     IconButton(

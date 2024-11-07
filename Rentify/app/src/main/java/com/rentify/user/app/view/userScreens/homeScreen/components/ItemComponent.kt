@@ -26,11 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ItemHomeComponent(navController: NavHostController) {
-    LayoutItemHome(navController)
+fun ItemHomeComponent() {
+    LayoutItemHome(navController= rememberNavController())
 }
 
 @Composable
@@ -39,7 +41,7 @@ fun LayoutItemHome(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(9.dp)
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
     ) {
