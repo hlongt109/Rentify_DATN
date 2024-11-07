@@ -20,7 +20,7 @@ const bcrypt = require("bcrypt");
 const verifiedEmail = require("../../config/common/mailer");
 const Booking = require("../../models/Booking");
 //url
-const url = "http://localhost:3000/api/confirm/";
+const url = "http://localhost:3000/api/confirm-email/";
 
 // routers
 
@@ -44,33 +44,27 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-router.post("/login", async (req, res) => {
+router.post("/login-user", async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await Account.findOne({ username: username });
+    const { email, password } = req.body;
+    const user = await Account.findOne({ email: email });
+
     if (user) {
       const match = await bcrypt.compare(password, user.password);
-      if (match) {
-        //token
-        const token = jwt.sign({ id: user._id }, key, {
-          expiresIn: "1d",
-        });
-        //khi token hết hạn, người dùng sẽ call 1 api khác để lấy token mới
-        //Lúc này người dùng sẽ truyền refreshToken lên để nhận về 1 cặp token, refershToken mới
-        //Nếu cả 2 token đều hết hạn người dùng sẽ phải thoát app và đăng nhập lại
-        const refreshToken = jwt.sign({ id: user._id }, key, {
-          expiresIn: "1d",
-        });
-        return res.json({
-          status: 200,
-          message: "login success",
-          data: user,
-          token: token,
-          refreshToken: refreshToken,
-        });
+      console.log(user);
+      if (user.verified) {
+        if (match) {
+          return res.json({
+            status: 200,
+            message: "login success",
+            data: user,
+          });
+        } else {
+          // Trả về khi mật khẩu không khớp
+          return res.status(400).send("Mật khẩu không khớp");
+        }
       } else {
-        // Trả về khi mật khẩu không khớp
-        return res.status(400).send("Mật khẩu không khớp");
+        return res.status(400).send("Ta khoan chua duoc xac minh");
       }
     } else {
       return res.status(400).send("Tài khoản không tồn tại");
@@ -82,10 +76,11 @@ router.post("/login", async (req, res) => {
 });
 
 //active account
-router.get("/confirm/:userId", async (req, res) => {
+router.get("/confirm-email/:userId", async (req, res) => {
   try {
+    console.log("Requesting userId:", req.params.userId); // Log ID
     const user = await Account.findOne({
-      id: req.params.userId,
+      _id: req.params.userId,
     });
 
     if (!user) {
@@ -93,6 +88,8 @@ router.get("/confirm/:userId", async (req, res) => {
     }
 
     await Account.updateOne({ _id: user._id }, { $set: { verified: true } });
+    console.log("log thu user", user);
+
     res.send("Email verified");
   } catch (error) {
     console.error("An error occurred:", error);
@@ -100,35 +97,35 @@ router.get("/confirm/:userId", async (req, res) => {
   }
 });
 //dang ky
-// router.post("/register", async (req, res) => {
-//   try {
-//     const data = req.body;
-//     let user = await Account.findOne({ email: data.email });
-//     if (user) {
-//       return res.status(400).send("Email đã tồn tại");
-//     }
-//     const hashPassword = await bcrypt.hash(data.password, 10);
-//     user = Account({
-//       email: data.email,
-//       username: data.username,
-//       password: hashPassword,
-//       name: data.name,
-//     });
+router.post("/register-user", async (req, res) => {
+  try {
+    const data = req.body;
+    let user = await Account.findOne({ email: data.email });
+    if (user) {
+      return res.status(400).send("Email đã tồn tại");
+    }
+    const hashPassword = await bcrypt.hash(data.password, 10);
+    user = Account({
+      email: data.email,
+      username: data.username,
+      password: hashPassword,
+      name: data.name,
+    });
 
-//     const result = await user.save();
-//     console.log(result);
-//     await verifiedEmail(user.email, url + user._id);
-//     console.log(user.email);
+    const result = await user.save();
+    console.log(result);
+    await verifiedEmail(user.email, url + user._id);
+    console.log(verifiedEmail(user.email, url + user._id));
 
-//     res.status(200).send({
-//       message: "Register success",
-//       user: result,
-//     });
-//   } catch (error) {
-//     console.error("Registration failed:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
+    res.status(200).send({
+      message: "Register success",
+      user: result,
+    });
+  } catch (error) {
+    console.error("Registration failed:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 //danh sach phong tro
 router.get("/list-post-rooms", verifyToken, async (req, res) => {

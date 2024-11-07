@@ -25,8 +25,11 @@ const verifyToken = (req, res, next) => {
 router.get("/post/list", async (req, res) => {
     try {
         const showList = await Post.find();
-        res.render('Posts/listPost', { list: showList });
-        //return res.json({ message: "Danh sách bài đăng", showList });
+        return res.status(200).json({
+            status: 200,
+            message: "Lấy dữ liệu thành công",
+            showList
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Lỗi server');
