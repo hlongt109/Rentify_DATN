@@ -39,6 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.model.Location
+import com.rentify.user.app.model.Room
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ArrangeComponent
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ChangeLocation
@@ -62,7 +64,7 @@ fun ListPostRoomScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     var bottomSheetHeight by remember { mutableStateOf(0.6f) }
-    val imeVisible = WindowInsets.isImeVisible
+    var selectedRoom by remember { mutableStateOf<Room?>(null) }
     // Theo dõi trạng thái của BottomSheet
     LaunchedEffect(sheetState.currentValue) {
         showBottomSheet = sheetState.currentValue != ModalBottomSheetValue.Hidden
@@ -136,7 +138,10 @@ fun ListPostRoomScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         items(list) { item ->
-                            ItemTypeRoom(item)
+                            ItemTypeRoom(
+                                item,
+                                isSelected = item == selectedRoom,
+                                onClick = { selectedRoom = item })
                         }
                     }
 

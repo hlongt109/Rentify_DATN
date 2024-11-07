@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.Location
 import com.rentify.user.app.ui.theme.ColorBlack
+import com.rentify.user.app.ui.theme.ColorBlack
+import com.rentify.user.app.ui.theme.location
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.colorText
 import com.rentify.user.app.ui.theme.search
@@ -67,7 +69,7 @@ fun ChangeLocation(
     LaunchedEffect(imeVisible) {
         onKeyboardVisibilityChanged(imeVisible)
     }
-
+    var selectedItem by remember { mutableStateOf<Location?>(null) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -121,9 +123,14 @@ fun ChangeLocation(
             Spacer(modifier = Modifier.padding(top = 15.dp))
             LazyColumn {
                 items(listLocation) { items ->
-                    ItemLocation(items, onClick = {})
+                    ItemLocation(items, isSelected = items == selectedItem, onClick = {
+                        selectedItem = items
+                    })
                 }
             }
         }
     }
 }
+
+
+

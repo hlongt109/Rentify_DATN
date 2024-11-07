@@ -37,7 +37,6 @@ fun LocationComponent(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
             // Sử dụng clickable đơn giản hơn
             .clickable(
                 enabled = enabled,

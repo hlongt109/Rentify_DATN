@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,13 +16,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.Location
 import com.rentify.user.app.ui.theme.ColorBlack
+import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput
+import com.rentify.user.app.ui.theme.colorLocation
 
 @Composable
 fun ItemLocation(
     item: Location,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isSelected: Boolean
 ) {
+    val colorText = if(isSelected) colorLocation else ColorBlack
     Box(
         modifier =
         Modifier.fillMaxWidth()
@@ -30,8 +35,8 @@ fun ItemLocation(
             Spacer(modifier = Modifier.padding(top = 10.dp))
             Text(
                 text = item.city,
-                modifier = Modifier,
-                color = Color.Black,
+                modifier = Modifier.clickable { onClick() },
+                color = colorText,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium
             )
