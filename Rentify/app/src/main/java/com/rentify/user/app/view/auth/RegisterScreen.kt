@@ -346,6 +346,7 @@ fun RegisterScreen(navController: NavHostController) {
 
                         override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
                             // Xử lý lỗi kết nối
+                            println("Lỗi kết nối: ${t.message}")
                             Toast.makeText(context, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
 
                         }

@@ -15,6 +15,7 @@ import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.TinnhanScreen.TinnhanScreen
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
 import com.rentify.user.app.view.userScreens.laundrydetailscreen.LaundryDetailScreenScreen
@@ -23,6 +24,7 @@ import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.profilescreen.ProfileScreen
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
 import com.rentify.user.app.view.userScreens.roomdetailsScreen.LayoutRoomdetails
+import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 
 class MainActivity : ComponentActivity() {
@@ -37,9 +39,9 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
+        NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
             composable(ROUTER.SPLASH.name) {
-                SplashScreen(navController = navController)
+                SearchPostRoomateScreen(navController = navController)
             }
             composable(ROUTER.INTRO.name) {
                 IntroScreen(navController = navController)
