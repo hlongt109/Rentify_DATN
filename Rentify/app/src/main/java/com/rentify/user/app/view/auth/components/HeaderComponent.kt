@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,14 +39,16 @@ fun HeaderComponent(
             verticalAlignment = Alignment.CenterVertically
 
         ){
-        Icon(
-           painter = painterResource(id = iconBack),
-            contentDescription = "icon back",
-            tint = Color.Black,
-            modifier = Modifier
-                .width(20.dp)
-                .height(20.dp)
-        )
+        IconButton(onClick = {}) {
+            Icon(
+                painter = painterResource(id = iconBack),
+                contentDescription = "icon back",
+                tint = Color.Black,
+                modifier = Modifier
+                    .width(20.dp)
+                    .height(20.dp)
+            )
+        }
 
           Text(
               text = title,

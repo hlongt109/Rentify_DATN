@@ -131,6 +131,7 @@ fun LoginScreenApp(navigator: NavController) {
                     },
                     placeholder = "Email",
                     isFocused = remember { mutableStateOf(isFocusedEmail) },
+
                 )
                 //loi cho email
                 errorEmail?.let { ShowReport.ShowError(message = it) }
@@ -144,6 +145,7 @@ fun LoginScreenApp(navigator: NavController) {
                     },
                     placeholder = "Password",
                     isFocused = remember { mutableStateOf(isFocusedPass) },
+                    isPassword = true
                 )
                 //loi cho password
                 errorPass?.let { ShowReport.ShowError(message = it) }
@@ -196,5 +198,6 @@ fun LoginScreenApp(navigator: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-//    LoginScreenApp()
+    val navController = rememberNavController()
+    LoginScreenApp(navController)
 }

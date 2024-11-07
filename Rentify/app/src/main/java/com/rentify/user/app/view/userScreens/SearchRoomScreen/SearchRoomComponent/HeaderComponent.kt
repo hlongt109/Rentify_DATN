@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -65,13 +66,31 @@ fun HeaderSearchComponent(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                painter = painterResource(iconBack),
-                contentDescription = "Back",
-                tint = Color.Black,
-                modifier = Modifier.size(25.dp)
+//            Icon(
+//                painter = painterResource(iconBack),
+//                contentDescription = "Back",
+//                tint = Color.Black,
+//                modifier = Modifier.size(25.dp)
+//                    .offset(x = -20.dp, y = 0.dp)
+//            )
+
+            IconButton(
+                onClick = {},
+                modifier = Modifier
+                    .width(30.dp)
+                    .height(30.dp)
                     .offset(x = -20.dp, y = 0.dp)
-            )
+            ) {
+                Icon(
+                    painter = painterResource(iconBack),
+                    contentDescription = "Back",
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .offset(x = 0.dp, y = 0.dp)
+                )
+            }
+
 
             Row(
                 modifier = Modifier

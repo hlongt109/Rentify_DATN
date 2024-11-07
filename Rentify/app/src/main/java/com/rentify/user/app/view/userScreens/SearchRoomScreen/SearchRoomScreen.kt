@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -147,19 +148,21 @@ fun ListPostRoomScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.padding(top = 15.dp))
                     Divider(color = colorInput, thickness = 1.dp)
-                    Spacer(modifier = Modifier.padding(top = 10.dp))
-
-                    LocationComponent(
-                        enabled = !sheetState.isVisible,
-                        onShowBottomSheet = {
-                            scope.launch {
-                                showBottomSheet = true
-                                sheetState.show()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                    ) {
+                        LocationComponent(
+                            enabled = !sheetState.isVisible,
+                            onShowBottomSheet = {
+                                scope.launch {
+                                    showBottomSheet = true
+                                    sheetState.show()
+                                }
                             }
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.padding(top = 10.dp))
+                        )
+                    }
                     Divider(color = colorInput, thickness = 1.dp)
                     Spacer(modifier = Modifier.padding(top = 10.dp))
 
