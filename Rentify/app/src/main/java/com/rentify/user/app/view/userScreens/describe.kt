@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun Preview(){
     Screen(navController= rememberNavController())

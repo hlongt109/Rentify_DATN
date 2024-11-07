@@ -15,6 +15,7 @@ import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.userScreens.TinnhanScreen.TinnhanScreen
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
 import com.rentify.user.app.view.userScreens.laundrydetailscreen.LaundryDetailScreenScreen
 import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
@@ -79,6 +80,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.LAUDRYDETAIL.name) {
                 LaundryDetailScreenScreen(navController = navController)
             }
+            composable(ROUTER.TINNHAN.name) {
+                TinnhanScreen(navController = navController)
+            }
         }
     }
 
@@ -97,5 +101,6 @@ class MainActivity : ComponentActivity() {
         PROFILE,
         LAUDRY,
         LAUDRYDETAIL,
+        TINNHAN
     }
 }

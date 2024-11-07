@@ -17,7 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.userScreens.laundryScreen.components.ItemgiatComponent
 import com.rentify.user.app.view.userScreens.laundryScreen.components.TenComponent
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LaundryPreview(){
     LaundryScreen(navController= rememberNavController())
@@ -29,12 +29,6 @@ fun LaundryScreen(navController: NavHostController){
             .fillMaxWidth()
             .fillMaxHeight()
     ){
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-        }
         TenComponent(navController)
         ItemgiatComponent(navController)
     }

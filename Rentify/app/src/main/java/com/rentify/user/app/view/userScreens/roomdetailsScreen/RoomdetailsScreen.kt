@@ -50,12 +50,6 @@ fun LayoutRoomdetails(navController: NavHostController) {
             .fillMaxWidth()
             .verticalScroll(scrollState)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-        }
         NameComponent(navController)
         ImageComponent()
         NoidungComponent()

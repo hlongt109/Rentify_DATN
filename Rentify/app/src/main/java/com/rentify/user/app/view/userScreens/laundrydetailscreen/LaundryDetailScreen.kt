@@ -25,7 +25,7 @@ import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.RoomCo
 import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.ServiceComponent
 import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.baidangPreview
 
-@Preview
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun LaundryDetailScreenPreview() {
     LaundryDetailScreenScreen(navController = rememberNavController())
@@ -39,12 +39,6 @@ fun LaundryDetailScreenScreen(navController: NavHostController) {
             .fillMaxWidth()
             .verticalScroll(scrollState)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-        }
         tenchitietComponent(navController)
         anhComponent()
         NDComponent(navController)
