@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.serviceScreen.components
+package com.rentify.user.app.view.userScreens.personalScreen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,16 +18,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ItemNameComponent(modifier: Modifier=Modifier) {
-    LayoutItemName()
+fun ItemNameComponent(navController: NavHostController) {
+    LayoutItemName(navController)
 }
 
 @Composable
-fun LayoutItemName() {
+fun LayoutItemName(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,7 +45,9 @@ fun LayoutItemName() {
                     width = 1.dp,
                     color = Color(0xFFfafafa),
                     shape = RoundedCornerShape(12.dp)
-                )
+                ).clickable {
+                    navController.navigate("PROFILE")
+                }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.user),

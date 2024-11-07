@@ -1,14 +1,15 @@
-package com.rentify.user.app.view.userScreens.messengerScreem
+package com.rentify.user.app.view.userScreens.messengerScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.view.userScreens.messengerScreen.components.MessengerComponent
+import com.rentify.user.app.view.userScreens.messengerScreen.components.headcomponent
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -23,7 +24,8 @@ fun LayoutMessenger(navController: NavHostController) {
             .fillMaxWidth()
             .fillMaxHeight()
     ){
-        Text(text = "LayoutMessenger")
+        headcomponent(navController)
+        MessengerComponent(navController)
     }
 
 }

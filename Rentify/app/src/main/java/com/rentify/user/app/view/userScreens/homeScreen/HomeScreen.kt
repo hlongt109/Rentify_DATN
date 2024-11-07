@@ -42,9 +42,9 @@ fun LayoutHome(navController: NavHostController) {
         KhamPhaComponent()
         VideoComponent()
         DoitacComponent()
-        ItemHomeComponent()
-        ItemHomeComponent()
-        ItemHomeComponent()
+        ItemHomeComponent(navController)
+        ItemHomeComponent(navController)
+        ItemHomeComponent(navController)
     }
 }
 
