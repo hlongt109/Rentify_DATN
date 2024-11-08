@@ -42,9 +42,9 @@
         vertical-align: middle; /* Căn giữa theo chiều dọc */
     }
     .search-input-container{
-        border: 1px solid #d3d3d3; 
+        /* border: 1px solid #d3d3d3; 
         border-radius: 5px;
-        height: 33px;
+        height: 33px; */
     }
     .search-input{
         border-radius: 5px;
@@ -86,12 +86,47 @@
         cursor: not-allowed;
     }
     .search-input{
-        padding-right: 35px;
+        margin-right: 5px;
+        border: 1px solid #d3d3d3; 
+        border-radius: 5px;
+        height: 33px;
     }
     .search-icon {
         margin-right: -12px;
         padding: 5px;
         color: #ffffff; 
+    }
+    .button-search{
+        background-color: #007bff;
+        border: none;
+        padding-left: 10px; padding-right: 10px; border-radius: 5px;
+    }
+    .input-container {
+        position: relative;
+        width: 100%; margin-right: 10px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding-right: 24px; /* Dành không gian cho nút 'X' */
+    }
+
+    .clear-button {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        color: #aaa;
+        font-size: 18px;
+        cursor: pointer;
+        border: none;
+        display: none; /* Ẩn nút 'X' khi chưa nhập */
+    }
+
+    .search-input:not(:placeholder-shown) + .clear-button {
+        border: none;
+        display: inline; /* Hiện nút 'X' khi có chữ */
     }
 
 </style>
@@ -128,8 +163,15 @@
                     </div>
                 </div>
                 <div class="search-input-container">
-                    <input type="text" id="search-input" placeholder="Nhập tên để tìm kiếm" class="search-input" />
-                    <span class="search-icon">&#128269;</span>
+                    <!-- <input type="text" id="search-input" placeholder="Nhập tên để tìm kiếm" class="search-input" /> -->
+                    <div class="input-container">
+                        <input type="text" id="search-input" placeholder="Nhập tên để tìm kiếm" class="search-input" />
+                        <span id="clear-button" class="clear-button" onclick="clearInput()">×</span>
+                    </div>
+                    <button class="button-search" onclick="filterByName(document.getElementById('search-input').value)">
+                        <!-- &#128269; -->
+                        <i class="fas fa-search" style="color: #ffffff;"></i>
+                    </button>
                 </div>
             </div>
 
@@ -164,6 +206,7 @@
         let reports = [];
         let selectedType = '';
         let selectedStatus = -1;
+        let searchText = '';
         let page = 1;
         const pageSize = 6;
 
@@ -189,12 +232,7 @@
                 console.error("Error fetching reports:", error);
             }
         };
-
-        // Function to select report type
-        // const selectType = (type) => {
-        //     selectedType = type;
-        //     renderTable();
-        // };
+        
         function updateDropdownText(buttonId, text) {
             document.getElementById(buttonId).innerText = text;
         }
@@ -209,11 +247,23 @@
             renderTable();
         };
 
+        const filterByName = (name) =>  {
+            searchText = document.getElementById('search-input').value.trim().toLowerCase();
+            renderTable();
+        };
+        function clearInput() {
+            document.getElementById("search-input").value = "";
+            document.getElementById("clear-button").style.display = "none"; // Ẩn nút "X" sau khi xóa
+            searchText = ''
+            renderTable();
+        }
+
         // Function to render report table
         const renderTable = () => {
             const filteredReports = reports.filter(report =>
                 (selectedType === '' || report.type === selectedType) &&
-                (selectedStatus === -1 || report.status === selectedStatus)
+                (selectedStatus === -1 || report.status === selectedStatus) &&
+                (searchText === '' || (report.user_id.name ?? '').toLowerCase().includes(searchText))
             );
 
             const displayReports = filteredReports.slice(
