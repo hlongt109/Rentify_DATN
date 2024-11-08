@@ -70,7 +70,7 @@ fun ProductTypeRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(10.dp)
-            .background(color = Color(0xffeeeeee))
+            .background(color = Color(0xfff7f7f7))
     ) {
     }
     Row(
@@ -167,7 +167,7 @@ fun ProductTypeRow(
         )
         Spacer(modifier = Modifier.weight(1f))
         Image(
-            painter = painterResource(id = R.drawable.next),
+            painter = painterResource(id = R.drawable.baseline_navigate_next_24),
             contentDescription = "",
             modifier = Modifier
                 .size(30.dp)
@@ -182,22 +182,9 @@ fun ProductTypeRow(
         Text(
             text = "Các tin đăng của chủ nhà đối tác hợp tác với Rentify được hiển thị nổi bật, uy tín hơn các chủ nhà thường để giúp bạn an tâm hơn khi thue phòng và trải nhiệm trên App Rentify",
             modifier = Modifier.padding(start = 5.dp),
-            fontSize = 20.sp,
+            fontSize = 15.sp,
             color = Color(0xff777777)
         )
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-            .background(color = Color(0xffeeeeee))
-    ) {
     }
     Row(
         modifier = Modifier
@@ -206,7 +193,20 @@ fun ProductTypeRow(
     ) {
     }
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(10.dp)
+            .background(color = Color(0xfff7f7f7))
+    ) {
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(10.dp)
+    ) {
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
     ) {
         Image(
             painter = painterResource(id = R.drawable.user),
@@ -228,21 +228,22 @@ fun ProductTypeRow(
                 modifier = Modifier
                     .padding(start = 5.dp)
                     .padding(bottom = 10.dp),
-                fontSize = 10.sp
+                fontSize = 10.sp,
+                color = Color(0xFF109bff)
             )
         }
     }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(30.dp)
+            .height(10.dp)
     ) {
     }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(10.dp)
-            .background(color = Color(0xffeeeeee))
+            .background(color = Color(0xfff7f7f7))
     ) {
     }
 

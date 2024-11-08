@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,14 +39,17 @@ fun ComfortComponent(){
 }
 @Composable
 fun LayoutComfort(){
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(30.dp)
+            .height(20.dp)
     ) {
     }
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 15.dp)
     ) {
         Image(
             painter = painterResource(id = R.drawable.phitn),
@@ -53,8 +57,7 @@ fun LayoutComfort(){
             modifier = Modifier.size(40.dp)
         )
         Text(
-            text = "Tiện nghi ",
-            fontWeight = FontWeight.Bold,
+            text = "Phí tiện nghi ",
             modifier = Modifier
                 .padding(start = 5.dp)
                 .padding(top = 10.dp),
@@ -71,16 +74,21 @@ fun LayoutComfort(){
         modifier = Modifier
             .fillMaxWidth()
             .height(1.dp)
-            .background(color = Color(0xff8c8c8c))
+            .background(color = Color(0xffd9d9d9))
+            .padding(start = 20.dp, end = 20.dp)
     ) {
     }
-    Row (
-        modifier = Modifier.fillMaxWidth()
+//
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(top = 10.dp)
-    ){
+            .horizontalScroll(rememberScrollState())
+    ) {
         Box(
             modifier = Modifier
-                .width(130.dp)
+                .width(160.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -88,8 +96,8 @@ fun LayoutComfort(){
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .background(color = Color(0xFFfafafa))
+                    .height(80.dp)
+                    .background(color = Color.White)
                     .border(
                         width = 1.dp,
                         color = Color(0xFFfafafa),
@@ -103,16 +111,14 @@ fun LayoutComfort(){
                     painter = painterResource(id = R.drawable.khepkin),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape),
+                        .width(40.dp)
+                        .height(40.dp)
+
                 )
                 Text(
                     text = "Khép kín",
-                    fontSize = 20.sp,
+                    fontSize = 15.sp,
                     color = Color.Black,
-                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(start = 8.dp),
                     textAlign = TextAlign.Center
@@ -122,7 +128,7 @@ fun LayoutComfort(){
 //
         Box(
             modifier = Modifier
-                .width(130.dp)
+                .width(160.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -130,8 +136,8 @@ fun LayoutComfort(){
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .background(color = Color(0xFFfafafa))
+                    .height(80.dp)
+                    .background(color = Color.White)
                     .border(
                         width = 1.dp,
                         color = Color(0xFFfafafa),
@@ -145,17 +151,15 @@ fun LayoutComfort(){
                     painter = painterResource(id = R.drawable.bancong),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape),
+                        .width(40.dp)
+                        .height(40.dp)
+
                 )
 
                 Text(
                     text = "Ban công",
-                    fontSize = 20.sp,
+                    fontSize = 15.sp,
                     color = Color.Black,
-                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(start = 8.dp),
                     textAlign = TextAlign.Center
@@ -164,7 +168,7 @@ fun LayoutComfort(){
         }
         Box(
             modifier = Modifier
-                .width(130.dp)
+                .width(160.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -172,8 +176,8 @@ fun LayoutComfort(){
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .background(color = Color(0xFFfafafa))
+                    .height(80.dp)
+                    .background(color = Color.White)
                     .border(
                         width = 1.dp,
                         color = Color(0xFFfafafa),
@@ -184,20 +188,17 @@ fun LayoutComfort(){
                 horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.bancong),
+                    painter = painterResource(id = R.drawable.camm),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape),
-                )
+                        .width(40.dp)
+                        .height(40.dp)
 
+                )
                 Text(
-                    text = "Ban công",
-                    fontSize = 20.sp,
+                    text = "Không chung chủ",
+                    fontSize = 15.sp,
                     color = Color.Black,
-                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(start = 8.dp),
                     textAlign = TextAlign.Center
@@ -215,7 +216,7 @@ fun LayoutComfort(){
         modifier = Modifier
             .fillMaxWidth()
             .height(10.dp)
-            .background(color = Color(0xffeeeeee))
+            .background(color = Color(0xfff7f7f7))
     ) {
     }
 }

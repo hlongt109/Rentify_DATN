@@ -35,11 +35,12 @@ import com.rentify.user.app.R
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun baidangPreview(){
+fun baidangPreview() {
     Layoutbaidang()
 }
+
 @Composable
-fun Layoutbaidang(){
+fun Layoutbaidang() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,15 +67,15 @@ fun Layoutbaidang(){
     ) {
         Box(
             modifier = Modifier
-                .width(200.dp)
+                .width(150.dp)
                 .padding(16.dp, top = 20.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
             Column(
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(350.dp)
+                    .width(150.dp)
+                    .height(200.dp)
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
@@ -84,18 +85,25 @@ fun Layoutbaidang(){
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.iconproduct),
+                    painter = painterResource(id = R.drawable.chitietp),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(130.dp)
-                        .height(130.dp)
-                        .padding(top = 6.dp),
+                        .fillMaxWidth() // This ensures the image takes the full width of the box
+                        .height(100.dp)
                 )
-                Column (
-                    modifier = Modifier.padding(top = 12.dp)
-                ){
+                Column(
+                    modifier = Modifier.padding(top = 5.dp)
+                ) {
                     Text(
-                        text = "PHONG TRỌ RẺ ĐẸP HÀ NỘI ",
+                        text = "3 giờ trước",
+                        color = Color(0XFF0d99ff),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Text(
+                        text = "Phòng Đẹp-Rẻ-Hiện...",
                         fontSize = 12.sp,
                         color = Color.Black,
                         modifier = Modifier
@@ -103,61 +111,80 @@ fun Layoutbaidang(){
                             .padding(start = 8.dp)
                     )
                     Text(
-                        text = "Từ 3.000.000đ/tháng",
-                        color = Color.Red,
+                        text = "Từ 5.000.000đ/tháng",
+                        color = Color(0XFFb95533),
                         fontSize = 12.sp,
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 8.dp)
                     )
-                    Text(
-                        text = "27/143 xuân phương",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
                             .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Quận Nam Từ Liêm, Hà Nội",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
+                            .fillMaxWidth(), // Ensure the Row takes the full width available
+                        verticalAlignment = Alignment.CenterVertically // Align items vertically centered
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.vg),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "18 - 25m2",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.person),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "2 ng",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
+                    }
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Diện tích : 25 - 25m2",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Người:2",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                }
+                            .padding(start = 8.dp, top = 5.dp, bottom = 5.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.mapp),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "27/143 Xuân ",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
 
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
+
         Box(
             modifier = Modifier
-                .width(200.dp)
+                .width(150.dp)
                 .padding(16.dp, top = 20.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
             Column(
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(350.dp)
+                    .width(150.dp)
+                    .height(200.dp)
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
@@ -167,18 +194,25 @@ fun Layoutbaidang(){
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.iconproduct),
+                    painter = painterResource(id = R.drawable.chitietp),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(130.dp)
-                        .height(130.dp)
-                        .padding(top = 6.dp),
+                        .fillMaxWidth() // This ensures the image takes the full width of the box
+                        .height(100.dp)
                 )
-                Column (
-                    modifier = Modifier.padding(top = 12.dp)
-                ){
+                Column(
+                    modifier = Modifier.padding(top = 5.dp)
+                ) {
                     Text(
-                        text = "PHONG TRỌ RẺ ĐẸP HÀ NỘI ",
+                        text = "3 giờ trước",
+                        color = Color(0XFF0d99ff),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Text(
+                        text = "Phòng Đẹp-Rẻ-Hiện...",
                         fontSize = 12.sp,
                         color = Color.Black,
                         modifier = Modifier
@@ -186,61 +220,80 @@ fun Layoutbaidang(){
                             .padding(start = 8.dp)
                     )
                     Text(
-                        text = "Từ 3.000.000đ/tháng",
-                        color = Color.Red,
+                        text = "Từ 5.000.000đ/tháng",
+                        color = Color(0XFFb95533),
                         fontSize = 12.sp,
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 8.dp)
                     )
-                    Text(
-                        text = "27/143 xuân phương",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
                             .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Quận Nam Từ Liêm, Hà Nội",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
+                            .fillMaxWidth(), // Ensure the Row takes the full width available
+                        verticalAlignment = Alignment.CenterVertically // Align items vertically centered
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.vg),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "18 - 25m2",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.person),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "2 ng",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
+                    }
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Diện tích : 25 - 25m2",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Người:2",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                }
+                            .padding(start = 8.dp, top = 5.dp, bottom = 5.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.mapp),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "27/143 Xuân ",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
 
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
+
         Box(
             modifier = Modifier
-                .width(200.dp)
+                .width(150.dp)
                 .padding(16.dp, top = 20.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
             Column(
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(350.dp)
+                    .width(150.dp)
+                    .height(200.dp)
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
@@ -250,18 +303,25 @@ fun Layoutbaidang(){
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.iconproduct),
+                    painter = painterResource(id = R.drawable.chitietp),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(130.dp)
-                        .height(130.dp)
-                        .padding(top = 6.dp),
+                        .fillMaxWidth() // This ensures the image takes the full width of the box
+                        .height(100.dp)
                 )
-                Column (
-                    modifier = Modifier.padding(top = 12.dp)
-                ){
+                Column(
+                    modifier = Modifier.padding(top = 5.dp)
+                ) {
                     Text(
-                        text = "PHONG TRỌ RẺ ĐẸP HÀ NỘI ",
+                        text = "3 giờ trước",
+                        color = Color(0XFF0d99ff),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Text(
+                        text = "Phòng Đẹp-Rẻ-Hiện...",
                         fontSize = 12.sp,
                         color = Color.Black,
                         modifier = Modifier
@@ -269,47 +329,65 @@ fun Layoutbaidang(){
                             .padding(start = 8.dp)
                     )
                     Text(
-                        text = "Từ 3.000.000đ/tháng",
-                        color = Color.Red,
+                        text = "Từ 5.000.000đ/tháng",
+                        color = Color(0XFFb95533),
                         fontSize = 12.sp,
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 8.dp)
                     )
-                    Text(
-                        text = "27/143 xuân phương",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
                             .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Quận Nam Từ Liêm, Hà Nội",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
+                            .fillMaxWidth(), // Ensure the Row takes the full width available
+                        verticalAlignment = Alignment.CenterVertically // Align items vertically centered
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.vg),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "18 - 25m2",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.person),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "2 ng",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
+                    }
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Diện tích : 25 - 25m2",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Người:2",
-                        fontSize = 12.sp,
-                        color = Color(0xFF909191),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                }
+                            .padding(start = 8.dp, top = 5.dp, bottom = 5.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.mapp),
+                            contentDescription = "",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "27/143 Xuân ",
+                            fontSize = 12.sp,
+                            color = Color(0xFF909191),
+                            modifier = Modifier
+                                .padding(start = 4.dp) // Add some padding for spacing
+                        )
 
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
@@ -318,7 +396,7 @@ fun Layoutbaidang(){
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 10.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly // Căn giữa các phần tử
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         // Báo cáo
         Box(

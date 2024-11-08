@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -46,7 +49,9 @@ fun LayoutService() {
     ) {
     }
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 15.dp)
     ) {
         Image(
             painter = painterResource(id = R.drawable.phidv),
@@ -55,7 +60,6 @@ fun LayoutService() {
         )
         Text(
             text = "Phí dịch vụ ",
-            fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .padding(start = 5.dp)
                 .padding(top = 10.dp),
@@ -72,7 +76,8 @@ fun LayoutService() {
         modifier = Modifier
             .fillMaxWidth()
             .height(1.dp)
-            .background(color = Color(0xff8c8c8c))
+            .background(color = Color(0xffd9d9d9))
+            .padding(start = 20.dp, end = 20.dp)
     ) {
     }
 //
@@ -81,10 +86,11 @@ fun LayoutService() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 10.dp)
+            .horizontalScroll(rememberScrollState())
     ) {
         Box(
             modifier = Modifier
-                .width(130.dp)
+                .width(160.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -92,8 +98,8 @@ fun LayoutService() {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .background(color = Color(0xFFfafafa))
+                    .height(80.dp)
+                    .background(color = Color.White)
                     .border(
                         width = 1.dp,
                         color = Color(0xFFfafafa),
@@ -107,14 +113,13 @@ fun LayoutService() {
                     painter = painterResource(id = R.drawable.dien),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape),
+                        .width(40.dp)
+                        .height(40.dp)
+
                 )
                 Text(
                     text = "Điện",
-                    fontSize = 20.sp,
+                    fontSize = 15.sp,
                     color = Color(0xFF909191),
                     modifier = Modifier
                         .padding(start = 8.dp),
@@ -122,9 +127,8 @@ fun LayoutService() {
                 )
                 Text(
                     text = "3.800đ/kW",
-                    fontSize = 20.sp,
+                    fontSize = 15.sp,
                     color = Color.Black,
-                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(start = 8.dp),
                     textAlign = TextAlign.Center
@@ -134,7 +138,7 @@ fun LayoutService() {
 //
         Box(
             modifier = Modifier
-                .width(130.dp)
+                .width(160.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -142,8 +146,8 @@ fun LayoutService() {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .background(color = Color(0xFFfafafa))
+                    .height(80.dp)
+                    .background(color = Color.White)
                     .border(
                         width = 1.dp,
                         color = Color(0xFFfafafa),
@@ -157,14 +161,13 @@ fun LayoutService() {
                     painter = painterResource(id = R.drawable.nuoc),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape),
+                        .width(40.dp)
+                        .height(40.dp)
+
                 )
                 Text(
                     text = "Nước",
-                    fontSize = 20.sp,
+                    fontSize = 15.sp,
                     color = Color(0xFF909191),
                     modifier = Modifier
                         .padding(start = 8.dp),
@@ -172,9 +175,8 @@ fun LayoutService() {
                 )
                 Text(
                     text = "28.000đ/khối",
-                    fontSize = 20.sp,
+                    fontSize = 15.sp,
                     color = Color.Black,
-                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(start = 8.dp),
                     textAlign = TextAlign.Center
@@ -183,7 +185,7 @@ fun LayoutService() {
         }
         Box(
             modifier = Modifier
-                .width(130.dp)
+                .width(160.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -191,8 +193,8 @@ fun LayoutService() {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .background(color = Color(0xFFfafafa))
+                    .height(80.dp)
+                    .background(color = Color.White)
                     .border(
                         width = 1.dp,
                         color = Color(0xFFfafafa),
@@ -203,27 +205,25 @@ fun LayoutService() {
                 horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.nuoc),
+                    painter = painterResource(id = R.drawable.wifi),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .padding(5.dp)
-                        .clip(CircleShape),
+                        .width(40.dp)
+                        .height(40.dp)
+
                 )
                 Text(
-                    text = "Nước",
-                    fontSize = 20.sp,
+                    text = "Mạng",
+                    fontSize = 15.sp,
                     color = Color(0xFF909191),
                     modifier = Modifier
                         .padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = "28.000đ/khối",
-                    fontSize = 20.sp,
+                    text = "100.000đ/phòng",
+                    fontSize = 15.sp,
                     color = Color.Black,
-                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(start = 8.dp),
                     textAlign = TextAlign.Center
@@ -241,7 +241,7 @@ fun LayoutService() {
         modifier = Modifier
             .fillMaxWidth()
             .height(10.dp)
-            .background(color = Color(0xffeeeeee))
+            .background(color = Color(0xfff7f7f7))
     ) {
     }
 

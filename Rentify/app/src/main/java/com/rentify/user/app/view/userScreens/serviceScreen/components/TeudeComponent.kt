@@ -27,7 +27,7 @@ fun TeudeComponent() {
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(color = Color(0xffd2f1ff))
+            .background(color = Color(0xff84d8ff))
     ) {
         Text(text = "Dịch Vụ bán ",
             modifier = Modifier.padding(12.dp),

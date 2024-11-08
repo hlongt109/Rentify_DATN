@@ -41,7 +41,7 @@ fun ItemComponent(navController: NavHostController){
     Row {
         Box(
             modifier = Modifier
-                .width(130.dp)
+                .width(200.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -49,7 +49,7 @@ fun ItemComponent(navController: NavHostController){
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(200.dp)
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
@@ -64,8 +64,8 @@ fun ItemComponent(navController: NavHostController){
                     painter = painterResource(id = R.drawable.tuvan),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
+                        .width(110.dp)
+                        .height(100.dp)
                         .padding(5.dp)
                 )
                 Text(
@@ -81,7 +81,7 @@ fun ItemComponent(navController: NavHostController){
         }
         Box(
             modifier = Modifier
-                .width(130.dp)
+                .width(200.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -92,7 +92,7 @@ fun ItemComponent(navController: NavHostController){
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(200.dp)
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
@@ -109,8 +109,8 @@ fun ItemComponent(navController: NavHostController){
                     painter = painterResource(id = R.drawable.gatla),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
+                        .width(100.dp)
+                        .height(100.dp)
                         .padding(5.dp)
                 )
                 Text(

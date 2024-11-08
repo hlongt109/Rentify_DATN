@@ -44,7 +44,7 @@ fun LayoutNoidung(){
             Text(text = "Phòng Trọ",
                 modifier = Modifier.padding(start = 5.dp)
                     .padding(end = 10.dp),
-                fontSize = 20.sp,
+                fontSize = 15.sp,
                 color = Color(0xfffeb051)
             )
             Image(painter = painterResource(id = R.drawable.n),
@@ -54,30 +54,30 @@ fun LayoutNoidung(){
             Text(text = "Nam / Nữ  ",
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 10.dp),
-                fontSize = 20.sp
+                fontSize = 15.sp
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+            modifier = Modifier.fillMaxWidth().padding(start = 15.dp, top = 5.dp)
         ){
             Text(text = "250 Kim Giang - Phòng rộng giá rẻ ở 4 người ",
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
+                fontSize = 15.sp,
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+            modifier = Modifier.fillMaxWidth().padding(start = 15.dp,5.dp)
         ){
             Text(text = "3.500.000 - 5.100.00đ/tháng",
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
                 color = Color.Red,
-                fontSize = 20.sp,
+                fontSize = 15.sp,
             )
         }
         Row (
-            modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+            modifier = Modifier.fillMaxWidth().padding(start = 17.dp,5.dp)
         ){
 
             Image(painter = painterResource(id = R.drawable.nha),
@@ -86,12 +86,12 @@ fun LayoutNoidung(){
             )
             Text(text = "Tên toà nhà : GHM26",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
+                fontSize = 15.sp,
                 color = Color(0xff777777)
             )
         }
         Row (
-            modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+            modifier = Modifier.fillMaxWidth().padding(start = 15.dp, top = 5.dp)
         ){
 
             Image(painter = painterResource(id = R.drawable.dc),
@@ -100,16 +100,11 @@ fun LayoutNoidung(){
             )
             Text(text = "27/143 xuân phương, nam từ liêm, hà nội",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
+                fontSize = 15.sp,
                 color = Color(0xff777777)
             )
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(30.dp)
-        ) {
-        }
+
         Row(
             modifier = Modifier
                 .height(50.dp)
