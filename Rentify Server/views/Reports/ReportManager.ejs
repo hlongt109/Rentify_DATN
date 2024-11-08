@@ -22,50 +22,61 @@
     .status-unknown {
         color: #b0b0b0;
     }
-    th:nth-child(5), td:nth-child(5) {
-        width: 60%; /* Giới hạn độ rộng cột "Loại vấn đề" */
-        /* background-color: #f20; */
+
+    th:nth-child(5),
+    td:nth-child(5) {
+        width: 60%;
     }
+
     .issue-type {
-        border: 1px solid #d3d3d3; /* Border xám nhạt */
+        border: 1px solid #d3d3d3;
         padding: 5px;
         border-radius: 4px;
-        display: inline-block; /* Đảm bảo không chiếm toàn bộ chiều rộng */
-        width: 70%; /* Cài đặt chiều rộng khoảng 70% */
-        text-align: center; /* Căn giữa chữ */
-        margin: 0 auto; /* Căn giữa */
+        display: inline-block;
+        width: 70%;
+        text-align: center;
+        margin: 0 auto;
     }
+
     .table tbody tr {
-       border-bottom: 1px solid #d3d3d3; /* Màu xám nhạt */
+        border-bottom: 1px solid #d3d3d3;
     }
+
     .table tbody tr td {
-        vertical-align: middle; /* Căn giữa theo chiều dọc */
+        vertical-align: middle;
     }
-    .search-input{
+
+    .search-input {
         border-radius: 5px;
+        margin-right: 5px;
+        border: 1px solid #d3d3d3;
+        height: 33px;
+        width: 100%;
+        padding-right: 24px;
     }
+
     .border-bottom {
         border-bottom: 1px solid #d3d3d3;
     }
+
     .action-btn {
-    width: 70px; /* Đặt độ rộng cố định */
-    text-align: center;
-    padding: 5px 0; /* Căn chỉnh nội dung cho đẹp */
+        width: 70px;
+        text-align: center;
+        padding: 5px 0;
     }
 
-    /* Kiểu nút khi status là 1 (chỉ có viền và chữ màu xanh nhạt) */
     .view-btn {
-        background-color: transparent; /* Không có nền */
-        border: 1px solid #28a745; /* Viền xanh nhạt */
-        color: #28a745; /* Chữ xanh nhạt */
-    }
-    .view-btn-pending {
-        background-color: #f8d568; /* Không có nền */
-        border: 1px solid #f8d568;
-        color: #fff; /* Chữ xanh nhạt */
+        background-color: transparent;
+        border: 1px solid #28a745;
+        color: #28a745;
     }
 
-    /* CSS cho phân trang */
+    .view-btn-pending {
+        background-color: #f8d568;
+        border: 1px solid #f8d568;
+        color: #fff;
+    }
+
     .pagination button {
         margin: 0 5px;
         padding: 5px 10px;
@@ -80,30 +91,25 @@
         background-color: #d3d3d3;
         cursor: not-allowed;
     }
-    .search-input{
-        margin-right: 5px;
-        border: 1px solid #d3d3d3; 
-        border-radius: 5px;
-        height: 33px;
-    }
+
     .search-icon {
         margin-right: -12px;
         padding: 5px;
-        color: #ffffff; 
-    }
-    .button-search{
-        background-color: #007bff;
-        border: none;
-        padding-left: 10px; padding-right: 10px; border-radius: 5px;
-    }
-    .input-container {
-        position: relative;
-        width: 100%; margin-right: 10px;
+        color: #ffffff;
     }
 
-    .search-input {
+    .button-search {
+        background-color: #007bff;
+        border: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-radius: 5px;
+    }
+
+    .input-container {
+        position: relative;
         width: 100%;
-        padding-right: 24px; /* Dành không gian cho nút 'X' */
+        margin-right: 10px;
     }
 
     .clear-button {
@@ -116,14 +122,46 @@
         font-size: 18px;
         cursor: pointer;
         border: none;
-        display: none; /* Ẩn nút 'X' khi chưa nhập */
+        display: none;
     }
 
-    .search-input:not(:placeholder-shown) + .clear-button {
-        border: none;
-        display: inline; /* Hiện nút 'X' khi có chữ */
+    .search-input:not(:placeholder-shown)+.clear-button {
+        display: inline;
     }
 
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 100%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
 </style>
 
 <body>
@@ -139,10 +177,17 @@
                         Loại vấn đề
                     </button>
                     <div class="dropdown-menu" aria-labelledby="issueTypeButton">
-                        <a class="dropdown-item " href="#" onclick="updateDropdownText('issueTypeButton', 'Loại vấn đề'); filterByType('Unknown')">Loại vấn đề</a>
-                        <a class="dropdown-item border-bottom" href="#" onclick="updateDropdownText('issueTypeButton', 'Bài đăng'); filterByType('post')">Bài đăng</a>
-                        <a class="dropdown-item border-bottom" href="#" onclick="updateDropdownText('issueTypeButton', 'Phòng ở'); filterByType('room')">Phòng ở</a>
-                        <a class="dropdown-item" href="#" onclick="updateDropdownText('issueTypeButton', 'Dịch vụ'); filterByType('service')">Dịch vụ</a>
+                        <a class="dropdown-item " href="#"
+                            onclick="updateDropdownText('issueTypeButton', 'Loại vấn đề'); filterByType('Unknown')">Loại
+                            vấn đề</a>
+                        <a class="dropdown-item border-bottom" href="#"
+                            onclick="updateDropdownText('issueTypeButton', 'Bài đăng'); filterByType('post')">Bài
+                            đăng</a>
+                        <a class="dropdown-item border-bottom" href="#"
+                            onclick="updateDropdownText('issueTypeButton', 'Phòng ở'); filterByType('room')">Phòng ở</a>
+                        <a class="dropdown-item" href="#"
+                            onclick="updateDropdownText('issueTypeButton', 'Dịch vụ'); filterByType('service')">Dịch
+                            vụ</a>
                     </div>
                 </div>
                 <div class="dropdown input-spacing">
@@ -152,9 +197,13 @@
                         Trạng thái
                     </button>
                     <div class="dropdown-menu" aria-labelledby="statusButton">
-                        <a class="dropdown-item border-bottom" href="#" onclick="updateDropdownText('statusButton', 'Trạng thái'); filterByStatus(-1)">Trạng thái</a>
-                        <a class="dropdown-item border-bottom" href="#" onclick="updateDropdownText('statusButton', 'Chưa xử lý'); filterByStatus(0)">Chưa xử lý</a>
-                        <a class="dropdown-item " href="#" onclick="updateDropdownText('statusButton', 'Đã xử lý'); ; filterByStatus(1)">Đã xử lý</a>
+                        <a class="dropdown-item border-bottom" href="#"
+                            onclick="updateDropdownText('statusButton', 'Trạng thái'); filterByStatus(-1)">Trạng
+                            thái</a>
+                        <a class="dropdown-item border-bottom" href="#"
+                            onclick="updateDropdownText('statusButton', 'Chưa xử lý'); filterByStatus(0)">Chưa xử lý</a>
+                        <a class="dropdown-item " href="#"
+                            onclick="updateDropdownText('statusButton', 'Đã xử lý'); ; filterByStatus(1)">Đã xử lý</a>
                     </div>
                 </div>
                 <div class="search-input-container">
@@ -189,6 +238,17 @@
             </table>
             <div class="pagination" id="pagination">
                 <!-- Dữ liệu phân trang sẽ được thêm vào đây -->
+            </div>
+        </div>
+
+        <!-- Modal cho chi tiết báo cáo -->
+        <div id="reportDetailsModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="d-flex align-items-center justify-content-between w-100">
+                    <span class="close mb-1" onclick="closeReportDetails()">&times;</span>
+                    <h4 class="mb-0 flex-grow-1 text-center" style="margin-left: -30px;">Thông tin chi tiết báo cáo</h4>
+                </div>
+                <p id="reportDetails"></p>
             </div>
         </div>
     </div>
@@ -227,7 +287,7 @@
                 console.error("Error fetching reports:", error);
             }
         };
-        
+
         function updateDropdownText(buttonId, text) {
             document.getElementById(buttonId).innerText = text;
         }
@@ -242,7 +302,7 @@
             renderTable();
         };
 
-        const filterByName = (name) =>  {
+        const filterByName = (name) => {
             searchText = document.getElementById('search-input').value.trim().toLowerCase();
             renderTable();
         };
@@ -279,7 +339,7 @@
                     <td>${getIssueType(report.type) ?? 'N/A'}</td>
                     <td>${getStatus(report.status) ?? 'N/A'}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm action-btn ${report.status === 1 ? 'view-btn' : 'view-btn-pending'}" onclick="toggleEditForm('${report._id}')">
+                        <button  class="btn btn-primary btn-sm action-btn ${report.status === 1 ? 'view-btn' : 'view-btn-pending'}" onclick="toggleEditForm('${report._id}')">
                             ${report.status === 0 ? 'Xử lý' : 'Xem'}
                         </button>
                     </td>
@@ -299,7 +359,7 @@
                     return '<span class="issue-type">Bài Đăng</span>';
                 default:
                     return '<span class="issue-type">Unknown</span>';
-                }
+            }
         }
         function getStatus(status) {
             switch (status) {
@@ -345,16 +405,63 @@
             nextButton.onclick = () => changePage(page + 1);
             paginationContainer.appendChild(nextButton);
         };
-
-            // Function to change page
+        // Function to change page
         const changePage = (newPage) => {
             page = newPage;
             renderTable();
         };
-
-
-        // Initial data fetch
         fetchReports();
+
+        // ================= details =========================
+
+        async function toggleEditForm(reportId) {
+            try {
+                // Show the modal
+                document.getElementById("reportDetailsModal").style.display = 'block';
+
+                // Make the API request to fetch report details based on reportId
+                const response = await fetch(`http://localhost:3000/api/get_report_details/${reportId}`);
+
+                if (response.ok) {
+                    // Parse the response JSON
+                    const result = await response.json();
+
+                    // If the API returns data, render it on the page
+                    console.log(result); // You can check the structure of the response here
+                    const { data, dataDetails } = result;
+                    console.log(data)
+                    // Call a function to render the report details in your modal
+                    showReportDetails(data, dataDetails);
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error("Error fetching report details:", error);
+                Toastify({
+                    text: "Failed to load report details",
+                    style: {
+                        background: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                    }
+                }).showToast();
+            }
+        }
+
+        function showReportDetails(data, dataDetails) {
+            const reportDetails = `
+                <strong>Người dùng:</strong> ${data.user_id.name ?? 'N/A'}<br>
+                <strong>Tiêu đề:</strong> ${data.title_support ?? 'N/A'}<br>
+                <strong>Nội dung:</strong> ${data.content_support ?? 'N/A'}<br>
+                <strong>Thời gian tạo:</strong> ${data.created_at ?? 'N/A'}<br>
+                <strong>Loại vấn đề:</strong> ${getIssueType(data.type) ?? 'N/A'}<br>
+                <strong>Trạng thái:</strong> ${getStatus(data.status) ?? 'N/A'}<br>
+            `;
+            document.getElementById('reportDetails').innerHTML = reportDetails;
+        }
+
+        function closeReportDetails() {
+            document.getElementById('reportDetailsModal').style.display = 'none'; // Đóng modal
+        }
+
     </script>
 </body>
 

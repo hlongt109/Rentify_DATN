@@ -35,12 +35,12 @@ router.get("/get_report_details/:id", async (req, res) => {
             return res.status(400).json({ error: 'id cant not be empty' });
         }
 
-        const result = await Report.findById(id);
+        const result = await Report.findById(id).populate('user_id');;
         if (!result) {
             return res.status(404).json({ message: "Report not found" })
         }
-
-        if(result.type !== "post" && result.type !== "room" || result.type !== "service"){
+        console.log(result.type)
+        if(result.type !== "post" && result.type !== "room" && result.type !== "service"){
             return res.status(404).json({message: "Report type error during processing"})
         }
 
@@ -72,7 +72,7 @@ router.get("/get_report_details/:id", async (req, res) => {
 });
 
 // update status
-router.put("/report:id", async(req, res) => {
+router.put("/report/:id", async(req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;
