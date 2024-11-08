@@ -85,6 +85,14 @@
         background-color: #d3d3d3;
         cursor: not-allowed;
     }
+    .search-input{
+        padding-right: 35px;
+    }
+    .search-icon {
+        margin-right: -12px;
+        padding: 5px;
+        color: #ffffff; 
+    }
 
 </style>
 
@@ -95,32 +103,32 @@
             <h4>Quản lý báo cáo</h4>
             <div class="search-input-container1 d-flex align-items-center">
                 <div class="dropdown input-spacing"> <!-- Thêm lớp input-spacing -->
-                    <button id="roleDropdownButton" class="btn text-white shadow-button dropdown-toggle"
+                    <button id="issueTypeButton" class="btn text-white shadow-button dropdown-toggle"
                         style="font-size: 0.75rem; background-color: #007bff; width: 100px;" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         Loại vấn đề
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="roleDropdownButton">
-                        <a class="dropdown-item " href="#" onclick="filterByType('Unknown')">Loại vấn đề</a>
-                        <a class="dropdown-item border-bottom" href="#" onclick="filterByType('post')">Bài đăng</a>
-                        <a class="dropdown-item border-bottom" href="#" onclick="filterByType('room')">Phòng ở</a>
-                        <a class="dropdown-item" href="#" onclick="filterByType('service')">Dịch vụ</a>
+                    <div class="dropdown-menu" aria-labelledby="issueTypeButton">
+                        <a class="dropdown-item " href="#" onclick="updateDropdownText('issueTypeButton', 'Loại vấn đề'); filterByType('Unknown')">Loại vấn đề</a>
+                        <a class="dropdown-item border-bottom" href="#" onclick="updateDropdownText('issueTypeButton', 'Bài đăng'); filterByType('post')">Bài đăng</a>
+                        <a class="dropdown-item border-bottom" href="#" onclick="updateDropdownText('issueTypeButton', 'Phòng ở'); filterByType('room')">Phòng ở</a>
+                        <a class="dropdown-item" href="#" onclick="updateDropdownText('issueTypeButton', 'Dịch vụ'); filterByType('service')">Dịch vụ</a>
                     </div>
                 </div>
                 <div class="dropdown input-spacing">
-                    <button id="roleDropdownButton" class="btn text-white shadow-button dropdown-toggle"
+                    <button id="statusButton" class="btn text-white shadow-button dropdown-toggle"
                         style="font-size: 0.75rem; background-color: #007bff; width: 100px;" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         Trạng thái
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="roleDropdownButton">
-                        <a class="dropdown-item border-bottom" href="#" onclick="filterByStatus(-1)">Trạng thái</a>
-                        <a class="dropdown-item border-bottom" href="#" onclick="filterByStatus(0)">Chưa xử lý</a>
-                        <a class="dropdown-item " href="#" onclick="filterByStatus(1)">Đã xử lý</a>
+                    <div class="dropdown-menu" aria-labelledby="statusButton">
+                        <a class="dropdown-item border-bottom" href="#" onclick="updateDropdownText('statusButton', 'Trạng thái'); filterByStatus(-1)">Trạng thái</a>
+                        <a class="dropdown-item border-bottom" href="#" onclick="updateDropdownText('statusButton', 'Chưa xử lý'); filterByStatus(0)">Chưa xử lý</a>
+                        <a class="dropdown-item " href="#" onclick="updateDropdownText('statusButton', 'Đã xử lý'); ; filterByStatus(1)">Đã xử lý</a>
                     </div>
                 </div>
                 <div class="search-input-container">
-                    <input type="text" id="search-input" placeholder="Search here ..." class="search-input" />
+                    <input type="text" id="search-input" placeholder="Nhập tên để tìm kiếm" class="search-input" />
                     <span class="search-icon">&#128269;</span>
                 </div>
             </div>
@@ -183,10 +191,13 @@
         };
 
         // Function to select report type
-        const selectType = (type) => {
-            selectedType = type;
-            renderTable();
-        };
+        // const selectType = (type) => {
+        //     selectedType = type;
+        //     renderTable();
+        // };
+        function updateDropdownText(buttonId, text) {
+            document.getElementById(buttonId).innerText = text;
+        }
 
         const filterByType = (type) => {
             selectedType = type === 'Unknown' ? '' : type; // Reset if 'Unknown' is selected
