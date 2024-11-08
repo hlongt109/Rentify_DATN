@@ -12,7 +12,7 @@
 </head>
 <style>
     .status-pending {
-        color: #f8d568;
+        color: #f4d03f;
     }
 
     .status-completed {
@@ -162,6 +162,11 @@
         text-decoration: none;
         cursor: pointer;
     }
+    .report-detail-label {
+        display: inline-block;
+        width: 120px; 
+        font-weight: bold;
+    }
 </style>
 
 <body>
@@ -245,10 +250,11 @@
         <div id="reportDetailsModal" class="modal" style="display: none;">
             <div class="modal-content">
                 <div class="d-flex align-items-center justify-content-between w-100">
-                    <span class="close mb-1" onclick="closeReportDetails()">&times;</span>
-                    <h4 class="mb-0 flex-grow-1 text-center" style="margin-left: -30px;">Thông tin chi tiết báo cáo</h4>
+                    <span class="close mb-1 text-dark" style="color: black;" onclick="closeReportDetails()">&times;</span>
+                    
+                    <h4 class="mb-0 flex-grow-1 text-center" style="margin-left: -30px;">Thông tin báo cáo</h4>
                 </div>
-                <p id="reportDetails"></p>
+                <p class="mt-2" id="reportDetails"></p>
             </div>
         </div>
     </div>
@@ -448,18 +454,50 @@
 
         function showReportDetails(data, dataDetails) {
             const reportDetails = `
-                <strong>Người dùng:</strong> ${data.user_id.name ?? 'N/A'}<br>
-                <strong>Tiêu đề:</strong> ${data.title_support ?? 'N/A'}<br>
-                <strong>Nội dung:</strong> ${data.content_support ?? 'N/A'}<br>
-                <strong>Thời gian tạo:</strong> ${data.created_at ?? 'N/A'}<br>
-                <strong>Loại vấn đề:</strong> ${getIssueType(data.type) ?? 'N/A'}<br>
-                <strong>Trạng thái:</strong> ${getStatus(data.status) ?? 'N/A'}<br>
+            <div class="mb-2"><span class="report-detail-label">Người dùng:</span> ${data.user_id.name ?? 'N/A'}</div>
+            <div class="d-flex align-items-center mb-2">
+                <div class="border-end border-1 border-secondary pe-4"><span class="report-detail-label">Điện thoại:</span> ${data.user_id.phoneNumber}</div>
+                <div class="ml-4">
+                    <span style="font-weight: bold; display: inline-block;">Email:</span>
+                    <span class="px-4 py-1 text-muted">${data.user_id.email}</span>
+                </div>
+            </div>
+            <div class="mb-2"><span class="report-detail-label">Thời gian tạo:</span> ${data.created_at ?? 'N/A'}</div>
+            <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                <div><span class="report-detail-label">Loại vấn đề:</span> ${getIssueDetail(data.type)}</div>
+                <div class="ps-4" style="margin-left: 9px">
+                    <span class="report-detail-label">Trạng thái:</span>
+                    <span class="border rounded-pill px-4 py-1 text-muted small fw-bold">${getStatus(data.status) ?? 'N/A'}</span>
+                </div>
+            </div>
+            <div class="mb-2"><span class="report-detail-label">Tiêu đề:</span> ${data.title_support ?? 'N/A'}</div>
+            <div class="mb-2"><span class="report-detail-label">Nội dung:</span> ${data.content_support ?? 'N/A'}</div>
+            <div class="d-flex mb-2"><span class="report-detail-label">Hình ảnh:</span> 
+                <div class="d-flex flex-wrap">
+                    ${data.image?.map(imageUrl => `
+                        <img src="${imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
+                    `).join('')}
+                </div>
+            </div>
             `;
             document.getElementById('reportDetails').innerHTML = reportDetails;
         }
 
         function closeReportDetails() {
             document.getElementById('reportDetailsModal').style.display = 'none'; // Đóng modal
+        }
+
+        function getIssueDetail(type) {
+            switch (type) {
+                case 'room':
+                    return '<span class="border rounded-pill px-4 py-1 text-primary small fw-bold">Phòng ở</span>';
+                case 'service':
+                    return '<span class="border rounded-pill px-4 py-1 small text-primary fw-bold">Dịch Vụ</span>';
+                case 'post':
+                    return '<span class="border rounded-pill px-4 py-1 small text-primary fw-bold">Bài Đăng</span>'
+                default:
+                    return '<span class="border rounded-pill px-4 py-1 small text-primary fw-bold">Unknown</span>';
+            }
         }
 
     </script>

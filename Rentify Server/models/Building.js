@@ -6,7 +6,7 @@ const Building = new Schema({
         ref: 'Landlord',
         required: true
     },
-    lmanager_id: { 
+    manager_id: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Manager',
         required: true
