@@ -13,7 +13,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/api/home', (req, res) => {
-  res.render('UserManagement/UserManagement', (err, html) => {
+  res.render('Home/Home', (err, html) => {
     if (err) {
       return res.status(500).send(err);
     }

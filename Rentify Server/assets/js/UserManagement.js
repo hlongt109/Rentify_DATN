@@ -150,7 +150,7 @@ const renderTable = () => {
                     <label for="edit-email" class="form-label">Email</label>
                     <input type="email" id="edit-email" class="form-control" value="${user.email ?? ''}" placeholder="Email" readonly />
                 </div>
-            </div>
+            </div>            
             <div class="col">
                 <div class="form-group">
                     <label for="edit-phone" class="form-label">Phone Number</label>

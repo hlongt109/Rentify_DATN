@@ -14,6 +14,9 @@ const uploadFile = require("../../config/common/upload")
 
 
 // apis
+router.get("/home", (req, res) => {
+    res.render('Home/Home');
+})
 //login
 router.get("/admin/login", (req, res) => {
     res.render('Login/Login');
