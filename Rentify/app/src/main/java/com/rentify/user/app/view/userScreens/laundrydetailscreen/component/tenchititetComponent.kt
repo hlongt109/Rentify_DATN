@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.userScreens.laundrydetailscreen.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,32 +34,33 @@ fun tenchitietPreview(){
 }
 @Composable
 fun tenchitietComponent (navController: NavHostController){
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-    ){
-        Image(
-            painter = painterResource(id = R.drawable.back),
-            contentDescription = "back",
+            .background(color = Color(0xffd2f1ff))
+    ) {
+        Spacer(modifier = Modifier.padding(top = 50.dp))
+        Row(
             modifier = Modifier
-                .size(40.dp)
-                .padding(top = 10.dp)
-                .clip(CircleShape)
-                .clickable {
-                    navController.popBackStack()
-                }
-        )
-        Column(
-            modifier = Modifier
-                .padding(top = 15.dp)
-                .weight(1f) // Cho phép cột chiếm không gian còn lại
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(color = Color(0xff84d8ff))
         ) {
-            Text(
-                text = "Chi tiết sản phẩm ",
-                fontSize = 20.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold
+            Image(
+                painter = painterResource(id = R.drawable.back),
+                contentDescription = "Back",
+                modifier = Modifier
+                    .padding(start = 12.dp, top = 12.dp)
+                    .size(30.dp)
+                    .clickable {
+                        navController.popBackStack()
+                    },
+            )
+            Text(text = "Chi tiết",
+                modifier = Modifier.padding(15.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
             )
         }
     }

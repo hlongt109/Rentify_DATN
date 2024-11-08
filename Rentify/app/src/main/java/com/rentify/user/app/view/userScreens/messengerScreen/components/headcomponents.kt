@@ -32,7 +32,7 @@ fun headcomponent(navController: NavHostController){
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(color = Color(0xffd2f1ff))
+            .background(color = Color(0xff84d8ff))
     ) {
         Text(
             text = "Tin nhắn ",
@@ -44,8 +44,8 @@ fun headcomponent(navController: NavHostController){
         Image(
             painter = painterResource(id = R.drawable.searchtinnhan),
             contentDescription = "",
-            modifier = Modifier.size(30.dp)
-                .padding(top = 10.dp)
+            modifier = Modifier.size(50.dp)
+                .padding(10.dp)
         )
     }
 

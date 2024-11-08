@@ -126,7 +126,7 @@ fun AppNavigation(navHostController: NavHostController) {
                                 modifier = Modifier.size(25.dp)
                             )
                         },
-                        label = { Text(text = "Service",color = if (isSelected == ROUTER.SERVICE.name) Color(0xFF059BEE) else Color(color = 0xFFb7b7b7))},
+                        label = { Text(text = "Rent",color = if (isSelected == ROUTER.SERVICE.name) Color(0xFF059BEE) else Color(color = 0xFFb7b7b7))},
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Color(0xFF059BEE),
                             unselectedIconColor = Color(color = 0xFFb7b7b7),
@@ -150,7 +150,7 @@ fun AppNavigation(navHostController: NavHostController) {
                                 modifier = Modifier.size(25.dp)
                             )
                         },
-                        label = { Text(text = "Mesenger",color = if (isSelected == ROUTER.MESSENGER.name) Color(0xFF059BEE) else Color(color = 0xFFb7b7b7))},
+                        label = { Text(text = "Tin nhăn",color = if (isSelected == ROUTER.MESSENGER.name) Color(0xFF059BEE) else Color(color = 0xFFb7b7b7))},
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Color(0xFF059BEE),
                             unselectedIconColor = Color(color = 0xFFb7b7b7),

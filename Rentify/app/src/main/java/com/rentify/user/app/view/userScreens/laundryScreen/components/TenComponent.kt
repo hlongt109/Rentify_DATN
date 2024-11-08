@@ -37,7 +37,12 @@ fun TenComponent(navController: NavHostController) {
             .background(color = Color(0xffd2f1ff))
     ) {
         Spacer(modifier = Modifier.padding(top = 50.dp))
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(color = Color(0xff84d8ff))
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.back),
                 contentDescription = "Back",
@@ -48,9 +53,8 @@ fun TenComponent(navController: NavHostController) {
                         navController.popBackStack()
                     },
             )
-            Text(
-                text = "Giặt là ",
-                modifier = Modifier.padding(top = 15.dp),
+            Text(text = "Giặt là ",
+                modifier = Modifier.padding(15.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )

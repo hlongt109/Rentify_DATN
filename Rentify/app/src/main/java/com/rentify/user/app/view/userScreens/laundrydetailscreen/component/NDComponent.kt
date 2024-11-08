@@ -29,7 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 
-@Preview
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun NDPreview(){
     NDComponent(navController= rememberNavController())
@@ -40,42 +40,33 @@ fun NDComponent(navController: NavHostController){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(10.dp)
-        ) {
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
                 .height(1.dp)
-                .background(color = Color(0xff8c8c8c))
+                .background(color = Color(0xfff2f2f2))
         ) {
         }
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
         ){
             Text(text = "Chăn ga ",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
+                modifier = Modifier.padding(5.dp),
+                fontSize = 15.sp,
             )
         }
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
         ){
             Text(text = "14.000 VNĐ / 1kg",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 5.dp),
+                modifier = Modifier.padding(5.dp),
                 color = Color.Red,
-                fontSize = 20.sp,
+                fontSize = 15.sp,
             )
         }
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
         ){
             Text(text = "Người đã sử dụng: 260",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
+                modifier = Modifier.padding( 5.dp),
+                fontSize = 15.sp,
             )
         }
 
@@ -98,7 +89,7 @@ fun NDComponent(navController: NavHostController){
         ) {
             Text(
                 text = "Liên Hệ Ngay",
-                modifier = Modifier.padding(start = 5.dp),
+                modifier = Modifier.padding(5.dp),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold, // Đậm chữ
                 color = Color.White, // Màu chữ trắng
@@ -106,22 +97,20 @@ fun NDComponent(navController: NavHostController){
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+            modifier = Modifier.fillMaxWidth().padding(15.dp)
         ){
             Text(text = "Mô tả sản phẩm",
-                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 5.dp),
                 color = Color.Red,
-                fontSize = 20.sp,
+                fontSize = 15.sp,
             )
         }
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
         ){
             Text(text = "Vắt  cực khô khô đét",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
+                modifier = Modifier.padding(5.dp),
+                fontSize = 15.sp,
             )
         }
     }

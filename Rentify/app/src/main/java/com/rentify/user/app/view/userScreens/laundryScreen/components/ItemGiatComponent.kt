@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,11 +36,12 @@ import com.rentify.user.app.R
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun ItemgiatComponentPreview(){
+fun ItemgiatComponentPreview() {
     ItemgiatComponent(navController = rememberNavController())
 }
+
 @Composable
-fun ItemgiatComponent(navController: NavHostController){
+fun ItemgiatComponent(navController: NavHostController) {
     Row {
         Box(
             modifier = Modifier
@@ -47,14 +50,13 @@ fun ItemgiatComponent(navController: NavHostController){
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
                 .clickable {
-                    navController.navigate("LAUDRYDETAIL")
-                }
 
+                }
         ) {
             Column(
                 modifier = Modifier
                     .width(200.dp)
-                    .height(250.dp)
+                    .height(240.dp)
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
@@ -67,16 +69,16 @@ fun ItemgiatComponent(navController: NavHostController){
                     painter = painterResource(id = R.drawable.giattay),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(130.dp)
+                        .width(200.dp)
                         .height(130.dp)
-                        .padding(top = 6.dp),
+                        .padding(top = 2.dp)
                 )
-                Column (
+                Column(
                     modifier = Modifier.padding(top = 12.dp)
-                ){
+                ) {
                     Text(
-                        text = "Chăn ga ",
-                        fontSize = 12.sp,
+                        text = "Giặt ướt ",
+                        fontSize = 20.sp,
                         color = Color.Black,
                         modifier = Modifier
                             .weight(1f)
@@ -91,37 +93,37 @@ fun ItemgiatComponent(navController: NavHostController){
                             .weight(1f)
                             .padding(start = 8.dp)
                     )
-                    Text(
-                        text = "Người đã sử dụng: 260",
-                        fontSize = 12.sp,
-                        color = Color.Black,
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp),
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Mô tả sản phẩm",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Vắt  cực khô khô đét",
-                        fontSize = 12.sp,
-                        color = Color.Black,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp),
-                        fontWeight = FontWeight.Bold
-                    )
+                            .height(35.dp)
+                            .fillMaxWidth()
+                            .padding(start = 5.dp, end = 5.dp)
+                            .background(color = Color(0xFF84d8ff), shape = RoundedCornerShape(20.dp))
+                            .clickable(
+                                onClick = {
+                                    navController.navigate("LAUDRYDETAIL")
+                                },
+                                indication = null, // Disable ripple effect
+                                interactionSource = remember { MutableInteractionSource() }
+                            ),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically // Center vertically
+                    ) {
+                        Text(
+                            text = "Liên Hệ Ngay",
+                            modifier = Modifier.padding(5.dp), // Adjust padding for better appearance
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold, // Bold text
+                            color = Color.White, // White text color
+                            lineHeight = 24.sp // Line height
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
-
             }
-            Spacer(modifier = Modifier.height(20.dp))
         }
+
+
         Box(
             modifier = Modifier
                 .width(200.dp)
@@ -129,14 +131,13 @@ fun ItemgiatComponent(navController: NavHostController){
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
                 .clickable {
-                    navController.navigate("LAUDRYDETAIL")
-                }
 
+                }
         ) {
             Column(
                 modifier = Modifier
                     .width(200.dp)
-                    .height(250.dp)
+                    .height(240.dp)
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
@@ -149,16 +150,16 @@ fun ItemgiatComponent(navController: NavHostController){
                     painter = painterResource(id = R.drawable.giattay),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(130.dp)
+                        .width(200.dp)
                         .height(130.dp)
-                        .padding(top = 6.dp),
+                        .padding(top = 2.dp)
                 )
-                Column (
+                Column(
                     modifier = Modifier.padding(top = 12.dp)
-                ){
+                ) {
                     Text(
-                        text = "Chăn ga ",
-                        fontSize = 12.sp,
+                        text = "Giặt ướt ",
+                        fontSize = 20.sp,
                         color = Color.Black,
                         modifier = Modifier
                             .weight(1f)
@@ -173,36 +174,34 @@ fun ItemgiatComponent(navController: NavHostController){
                             .weight(1f)
                             .padding(start = 8.dp)
                     )
-                    Text(
-                        text = "Người đã sử dụng: 260",
-                        fontSize = 12.sp,
-                        color = Color.Black,
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp),
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Mô tả sản phẩm",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    )
-                    Text(
-                        text = "Vắt  cực khô khô đét",
-                        fontSize = 12.sp,
-                        color = Color.Black,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp),
-                        fontWeight = FontWeight.Bold
-                    )
+                            .height(35.dp)
+                            .fillMaxWidth()
+                            .padding(start = 5.dp, end = 5.dp)
+                            .background(color = Color(0xFF84d8ff), shape = RoundedCornerShape(20.dp))
+                            .clickable(
+                                onClick = {
+                                    navController.navigate("LAUDRYDETAIL")
+                                },
+                                indication = null, // Disable ripple effect
+                                interactionSource = remember { MutableInteractionSource() }
+                            ),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically // Center vertically
+                    ) {
+                        Text(
+                            text = "Liên Hệ Ngay",
+                            modifier = Modifier.padding(5.dp), // Adjust padding for better appearance
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold, // Bold text
+                            color = Color.White, // White text color
+                            lineHeight = 24.sp // Line height
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
-
             }
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }

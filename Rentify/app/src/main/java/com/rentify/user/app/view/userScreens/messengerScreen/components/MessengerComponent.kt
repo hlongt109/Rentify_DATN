@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,7 +51,7 @@ fun MessengerComponent(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(70.dp)
+                    .height(80.dp)
                     .background(color = Color.White)
                     .border(
                         width = 1.dp,
@@ -62,12 +63,12 @@ fun MessengerComponent(navController: NavHostController) {
                     }
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.user),
+                    painter = painterResource(id = R.drawable.ad),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(40.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
-                        .padding(8.dp)
+                        .size(70.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
                         .clip(CircleShape)
+                        .padding(start = 20.dp)
                 )
                 Column(
                     modifier = Modifier
@@ -78,6 +79,7 @@ fun MessengerComponent(navController: NavHostController) {
                         text = "Hỗ trợ tìm phòng",
                         fontSize = 16.sp, // Font size giảm một chút
                         color = Color.Black,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 Text(
@@ -87,7 +89,7 @@ fun MessengerComponent(navController: NavHostController) {
                     modifier = Modifier
                         .padding(end = 10.dp)
                         .background(
-                            color = Color(0xff44acfe),
+                            color = Color(0xff44acfe), // Màu nền xanh nhạt
                             shape = RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp) // Padding cho nhãn "Admin"
@@ -107,7 +109,7 @@ fun MessengerComponent(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(70.dp)
+                    .height(80.dp)
                     .background(color = Color.White)
                     .border(
                         width = 1.dp,
@@ -119,12 +121,12 @@ fun MessengerComponent(navController: NavHostController) {
                     }
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.user),
+                    painter = painterResource(id = R.drawable.ad),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(40.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
-                        .padding(8.dp)
+                        .size(70.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
                         .clip(CircleShape)
+                        .padding(start = 20.dp)
                 )
                 Column(
                     modifier = Modifier
@@ -132,9 +134,10 @@ fun MessengerComponent(navController: NavHostController) {
                         .weight(1f)
                 ) {
                     Text(
-                        text = "Vũ Văn Phúc",
+                        text = "Nguyễn Thiên Thiên",
                         fontSize = 16.sp, // Font size giảm một chút
                         color = Color.Black,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 Text(
