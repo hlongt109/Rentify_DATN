@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -78,7 +79,6 @@ fun LayoutComfort(){
             .padding(start = 20.dp, end = 20.dp)
     ) {
     }
-//
 
     Row(
         modifier = Modifier
@@ -86,10 +86,11 @@ fun LayoutComfort(){
             .padding(top = 10.dp)
             .horizontalScroll(rememberScrollState())
     ) {
+        // Thẻ 1
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f)
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -104,8 +105,8 @@ fun LayoutComfort(){
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.khepkin),
@@ -113,23 +114,23 @@ fun LayoutComfort(){
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
+
                 Text(
                     text = "Khép kín",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
-//
+
+        // Thẻ 2
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f) // Chia đều không gian
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -144,8 +145,8 @@ fun LayoutComfort(){
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.bancong),
@@ -153,23 +154,23 @@ fun LayoutComfort(){
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
 
                 Text(
-                    text = "Ban công",
+                    text = "Ban công ",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
+
+        // Thẻ 3
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f) // Chia đều không gian
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -184,8 +185,8 @@ fun LayoutComfort(){
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.camm),
@@ -193,14 +194,13 @@ fun LayoutComfort(){
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
+
                 Text(
                     text = "Không chung chủ",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }

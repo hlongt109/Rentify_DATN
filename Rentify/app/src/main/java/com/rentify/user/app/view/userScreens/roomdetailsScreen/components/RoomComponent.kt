@@ -81,11 +81,17 @@ fun ProductTypeRow(
     }
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(color = Color(0xff8c8c8c))
-            .padding(bottom = 10.dp)
+            .fillMaxWidth() // Chiếm toàn bộ chiều rộng
+            .padding(start = 9.dp) // Padding bên trái
     ) {
+        Spacer(modifier = Modifier.weight(1f)) // Spacer bên trái
+        Box(
+            modifier = Modifier
+                .width(350.dp)
+                .height(1.dp)
+                .background(color = Color(0xff8c8c8c))
+        )
+        Spacer(modifier = Modifier.weight(1f)) // Spacer bên phải
     }
     Row(
         modifier = Modifier
@@ -138,11 +144,19 @@ fun ProductTypeRow(
     }
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(color = Color(0xff8c8c8c))
+            .fillMaxWidth() // Chiếm toàn bộ chiều rộng
+            .padding(start = 9.dp) // Padding bên trái
     ) {
+        Spacer(modifier = Modifier.weight(1f)) // Spacer bên trái
+        Box(
+            modifier = Modifier
+                .width(350.dp)
+                .height(1.dp)
+                .background(color = Color(0xff8c8c8c))
+        )
+        Spacer(modifier = Modifier.weight(1f)) // Spacer bên phải
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

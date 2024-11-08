@@ -80,18 +80,17 @@ fun LayoutService() {
             .padding(start = 20.dp, end = 20.dp)
     ) {
     }
-//
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 10.dp)
             .horizontalScroll(rememberScrollState())
     ) {
+        // Thẻ 1
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f)
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -106,8 +105,8 @@ fun LayoutService() {
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.dien),
@@ -115,31 +114,29 @@ fun LayoutService() {
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
                 Text(
                     text = "Điện",
                     fontSize = 15.sp,
                     color = Color(0xFF909191),
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = "3.800đ/kW",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
-//
+
+        // Thẻ 2
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f) // Chia đều không gian
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -154,8 +151,8 @@ fun LayoutService() {
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.nuoc),
@@ -163,30 +160,29 @@ fun LayoutService() {
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
                 Text(
                     text = "Nước",
                     fontSize = 15.sp,
                     color = Color(0xFF909191),
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = "28.000đ/khối",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
+
+        // Thẻ 3
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f) // Chia đều không gian
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -201,8 +197,8 @@ fun LayoutService() {
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.wifi),
@@ -210,27 +206,25 @@ fun LayoutService() {
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
                 Text(
                     text = "Mạng",
                     fontSize = 15.sp,
                     color = Color(0xFF909191),
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = "100.000đ/phòng",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

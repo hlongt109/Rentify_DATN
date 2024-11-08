@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -78,7 +79,6 @@ fun LayoutInterior(){
             .padding(start = 20.dp, end = 20.dp)
     ) {
     }
-//
 
     Row(
         modifier = Modifier
@@ -86,10 +86,11 @@ fun LayoutInterior(){
             .padding(top = 10.dp)
             .horizontalScroll(rememberScrollState())
     ) {
+        // Thẻ 1
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f)
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -104,8 +105,8 @@ fun LayoutInterior(){
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.dieuhoa),
@@ -113,23 +114,23 @@ fun LayoutInterior(){
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
+
                 Text(
-                    text = "Điều hòa ",
+                    text = "Điều hòa",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
-//
+
+        // Thẻ 2
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f) // Chia đều không gian
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -144,8 +145,8 @@ fun LayoutInterior(){
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.nonglanh),
@@ -153,23 +154,23 @@ fun LayoutInterior(){
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
 
                 Text(
                     text = "Nóng lạnh",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
+
+        // Thẻ 3
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f) // Chia đều không gian
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -184,8 +185,8 @@ fun LayoutInterior(){
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.giuong),
@@ -193,14 +194,13 @@ fun LayoutInterior(){
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
+
                 Text(
-                    text = "Giường ngủ",
+                    text = "Giường",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
@@ -212,10 +212,11 @@ fun LayoutInterior(){
             .padding(top = 10.dp)
             .horizontalScroll(rememberScrollState())
     ) {
+        // Thẻ 1
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f)
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -230,8 +231,8 @@ fun LayoutInterior(){
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.maygiat),
@@ -239,23 +240,23 @@ fun LayoutInterior(){
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
+
                 Text(
-                    text = "máy giặt",
+                    text = "Máy giặt",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
-//
+
+        // Thẻ 2
         Box(
             modifier = Modifier
-                .width(160.dp)
-                .padding(16.dp)
+                .weight(1f)
+                .padding(8.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
@@ -270,8 +271,8 @@ fun LayoutInterior(){
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
-                verticalArrangement = Arrangement.Center, // Center items vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.maygiat),
@@ -279,20 +280,57 @@ fun LayoutInterior(){
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
-
                 )
 
                 Text(
-                    text = "Máy Giặt",
+                    text = "Máy giặt",
                     fontSize = 15.sp,
                     color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     textAlign = TextAlign.Center
                 )
             }
         }
 
+        // Thẻ 3
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(12.dp))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .background(color = Color.White)
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFfafafa),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable { },
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.maygiat),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .width(40.dp)
+                        .height(40.dp)
+                )
+
+                Text(
+                    text = "Máy giặt",
+                    fontSize = 15.sp,
+                    color = Color.Black,
+                    modifier = Modifier.padding(start = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     }
     Row(
         modifier = Modifier
