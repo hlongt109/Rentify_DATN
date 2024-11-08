@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.style.TextAlign
 import com.rentify.user.app.R
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -371,6 +372,87 @@ fun LayoutItems() {
                         modifier = Modifier.size(30.dp)
                     )
                 }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.out),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(5.dp)
+                    )
+                    Text(
+                        text = "Đăng xuất ",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    )
+                    Image(painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .padding(start = 10.dp, end = 10.dp)
+                        .background(color = Color(0xff8c8c8c))
+                ) {
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center, // Căn giữa theo chiều ngang
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .background(color = Color(0xFFfafafa))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFfafafa),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.delete),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp)
+                            .padding(10.dp)
+                    )
+                    Text(
+                        text = "Yêu cầu xóa tài khoản",
+                        fontSize = 20.sp,
+                        color = Color(0xFF84d8ff),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
             }
 
         }
