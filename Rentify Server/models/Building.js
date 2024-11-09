@@ -12,7 +12,7 @@ const Building = new Schema({
         required: true
     },
     address: { type: String },
-    description: { type: String }, 
+    name: { type: String }, 
     number_of_floors: { type: Number},
     created_at: { type: String},
     updated_at: { type: String}

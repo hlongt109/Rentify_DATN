@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const Landlord = new Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'User',
         required: true
     },
     building_id: { 

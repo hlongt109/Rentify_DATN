@@ -11,7 +11,7 @@ const Post = new Schema({
     status: { type: Number, enum: [0, 1], default: 1 },
     video: { type: Array },
     photo: { type: Array },
-    post_type: { type: String, enum: ['roomate', 'rent'], require: true },
+    post_type: { type: String, enum: ['roomate', 'rent', 'seek', 'rejected'], require: true },
     created_at: { type: String },
     updated_at: { type: String }
 
