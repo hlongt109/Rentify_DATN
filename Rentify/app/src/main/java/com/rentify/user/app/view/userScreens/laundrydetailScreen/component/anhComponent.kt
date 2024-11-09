@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.laundrydetailscreen.component
+package com.rentify.user.app.view.userScreens.laundrydetailScreen.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border

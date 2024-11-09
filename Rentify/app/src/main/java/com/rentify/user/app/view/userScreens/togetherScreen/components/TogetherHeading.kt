@@ -1,11 +1,11 @@
-package com.rentify.user.app.view.userScreens.profilescreen.components
+package com.rentify.user.app.view.userScreens.togetherScreen.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,21 +27,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
-@Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun ProfileComponentPreview() {
-    ProfileComponent(navController = rememberNavController())
-}
-
 @Composable
-fun ProfileComponent(navController: NavHostController) {
+fun TogetherHeadingPreview(){
+    TogetherHeading(navController= rememberNavController())
+}
+@Composable
+fun TogetherHeading(navController: NavHostController){
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.trove),
+            painter = painterResource(id = R.drawable.back),
             contentDescription = "back",
             modifier = Modifier
                 .width(40.dp)
@@ -60,12 +59,18 @@ fun ProfileComponent(navController: NavHostController) {
             verticalArrangement = Arrangement.Center // Center vertically
         ) {
             Text(
-                text = "Hồ sơ cá nhân",
+                text = "Tìm ở ghép",
                 fontSize = 25.sp,
                 color = Color.Black,
-                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
         }
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(20.dp)
+            .background(color = Color(0xFFf7f7f7))
+    ) {
     }
 }

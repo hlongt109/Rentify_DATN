@@ -15,15 +15,16 @@ import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
-import com.rentify.user.app.view.userScreens.TinnhanScreen.TinnhanScreen
+import com.rentify.user.app.view.userScreens.chatScreen.TinnhanScreen
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
-import com.rentify.user.app.view.userScreens.laundrydetailscreen.LaundryDetailScreenScreen
+import com.rentify.user.app.view.userScreens.laundrydetailScreen.LaundryDetailScreenScreen
 import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
-import com.rentify.user.app.view.userScreens.profilescreen.ProfileScreen
+import com.rentify.user.app.view.userScreens.profileScreen.ProfileScreen
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.LayoutRoomdetails
+import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
+import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
+        NavHost(navController = navController, startDestination = ROUTER.TogeTher.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -83,24 +84,31 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.TINNHAN.name) {
                 TinnhanScreen(navController = navController)
             }
+            composable(ROUTER.TogeTher.name) {
+                TogetherScreen(navController = navController)
+            }
         }
     }
 
     enum class ROUTER {
-        HOME,
-        SERVICE,
-        RENT,
-        MESSENGER,
-        PERSONAL,
-        ROOMDETAILS,
-        INTRO,
-        SPLASH,
-        RESGITER,
-        LOGIN,
-        FORGOTPASS,
-        PROFILE,
-        LAUDRY,
-        LAUDRYDETAIL,
-        TINNHAN
+        HOME, // trangChu
+        SERVICE,// dịch vụ
+        RENT,// thuê
+        MESSENGER,// tin nhắn
+        PERSONAL, // trang cá nhân
+        ROOMDETAILS,// chi tiết phòng
+        INTRO,//intro
+        SPLASH,// màn hinh chào
+        RESGITER,//đăng ký
+        LOGIN,//đăng nhập
+        FORGOTPASS,//đổi mật kẩu
+        PROFILE,//hồ sơ
+        LAUDRY,// giặt là
+        LAUDRYDETAIL,// chi tiết giặt là
+        TINNHAN,// đoạn chat tin nhắn
+        TogeTher,// tìm bạn ở ghép
+        PaymentConfirmation,// xác nhận thanh toán
+        Payments,// thanh toán
+        ConTract,// hợp đồng
     }
 }

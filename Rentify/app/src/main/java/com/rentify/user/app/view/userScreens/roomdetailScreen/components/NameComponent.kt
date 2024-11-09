@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.roomdetailsScreen.components
+package com.rentify.user.app.view.userScreens.roomdetailScreen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

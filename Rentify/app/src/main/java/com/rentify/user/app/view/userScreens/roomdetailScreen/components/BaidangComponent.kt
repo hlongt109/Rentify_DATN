@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.roomdetailsScreen.components
+package com.rentify.user.app.view.userScreens.roomdetailScreen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -402,18 +401,20 @@ fun Layoutbaidang() {
         Box(
             modifier = Modifier
                 .width(130.dp)
+                .height(80.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(10.dp))
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = Color(0xFFfafafa))
+                    .height(80.dp)
+                    .background(color = Color(0xFFd9d9d9))
                     .border(
                         width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
+                        color = Color(0xFFd9d9d9),
+                        shape = RoundedCornerShape(10.dp)
                     )
                     .clickable { },
                 verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
@@ -435,6 +436,7 @@ fun Layoutbaidang() {
         Box(
             modifier = Modifier
                 .width(130.dp)
+                .height(80.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -442,10 +444,11 @@ fun Layoutbaidang() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(80.dp)
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
-                        color = Color(0xFFfafafa),
+                        color = Color(0xFF93dcff),
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
@@ -469,6 +472,7 @@ fun Layoutbaidang() {
         Box(
             modifier = Modifier
                 .width(130.dp)
+                .height(80.dp)
                 .padding(16.dp)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
@@ -476,10 +480,12 @@ fun Layoutbaidang() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(80.dp)
+
                     .background(color = Color(0xFFfafafa))
                     .border(
                         width = 1.dp,
-                        color = Color(0xFFfafafa),
+                        color = Color.Red,
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable { },
@@ -498,8 +504,6 @@ fun Layoutbaidang() {
                 )
             }
         }
-
-
     }
 
 

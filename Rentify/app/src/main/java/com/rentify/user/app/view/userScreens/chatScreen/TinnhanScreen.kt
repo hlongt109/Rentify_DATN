@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.TinnhanScreen
+package com.rentify.user.app.view.userScreens.chatScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,7 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
-import com.rentify.user.app.view.intro.SplashScreen
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)

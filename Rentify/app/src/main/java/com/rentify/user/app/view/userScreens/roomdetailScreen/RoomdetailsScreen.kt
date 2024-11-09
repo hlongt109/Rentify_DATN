@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.roomdetailsScreen
+package com.rentify.user.app.view.userScreens.roomdetailScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,14 +12,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.ComfortComponent
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.ImageComponent
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.InteriorComponent
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.LayoutNameComponent
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.NoidungComponent
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.RoomComponen
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.ServiceComponent
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.components.baidangPreview
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.ComfortComponent
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.ImageComponent
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.InteriorComponent
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutNameComponent
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.NoidungComponent
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.RoomComponen
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.ServiceComponent
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.baidangPreview
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

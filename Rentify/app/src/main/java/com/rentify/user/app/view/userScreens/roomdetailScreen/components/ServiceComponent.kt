@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.roomdetailsScreen.components
+package com.rentify.user.app.view.userScreens.roomdetailScreen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,22 +24,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.R
 
-// tiện nghi
+// dịch vụ
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun ComfortComponent(){
-    LayoutComfort()
+fun ServiceComponent() {
+    LayoutService()
 }
-@Composable
-fun LayoutComfort(){
 
+@Composable
+fun LayoutService() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,12 +51,12 @@ fun LayoutComfort(){
             .padding(start = 15.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.phitn),
+            painter = painterResource(id = R.drawable.phidv),
             contentDescription = "",
             modifier = Modifier.size(40.dp)
         )
         Text(
-            text = "Phí tiện nghi ",
+            text = "Phí dịch vụ ",
             modifier = Modifier
                 .padding(start = 5.dp)
                 .padding(top = 10.dp),
@@ -79,7 +77,6 @@ fun LayoutComfort(){
             .padding(start = 20.dp, end = 20.dp)
     ) {
     }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,15 +106,21 @@ fun LayoutComfort(){
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.khepkin),
+                    painter = painterResource(id = R.drawable.dien),
                     contentDescription = null,
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
                 )
-
                 Text(
-                    text = "Khép kín",
+                    text = "Điện",
+                    fontSize = 15.sp,
+                    color = Color(0xFF909191),
+                    modifier = Modifier.padding(start = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "3.800đ/kW",
                     fontSize = 15.sp,
                     color = Color.Black,
                     modifier = Modifier.padding(start = 8.dp),
@@ -149,15 +152,21 @@ fun LayoutComfort(){
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.bancong),
+                    painter = painterResource(id = R.drawable.nuoc),
                     contentDescription = null,
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
                 )
-
                 Text(
-                    text = "Ban công ",
+                    text = "Nước",
+                    fontSize = 15.sp,
+                    color = Color(0xFF909191),
+                    modifier = Modifier.padding(start = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "28.000đ/khối",
                     fontSize = 15.sp,
                     color = Color.Black,
                     modifier = Modifier.padding(start = 8.dp),
@@ -189,15 +198,21 @@ fun LayoutComfort(){
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.camm),
+                    painter = painterResource(id = R.drawable.wifi),
                     contentDescription = null,
                     modifier = Modifier
                         .width(40.dp)
                         .height(40.dp)
                 )
-
                 Text(
-                    text = "Không chung chủ",
+                    text = "Mạng",
+                    fontSize = 15.sp,
+                    color = Color(0xFF909191),
+                    modifier = Modifier.padding(start = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "100.000đ/phòng",
                     fontSize = 15.sp,
                     color = Color.Black,
                     modifier = Modifier.padding(start = 8.dp),
@@ -206,6 +221,7 @@ fun LayoutComfort(){
             }
         }
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -219,4 +235,5 @@ fun LayoutComfort(){
             .background(color = Color(0xfff7f7f7))
     ) {
     }
+
 }
