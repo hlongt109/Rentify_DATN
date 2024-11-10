@@ -21,7 +21,7 @@
             android:theme="@style/Theme.Rentify">
 
         </activity>
-        <activity android:name=".view.auth.LoginScreen"
+        <activity android:name=".view.fav.FavActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

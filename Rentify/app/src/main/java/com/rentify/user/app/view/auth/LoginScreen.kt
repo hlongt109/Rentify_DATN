@@ -66,6 +66,7 @@ class LoginScreen : ComponentActivity() {
         }
     }
 
+    @Preview(showBackground = true)
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun LoginScreenApp() {
