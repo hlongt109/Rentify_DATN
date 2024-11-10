@@ -1,9 +1,15 @@
 package com.rentify.user.app.view.userScreens.SearchRoomScreen
 
+import com.rentify.user.app.model.FakeModel.FakeService
 import com.rentify.user.app.model.Location
 import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostType
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.FakeModel.FakeTypeArrange
+import com.rentify.user.app.ui.theme.arrangeDown
+import com.rentify.user.app.ui.theme.arrangeTop
+import com.rentify.user.app.ui.theme.clock
+import com.rentify.user.app.ui.theme.home_arrange
 
 class FakeData {
     val rooms = listOf(
@@ -181,5 +187,35 @@ class FakeData {
         Location("Đà Nẵng", "Quận Hải Châu", "Phường Thạch Thang", 16.0545, 108.2022),
         Location("Hải Phòng", "Quận Lê Chân", "Phường Trại Cau", 20.9948, 106.3272),
         Location("Cần Thơ", "Quận Ninh Kiều", "Phường An Hội", 10.0255, 105.7842)
+    )
+
+    val listFakeTypeArrange_1s = listOf(
+        FakeTypeArrange(icon = clock, title = "Tin mới"),
+        FakeTypeArrange(icon = arrangeTop, title = "Giá cao nhất"),
+        FakeTypeArrange(icon = arrangeDown, title = "Giá thấp nhất"),
+    )
+    val listFakeTypeArrange_2s = listOf(
+        FakeTypeArrange(icon = home_arrange, title = "Phòng trọ"),
+        FakeTypeArrange(icon = home_arrange, title = "Nguyên căn"),
+        FakeTypeArrange(icon = home_arrange, title = "HomeStay"),
+        FakeTypeArrange(icon = home_arrange, title = "Chung cư"),
+        FakeTypeArrange(icon = home_arrange, title = "Chung cư mini")
+    )
+    val listFakeService = listOf(
+        FakeService("Vệ sinh khép kín"),
+        FakeService("Gác xếp"),
+        FakeService("Ban công"),
+        FakeService("Ra vào vân tay"),
+        FakeService("Không chung chủ"),
+        FakeService("Nuôi pet"),
+    )
+
+    val listFakeService_2 = listOf(
+        FakeService("Điều hòa"),
+        FakeService("Nóng lạnh"),
+        FakeService("Kệ bếp"),
+        FakeService("Tủ lạnh"),
+        FakeService("Giường ngủ"),
+        FakeService("Máy giặt"),
     )
 }

@@ -18,12 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.rentify.user.app.R
 
 
@@ -48,11 +50,11 @@ fun LayoutSearch() {
         TypeProduct("Tìm người ở ghép", R.drawable.timnguoi),
         TypeProduct("Vận chuyển", R.drawable.vanchuyen)
     )
-
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    val screenHeight = configuration.screenHeightDp
 
     var statusType by remember { mutableStateOf(listTypeProduct.first().type) }
-
-
     Column(
         modifier = Modifier
             .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
@@ -61,8 +63,7 @@ fun LayoutSearch() {
                 shape = RoundedCornerShape(20.dp)
             )
             .background(color = Color.White, shape = RoundedCornerShape(20.dp))
-            .padding(16.dp)
-    ) {
+            .padding(16.dp)) {
         // Thanh tìm kiếm với icon và chữ "Hà Nội"
         Row(
             verticalAlignment = Alignment.CenterVertically,

@@ -13,7 +13,8 @@ import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
-import com.rentify.user.app.view.userScreens.SearchRoomScreen.ListPostRoomScreen
+import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
+import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
 import com.rentify.user.app.view.userScreens.messengerScreem.LayoutMessenger
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
@@ -26,14 +27,15 @@ class MainActivity : ComponentActivity() {
         setContent {
 //            MainNavigation()
 //            MyScreen()
-            ListPostRoomScreen(navController = rememberNavController())
+//            PostRoomScreen(navController = rememberNavController())
+            FilterScreen(navController = rememberNavController())
         }
     }
 
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.LOGIN.name) {
+        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
             composable(ROUTER.HOME.name) {
                 AppNavigation(navController)
             }
@@ -55,6 +57,12 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.REGISTER.name) {
                 RegisterScreen(navController)
             }
+            composable(ROUTER.FILTER.name) {
+                FilterScreen(navController)
+            }
+            composable(ROUTER.SEARCHSCREEN.name) {
+                PostRoomScreen(navController)
+            }
         }
     }
 
@@ -65,6 +73,8 @@ class MainActivity : ComponentActivity() {
         MESSENGER,
         PERSONAL,
         LOGIN,
-        REGISTER
+        REGISTER,
+        FILTER,
+        SEARCHSCREEN
     }
 }

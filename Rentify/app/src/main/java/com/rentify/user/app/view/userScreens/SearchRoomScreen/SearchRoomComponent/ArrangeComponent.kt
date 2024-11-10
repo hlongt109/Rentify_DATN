@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,21 +23,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.rentify.user.app.MainActivity.ROUTER
 import com.rentify.user.app.ui.theme.arrange
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.colorTextSX
 import com.rentify.user.app.ui.theme.down
 
 @Composable
-fun ArrangeComponent(){
-    Row (
+fun ArrangeComponent(navController: NavController) {
+    Row(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween){
-        Row (){
-            Row (
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row() {
+            Row(
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Text(
                     text = "Sắp xếp theo",
                     color = colorTextSX,
@@ -52,10 +57,10 @@ fun ArrangeComponent(){
                 )
             }
             //sap xep 2
-            Row (
+            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(start = 10.dp)
-            ){
+            ) {
                 Text(
                     text = "Khoảng giá",
                     color = colorTextSX,
@@ -73,42 +78,47 @@ fun ArrangeComponent(){
 
         }
 
-       Row (
-           verticalAlignment = Alignment.CenterVertically,
-           modifier = Modifier.align(Alignment.CenterVertically)
-       ){
-           Divider(
-               color = colorInput,
-               modifier = Modifier
-                   .width(1.dp)
-                   .height(20.dp)
-                   .align(Alignment.CenterVertically),
-           )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        ) {
+            Divider(
+                color = colorInput,
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(20.dp)
+                    .align(Alignment.CenterVertically),
+            )
 
-           Icon(
-               painter = painterResource(arrange),
-               contentDescription = "Arrange",
-               tint = Color.Black,
-               modifier = Modifier.size(20.dp)
-                   .align(Alignment.CenterVertically)
-                   .padding(start = 5.dp),
-           )
-
-           Text(
-               text = "Lọc",
-               color = colorTextSX,
-               fontSize = 15.sp,
-               fontWeight = FontWeight.Medium,
-               modifier = Modifier.padding(start = 5.dp)
-           )
-
-       }
+            IconButton(
+                onClick = { navController.navigate(ROUTER.FILTER.name)},
+                modifier = Modifier.width(70.dp)
+            ) {
+              Row {
+                  Icon(
+                      painter = painterResource(arrange),
+                      contentDescription = "Arrange",
+                      tint = Color.Black,
+                      modifier = Modifier
+                          .size(20.dp)
+                          .align(Alignment.CenterVertically)
+                  )
+                  Text(
+                      text = "Lọc",
+                      color = colorTextSX,
+                      fontSize = 15.sp,
+                      fontWeight = FontWeight.Medium,
+                      modifier = Modifier.padding(start = 5.dp)
+                  )
+              }
+            }
+        }
 
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewArrange(){
-    ArrangeComponent()
+fun PreviewArrange() {
+//    ArrangeComponent()
 }

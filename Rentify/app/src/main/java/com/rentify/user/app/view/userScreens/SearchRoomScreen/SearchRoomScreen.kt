@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ListPostRoomScreen(navController: NavController) {
+fun PostRoomScreen(navController: NavController) {
     val list = FakeData().rooms
     val listPost = FakeData().listPost
     val listLocation = FakeData().listLocations
@@ -131,7 +131,7 @@ fun ListPostRoomScreen(navController: NavController) {
                         .padding(start = 15.dp, end = 15.dp)
                 ) {
                     Spacer(modifier = Modifier.padding(top = 10.dp))
-                    ArrangeComponent()
+                    ArrangeComponent(navController)
                     Spacer(modifier = Modifier.padding(top = 10.dp))
 
                     LazyRow(
@@ -184,5 +184,5 @@ fun ListPostRoomScreen(navController: NavController) {
 @Composable
 fun PreviewSearch() {
     val navController = rememberNavController()
-    ListPostRoomScreen(navController)
+    PostRoomScreen(navController)
 }

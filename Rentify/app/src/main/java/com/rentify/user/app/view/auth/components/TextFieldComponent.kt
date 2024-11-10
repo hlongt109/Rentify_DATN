@@ -60,7 +60,7 @@ fun TextFieldComponent(
             unfocusedIndicatorColor = Color.Transparent,
             cursorColor = greenInput
         ),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(15.dp),
         visualTransformation = if (isPassword && !passwordVisible.value) PasswordVisualTransformation() else VisualTransformation.None,
         // Thêm trailing icon cho password
         trailingIcon = if (isPassword) {

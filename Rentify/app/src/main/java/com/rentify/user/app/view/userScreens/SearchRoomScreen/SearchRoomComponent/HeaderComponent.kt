@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput
+import com.rentify.user.app.ui.theme.colorInput_2
 import com.rentify.user.app.ui.theme.greenInput
 import com.rentify.user.app.ui.theme.iconBack
 import com.rentify.user.app.ui.theme.search
@@ -111,7 +112,7 @@ fun HeaderSearchComponent(navController: NavController) {
                     onValueChange = {},
                     placeholder = {
                         Text(
-                            text = "Nhập tiêu đề tin đăng", color = colorInput
+                            text = "Nhập tiêu đề tin đăng", color = colorInput_2
                         )
 
                     },
