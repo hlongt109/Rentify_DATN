@@ -20,24 +20,4 @@ fun Preview(){
 }
 @Composable
 fun Screen(navController: NavHostController){
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-//            gọi component ở đây
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-        }
-    }
-
 }
