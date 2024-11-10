@@ -42,7 +42,7 @@ fun TogetherContent(navController: NavHostController){
         ){
             Text(text = "Cần tìm người ở ghép cách Cao đẳng FPT 1km",
                 modifier = Modifier.padding(start = 5.dp),
-                fontSize = 19.sp,
+                fontSize = 20.sp,
             )
         }
         Row(

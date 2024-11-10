@@ -24,6 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 
@@ -32,14 +34,14 @@ data class TypeProduct(val type: String, val icon: Int)
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun SearchComponent() {
-    LayoutSearch()
+fun SearchComponent(navController: NavHostController) {
+    LayoutSearch(navController = rememberNavController())
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayoutSearch() {
+fun LayoutSearch(navController: NavHostController) {
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
     val listTypeProduct = listOf(
         TypeProduct("Săn phòng giảm giá", R.drawable.sanphong),
@@ -123,7 +125,13 @@ fun LayoutSearch() {
                         .width(80.dp)
                 ) {
                     IconButton(
-                        onClick = { statusType = type.type },
+                        onClick = { statusType = type.type
+                            if (type.type == "Tìm người ở ghép") {
+                                navController.navigate("TogeTher") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+                                  },
                         modifier = Modifier
                             .background(
                                 color = if (statusType == type.type) Color.White else Color.White,

@@ -1,9 +1,11 @@
 package com.rentify.user.app
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,9 +18,12 @@ import com.rentify.user.app.view.intro.SplashScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
 import com.rentify.user.app.view.userScreens.chatScreen.TinnhanScreen
+import com.rentify.user.app.view.userScreens.contractScreen.ContractScreen
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
 import com.rentify.user.app.view.userScreens.laundrydetailScreen.LaundryDetailScreenScreen
 import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
+import com.rentify.user.app.view.userScreens.paymentconfirmationScreen.PaymentConfirmationScreen
+import com.rentify.user.app.view.userScreens.paymentscreen.PaymentScreen
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.profileScreen.ProfileScreen
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
@@ -27,6 +32,7 @@ import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -35,10 +41,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.TogeTher.name) {
+        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -87,6 +94,17 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.TogeTher.name) {
                 TogetherScreen(navController = navController)
             }
+            composable(ROUTER.PaymentConfirmation.name) {
+                PaymentConfirmationScreen(navController = navController)
+            }
+            composable(ROUTER.Payments.name) {
+                PaymentScreen(navController = navController)
+            }
+            composable(ROUTER.ConTract.name) {
+                ContractScreen(navController = navController)
+            }
+
+
         }
     }
 

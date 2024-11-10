@@ -12,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.userScreens.homeScreen.components.BannerComponent
-import com.rentify.user.app.view.userScreens.personalScreen.components.ItemSComponent
 import com.rentify.user.app.view.userScreens.personalScreen.components.LayoutItemName
+import com.rentify.user.app.view.userScreens.personalScreen.components.LayoutItems
 import com.rentify.user.app.view.userScreens.personalScreen.components.MenuComponent
 
 
@@ -39,6 +39,6 @@ fun LayoutPersonal(navController: NavHostController) {
         BannerComponent()
         LayoutItemName(navController)
         MenuComponent()
-        ItemSComponent()
+        LayoutItems(navController)
     }
 }
