@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -27,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
-import java.time.format.TextStyle
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
@@ -53,13 +52,19 @@ fun PaymentConfirmationBodyPreview() {
 @Composable
 fun PaymentConfirmationBody(navController: NavHostController) {
     var isChecked by remember { mutableStateOf(false) }
+    var isBankTransferSelected by remember { mutableStateOf(false) }
+    var isCashSelected by remember { mutableStateOf(false) }
+
     Column {
         Row {
-            Text(text = "Phương thức thanh toán",
+            Text(
+                text = "Phương thức thanh toán",
                 modifier = Modifier.padding(start = 20.dp),
                 fontSize = 19.sp,
             )
         }
+
+        // Phương thức Chuyển khoản
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,14 +84,15 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable {
-                        navController.navigate("TINNHAN")
+                        isBankTransferSelected = true
+                        isCashSelected = false
                     }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.bank),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(70.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
+                        .size(70.dp)
                         .padding(start = 20.dp)
                 )
                 Column(
@@ -96,7 +102,7 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                 ) {
                     Text(
                         text = "Chuyển khoản",
-                        fontSize = 16.sp, // Font size giảm một chút
+                        fontSize = 16.sp,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
                     )
@@ -110,11 +116,14 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                     painter = painterResource(id = R.drawable.tich),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(40.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
+                        .size(40.dp)
                         .padding(end = 20.dp)
+                        .alpha(if (isBankTransferSelected) 1f else 0.5f)
                 )
             }
         }
+
+        // Phương thức Tiền mặt
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -134,14 +143,15 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable {
-                        navController.navigate("TINNHAN")
+                        isBankTransferSelected = false
+                        isCashSelected = true
                     }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.tienmat),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(70.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
+                        .size(70.dp)
                         .padding(start = 20.dp)
                 )
                 Column(
@@ -151,7 +161,7 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                 ) {
                     Text(
                         text = "Tiền mặt",
-                        fontSize = 16.sp, // Font size giảm một chút
+                        fontSize = 16.sp,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
                     )
@@ -165,15 +175,17 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                     painter = painterResource(id = R.drawable.tich),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(40.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
+                        .size(40.dp)
                         .padding(end = 20.dp)
+                        .alpha(if (isCashSelected) 1f else 0.5f)
                 )
             }
         }
-//        yêu cầu bạn sửa phần này :
+
+
         Row(
             modifier = Modifier.padding(start = 20.dp),
-            verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
+            verticalAlignment = Alignment.CenterVertically
         ) {
             CustomCheckbox(
                 isChecked = isChecked,
@@ -181,8 +193,8 @@ fun PaymentConfirmationBody(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Row(
-                modifier = Modifier.weight(1f).
-                height(60.dp)
+                modifier = Modifier.weight(1f)
+                    .height(60.dp)
             ) {
                 Text(
                     text = buildAnnotatedString {
@@ -201,12 +213,11 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                         append(" thanh toán của BQL, bao gồm cả hạn mức và phí theo quy định.")
                     }
                 )
-
             }
         }
-
     }
 }
+
 @Composable
 fun CustomCheckbox(
     isChecked: Boolean,
