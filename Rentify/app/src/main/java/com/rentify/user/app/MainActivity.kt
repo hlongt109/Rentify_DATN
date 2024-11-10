@@ -12,16 +12,15 @@ import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
 import com.rentify.user.app.view.intro.IntroScreen
-import com.rentify.user.app.view.intro.SplashScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
-import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
-
 
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
-import com.rentify.user.app.view.userScreens.TinnhanScreen.TinnhanScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
+import com.rentify.user.app.view.userScreens.addPostScreen.AddPostScreen
+import com.rentify.user.app.view.userScreens.cancelContract.CancelContractScreen
+import com.rentify.user.app.view.userScreens.contract.ContractScreen
 
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
 import com.rentify.user.app.view.userScreens.laundrydetailscreen.LaundryDetailScreenScreen
@@ -48,7 +47,7 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
             composable(ROUTER.SPLASH.name) {
-                IncidentReportScreen(  navController)
+                ContractScreen(  navController)
             }
             composable(ROUTER.INTRO.name) {
                 IntroScreen(navController = navController)
@@ -107,6 +106,12 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ADDINCIDENTREPORT.name) {
                 AddIncidentReportScreen(navController = navController)
             }
+            composable(ROUTER.CONTRACT.name) {
+                ContractScreen(navController = navController)
+            }
+            composable(ROUTER.CANCELCONTRACT.name) {
+                CancelContractScreen(navController = navController)
+            }
 
         }
     }
@@ -131,6 +136,8 @@ class MainActivity : ComponentActivity() {
         SEARCHPOSTROOMATE,
         SEARCHPOSTROOM,
         INCIDENTREPORT,
-        ADDINCIDENTREPORT
+        ADDINCIDENTREPORT,
+        CONTRACT,
+        CANCELCONTRACT
     }
 }
