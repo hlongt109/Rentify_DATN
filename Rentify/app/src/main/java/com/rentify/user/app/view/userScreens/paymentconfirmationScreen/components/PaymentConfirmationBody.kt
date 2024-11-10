@@ -188,7 +188,7 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                     text = buildAnnotatedString {
                         append("Tôi đã hiểu và đồng ý với ")
                         pushStyle(SpanStyle(color = Color(0xFFc24b2a)))
-                        append("Điều khoản")
+                        append(" Điều khoản")
                         pop()
                         append(" và ")
                         pushStyle(SpanStyle(color = Color(0xFFc24b2a)))
