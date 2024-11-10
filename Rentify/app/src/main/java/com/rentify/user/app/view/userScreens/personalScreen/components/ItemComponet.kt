@@ -20,16 +20,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.navigation.NavController
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity.ROUTER
 import com.rentify.user.app.R
+import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.userScreens.laundryScreen.components.ItemgiatComponent
 
-@Preview(showBackground = true, showSystemUi = true)
+//@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ItemSComponent() {
-    LayoutItems()
+fun ItemSComponent(navController: NavController) { // Thêm navController như tham số
+    LayoutItems(navController = navController)
 }
 
 @Composable
-fun LayoutItems() {
+fun LayoutItems(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,7 +59,11 @@ fun LayoutItems() {
                         color = Color(0xFFfafafa),
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .clickable { }
+                    .clickable {
+                        navController.navigate("CATEGORYPOST")
+
+
+                    }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.qlbaidang),

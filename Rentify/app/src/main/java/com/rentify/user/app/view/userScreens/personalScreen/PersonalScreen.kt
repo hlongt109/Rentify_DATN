@@ -38,6 +38,6 @@ fun LayoutPersonal(navController: NavHostController) {
         BannerComponent()
         ItemNameComponent(navController)
         MenuComponent()
-        ItemSComponent()
+        ItemSComponent(navController)
     }
 }

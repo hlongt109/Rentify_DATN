@@ -125,7 +125,7 @@ fun SearchPostRoomateScreen(navController: NavHostController) {
 
 
     }
-    }
+}
 
 
 @Preview(showBackground = true, showSystemUi = true)

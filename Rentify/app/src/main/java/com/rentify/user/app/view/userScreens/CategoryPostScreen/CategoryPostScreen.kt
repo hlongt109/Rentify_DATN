@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -23,13 +24,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.components.SpacerHeightCompose
 import com.rentify.user.app.R
 
 @Composable
-fun CategoryPostScreen(navController: NavHostController) {
+fun CategoryPostScreen(navController: NavController) {
 
         Column(
             modifier = Modifier
@@ -50,11 +52,11 @@ fun CategoryPostScreen(navController: NavHostController) {
                         .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
                     verticalAlignment = Alignment.CenterVertically,
                 ){
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowLeft,
+                    IconButton(   modifier = Modifier.width(100.dp), onClick = { /*TODO*/ }) {
+                        Image(
+                            painter = painterResource(id = R.drawable.back),
                             contentDescription = null,
-                            tint = Color.Black
+                            modifier = Modifier.size(30.dp, 30.dp)
                         )
 
                     }
@@ -83,9 +85,7 @@ fun CategoryPostScreen(navController: NavHostController) {
                         .selectable(
                             selected = true,
                             onClick = {
-//                                navController.navigate(
-//                                    ROUTE.detail_ql_loai_mon.name
-//                                )
+                                navController.navigate("SEARCHPOSTROOM")
                             }
                         ),
                     verticalAlignment = Alignment.CenterVertically
@@ -96,7 +96,7 @@ fun CategoryPostScreen(navController: NavHostController) {
                         modifier = Modifier.size(60.dp, 50.dp)
                     )
                     Text(
-                        text = "Quản lý loại món ăn",
+                        text = "Tìm phòng",
                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         fontSize = 17.sp,
                         fontWeight = FontWeight(700),
@@ -113,10 +113,8 @@ fun CategoryPostScreen(navController: NavHostController) {
                         .selectable(
                             selected = true,
                             onClick = {
+                                navController.navigate("SEARCHPOSTROOM")
 
-//                                navController.navigate(
-//                                    ROUTE.detail_ql_mon.name
-//                                )
                             }
                         ),
                     verticalAlignment = Alignment.CenterVertically
@@ -127,7 +125,7 @@ fun CategoryPostScreen(navController: NavHostController) {
                         modifier = Modifier.size(60.dp, 50.dp)
                     )
                     Text(
-                        text = "Quản lý món ăn",
+                        text = "Tìm người ở ghép",
                       //  fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         fontSize = 17.sp,
                         fontWeight = FontWeight(700),
@@ -135,10 +133,7 @@ fun CategoryPostScreen(navController: NavHostController) {
                         modifier = Modifier.padding(start = 5.dp)
                     )
                 }
-
-
             }
-
         }
     }
 

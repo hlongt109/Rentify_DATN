@@ -65,7 +65,7 @@ fun AddPostScreen(navController: NavHostController) {
     var selectedComfortable by remember { mutableStateOf(setOf<String>()) }
     var selectedService by remember { mutableStateOf(setOf<String>()) }
     var expanded by remember { mutableStateOf(false) }
-    var selectedGender by remember { mutableStateOf("Nhập giới tính") }
+    var selectedGender by remember { mutableStateOf("") }
     val genderOptions = listOf("Nam", "Nữ", "Giới tính thứ 3")
     val scrollState = rememberScrollState()
     var postTitle by remember { mutableStateOf("") }
@@ -275,7 +275,7 @@ fun AddPostScreen(navController: NavHostController) {
                 Row(
                     modifier = Modifier
 
-                        .shadow(6.dp, shape = RoundedCornerShape(10.dp))
+                        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                         .background(color = Color(0xFFffffff))
                         .border(
                             width = 0.dp,
@@ -322,7 +322,7 @@ fun AddPostScreen(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxHeight(0.6f)
                     .fillMaxWidth()
-                    .shadow(6.dp, shape = RoundedCornerShape(10.dp))
+                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                     .background(color = Color(0xFFffffff))
                     .border(
                         width = 0.dp, color = Color(0xFFEEEEEE), shape = RoundedCornerShape(10.dp)
@@ -589,7 +589,7 @@ fun AddPostScreen(navController: NavHostController) {
                             Text(
                                 text = "Nhập giới tính",
                                 fontSize = 13.sp,
-                                color = Color(0xFFcecece),
+                                color = Color(0xFF898888),
                                 fontFamily = FontFamily(Font(R.font.cairo_regular))
                             )
                         },
@@ -612,6 +612,13 @@ fun AddPostScreen(navController: NavHostController) {
                         }
                     }
                 }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            ) {
+
             }
             // giá phòng
             Column(
@@ -669,6 +676,7 @@ fun AddPostScreen(navController: NavHostController) {
                     contentDescription = null,
                     modifier = Modifier.size(30.dp, 30.dp)
                 )
+                Spacer(modifier = Modifier.width(3.dp))
                 Text(
                     text = "Tiện nghi",
                     //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
@@ -753,6 +761,7 @@ fun AddPostScreen(navController: NavHostController) {
                     contentDescription = null,
                     modifier = Modifier.size(30.dp, 30.dp)
                 )
+                Spacer(modifier = Modifier.width(3.dp))
                 Text(
                     text = "Dịch vụ",
                     //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
@@ -847,7 +856,7 @@ fun RoomTypeOption(
     Row(modifier = Modifier
         .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
             interactionSource = remember { MutableInteractionSource() })
-        .shadow(10.dp, shape = RoundedCornerShape(10.dp))
+        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
         .border(
             width = 2.dp,
             color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
@@ -871,7 +880,7 @@ fun ComfortableOption(
     Row(modifier = Modifier
         .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
             interactionSource = remember { MutableInteractionSource() })
-        .shadow(10.dp, shape = RoundedCornerShape(10.dp))
+        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
         .border(
             width = 2.dp,
             color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
@@ -895,7 +904,7 @@ fun ServiceOption(
     Row(modifier = Modifier
         .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
             interactionSource = remember { MutableInteractionSource() })
-        .shadow(10.dp, shape = RoundedCornerShape(10.dp))
+        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
         .border(
             width = 2.dp,
             color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected

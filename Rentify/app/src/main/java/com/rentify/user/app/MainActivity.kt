@@ -16,7 +16,13 @@ import com.rentify.user.app.view.intro.SplashScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
+
+
+import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.TinnhanScreen.TinnhanScreen
+import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
+
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
 import com.rentify.user.app.view.userScreens.laundrydetailscreen.LaundryDetailScreenScreen
 import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
@@ -24,6 +30,7 @@ import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.profilescreen.ProfileScreen
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
 import com.rentify.user.app.view.userScreens.roomdetailsScreen.LayoutRoomdetails
+import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 
@@ -41,7 +48,7 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
             composable(ROUTER.SPLASH.name) {
-                SearchPostRoomateScreen(navController = navController)
+                IncidentReportScreen(  navController)
             }
             composable(ROUTER.INTRO.name) {
                 IntroScreen(navController = navController)
@@ -82,9 +89,25 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.LAUDRYDETAIL.name) {
                 LaundryDetailScreenScreen(navController = navController)
             }
-            composable(ROUTER.TINNHAN.name) {
-                TinnhanScreen(navController = navController)
+            composable(ROUTER.CATEGORYPOST.name) {
+                CategoryPostScreen( navController)
             }
+            composable(ROUTER.SEARCHPOSTROOMATE.name) {
+                SearchPostRoomateScreen(navController = navController)
+            }
+            composable(ROUTER.SEARCHPOSTROOM.name) {
+                SearchPostRoonmScreen(navController = navController)
+            }
+            composable(ROUTER.ADDPOST.name) {
+                AddPostScreen(navController = navController)
+            }
+            composable(ROUTER.INCIDENTREPORT.name) {
+                IncidentReportScreen(navController = navController)
+            }
+            composable(ROUTER.ADDINCIDENTREPORT.name) {
+                AddIncidentReportScreen(navController = navController)
+            }
+
         }
     }
 
@@ -103,6 +126,11 @@ class MainActivity : ComponentActivity() {
         PROFILE,
         LAUDRY,
         LAUDRYDETAIL,
-        TINNHAN
+        ADDPOST,
+        CATEGORYPOST,
+        SEARCHPOSTROOMATE,
+        SEARCHPOSTROOM,
+        INCIDENTREPORT,
+        ADDINCIDENTREPORT
     }
 }
