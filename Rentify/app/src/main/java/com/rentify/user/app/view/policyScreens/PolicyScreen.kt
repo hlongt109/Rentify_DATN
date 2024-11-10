@@ -36,7 +36,7 @@ import androidx.compose.material.*
 import androidx.compose.ui.text.TextStyle
 
 
-@Preview (showBackground = true, showSystemUi = true)
+@Preview (showBackground = true)
 @Composable
 fun PolicyScreen() {
     Column(

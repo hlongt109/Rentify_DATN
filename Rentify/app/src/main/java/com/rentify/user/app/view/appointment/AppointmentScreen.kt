@@ -40,13 +40,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.LocationOn
 
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun AppointmentScreen() {
     Column(
@@ -82,7 +83,7 @@ fun AppointmentTopAppBarWithActions(
         contentColor = Color.Black, // Customize text/icon color
         navigationIcon = {
             IconButton(onClick = onBackClick) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Back")
             }
         },
         actions = {
@@ -149,12 +150,12 @@ fun AppointmentTabRow() {
             Tab(
                 selected = selectedTabIndex == 1,
                 onClick = { selectedTabIndex = 1 },
-                text = { Text("Chưa xem phòng") }
+                text = { Text("Phòng chưa xem") }
             )
             Tab(
                 selected = selectedTabIndex == 2,
                 onClick = { selectedTabIndex = 2 },
-                text = { Text("Đã xem phòng") }
+                text = { Text("Phòng đã xem") }
             )
         }
         when (selectedTabIndex) {

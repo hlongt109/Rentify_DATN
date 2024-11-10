@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.CropDin
 import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.People
@@ -50,7 +51,8 @@ fun FavScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         FavTopAppBarWithActions(
-            onBackClick = { /* Handle back icon click */ }
+            onBackClick = { /* Handle back icon click */ },
+            onCalendarClick = { /* Handle calendar icon click */ },
         )
         FavRoomListScreen()
     }
@@ -60,6 +62,7 @@ fun FavScreen() {
 @Composable
 fun FavTopAppBarWithActions(
     onBackClick: () -> Unit,
+    onCalendarClick: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -73,7 +76,12 @@ fun FavTopAppBarWithActions(
         contentColor = Color.Black, // Customize text/icon color
         navigationIcon = {
             IconButton(onClick = onBackClick) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Back")
+            }
+        },
+        actions = {
+            IconButton(onClick = onCalendarClick) {
+                Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = "Calendar")
             }
         },
         elevation = 4.dp // Customize elevation if needed
@@ -144,7 +152,7 @@ fun FavRoomCard(room: FavRoom) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "${room.size}",
+                        text = " ${room.size}",
                         color = Color.Gray,
                         fontSize = 12.sp
                     )
@@ -160,7 +168,7 @@ fun FavRoomCard(room: FavRoom) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "${room.capacity} người",
+                        text = " ${room.capacity} người",
                         color = Color.Gray,
                         fontSize = 12.sp
                     )
@@ -177,7 +185,7 @@ fun FavRoomCard(room: FavRoom) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = room.address,
+                        text = " ${room.address}",
                         color = Color.Gray,
                         fontSize = 12.sp,
                         maxLines = 1,
