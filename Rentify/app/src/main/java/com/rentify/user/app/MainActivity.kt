@@ -13,6 +13,10 @@ import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.navigator.ROUTER
+import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
+import com.rentify.user.app.view.userScreens.BillScreen.PaidScreen
+import com.rentify.user.app.view.userScreens.BillScreen.UnPaidScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
 import com.rentify.user.app.view.userScreens.messengerScreem.LayoutMessenger
@@ -28,7 +32,9 @@ class MainActivity : ComponentActivity() {
 //            MainNavigation()
 //            MyScreen()
 //            PostRoomScreen(navController = rememberNavController())
-            FilterScreen(navController = rememberNavController())
+//            FilterScreen(navController = rememberNavController())
+//            BillScreen(navController = rememberNavController())
+            TestNavigation()
         }
     }
 
@@ -66,6 +72,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    fun TestNavigation() {
+        val navController = rememberNavController()
+        NavHost(
+            navController = navController,
+            startDestination = ROUTER.BILL.name
+        ) {
+            composable(ROUTER.BILL.name) {
+                BillScreen(navController)
+            }
+            composable(ROUTER.UNPAID.name) {
+                UnPaidScreen()
+            }
+            composable(ROUTER.PAID.name) {
+                PaidScreen()
+            }
+        }
+    }
     enum class ROUTER {
         HOME,
         SERVICE,
@@ -75,6 +99,9 @@ class MainActivity : ComponentActivity() {
         LOGIN,
         REGISTER,
         FILTER,
-        SEARCHSCREEN
+        SEARCHSCREEN,
+        UNPAID,
+        PAID,
+        BILL
     }
 }

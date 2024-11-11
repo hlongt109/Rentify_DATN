@@ -2,7 +2,9 @@ package com.rentify.user.app.utils
 
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Currency
+import java.util.Date
 import java.util.Locale
 
 object CheckUnit {
@@ -18,4 +20,12 @@ object CheckUnit {
         }.format(price)
     }
 
+    fun formatYear(date: Date): String {
+        val format = SimpleDateFormat("yyyy", Locale.getDefault()) // Chỉ định định dạng năm
+        return format.format(date)
+    }
+    fun formatMonth(date: Date): String {
+        val format = SimpleDateFormat("MM/yyyy", Locale.getDefault()) // Chỉ định định dạng năm
+        return format.format(date)
+    }
 }

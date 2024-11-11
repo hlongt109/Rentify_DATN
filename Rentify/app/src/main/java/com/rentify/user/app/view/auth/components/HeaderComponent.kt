@@ -1,11 +1,13 @@
 package com.rentify.user.app.view.auth.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,12 +35,12 @@ fun HeaderComponent(
     Box(modifier = Modifier
         .background(backgroundColor)
         .fillMaxWidth()
-        .height(40.dp))
+        .height(80.dp))
     {
         Row (modifier = Modifier
-            .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
-
+            .fillMaxSize()
+            .padding(top = 15.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ){
         IconButton(onClick = {}) {
             Icon(
@@ -55,7 +58,8 @@ fun HeaderComponent(
               color = Color.Black,
               textAlign = TextAlign.Center,
               fontSize = 17.sp,
-              fontStyle = FontStyle.Normal
+              fontWeight = FontWeight.Medium,
+              modifier = Modifier.fillMaxWidth().offset(x = -20.dp)
           )
         }
     }
@@ -65,6 +69,6 @@ fun HeaderComponent(
 fun PreviewComponent(){
     HeaderComponent(
         Color.White,
-        ""
+        "hhh"
     )
 }

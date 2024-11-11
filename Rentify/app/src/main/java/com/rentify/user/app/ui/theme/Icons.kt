@@ -13,3 +13,4 @@ val arrangeTop = R.drawable.arrange_top
 val arrangeDown = R.drawable.arrange_down
 val home_arrange = R.drawable.home_arrange
 val tick = R.drawable.tick
+val file = R.drawable.file
