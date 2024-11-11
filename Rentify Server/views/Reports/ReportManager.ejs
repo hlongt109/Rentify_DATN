@@ -579,6 +579,7 @@
             ${serviceManagerContact}
             ` : '';
 
+            // cần thêm nút cấm đăng cho post
             const isPost = type === "post" ? ` 
             <h6 class="mb-3 flex-grow-1" style="color: #007bff;">Thông bài đăng :</h6>
             <div class="mb-2"><span class="report-detail-label">Loại:</span> ${getPostType(dataDetails.post_type) ?? 'N/A'}</div>
@@ -727,8 +728,8 @@
                     return '<span class="status-completed">Cho thuê nhà</span>';
                 case "seek":
                     return '<span class="status-completed">Tìm thuê nhà</span>';
-                case "rejected":
-                    return '<span class="status-rejected">Bài đăng vi phạm</span>';
+                // case "rejected":
+                //     return '<span class="status-rejected">Bài đăng vi phạm</span>';
                 default:
                     return '<span class="status-pending">Unknown</span>';
             }
