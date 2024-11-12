@@ -101,4 +101,5 @@ router.delete("/api/notifications/:id", async(req, res) => {
         handleServerError(req, res)
     }
 })
+
 module.exports = router;

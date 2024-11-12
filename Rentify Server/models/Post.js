@@ -8,7 +8,7 @@ const Post = new Schema({
     },
     title: { type: String, require: true },
     content: { type: String, require: true },
-    status: { type: Number, enum: [0, 1], default: 1 },
+    status: { type: Number, enum: [0, 1, 2], default: 0 },
     video: { type: Array },
     photo: { type: Array },
     post_type: { type: String, enum: ['roomate', 'rent'], require: true },

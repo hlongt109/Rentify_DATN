@@ -127,7 +127,7 @@ const renderTable = () => {
                 <button class="btn text-white shadow-button" style="font-size: 0.75rem; background-color: ${getRoleColor(user.role)}; width: 70px;">${user.role ?? 'N/A'}</button>
             </td>
             <td>
-                <button class="btn btn-primary shadow-button" style="font-size: 0.75rem;" onclick="toggleEditForm('${user._id}')">Update</button>
+                <button class="btn btn-primary shadow-button" style="font-size: 0.75rem;" onclick="toggleEditForm('${user._id}')">Cập nhật</button>
             </td>
         `;
 
@@ -189,8 +189,8 @@ const renderTable = () => {
             </div>
         </div>
         <div class="d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="cancelEdit()">Cancel</button>
-            <button type="button" class="btn btn-primary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="showConfirmModal('${user._id}')">Update</button>
+            <button type="button" class="btn btn-secondary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="cancelEdit()">Huỷ</button>
+            <button type="button" class="btn btn-primary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="showConfirmModal('${user._id}')">Cập nhật</button>
         </div>
     </form>
 </td>
