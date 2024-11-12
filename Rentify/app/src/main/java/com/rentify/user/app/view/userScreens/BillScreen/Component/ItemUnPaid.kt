@@ -115,7 +115,6 @@ fun ItemUnPaid(
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -147,9 +146,7 @@ fun ItemUnPaid(
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
+                
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,

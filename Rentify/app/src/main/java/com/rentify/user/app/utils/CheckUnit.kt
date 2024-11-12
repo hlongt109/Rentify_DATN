@@ -1,5 +1,10 @@
 package com.rentify.user.app.utils
 
+import androidx.compose.ui.platform.LocalConfiguration
+import com.google.gson.Gson
+import com.rentify.user.app.model.Service
+import java.net.URLDecoder
+import java.net.URLEncoder
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -28,4 +33,20 @@ object CheckUnit {
         val format = SimpleDateFormat("MM/yyyy", Locale.getDefault()) // Chỉ định định dạng năm
         return format.format(date)
     }
+
+    // 2. Tạo extension function để encode/decode Service
+    fun Service.toJson(): String {
+        return URLEncoder.encode(Gson().toJson(this), "UTF-8")
+    }
+
+    fun String.toService(): Service? {
+        return try {
+            Gson().fromJson(URLDecoder.decode(this, "UTF-8"), Service::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+//    val configuration = LocalConfiguration.current
+//    val screenWidth = configuration.screenWidthDp
+//    val screenHeight = configuration.screenHeightDp
 }

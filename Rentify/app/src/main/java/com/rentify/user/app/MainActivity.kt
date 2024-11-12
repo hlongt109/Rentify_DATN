@@ -6,14 +6,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.rentify.user.app.utils.CheckUnit.toService
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
 
 import com.rentify.user.app.view.navigator.AppNavigation
 import com.rentify.user.app.view.navigator.ROUTER
+import com.rentify.user.app.view.staffScreens.ServiceScreen.AddEditService
+import com.rentify.user.app.view.staffScreens.ServiceScreen.ServiceScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
 import com.rentify.user.app.view.userScreens.BillScreen.PaidScreen
 import com.rentify.user.app.view.userScreens.BillScreen.UnPaidScreen
@@ -77,19 +82,44 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         NavHost(
             navController = navController,
-            startDestination = ROUTER.BILL.name
+            startDestination = ROUTER.SERVICESTAFF.name
         ) {
-            composable(ROUTER.BILL.name) {
-                BillScreen(navController)
+            composable(ROUTER.SERVICESTAFF.name) {
+                ServiceScreen(navController)
             }
-            composable(ROUTER.UNPAID.name) {
-                UnPaidScreen()
+//              // Route cho add service (không cần serviceJson)
+            composable(
+                route = "${ROUTER.ADDEDITSERVICE.name}/{isEditing}",
+                arguments = listOf(
+                    navArgument("isEditing") {
+                        type = NavType.BoolType
+                        defaultValue = false
+                    }
+                )
+            ) { backStackEntry ->
+                val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: false
+                AddEditService(navController, isEditing, null)  // truyền null khi add
             }
-            composable(ROUTER.PAID.name) {
-                PaidScreen()
+            composable(
+                route = "${ROUTER.ADDEDITSERVICE.name}/{isEditing}/{serviceJson}",
+                arguments = listOf(
+                    navArgument("isEditing") {
+                        type = NavType.BoolType
+                        defaultValue = true
+                    },
+                    navArgument("serviceJson") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+                val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: true
+                val serviceJson = backStackEntry.arguments?.getString("serviceJson")
+                val service = serviceJson?.toService()
+                AddEditService(navController, isEditing, service)
             }
         }
     }
+
     enum class ROUTER {
         HOME,
         SERVICE,
@@ -102,6 +132,9 @@ class MainActivity : ComponentActivity() {
         SEARCHSCREEN,
         UNPAID,
         PAID,
-        BILL
+        BILL,
+        SERVICESTAFF,
+        ADDEDITSERVICE,
+        EDITSERVICE,
     }
 }

@@ -104,7 +104,7 @@ fun LoginScreenApp(navigator: NavController) {
                 .padding(15.dp)
         ) {
             Spacer(modifier = Modifier.padding(top = 30.dp))
-            HeaderComponent(backgroundColor = Color.White, title = "")
+            HeaderComponent(backgroundColor = Color.White, title = "", navController = navigator)
             Spacer(modifier = Modifier.padding(top = 50.dp))
             //text chao mung
             TextLoginContent()

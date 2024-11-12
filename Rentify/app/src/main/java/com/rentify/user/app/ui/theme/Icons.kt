@@ -14,3 +14,8 @@ val arrangeDown = R.drawable.arrange_down
 val home_arrange = R.drawable.home_arrange
 val tick = R.drawable.tick
 val file = R.drawable.file
+val edit = R.drawable.edit
+val delete = R.drawable.delete
+val camera = R.drawable.camera
+//image
+val image_service = R.drawable.imgservice

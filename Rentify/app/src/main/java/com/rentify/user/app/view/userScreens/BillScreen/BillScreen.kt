@@ -35,7 +35,7 @@ fun BillScreen(navController: NavController) {
             .padding(bottom = 80.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            HeaderComponent(backgroundColor = Color.White, title = "Hóa đơn")
+            HeaderComponent(backgroundColor = Color.White, title = "Hóa đơn", navController = navController)
             Column(
                 modifier = Modifier
                     .fillMaxSize()

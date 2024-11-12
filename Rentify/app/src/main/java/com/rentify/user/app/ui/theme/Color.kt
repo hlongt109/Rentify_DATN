@@ -28,6 +28,7 @@ val borderColor = Color(0xFFcccccc)
 val colorTabBar = Color(0xFFC24B2A)
 val colorUnTabBar = Color(0xFF908b8b)
 val iconColor = Color(0xFF7a7474)
+val colorMoney = Color(0xFFB95533)
 
 
 
