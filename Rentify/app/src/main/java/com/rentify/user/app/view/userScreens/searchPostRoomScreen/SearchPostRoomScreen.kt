@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -34,7 +36,8 @@ fun SearchPostRoonmScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color(0xfff7f7f7))
-
+                .statusBarsPadding()
+                .navigationBarsPadding()
         ) {
             Column(
                 modifier = Modifier
@@ -67,7 +70,7 @@ fun SearchPostRoonmScreen(navController: NavHostController) {
                         fontSize = 17.sp,
 
                         )
-                    IconButton( modifier = Modifier.width(100.dp), onClick = { /*TODO*/ }) {
+                    IconButton( modifier = Modifier.width(100.dp), onClick = { navController.navigate("ADDPOST") }) {
                         Image(
                             painter = painterResource(id = R.drawable.addr),
                             contentDescription = null,

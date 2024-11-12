@@ -66,7 +66,7 @@ fun SearchPostRoomateScreen(navController: NavHostController) {
                     fontSize = 17.sp,
 
                     )
-                IconButton( modifier = Modifier.width(100.dp), onClick = { /*TODO*/ }) {
+                IconButton( modifier = Modifier.width(100.dp), onClick = { navController.navigate("ADDPOST") }) {
                     Image(
                         painter = painterResource(id = R.drawable.addr),
                         contentDescription = null,

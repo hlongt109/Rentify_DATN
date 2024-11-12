@@ -46,6 +46,7 @@ fun LayoutSearch(navController: NavHostController) {
         TypeProduct("Săn phòng giảm giá", R.drawable.sanphong),
         TypeProduct("Tìm phòng xung quanh", R.drawable.map),
         TypeProduct("Tin đăng cho thuê", R.drawable.tindang),
+        TypeProduct("Tin đăng tìm phòng", R.drawable.map),
         TypeProduct("Tìm người ở ghép", R.drawable.timnguoi),
         TypeProduct("Vận chuyển", R.drawable.vanchuyen)
     )
@@ -127,6 +128,18 @@ fun LayoutSearch(navController: NavHostController) {
                         onClick = { statusType = type.type
                             if (type.type == "Tìm người ở ghép") {
                                 navController.navigate("TogeTher") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+
+                            if (type.type == "Tin đăng cho thuê") {
+                                navController.navigate("Search_room") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+
+                            if (type.type == "Tin đăng tìm phòng") {
+                                navController.navigate("Search_room") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }

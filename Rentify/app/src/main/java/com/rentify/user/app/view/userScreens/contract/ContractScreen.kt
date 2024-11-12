@@ -117,7 +117,7 @@ navController.navigate("CANCELCONTRACT")
 
             Spacer(modifier = Modifier.height(25.dp))
 
-            ViewContractButton(onClick = { /**/ })
+            ViewContractButton(onClick = { navController.navigate("CONTRACT") })
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

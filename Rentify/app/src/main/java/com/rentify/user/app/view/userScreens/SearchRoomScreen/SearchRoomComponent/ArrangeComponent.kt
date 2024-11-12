@@ -91,7 +91,7 @@ fun ArrangeComponent(navController: NavController) {
             )
 
             IconButton(
-                onClick = { navController.navigate(ROUTER.FILTER.name)},
+                onClick = { navController.navigate(ROUTER.Filter_room.name)},
                 modifier = Modifier.width(70.dp)
             ) {
               Row {
