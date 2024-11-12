@@ -1,7 +1,11 @@
 package com.rentify.user.app.repository.LoginRepository
 
 import com.google.gson.annotations.SerializedName
-
+data class RegisterRequest(
+    val username: String,
+    var email: String,
+    var password: String
+)
 data class LoginResponse(
     @SerializedName("_id") val userId: String,
     @SerializedName("email") val email: String,

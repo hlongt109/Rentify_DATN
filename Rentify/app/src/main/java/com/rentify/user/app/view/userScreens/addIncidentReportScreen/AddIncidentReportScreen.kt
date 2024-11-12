@@ -61,9 +61,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.flowlayout.FlowRow
-import com.rentify.user.app.network.ApiClient
-import com.rentify.user.app.network.RegisterRequest
-import com.rentify.user.app.network.RegisterResponse
+
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
