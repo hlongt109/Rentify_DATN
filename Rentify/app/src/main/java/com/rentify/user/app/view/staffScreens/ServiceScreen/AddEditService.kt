@@ -71,7 +71,7 @@ fun AddEditService(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
-            .padding(bottom = 40.dp)
+            .padding(bottom = 50.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize() // Thay đổi từ fillMaxWidth thành fillMaxSize
