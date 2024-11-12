@@ -18,7 +18,7 @@ import com.rentify.user.app.view.navigator.AppNavigation
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
-import com.rentify.user.app.view.userScreens.addPostScreen.AddPostScreen
+import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.cancelContract.CancelContractScreen
 import com.rentify.user.app.view.userScreens.contract.ContractScreen
 
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
             composable(ROUTER.SPLASH.name) {
-                ContractScreen(  navController)
+                ContractScreen (  navController)
             }
             composable(ROUTER.INTRO.name) {
                 IntroScreen(navController = navController)

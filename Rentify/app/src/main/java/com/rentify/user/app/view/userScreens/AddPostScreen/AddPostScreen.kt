@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.addPostScreen
+package com.rentify.user.app.view.userScreens.AddPostScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
