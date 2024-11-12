@@ -131,7 +131,7 @@ const renderTable1 = () => {
                 <button class="btn text-white shadow-button" style="font-size: 0.75rem; background-color: ${getRoleColor1(user.status)}; width: 70px;">
                 ${user.status ?? 'N/A'}
                 </button>
-            </td>
+            </td>   
             <td>
                 <button class="btn btn-primary shadow-button" style="font-size: 0.75rem;" onclick="toggleEditForm1('${user._id}')">Update</button>
             </td>

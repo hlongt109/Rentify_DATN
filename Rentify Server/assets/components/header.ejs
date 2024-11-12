@@ -17,11 +17,25 @@
             <i class="fas fa-search search-icon"></i>
         </div>
         <div class="right">
-            <i class="fas fa-bell icon"></i>
+
+            <!-- Biểu tượng chuông với số lượng thông báo chưa đọc -->
+            <div class="notification-bell" onclick="toggleNotificationList()">
+                <i class="fas fa-bell icon"></i>
+                <span class="notification-count" id="notification-count">0</span> <!-- Số lượng thông báo chưa đọc -->
+            </div>
+
+            <!-- Danh sách thông báo khi nhấn vào chuông -->
+            <div id="notification-list" class="notification-list">
+                <!-- Danh sách thông báo sẽ được hiển thị tại đây -->
+            </div>
+
+
+
             <i class="fas fa-envelope icon"></i>
             <i class="fas fa-user-circle avatar"></i>
         </div>
     </header>
+    <script src="../../assets/js/header.js"></script>
 </body>
 
 </html>

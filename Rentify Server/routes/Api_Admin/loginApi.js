@@ -25,8 +25,6 @@ router.get("/admin/login", (req, res) => {
 router.post("/admin/login", async (req, res) => {
     try {
         const { username, password } = req.body;
-        console.log(req.body);
-
         if (!username || !password) {
             return res.status(400).json({ message: 'Thiếu username hoặc password' });
         }
@@ -42,10 +40,11 @@ router.post("/admin/login", async (req, res) => {
             return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
         }
         // Tạo JWT
-        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1w' });
-        console.log("Generated token:", token); // Kiểm tra token được tạo
+        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1000h' });
+        //token
+        // const token = await user.generateAuthToken()
+        // user.token = token;
         const userID = user._id;
-        console.log(user._id);
 
         res.json({ message: "Đăng nhập thành công", token, data: user, userID });
     } catch (error) {
