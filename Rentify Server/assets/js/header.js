@@ -64,12 +64,35 @@ function renderNotificationList(notifications) {
         `;
 
         notificationElement.addEventListener('click', () => {
+            viewNotificationDetail(notification);
             markNotificationAsRead(notification._id); // Gọi hàm đánh dấu là đã đọc
         });
-
         notificationListElement.appendChild(notificationElement);
     });
 }
+// Hàm để xem chi tiết thông báo
+function viewNotificationDetail(notification) {
+    document.getElementById('notification-detail-title').innerText = notification.title;
+    document.getElementById('notification-detail-content').innerText = notification.content;
+    document.getElementById('notification-detail-time').innerText = new Date(notification.created_at).toLocaleString();
+
+    const modal = document.getElementById('notification-detail-modal');
+    modal.style.display = 'block'; // Hiển thị modal
+}
+// Hàm để đóng modal
+function closeNotificationDetail() {
+    const modal = document.getElementById('notification-detail-modal');
+    modal.style.display = 'none'; // Ẩn modal
+}
+
+// Đóng modal khi nhấn ra ngoài
+window.onclick = function (event) {
+    const modal = document.getElementById('notification-detail-modal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
 //cái này dùng để tắt hộp thoại thông báo khi ấn bất kì trên màn hình
 document.addEventListener('DOMContentLoaded', function () {
     // Lấy các phần tử thông báo sau khi DOM đã tải xong

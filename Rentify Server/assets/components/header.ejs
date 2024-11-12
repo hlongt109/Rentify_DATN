@@ -10,7 +10,6 @@
 </head>
 
 <body>
-    <!-- views/components/header.ejs -->
     <header class="header">
         <div class="search-container">
             <input type="text" placeholder="Tìm kiếm..." />
@@ -27,6 +26,15 @@
             <!-- Danh sách thông báo khi nhấn vào chuông -->
             <div id="notification-list" class="notification-list">
                 <!-- Danh sách thông báo sẽ được hiển thị tại đây -->
+            </div>
+            <!-- Modal chi tiết thông báo -->
+            <div id="notification-detail-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeNotificationDetail()">&times;</span>
+                    <h2 id="notification-detail-title"></h2>
+                    <p id="notification-detail-content"></p>
+                    <p id="notification-detail-time"></p>
+                </div>
             </div>
 
 

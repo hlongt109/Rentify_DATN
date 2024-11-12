@@ -43,7 +43,7 @@ router.post("/notifications", async (req, res) => {
         const { user_id, title, content } = data;
 
         // Kiểm tra nếu thiếu thông tin quan trọng
-        if (!user_id || !title || !content) {
+        if (!user_id || !title || !content) { //nhập ID của ng nhận
             return res.status(400).json({
                 "status": 400,
                 "message": "user_id, title và content là bắt buộc",
@@ -117,23 +117,15 @@ router.get('/notifications', authenticate, async (req, res) => {
         });
         res.json({ notifications, unreadCount });
     } catch (error) {
-        res.status(500).json({ message: "Loi khi lay thong bao", error });
+        res.status(500).json({ message: "Lỗi khi lấy thông báo", error });
     }
 })
-// router.get('/notifications', authenticate, async (req, res) => {
-//     try {
-//         const notifications = await Notification.find({ user_id: req.user.id });
-//         res.json(notifications);
-//     } catch (error) {
-//         res.status(500).json({ message: "Error fetching notifications" });
-//     }
-// });
 
 // API đánh dấu thông báo là đã đọc
 router.put('/notifications/:id/read', async (req, res) => {
     try {
         const notificationId = req.params.id;
-        await Notification.updateOne({ _id: notificationId, user_id: req.user.id }, { status: 'read' });
+        await Notification.updateOne({ _id: notificationId, user_id: req.user.id }, { read_status: 'read' });
         res.json({ message: "Notification marked as read" });
     } catch (error) {
         res.status(500).json({ message: "Error updating notification status" });
@@ -150,19 +142,16 @@ router.patch('/notifications/:notificationId/read', async (req, res) => {
             return res.status(404).json({ message: 'Notification not found' });
         }
 
-        // Giả sử `read_status` là trường trong thông báo để đánh dấu đã đọc
         notification.read_status = 'read';
 
         // Lưu lại thay đổi
         await notification.save();
 
-        return res.json({ message: 'Notification marked as read' });
+        return res.json({ message: 'Notification đã read' });
     } catch (error) {
         return res.status(500).json({ message: 'Error marking notification as read', error: error.message });
     }
 });
-
-
 
 // details
 router.get("/notifications/:id", async (req, res) => {

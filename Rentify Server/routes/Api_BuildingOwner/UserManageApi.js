@@ -40,26 +40,31 @@ const JWT_SECRET = 'your_jwt_secret_key';
 
 //#2. đăng nhập tài khoản POST : http://localhost:3000/api/login
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-
     try {
-        const user = await User.findOne({ email });
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Thiếu username hoặc password' });
+        }
+        // Tìm người dùng trong cơ sở dữ liệu
+        const user = await User.findOne({ username: username, password: password });
         if (!user) {
-            return res.status(400).json({ error: 'Invalid email or password.' });
+            return res.status(401).json({ message: 'Tài khoản không tồn tại' });
         }
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ error: 'Invalid email or password.' });
+        if (user.role !== 'landlord') {
+            return res.status(401).json({ message: 'Bạn không có quyền truy cập!' });
         }
-        const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
-        res.status(200).json({ message: 'Login successful!', token });
+        // Tạo JWT
+        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1000h' });
+        const userID = user._id;
+
+        res.json({ message: "Đăng nhập thành công", token, data: user, userID });
     } catch (error) {
         res.status(500).json({ error: 'Login failed.' });
     }
 });
 
 router.get("/login", (req, res) => {
-    res.render('login');
+    res.render('chutoa_web/Login');
 });
 
 module.exports = router;
