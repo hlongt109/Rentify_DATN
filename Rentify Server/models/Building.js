@@ -12,8 +12,13 @@ const Building = new Schema({
         ref: 'User',
         required: true
     },
+    service: [{ // toà nhà có nhưng vụ gì add vào đây
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service",
+    }],
+    nameBuilding: {type: String},
     address: { type: String },
-    description: { type: String }, 
+    description: { type: String },
     number_of_floors: { type: Number },
     created_at: { type: String },
     updated_at: { type: String }

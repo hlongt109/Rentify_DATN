@@ -16,7 +16,7 @@ const User = new Schema({
   address: { type: String },
   profile_picture_url: { type: String },
   verified: { type: Boolean, default: false }, //false: chua xac thuc, true: da xac thuc
-  landlord_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  landlord_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // 
   created_at: { type: String },
   updated_at: { type: String },
 });
