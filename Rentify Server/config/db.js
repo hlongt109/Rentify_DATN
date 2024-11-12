@@ -4,7 +4,7 @@ const url_db = "mongodb+srv://hoanglongtran1402:j5CATOjIJy19MtlH@rentifydb.xycpy
 const connect = async () => {
     try {
         await mongooes.connect(url_db)
-        console.log("The JS server is already running with http://localhost:3000/api/rentify/login \n")
+        console.log("The JS server is already running with http://localhost:3000/api/admin/login \n")
     } catch (error) {
         console.log("Error :" + error);
         console.log('Server connection failed');

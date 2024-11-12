@@ -119,6 +119,16 @@ class MainActivity : ComponentActivity() {
         INCIDENTREPORT,
         ADDINCIDENTREPORT,
         CONTRACT,
-        CANCELCONTRACT
+        CANCELCONTRACT,
+        LOGIN,
+        REGISTER,
+        FILTER,
+        SEARCHSCREEN,
+        UNPAID,
+        PAID,
+        BILL,
+        SERVICESTAFF,
+        ADDEDITSERVICE,
+        EDITSERVICE,
     }
 }

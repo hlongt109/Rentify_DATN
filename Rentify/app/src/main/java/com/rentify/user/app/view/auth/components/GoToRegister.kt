@@ -19,7 +19,7 @@ import com.rentify.user.app.ui.theme.greenInput
 
 
 @Composable
-fun GoToRegister(navController: NavController){
+fun GoToRegister(){
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
@@ -38,7 +38,7 @@ fun GoToRegister(navController: NavController){
             modifier = Modifier
                 .padding(start = 10.dp)
                 .clickable {
-                    navController.navigate("RESGITER")
+                    navController.navigate(ROUTER.REGISTER.name)
                 }
         )
     }

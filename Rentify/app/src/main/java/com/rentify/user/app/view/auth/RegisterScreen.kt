@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
+import com.rentify.user.app.MainActivity.ROUTER
 import com.rentify.user.app.R
 import com.rentify.user.app.network.ApiClient
 import com.rentify.user.app.network.RegisterRequest
@@ -328,14 +329,14 @@ fun RegisterScreen(navController: NavHostController) {
 
                     ApiClient.apiService.registerUser(registerRequest).enqueue(object : Callback<RegisterResponse> {
                         override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-                           val responseBody = response.body()
-                           println("Phản hồi đăng ký: $responseBody")
+//                            val responseBody = response.body()
+//                            println("Phản hồi đăng ký: $responseBody")
                             if (response.isSuccessful) {
                                 // Xử lý khi đăng ký thành công
                                 val user = response.body()?.user
                                 // Chuyển hướng hoặc thông báo cho người dùng
-                                Toast.makeText(context, "Đăng ký thành công: ${user?.username}", Toast.LENGTH_SHORT).show()
-                               // Toast.makeText(context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+                              //  Toast.makeText(context, "Đăng ký thành công: ${user?.username}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
                             } else {
                                 // Xử lý khi có lỗi
                                 println("Lỗi đăng ký: ${response.message()}")
@@ -346,7 +347,6 @@ fun RegisterScreen(navController: NavHostController) {
 
                         override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
                             // Xử lý lỗi kết nối
-                            println("Lỗi kết nối: ${t.message}")
                             Toast.makeText(context, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
 
                         }
@@ -384,9 +384,7 @@ fun RegisterScreen(navController: NavHostController) {
                 color = Color(0xff209FA8),
                         modifier = Modifier
                         .clickable {
-                    // Hành động khi người dùng nhấp vào nút
-                    // Ví dụ: chuyển đến trang đăng ký
-                    navController.navigate("register")
+                        navController.navigate(ROUTER.LOGIN.name)
                 }
             )
 
@@ -398,3 +396,29 @@ fun RegisterScreen(navController: NavHostController) {
 fun GreetingGetLayoutRegisterScreen() {
     RegisterScreen(navController = rememberNavController())
 }
+//            BasicTextField(
+//                value = email,
+//                onValueChange = { email = it },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(47.dp) // Chiều cao nhỏ hơn
+//                    .background(Color.White, RoundedCornerShape(8.dp))
+//                    .padding(horizontal = 8.dp, vertical = 8.dp), // Thêm padding để đảm bảo văn bản không bị cắt
+//                singleLine = true,
+//                textStyle = TextStyle(
+//                    color = Color.Black,
+//                    fontSize = 15.sp,
+//                    fontFamily = FontFamily(Font(R.font.cairo_regular))
+//                ),
+//                decorationBox = { innerTextField ->
+//                    if (email.isEmpty()) {
+//                        Text(
+//                            text = "Enter your email",
+//                            color = Color.Gray,
+//                            fontSize = 15.sp,
+//                            fontFamily = FontFamily(Font(R.font.cairo_regular))
+//                        )
+//                    }
+//                    innerTextField() // Hiển thị nội dung nhập của người dùng
+//                }
+//            )
