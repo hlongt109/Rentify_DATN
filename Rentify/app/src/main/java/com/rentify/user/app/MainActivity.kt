@@ -12,23 +12,17 @@ import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
 import com.rentify.user.app.view.intro.IntroScreen
-
+import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
-
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
-import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
-import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
-import com.rentify.user.app.view.userScreens.cancelContract.CancelContractScreen
-import com.rentify.user.app.view.userScreens.contract.ContractScreen
-
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
-import com.rentify.user.app.view.userScreens.laundrydetailscreen.LaundryDetailScreenScreen
+import com.rentify.user.app.view.userScreens.laundrydetailScreen.LaundryDetailScreenScreen
 import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
-import com.rentify.user.app.view.userScreens.profilescreen.ProfileScreen
+import com.rentify.user.app.view.userScreens.profileScreen.ProfileScreen
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
-import com.rentify.user.app.view.userScreens.roomdetailsScreen.LayoutRoomdetails
+import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
