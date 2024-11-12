@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 IntroScreen(navController = navController)
             }
             composable(ROUTER.LOGIN.name) {
-                LoginScreenApp(navController = navController)
+                LoginScreenApp(navigator = navController)
             }
             composable(ROUTER.RESGITER.name) {
                 RegisterScreen(navController = navController)
