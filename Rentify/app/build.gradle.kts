@@ -96,6 +96,8 @@ dependencies {
 
     // SplashScreen
     implementation("androidx.core:core-splashscreen:1.0.0")
+    // Bottom Sheet Dialog
+    implementation("androidx.compose.material:material:1.7.5")
     //
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
