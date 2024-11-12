@@ -43,7 +43,7 @@ fun LayoutHome(navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(screenHeight.dp / 2.5f)
+                .height(320.dp)
         ){
             BannerComponent()
             // #2. Gọi component search
@@ -61,4 +61,3 @@ fun LayoutHome(navController: NavHostController) {
         LayoutItemHome(navController)
     }
 }
-

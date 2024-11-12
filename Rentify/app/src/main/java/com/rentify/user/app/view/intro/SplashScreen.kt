@@ -30,7 +30,7 @@ fun SplashScreenPreview() {
 @Composable
 fun SplashScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
-        delay(5000)
+        delay(3000)
         navController.navigate("INTRO") {
             popUpTo("splash") { inclusive = true }
         }

@@ -27,6 +27,7 @@ import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
+import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,6 +97,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ADDPOST.name) {
                 AddPostScreen(navController = navController)
             }
+            composable(ROUTER.TogeTher.name) {
+                TogetherScreen(navController = navController)
+            }
         }
     }
 
@@ -118,9 +122,18 @@ class MainActivity : ComponentActivity() {
         CATEGORYPOST,
         SEARCHPOSTROOMATE,
         SEARCHPOSTROOM,
+        TogeTher,
         INCIDENTREPORT,
         ADDINCIDENTREPORT,
         CONTRACT,
         CANCELCONTRACT,
+        FILTER,
+        SEARCHSCREEN,
+        UNPAID,
+        PAID,
+        BILL,
+        SERVICESTAFF,
+        ADDEDITSERVICE,
+        EDITSERVICE,
     }
 }

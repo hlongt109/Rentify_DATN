@@ -37,7 +37,7 @@ fun GoToRegister(navController: NavController) {
             modifier = Modifier
                 .padding(start = 10.dp)
                 .clickable {
-                    navController.navigate(ROUTER.REGISTER.name)
+                    navController.navigate(ROUTER.RESGITER.name)
                 }
         )
     }
