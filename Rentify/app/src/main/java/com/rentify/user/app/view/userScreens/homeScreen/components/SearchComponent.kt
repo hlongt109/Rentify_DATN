@@ -24,6 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 
@@ -32,14 +34,14 @@ data class TypeProduct(val type: String, val icon: Int)
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun SearchComponent() {
-    LayoutSearch()
+fun SearchComponent(navController: NavHostController) {
+    LayoutSearch(navController = rememberNavController())
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayoutSearch() {
+fun LayoutSearch(navController: NavHostController) {
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
     val listTypeProduct = listOf(
         TypeProduct("Săn phòng giảm giá", R.drawable.sanphong),
@@ -55,7 +57,7 @@ fun LayoutSearch() {
 
     Column(
         modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
+            .padding(9.dp)
             .shadow(
                 elevation = 9.dp,
                 shape = RoundedCornerShape(20.dp)
@@ -68,18 +70,17 @@ fun LayoutSearch() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
-                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .background(Color(0xFFF5F5F5), RoundedCornerShape(16.dp))
         ) {
             // Vùng chứa biểu tượng và chữ "Hà Nội"
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .background(Color(0xFFB3E5FC), RoundedCornerShape(16.dp))
-                    .padding(horizontal = 10.dp, vertical = 15.dp)
+                    .padding(horizontal = 25.dp, vertical = 18.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.map), // Icon vị trí
+                    painter = painterResource(id = R.drawable.dc), // Icon vị trí
                     contentDescription = "Location Icon",
                     modifier = Modifier.size(20.dp)
                 )
@@ -114,28 +115,34 @@ fun LayoutSearch() {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(vertical = 16.dp, horizontal = 8.dp)
+                .padding(vertical = 2.dp, horizontal = 0.dp)
         ) {
             listTypeProduct.forEach { type ->
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(horizontal = 10.dp)
+                        .padding(horizontal = 0.dp)
                         .width(80.dp)
                 ) {
                     IconButton(
-                        onClick = { statusType = type.type },
+                        onClick = { statusType = type.type
+                            if (type.type == "Tìm người ở ghép") {
+                                navController.navigate("TogeTher") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+                                  },
                         modifier = Modifier
                             .background(
                                 color = if (statusType == type.type) Color.White else Color.White,
-                                shape = RoundedCornerShape(8.dp)
+                                shape = RoundedCornerShape(20.dp)
                             )
-                            .padding(8.dp)
+                            .padding(2.dp)
                     ) {
                         Image(
                             painter = painterResource(id = type.icon),
-                            contentDescription = null,
-                            modifier = Modifier.size(26.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                     Text(
