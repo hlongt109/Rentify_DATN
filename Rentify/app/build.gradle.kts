@@ -97,6 +97,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.0")
     //
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
 
 }
 // Allow references to generated code
