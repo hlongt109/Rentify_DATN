@@ -142,7 +142,7 @@
                     // Phân quyền role
                     console.log("Role:", role);
                     if (role === 'admin') {
-                        window.location.href = '/api/post/list';
+                        window.location.href = '/';
                     } else if (role === 'landlord') {
                         window.location.href = '/api/post/list';
                     } else {
@@ -162,6 +162,8 @@
                         if (data.message === 'Thiếu username hoặc password') {
                             alert('Vui lòng nhập đủ thông tin đăng nhập');
                         }
+                    }else if (response.status === 500){
+                        alert("Lỗi kết nốu với máy chủ, vui lòng thử lại")
                     }
                 }
             } catch (error) {

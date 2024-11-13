@@ -11,11 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.rentify.user.app.MainActivity.ROUTER
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.greenInput
 
+
 @Composable
-fun GoToRegister(){
+fun GoToRegister(navController: NavController) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
@@ -34,8 +37,7 @@ fun GoToRegister(){
             modifier = Modifier
                 .padding(start = 10.dp)
                 .clickable {
-                    //chuyen sang man hinh dang ky
-
+                    navController.navigate(ROUTER.RESGITER.name)
                 }
         )
     }

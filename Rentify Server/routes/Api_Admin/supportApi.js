@@ -4,24 +4,26 @@ var router = express.Router();
 const Support = require("../../models/Support")
 
 // api
-router.get("/api/support-customer", async (req, res) => {
+router.get("/api/support_customer", async (req, res) => {
     try {
         const data = await Support.find();
-        if (data) {
-            res.status(200).send(data)
-        } else {
-            res.json({
-                "status": 400,
-                "message": "Get support list failed",
-                "data": []
-            })
-        }
+        // if (data) {
+        //     res.status(200).send(data)
+        // } else {
+        //     res.json({
+        //         "status": 400,
+        //         "message": "Get support list failed",
+        //         "data": []
+        //     })
+        // }
+        res.render('Support/listSupport', { data })
     } catch (error) {
-        handleServerError(res, error);
+        console.error(error);
+        res.status(500).send('Lỗi server');
     }
 })
 
-router.put("/api/support-customer/{id}", async (req, res) => {
+router.put("/api/support_customer/{id}", async (req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;

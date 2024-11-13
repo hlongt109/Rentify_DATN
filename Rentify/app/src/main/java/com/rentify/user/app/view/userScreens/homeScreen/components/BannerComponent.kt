@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -21,6 +22,7 @@ fun BannerComponent() {
 fun LayoutBanner() {
     val images = listOf(
         R.drawable.banner1,
+        R.drawable.banner2,
         R.drawable.banner3,
         R.drawable.banner4
     )
@@ -41,7 +43,9 @@ fun LayoutBanner() {
         }
     }
 
-    Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(200.dp)) {
         Image(
             painter = rememberImagePainter(data = images[previousIndex]),
             contentDescription = null,
@@ -54,9 +58,9 @@ fun LayoutBanner() {
             painter = rememberImagePainter(data = images[currentIndex]),
             contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .graphicsLayer(translationX = offset)
+                .fillMaxSize()
+                .graphicsLayer(translationX = offset),
+            contentScale = ContentScale.Crop
         )
     }
 }
