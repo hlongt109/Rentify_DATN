@@ -70,7 +70,7 @@ fun CancelContractScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
 
-                .padding(bottom = screenHeight.dp / 4.5f)
+                .padding(bottom = screenHeight.dp / 3.7f)
         ) {
             HeaderSection()
             Spacer(modifier = Modifier.height(30.dp))
@@ -119,7 +119,7 @@ fun CancelContractScreen(navController: NavController) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(screenHeight.dp / 4f)
+                .height(screenHeight.dp / 3.7f)
 
         ) {
             CancelContractOptions()}

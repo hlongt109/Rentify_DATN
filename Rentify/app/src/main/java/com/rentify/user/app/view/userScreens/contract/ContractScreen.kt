@@ -90,101 +90,6 @@ navController.navigate("CANCELCONTRACT")
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     val scrollState = rememberScrollState()
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .statusBarsPadding()
-//                .navigationBarsPadding()
-//                .background(color = Color(0xfff3f3f3))
-//
-//        ) {
-//
-//            HeaderSection()
-//
-//            Spacer(modifier = Modifier.height(30.dp))
-//
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .background(color = Color(0xFFffffff))
-//                    .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
-//                    .padding(15.dp)
-//            ) {
-//                Text(
-//                    text = "Thông tin hợp đồng",
-//                    color = Color.Black,
-//                    fontWeight = FontWeight(700),
-//                    fontSize = 17.sp
-//                )
-//
-//                ContractInfoRow("Số hợp đồng", "ABC/1234")
-//                ContractInfoRow("Loại hợp đồng", "6 tháng")
-//                ContractInfoRow("Thời hạn ký kết", "01/09/2024")
-//                ContractInfoRow("Thời hạn kết thúc", "01/04/2024")
-//                ContractInfoRow("Tiền cọc", "3.500.000")
-//                ContractInfoRow("Tiền thuê", "3.500.000 VND / tháng")
-//                ContractInfoRow("Kỳ thanh toán", "01 - 05 hằng tháng")
-//            }
-//
-//            Spacer(modifier = Modifier.height(25.dp))
-//
-//            ViewContractButton(onClick = { navController.navigate("CONTRACT") })
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//
-//                    .background(color = Color(0xfff5f5f5)), // Để IconButton nằm bên trái
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.SpaceBetween
-//            ) {
-//                Row(modifier = Modifier
-//                    .padding(20.dp)
-//                    .fillMaxWidth(0.4f)
-//                    .background(color = Color(0xffffffff))
-//                    .clickable(onClick = { isShowDialog = true },
-//                        indication = null, // Bỏ hiệu ứng tối khi nhấn
-//                        interactionSource = remember { MutableInteractionSource() })
-//                    //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-//                    .border(
-//                        width = 2.dp,
-//                        color = Color(0xFF84d8ff), // Change border color if selected
-//                        shape = RoundedCornerShape(9.dp)
-//                    ), verticalAlignment = Alignment.CenterVertically
-//                , horizontalArrangement = Arrangement.Center) {
-//                    Text(
-//                        modifier = Modifier
-//                            .padding(20.dp),
-//                        text = "  Hủy hợp đồng  ",
-//                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                        color = Color(0xff000000),
-//                         fontWeight = FontWeight(700),
-//                        fontSize = 14.sp,
-//                        )
-//                }
-//
-//                Row(modifier = Modifier
-//                    .padding(20.dp)
-//                    .clickable(onClick = {/**/ }, indication = null, // Bỏ hiệu ứng tối khi nhấn
-//                        interactionSource = remember { MutableInteractionSource() })
-//                    //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-//                   , verticalAlignment = Alignment.CenterVertically) {
-//                    Text(
-//                        modifier = Modifier
-//                            .background(
-//                                color = Color(0xFF84d8ff),
-//                                shape = RoundedCornerShape(9.dp)
-//                            ) // bo tròn nền
-//                            .padding(20.dp),
-//                        text = "Gia hạn hợp đồng",
-//                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                        color = Color(0xffffffff),
-//                        fontWeight = FontWeight(700),
-//                        fontSize = 14.sp,
-//                    )
-//                }
-//            }
-//        }
-//    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -196,7 +101,7 @@ navController.navigate("CANCELCONTRACT")
             modifier = Modifier
                 .fillMaxSize()
 
-                .padding(bottom = screenHeight.dp / 4.5f)
+                .padding(bottom = screenHeight.dp / 6f)
         ) {
             HeaderSection()
             Spacer(modifier = Modifier.height(30.dp))
@@ -245,68 +150,73 @@ navController.navigate("CANCELCONTRACT")
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(screenHeight.dp/4f)
-                .background(color = Color.White)
+                .height(screenHeight.dp/6f)
+
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-
-                    .background(color = Color(0xfff5f5f5)), // Để IconButton nằm bên trái
+                    .background(color = Color(0xfff5f5f5)),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                // Nút Hủy hợp đồng
                 Row(
                     modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth(0.4f)
+                        .weight(1f)
+                        .padding(horizontal = 16.dp)
                         .background(color = Color(0xffffffff))
-                        .clickable(onClick = { isShowDialog = true },
-                            indication = null, // Bỏ hiệu ứng tối khi nhấn
-                            interactionSource = remember { MutableInteractionSource() })
-                        //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                        .clickable(
+                            onClick = { isShowDialog = true },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
                         .border(
                             width = 2.dp,
-                            color = Color(0xFF84d8ff), // Change border color if selected
+                            color = Color(0xFF84d8ff),
                             shape = RoundedCornerShape(9.dp)
                         ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        modifier = Modifier
-                            .padding(20.dp),
-                        text = "  Hủy hợp đồng  ",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        modifier = Modifier.padding(vertical = 20.dp),
+                        text = "Hủy hợp đồng",
                         color = Color(0xff000000),
-                        fontWeight = FontWeight(700),
-                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
                     )
                 }
 
+                Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa hai nút
+
+                // Nút Gia hạn hợp đồng
                 Row(
                     modifier = Modifier
-                        .padding(20.dp)
-                        .clickable(onClick = {/**/ }, indication = null, // Bỏ hiệu ứng tối khi nhấn
-                            interactionSource = remember { MutableInteractionSource() })
-                    //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                    , verticalAlignment = Alignment.CenterVertically
+                        .weight(1f)
+                        .padding(horizontal = 16.dp)
+                        .clickable(
+                            onClick = { /* Handle extend contract */ },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                        .background(
+                            color = Color(0xFF84d8ff),
+                            shape = RoundedCornerShape(9.dp)
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        modifier = Modifier
-                            .background(
-                                color = Color(0xFF84d8ff),
-                                shape = RoundedCornerShape(9.dp)
-                            ) // bo tròn nền
-                            .padding(20.dp),
+                        modifier = Modifier.padding(vertical = 20.dp),
                         text = "Gia hạn hợp đồng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffffffff),
-                        fontWeight = FontWeight(700),
-                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
                     )
                 }
             }
+
 
         }}}
 

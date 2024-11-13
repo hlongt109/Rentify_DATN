@@ -26,43 +26,60 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun CancelContractOptions() {
     Column(
-        modifier = Modifier.background(color = Color(0xfff5f5f5))
-        .padding(20.dp)
+        modifier = Modifier
+            .background(color = Color(0xfff5f5f5))
+            .padding(20.dp)
+            .fillMaxWidth()
     ) {
+        // Hàng đầu tiên: Thông báo yêu cầu hủy hợp đồng
         Row(
             modifier = Modifier
-
                 .fillMaxWidth()
                 .background(color = Color(0xFFfbd0cd), shape = RoundedCornerShape(9.dp))
-                .clickable(onClick = { /**/ }, indication = null, interactionSource = remember { MutableInteractionSource() }),
+                .clickable(
+                    onClick = { /** Handle cancellation request action */ },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+                .padding(vertical = 8.dp), // Thêm padding vertical
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                modifier = Modifier.padding(20.dp),
+                modifier = Modifier.padding(vertical = 10.dp), // Đặt padding ngang cho Text
                 text = "Đã yêu cầu hủy hợp đồng",
                 color = Color(0xffff303b),
-                fontWeight = FontWeight(700),
+                fontWeight = FontWeight.Bold,
                 fontSize = 14.sp
             )
         }
-        Spacer(modifier = Modifier .fillMaxHeight(0.1f))
 
+        Spacer(modifier = Modifier.height(16.dp)) // Khoảng cách giữa các hàng
+
+        // Hàng thứ hai: Nút hủy hợp đồng
         Row(
             modifier = Modifier
-
                 .fillMaxWidth()
-                .background(color = Color(0xffffffff))
-                .clickable(onClick = { /**/ }, indication = null, interactionSource = remember { MutableInteractionSource() })
-                .border(2.dp, Color(0xFF84d8ff), RoundedCornerShape(9.dp)),
+                .background(color = Color.White, shape = RoundedCornerShape(9.dp))
+                .clickable(
+                    onClick = { /** Handle contract cancellation */ },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+                .border(
+                    width = 2.dp,
+                    color = Color(0xFF84d8ff),
+                    shape = RoundedCornerShape(9.dp)
+                )
+                .padding(vertical = 8.dp), // Thêm padding vertical
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                modifier = Modifier.padding(20.dp),
+                modifier = Modifier.padding(vertical = 10.dp), // Đặt padding ngang cho Text
                 text = "Hủy hợp đồng",
-                color = Color(0xff000000),
-                fontWeight = FontWeight(700),
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
                 fontSize = 14.sp
             )
         }

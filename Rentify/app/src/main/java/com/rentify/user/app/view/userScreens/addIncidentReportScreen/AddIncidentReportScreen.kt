@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,9 +60,11 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.flowlayout.FlowRow
+import com.rentify.user.app.view.userScreens.addIncidentReportScreen.Components.HeaderComponent
 
 
 import retrofit2.Call
@@ -76,63 +80,31 @@ fun AddIncidentReportScreen(navController: NavHostController) {
     var isCheckedLow by remember { mutableStateOf(false) }
     var incidentdescription by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
-    var incident by remember { mutableStateOf("") }
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
 
-    Column(
+    var incident by remember { mutableStateOf("") }
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xfff7f7f7))
-
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color(0xff84d8ff))
-                .padding(10.dp)
-        ) {
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
 
-                    .background(color = Color(0xff84d8ff)), // Để IconButton nằm bên trái
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Row(   modifier = Modifier.width(100.dp).padding(5.dp)
-                    .clickable(onClick = { /**/ },
-                        indication = null, // Bỏ hiệu ứng tối khi nhấn
-                        interactionSource = remember { MutableInteractionSource() }),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.back),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp, 30.dp)
-                    )
-
-                }
-                Text(
-                    text = "Báo cáo sự cố",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color.Black,
-                    fontWeight = FontWeight(700),
-                    fontSize = 17.sp,
-
-                    )
-                Row( modifier = Modifier.width(100.dp)) {
-
-                }
-            }
-
-
-        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(15.dp)
         ) {
+            HeaderComponent(navController = navController)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(bottom = screenHeight.dp / 8f)
+                    .padding(15.dp)
+            ) {
 // chọn phòg
                 Row(
                     modifier = Modifier
@@ -148,19 +120,16 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                         .padding(15.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
-
                 ) {
                     Column {
                         Row {
                             Text(
-
                                 text = "Chọn phòng",
                                 //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                                 color = Color(0xff7f7f7f),
                                 // fontWeight = FontWeight(700),
                                 fontSize = 16.sp,
-
-                                )
+                            )
                             Text(
 
                                 text = " *",
@@ -194,138 +163,206 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                     }
                 }
 ///2
-            Spacer(modifier = Modifier.height(20.dp))
-            Column(
-                modifier = Modifier
+                Spacer(modifier = Modifier.height(20.dp))
+                Column(
+                    modifier = Modifier
 
-                    .fillMaxWidth()
-                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                    .background(color = Color(0xFFffffff))
-                    .border(
-                        width = 0.dp, color = Color(0xFFEEEEEE), shape = RoundedCornerShape(10.dp)
-                    )
-                    .padding(15.dp),
-                verticalArrangement = Arrangement.Center,
+                        .fillMaxWidth()
+                        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                        .background(color = Color(0xFFffffff))
+                        .border(
+                            width = 0.dp,
+                            color = Color(0xFFEEEEEE),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .padding(15.dp),
+                    verticalArrangement = Arrangement.Center,
 
-            ) {
+                    ) {
 // sự cố
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                        Text(
-
-                            text = "Sự cố",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff000000),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-
-                            )
-                        Text(
-
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-
-                            )
-                    }
-                    TextField(
-                        value = incidentdescription,
-                        onValueChange = { incidentdescription = it },
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFffffff),
-                            focusedContainerColor = Color(0xFFffffff),
-                        ),
-                        placeholder = {
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                    ) {
+                        Row {
                             Text(
-                                text = "Nhập tóm tắt sự cố",
+
+                                text = "Sự cố",
+                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color(0xff000000),
+                                // fontWeight = FontWeight(700),
                                 fontSize = 13.sp,
-                                color = Color(0xFF7f7f7f),
+
+                                )
+                            Text(
+
+                                text = " *",
+                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color(0xffff1a1a),
+                                // fontWeight = FontWeight(700),
+                                fontSize = 16.sp,
+
+                                )
+                        }
+                        TextField(
+                            value = incidentdescription,
+                            onValueChange = { incidentdescription = it },
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Color(0xFFcecece),
+                                unfocusedIndicatorColor = Color(0xFFcecece),
+                                focusedPlaceholderColor = Color.Black,
+                                unfocusedPlaceholderColor = Color.Gray,
+                                unfocusedContainerColor = Color(0xFFffffff),
+                                focusedContainerColor = Color(0xFFffffff),
+                            ),
+                            placeholder = {
+                                Text(
+                                    text = "Nhập tóm tắt sự cố",
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF7f7f7f),
+                                    fontFamily = FontFamily(Font(R.font.cairo_regular))
+                                )
+                            },
+                            shape = RoundedCornerShape(size = 8.dp),
+                            textStyle = TextStyle(
+                                color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.cairo_regular))
                             )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
                         )
-                    )
 
-                }
-              // mô tả sự cố
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                        Text(
-
-                            text = "Mô tả sự cố",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff000000),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-
-                            )
-                        Text(
-
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-
-                            )
                     }
-                    TextField(
-                        value = incident,
-                        onValueChange = { incident = it },
+                    // mô tả sự cố
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
-
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFffffff),
-                            focusedContainerColor = Color(0xFFffffff),
-                        ),
-                        placeholder = {
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                    ) {
+                        Row {
                             Text(
-                                text = "Nhập mô tả ( ghi chú  ) khi giải quyết sự cố",
+
+                                text = "Mô tả sự cố",
+                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color(0xff000000),
+                                // fontWeight = FontWeight(700),
                                 fontSize = 13.sp,
-                                color = Color(0xFF7f7f7f),
+
+                                )
+                            Text(
+
+                                text = " *",
+                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color(0xffff1a1a),
+                                // fontWeight = FontWeight(700),
+                                fontSize = 16.sp,
+
+                                )
+                        }
+                        TextField(
+                            value = incident,
+                            onValueChange = { incident = it },
+                            modifier = Modifier
+                                .fillMaxWidth(),
+
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Color(0xFFcecece),
+                                unfocusedIndicatorColor = Color(0xFFcecece),
+                                focusedPlaceholderColor = Color.Black,
+                                unfocusedPlaceholderColor = Color.Gray,
+                                unfocusedContainerColor = Color(0xFFffffff),
+                                focusedContainerColor = Color(0xFFffffff),
+                            ),
+                            placeholder = {
+                                Text(
+                                    text = "Nhập mô tả ( ghi chú  ) khi giải quyết sự cố",
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF7f7f7f),
+                                    fontFamily = FontFamily(Font(R.font.cairo_regular))
+                                )
+                            },
+                            shape = RoundedCornerShape(size = 8.dp),
+                            textStyle = TextStyle(
+                                color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.cairo_regular))
                             )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
                         )
-                    )
-                }
+                    }
 //ảnh
-                Row(
-                    modifier = Modifier.padding(5.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
                     Row(
+                        modifier = Modifier.padding(5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                                .background(color = Color(0xFFffffff))
+
+                                .drawBehind {
+                                    val borderWidth = 2.dp.toPx()  // Độ rộng của viền
+                                    val dashWidth = 2.dp.toPx()   // Độ dài của nét đứt
+                                    val gapWidth = 1.dp.toPx()     // Khoảng cách giữa các nét đứt
+                                    val radius = 10.dp.toPx()      // Độ cong của góc
+
+                                    // Vẽ viền nét đứt xung quanh
+                                    drawRoundRect(
+                                        color = Color(0xFF7ccaef),
+                                        size = size.copy(
+                                            width = size.width - borderWidth,
+                                            height = size.height - borderWidth
+                                        ),
+                                        style = Stroke(
+                                            width = borderWidth,
+                                            pathEffect = PathEffect.dashPathEffect(
+                                                floatArrayOf(
+                                                    dashWidth,
+                                                    gapWidth
+                                                )
+                                            )
+                                        ),
+                                        cornerRadius = CornerRadius(radius, radius)
+                                    )
+                                },
+
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(25.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.image1),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(30.dp, 30.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(15.dp))
+                        Column {
+                            Text(
+                                text = "Ảnh Phòng trọ",
+                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color.Black,
+                                // fontWeight = FontWeight(700),
+                                fontSize = 14.sp,
+                            )
+                        }
+
+
+                    }
+                    Spacer(modifier = Modifier.height(17.dp))
+//video
+                    Column(
                         modifier = Modifier
+                            .fillMaxWidth()
                             //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                             .background(color = Color(0xFFffffff))
-
+                            .border(
+                                width = 0.dp,
+                                color = Color(0xFFEEEEEE),
+                                shape = RoundedCornerShape(10.dp)
+                            )
                             .drawBehind {
                                 val borderWidth = 2.dp.toPx()  // Độ rộng của viền
                                 val dashWidth = 2.dp.toPx()   // Độ dài của nét đứt
@@ -350,270 +387,146 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                     ),
                                     cornerRadius = CornerRadius(radius, radius)
                                 )
-                            },
+                            }
+                            .padding(25.dp),
 
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row(
-                            modifier = Modifier.padding(25.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.image1),
-                                contentDescription = null,
-                                modifier = Modifier.size(30.dp, 30.dp)
+                        Image(
+                            painter = painterResource(id = R.drawable.video2),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp, 30.dp)
+                        )
+                        Spacer(modifier = Modifier.height(7.dp))
+                        Text(
+
+                            text = "Video",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color.Black,
+                            // fontWeight = FontWeight(700),
+                            fontSize = 13.sp,
+
                             )
-                        }
                     }
-                    Spacer(modifier = Modifier.width(15.dp))
+                    //checkbox
+                    Spacer(modifier = Modifier.height(10.dp))
                     Column {
                         Text(
-                            text = "Ảnh Phòng trọ",
+                            text = "Mức độ nghiêm trọng",
                             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color.Black,
                             // fontWeight = FontWeight(700),
                             fontSize = 14.sp,
-                            )
-                    }
-
-
-                }
-                Spacer(modifier = Modifier.height(17.dp))
-//video
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                        .background(color = Color(0xFFffffff))
-                        .border(
-                            width = 0.dp,
-                            color = Color(0xFFEEEEEE),
-                            shape = RoundedCornerShape(10.dp)
                         )
-                        .drawBehind {
-                            val borderWidth = 2.dp.toPx()  // Độ rộng của viền
-                            val dashWidth = 2.dp.toPx()   // Độ dài của nét đứt
-                            val gapWidth = 1.dp.toPx()     // Khoảng cách giữa các nét đứt
-                            val radius = 10.dp.toPx()      // Độ cong của góc
+                        Row {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = isCheckedHigh,
+                                    onCheckedChange = { isCheckedHigh = it }
+                                )
+                                Text(
+                                    text = "Cao",
+                                    modifier = Modifier
+                                        .background(
+                                            color = Color(0xffff0000),
+                                            shape = RoundedCornerShape(5.dp)
+                                        ) // bo tròn nền
+                                        .padding(5.dp),
+                                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                    color = Color.White,
+                                    // fontWeight = FontWeight(700),
+                                    fontSize = 14.sp,
+                                )
+                            }
 
-                            // Vẽ viền nét đứt xung quanh
-                            drawRoundRect(
-                                color = Color(0xFF7ccaef),
-                                size = size.copy(
-                                    width = size.width - borderWidth,
-                                    height = size.height - borderWidth
-                                ),
-                                style = Stroke(
-                                    width = borderWidth,
-                                    pathEffect = PathEffect.dashPathEffect(
-                                        floatArrayOf(
-                                            dashWidth,
-                                            gapWidth
-                                        )
-                                    )
-                                ),
-                                cornerRadius = CornerRadius(radius, radius)
-                            )
+                            // Checkbox "Trung bình"
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = isCheckedMedium,
+                                    onCheckedChange = { isCheckedMedium = it }
+                                )
+                                Text(
+                                    text = "Trung bình",
+                                    modifier = Modifier
+                                        .background(
+                                            color = Color(0xffe40505),
+                                            shape = RoundedCornerShape(5.dp)
+                                        ) // bo tròn nền
+                                        .padding(5.dp),
+                                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                    color = Color.White,
+                                    // fontWeight = FontWeight(700),
+                                    fontSize = 14.sp,
+                                )
+                            }
+
+                            // Checkbox "Thấp"
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = isCheckedLow,
+                                    onCheckedChange = { isCheckedLow = it }
+                                )
+                                Text(
+                                    text = "Thấp",
+                                    modifier = Modifier
+                                        .background(
+                                            color = Color(0xfff1d22d),
+                                            shape = RoundedCornerShape(5.dp)
+                                        ) // bo tròn nền
+                                        .padding(5.dp),
+                                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                    color = Color.White,
+                                    // fontWeight = FontWeight(700),
+                                    fontSize = 14.sp,
+                                )
+                            }
                         }
-                        .padding(25.dp),
 
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.video2),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp, 30.dp)
-                    )
-                    Spacer(modifier = Modifier.height(7.dp))
-                    Text(
-
-                        text = "Video",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color.Black,
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-
-                        )
+                    }
                 }
-                //checkbox
-                Spacer(modifier = Modifier.height(10.dp))
-Column {
-    Text(
-        text = "Mức độ nghiêm trọng",
-        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-        color = Color.Black,
-        // fontWeight = FontWeight(700),
-        fontSize = 14.sp,
-    )
-    Row {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = isCheckedHigh,
-                onCheckedChange = { isCheckedHigh = it }
-            )
-            Text(
-                text = "Cao",
-                modifier = Modifier
-                    .background(
-                        color = Color(0xffff0000),
-                        shape = RoundedCornerShape(5.dp)
-                    ) // bo tròn nền
-                    .padding(5.dp),
-                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                color = Color.White,
-                // fontWeight = FontWeight(700),
-                fontSize = 14.sp,
-            ) }
+                Spacer(modifier = Modifier.height(25.dp))
 
-        // Checkbox "Trung bình"
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = isCheckedMedium,
-                onCheckedChange = { isCheckedMedium = it }
-            )
-            Text(
-                text = "Trung bình",
-                modifier = Modifier
-                    .background(
-                        color = Color(0xffe40505),
-                        shape = RoundedCornerShape(5.dp)
-                    ) // bo tròn nền
-                    .padding(5.dp),
-                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                color = Color.White,
-                // fontWeight = FontWeight(700),
-                fontSize = 14.sp,
-            )
+            }
+
         }
+        Box(
+            modifier = Modifier.background(Color(0xfff7f7f7))
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp)
+                .height(screenHeight.dp/8f)
 
-        // Checkbox "Thấp"
-        Row(
-            verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(
-                checked = isCheckedLow,
-                onCheckedChange = { isCheckedLow = it }
-            )
-            Text(
-                text = "Thấp",
-                modifier = Modifier
-                    .background(
-                        color = Color(0xfff1d22d),
-                        shape = RoundedCornerShape(5.dp)
-                    ) // bo tròn nền
-                    .padding(5.dp),
-                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                color = Color.White,
-                // fontWeight = FontWeight(700),
-                fontSize = 14.sp,
-            ) }
-    }
-
-}
-}
-            Spacer(modifier = Modifier.height(25.dp))
             Button(
                 onClick = {/**/
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
-                //  .background(Color(0xffFE724C), RoundedCornerShape(25.dp)), // Bo tròn 12.dp
+                //  , RoundedCornerShape(25.dp)), // Bo tròn 12.dp
 
                 shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xfffb6b53)
                 )
             ) {
                 Text(
-                    modifier = Modifier.padding(6.dp),
+                    modifier = Modifier.padding(vertical = 10.dp),
                     text = "Báo cáo sự cố",
                     fontSize = 16.sp,
                     // fontFamily = FontFamily(Font(R.font.cairo_regular)),
                     color = Color(0xffffffff)
                 )
             }
-            }
-
         }
-
-    }
-
-
-@Composable
-fun RoomTypeOption(
-    text: String, isSelected: Boolean, onClick: () -> Unit
-) {
-    Row(modifier = Modifier
-        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
-            interactionSource = remember { MutableInteractionSource() })
-        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-        .border(
-            width = 2.dp,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-            shape = RoundedCornerShape(9.dp)
-        ), verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            modifier = Modifier
-                .background(color = Color(0xFFeeeeee))
-                .padding(7.dp),
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp
-        )
     }
 }
 
-@Composable
-fun ComfortableOption(
-    text: String, isSelected: Boolean, onClick: () -> Unit
-) {
-    Row(modifier = Modifier
-        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
-            interactionSource = remember { MutableInteractionSource() })
-        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-        .border(
-            width = 2.dp,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-            shape = RoundedCornerShape(9.dp)
-        ), verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            modifier = Modifier
-                .background(color = Color(0xFFeeeeee))
-                .padding(7.dp),
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp
-        )
-    }
-}
-
-@Composable
-fun ServiceOption(
-    text: String, isSelected: Boolean, onClick: () -> Unit
-) {
-    Row(modifier = Modifier
-        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
-            interactionSource = remember { MutableInteractionSource() })
-        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-        .border(
-            width = 2.dp,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-            shape = RoundedCornerShape(9.dp)
-        ), verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            modifier = Modifier
-                .background(color = Color(0xFFeeeeee))
-                .padding(7.dp),
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp
-        )
-    }
-}
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingLayoutAddPostScreen() {
