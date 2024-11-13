@@ -38,8 +38,8 @@ class MainActivity : ComponentActivity() {
 //            MyScreen()
 //            PostRoomScreen(navController = rememberNavController())
 //            FilterScreen(navController = rememberNavController())
-//            BillScreen(navController = rememberNavController())
-            TestNavigation()
+            BillScreen(navController = rememberNavController())
+//            TestNavigation()
         }
     }
 
