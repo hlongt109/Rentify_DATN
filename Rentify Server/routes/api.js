@@ -60,7 +60,7 @@ router.use("", serviceManageApi);
 router.use("", statisticApi);
 router.use("", paymentApi_BuildingOwner);
 router.use("", UserManage);
-router.use("", notificationApi);
+router.use("/api", notificationApi);
 router.use("", apiUser);
 router.use("", personalContractApi);
 router.use("", bookingApi);
@@ -68,7 +68,7 @@ router.use("", findPostApi);
 router.use("", adminApi);
 router.use("", postAdmin);
 router.use("", userAdmin);
-router.use("", nofAdmin);
+router.use("/api", nofAdmin);
 router.use("", spAdmin);
 router.use("", statAdmin);
 router.use("/staff/posts", post_staffApi); // Đổi đường dẫn cho post_staffApi

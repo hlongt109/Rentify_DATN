@@ -53,7 +53,7 @@ router.get('/api/support_customer', (req, res) => {
 
 router.get('/api/post/list', async (req, res) => {
   try {
-    const showList = await Post.find(); // Lấy danh sách bài đăng từ MongoDB
+    const showList = await Post.find().populate('user_id', 'username'); // Lấy danh sách bài đăng từ MongoDB
     res.render('Posts/listPost', { list: showList }, (err, html) => { // Truyền biến list vào template
       if (err) {
         return res.status(500).send(err);

@@ -119,7 +119,7 @@ router.post('/post/add', authenticate, upload.fields([{ name: 'video' }, { name:
     }
 })
 //Update post
-router.get("/post/update1/:id", authenticate, async (req, res) => {
+router.get("/post/update1/:id", async (req, res) => {
     try {
         const postId = req.params.id;
         const upDB = await Post.findById(postId); // Tìm bài viết theo ID
@@ -132,7 +132,7 @@ router.get("/post/update1/:id", authenticate, async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 })
-router.post("/post/update/:id", checkUserRole, async (req, res) => {
+router.post("/post/update/:id", async (req, res) => {
     console.log(req);
 
     try {
@@ -171,6 +171,45 @@ router.delete("/post/delete/:id", async (req, res) => {
         return res.status(200).json({ message: 'Xóa bài đăng thành công' });
     } catch (error) {
         return res.status(500).json({ message: 'Lỗi: ' + error.message });
+    }
+});
+
+// Route để cập nhật status của bài đăng thành 2
+router.put("/posts/:id/status", async (req, res) => {
+    try {
+        const { id } = req.params; // Lấy id của bài đăng từ params
+
+        // Tìm và cập nhật bài đăng với id tương ứng
+        const updatedPost = await Post.findByIdAndUpdate(
+            id,
+            { status: 2, updated_at: new Date().toISOString() }, // Cập nhật status thành 2 và updated_at
+            { new: true } // Tùy chọn để trả về tài liệu đã cập nhật
+        );
+
+        // Kiểm tra nếu bài đăng không tồn tại
+        if (!updatedPost) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        // Trả về dữ liệu bài đăng đã cập nhật
+        return res.status(200).json({ message: "Post status updated to 2 successfully", data: updatedPost });
+    } catch (error) {
+        console.log("Error:", error);
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+router.get("/post/listhaha", async (req, res) => {
+    try {
+        const showList = await Post.find();
+        return res.status(200).json({
+            status: 200,
+            message: "Lấy dữ liệu thành công",
+            showList
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Lỗi server');
     }
 });
 
