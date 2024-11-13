@@ -49,42 +49,43 @@ fun TinnhanScreen(navController: NavHostController) {
             .imePadding()
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-        }
+
         // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(Color.White),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.back),
-                contentDescription = "Quay lại",
+        Column (
+            modifier = Modifier.fillMaxWidth()
+                .height(100.dp)
+                .background(color = Color(0xff84d8ff))
+        ){
+            Row(
                 modifier = Modifier
-                    .size(34.dp)
-                    .clickable {
-                        navController.popBackStack()
-                    }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Image(
-                painter = painterResource(id = R.drawable.user),
-                contentDescription = null,
-                modifier = Modifier.size(34.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Nguyễn Thiên Thiên",
-                modifier = Modifier.padding(12.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
+                    .fillMaxWidth()
+                    .padding(top = 50.dp)
+                    .background(color = Color(0xff84d8ff)),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.back),
+                    contentDescription = "Quay lại",
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clickable {
+                            navController.popBackStack()
+                        }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.user),
+                    contentDescription = null,
+                    modifier = Modifier.size(34.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Nguyễn Thiên Thiên",
+                    modifier = Modifier.padding(12.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+            }
         }
 
         // Scrollable message area
@@ -109,7 +110,8 @@ fun TinnhanScreen(navController: NavHostController) {
         var sentText by remember { mutableStateOf(TextFieldValue("")) }
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -124,7 +126,10 @@ fun TinnhanScreen(navController: NavHostController) {
                         Box(
                             modifier = Modifier
                                 .size(40.dp) // Kích thước lớn hơn icon
-                                .background(color = Color(0xfffe9a00), shape = RoundedCornerShape(20.dp)), // Nền đỏ với góc tròn
+                                .background(
+                                    color = Color(0xfffe9a00),
+                                    shape = RoundedCornerShape(20.dp)
+                                ), // Nền đỏ với góc tròn
                             contentAlignment = Alignment.Center // Căn giữa icon trong box
                         ) {
                             Image(
@@ -137,7 +142,10 @@ fun TinnhanScreen(navController: NavHostController) {
                         Box(
                             modifier = Modifier
                                 .size(40.dp) // Kích thước lớn hơn icon
-                                .background(color = Color(0xFF44acfe), shape = RoundedCornerShape(20.dp)), // Nền đỏ với góc tròn
+                                .background(
+                                    color = Color(0xFF44acfe),
+                                    shape = RoundedCornerShape(20.dp)
+                                ), // Nền đỏ với góc tròn
                             contentAlignment = Alignment.Center // Căn giữa icon trong box
                         ) {
                             Image(
@@ -163,7 +171,11 @@ fun TinnhanScreen(navController: NavHostController) {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(width = 1.dp, color = Color(0xffdfdfdf), shape = RoundedCornerShape(20.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xffdfdfdf),
+                        shape = RoundedCornerShape(20.dp)
+                    )
             )
         }
         Spacer(modifier = Modifier.height(50.dp))

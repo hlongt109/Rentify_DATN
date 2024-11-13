@@ -3,6 +3,7 @@ package com.rentify.user.app.view.userScreens.laundrydetailScreen.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,34 +31,34 @@ fun tenchitietPreview(){
 }
 @Composable
 fun tenchitietComponent (navController: NavHostController){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(color = Color(0xffd2f1ff))
-    ) {
-        Spacer(modifier = Modifier.padding(top = 50.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(color = Color(0xff84d8ff))
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.back),
-                contentDescription = "Back",
+
+    Column (
+        modifier = Modifier.fillMaxWidth()
+            .height(100.dp)
+            .background(color = Color(0xff84d8ff))
+    ){
+
+            Row(
                 modifier = Modifier
-                    .padding(start = 12.dp, top = 12.dp)
-                    .size(30.dp)
-                    .clickable {
-                        navController.popBackStack()
-                    },
-            )
-            Text(text = "Chi tiết",
-                modifier = Modifier.padding(15.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
+                    .fillMaxWidth()
+                    .padding(top = 50.dp)
+                    .background(color = Color(0xff84d8ff))
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.back),
+                    contentDescription = "Back",
+                    modifier = Modifier
+                        .padding(start = 12.dp, top = 12.dp)
+                        .size(30.dp)
+                        .clickable {
+                            navController.popBackStack()
+                        },
+                )
+                Text(text = "Chi tiết",
+                    modifier = Modifier.padding(15.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+            }
         }
-    }
 }

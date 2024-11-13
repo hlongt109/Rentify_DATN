@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.profileScreen.components
+package com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -26,14 +26,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
-@Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun ProfileComponentPreview() {
-    ProfileComponent(navController = rememberNavController())
-}
-
 @Composable
-fun ProfileComponent(navController: NavHostController) {
+fun PreviewHeadPersonalProfile(){
+    HeadPersonalProfile(navController= rememberNavController())
+}
+@Composable
+fun HeadPersonalProfile(navController: NavHostController){
     Column (
         modifier = Modifier.fillMaxWidth()
             .height(100.dp)
@@ -44,7 +43,7 @@ fun ProfileComponent(navController: NavHostController) {
                 .padding(top = 50.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.trove),
+                painter = painterResource(id = R.drawable.quaylai),
                 contentDescription = "back",
                 modifier = Modifier
                     .width(40.dp)
@@ -63,9 +62,10 @@ fun ProfileComponent(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center // Center vertically
             ) {
                 Text(
-                    text = "Hồ sơ cá nhân",
+                    text = "Thông tin cá nhân",
+                    modifier = Modifier.padding(end = 20.dp),
                     fontSize = 25.sp,
-                    color = Color(0xff122457),
+                    color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )

@@ -1,10 +1,13 @@
-package com.rentify.user.app.view.userScreens.profileScreen.components
+package com.rentify.user.app.view.staffScreens.personalScreen.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,14 +29,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
-@Composable
+//_vanphuc : phần đầu
 @Preview(showBackground = true, showSystemUi = true)
-fun ProfileComponentPreview() {
-    ProfileComponent(navController = rememberNavController())
-}
-
 @Composable
-fun ProfileComponent(navController: NavHostController) {
+fun HeadPersonalPreview(){
+    HeadPersonal(navController= rememberNavController())
+}
+@Composable
+fun HeadPersonal(navController: NavHostController){
     Column (
         modifier = Modifier.fillMaxWidth()
             .height(100.dp)
@@ -44,7 +47,7 @@ fun ProfileComponent(navController: NavHostController) {
                 .padding(top = 50.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.trove),
+                painter = painterResource(id = R.drawable.quaylai),
                 contentDescription = "back",
                 modifier = Modifier
                     .width(40.dp)
@@ -64,8 +67,9 @@ fun ProfileComponent(navController: NavHostController) {
             ) {
                 Text(
                     text = "Hồ sơ cá nhân",
+                    modifier = Modifier.padding(end = 20.dp),
                     fontSize = 25.sp,
-                    color = Color(0xff122457),
+                    color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )

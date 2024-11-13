@@ -31,44 +31,49 @@ fun NameComponent() {
 }
 @Composable
 fun LayoutNameComponent (navController: NavHostController){
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
+    Column (
+        modifier = Modifier.fillMaxWidth()
+            .height(100.dp)
     ){
-        Image(
-            painter = painterResource(id = R.drawable.back),
-            contentDescription = "back",
+        Row (
             modifier = Modifier
-                .width(40.dp)
-                .height(40.dp)
-                .padding(5.dp)
-                .clip(CircleShape)
-                .clickable {
-                    navController.popBackStack()
-                }
-        )
-        Column(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .weight(1f) // Cho phép cột chiếm không gian còn lại
-        ) {
-            Text(
-                text = "Chi tiết phòng",
-                fontSize = 20.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold
+                .fillMaxWidth()
+                .padding(top = 40.dp)
+        ){
+            Image(
+                painter = painterResource(id = R.drawable.back),
+                contentDescription = "back",
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp)
+                    .padding(5.dp)
+                    .clip(CircleShape)
+                    .clickable {
+                        navController.popBackStack()
+                    }
+            )
+            Column(
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .weight(1f) // Cho phép cột chiếm không gian còn lại
+            ) {
+                Text(
+                    text = "Chi tiết phòng",
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            // Sử dụng Spacer để đẩy hình ảnh "next" sang bên phải
+            Spacer(modifier = Modifier.width(8.dp))
+            Image(
+                painter = painterResource(id = R.drawable.yeuthich),
+                contentDescription = null,
+                modifier = Modifier
+                    .width(30.dp)
+                    .height(30.dp)
+                    .padding(top = 10.dp, end = 10.dp)
             )
         }
-        // Sử dụng Spacer để đẩy hình ảnh "next" sang bên phải
-        Spacer(modifier = Modifier.width(8.dp))
-        Image(
-            painter = painterResource(id = R.drawable.yeuthich),
-            contentDescription = null,
-            modifier = Modifier
-                .width(30.dp)
-                .height(30.dp)
-                .padding(top = 10.dp, end = 10.dp)
-        )
     }
 }
