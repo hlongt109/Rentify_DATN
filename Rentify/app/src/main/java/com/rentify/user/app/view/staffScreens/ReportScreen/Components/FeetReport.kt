@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,8 +65,6 @@ import com.rentify.user.app.ui.theme.ColorBlack
 fun PreviewFeetReport() {
     FeetReportyeucau(navController = rememberNavController())
 }
-
-
 @Composable
 fun FeetReportyeucau(navController: NavHostController) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -77,7 +77,7 @@ fun FeetReportyeucau(navController: NavHostController) {
             .padding(16.dp)
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
-            .clickable { isExpanded = !isExpanded } // Make the entire Box clickable
+            .clickable { isExpanded = !isExpanded } // Làm cho toàn bộ Box có thể nhấp
     ) {
         Column {
             Row(
@@ -85,12 +85,7 @@ fun FeetReportyeucau(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp)
-                    .background(color = Color.White)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFF0F0F0),
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                    .background(color = Color.White) // Đã xóa đường viền
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.phong),
@@ -137,11 +132,12 @@ fun FeetReportyeucau(navController: NavHostController) {
                         else
                             Icons.Default.KeyboardArrowDown,
                         contentDescription = if (isExpanded) "Collapse" else "Expand",
-                        tint = ColorBlack
+                        tint = Color.Black
                     )
                 }
             }
-            // Use AnimatedVisibility to handle the expansion
+
+            // Sử dụng AnimatedVisibility để xử lý việc mở rộng
             AnimatedVisibility(
                 visible = isExpanded,
                 enter = fadeIn() + expandVertically(),
@@ -150,11 +146,11 @@ fun FeetReportyeucau(navController: NavHostController) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(color = Color.White) // Same background color
-                        .padding(15.dp), // Adjust padding for continuity
+                        .background(color = Color.White)
+                        .padding(15.dp),
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    // Incident description input
+                    // Nhập mô tả sự cố
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -199,7 +195,7 @@ fun FeetReportyeucau(navController: NavHostController) {
                             )
                         )
                     }
-                    // Incident description
+                    // Mô tả sự cố
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -244,7 +240,7 @@ fun FeetReportyeucau(navController: NavHostController) {
                             )
                         )
                     }
-                    // Additional UI elements...
+                    // Các phần tử UI bổ sung...
                     Row(
                         modifier = Modifier.padding(5.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -253,12 +249,12 @@ fun FeetReportyeucau(navController: NavHostController) {
                             modifier = Modifier
                                 .background(color = Color(0xFFffffff))
                                 .drawBehind {
-                                    val borderWidth = 2.dp.toPx()  // Border width
-                                    val dashWidth = 2.dp.toPx()   // Dash length
-                                    val gapWidth = 1.dp.toPx()     // Gap between dashes
-                                    val radius = 10.dp.toPx()      // Corner radius
+                                    val borderWidth = 2.dp.toPx()  // Độ rộng của viền
+                                    val dashWidth = 2.dp.toPx()   // Độ dài của nét đứt
+                                    val gapWidth = 1.dp.toPx()     // Khoảng cách giữa các nét đứt
+                                    val radius = 10.dp.toPx()      // Độ cong của góc
 
-                                    // Draw dashed border
+                                    // Vẽ viền nét đứt xung quanh
                                     drawRoundRect(
                                         color = Color(0xFF7ccaef),
                                         size = size.copy(
@@ -300,13 +296,7 @@ fun FeetReportyeucau(navController: NavHostController) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                             .background(color = Color(0xFFffffff))
-                            .border(
-                                width = 0.dp,
-                                color = Color(0xFFEEEEEE),
-                                shape = RoundedCornerShape(10.dp)
-                            )
                             .drawBehind {
                                 val borderWidth = 2.dp.toPx()  // Độ rộng của viền
                                 val dashWidth = 2.dp.toPx()   // Độ dài của nét đứt
@@ -333,7 +323,6 @@ fun FeetReportyeucau(navController: NavHostController) {
                                 )
                             }
                             .padding(25.dp),
-
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -344,14 +333,10 @@ fun FeetReportyeucau(navController: NavHostController) {
                         )
                         Spacer(modifier = Modifier.height(7.dp))
                         Text(
-
                             text = "Video",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color.Black,
-                            // fontWeight = FontWeight(700),
                             fontSize = 13.sp,
-
-                            )
+                        )
                     }
                     Spacer(modifier = Modifier.height(25.dp))
                     Button(
@@ -375,8 +360,12 @@ fun FeetReportyeucau(navController: NavHostController) {
     }
 }
 
-
 @Composable
 fun FeetReporthoanthanh() {
-
+    Column (
+        modifier = Modifier.fillMaxSize()
+    ){
+        Text(text = "Ok,hiểu rồi",
+            textAlign = TextAlign.Center)
+    }
 }
