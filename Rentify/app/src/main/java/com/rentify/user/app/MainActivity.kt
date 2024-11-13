@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
+        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }

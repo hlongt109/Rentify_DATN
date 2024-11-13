@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,46 +56,75 @@ import com.rentify.user.app.view.userScreens.cancelContract.components.ViewContr
 
 @Composable
 fun CancelContractScreen(navController: NavController) {
-    Column(
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+    val scrollState = rememberScrollState()
+    Box(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .background(color = Color(0xfff3f3f3))
     ) {
-        HeaderSection()
-
-        Spacer(modifier = Modifier.height(30.dp))
-
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color(0xFFffffff))
-                .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
-                .padding(15.dp)
+                .fillMaxSize()
+
+                .padding(bottom = screenHeight.dp / 4.5f)
         ) {
-            Text(
-                text = "Thông tin hợp đồng",
-                color = Color.Black,
-                fontWeight = FontWeight(700),
-                fontSize = 17.sp
-            )
+            HeaderSection()
+            Spacer(modifier = Modifier.height(30.dp))
+            Column( modifier = Modifier
+                .verticalScroll(scrollState)
+                .fillMaxWidth()
+            ){
+                Column(
+                    modifier = Modifier
 
-            ContractInfoRow("Số hợp đồng", "ABC/1234")
-            ContractInfoRow("Loại hợp đồng", "6 tháng")
-            ContractInfoRow("Thời hạn ký kết", "01/09/2024")
-            ContractInfoRow("Thời hạn kết thúc", "01/04/2024")
-            ContractInfoRow("Tiền cọc", "3.500.000")
-            ContractInfoRow("Tiền thuê", "3.500.000 VND / tháng")
-            ContractInfoRow("Kỳ thanh toán", "01 - 05 hằng tháng")
+                        .background(color = Color(0xFFffffff))
+                ){
+                Column(
+                     modifier = Modifier
+                         .padding(15.dp)
+                         .background(color = Color(0xFFffffff))
+                ) {
+                    Text(
+                        text = "Thông tin hợp đồng",
+                        color = Color.Black,
+                        fontWeight = FontWeight(700),
+                        fontSize = 17.sp
+                    )
+                    ContractInfoRow("Số hợp đồng", "ABC/1234")
+                    ContractInfoRow("Loại hợp đồng", "6 tháng")
+                    ContractInfoRow("Thời hạn ký kết", "01/09/2024")
+                    ContractInfoRow("Thời hạn kết thúc", "01/04/2024")
+                    ContractInfoRow("Tiền cọc", "3.500.000")
+                    ContractInfoRow("Tiền thuê", "3.500.000 VND / tháng")
+                    ContractInfoRow("Kỳ thanh toán", "01 - 05 hằng tháng")
+                }}
+                Spacer(modifier = Modifier
+                    .background(color = Color(0xFFeeeeee))
+                    .fillMaxWidth()
+                    .height(25.dp))
+                Box(
+                    modifier = Modifier
+
+                        .padding(15.dp)
+                        .fillMaxWidth()){
+ ViewContractButton(onClick = { navController.navigate("CONTRACT") })
+}
+            }
         }
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(screenHeight.dp / 4f)
 
-        Spacer(modifier = Modifier.height(25.dp))
-
-        ViewContractButton(onClick = { /**/ })
-
-        CancelContractOptions()
+        ) {
+            CancelContractOptions()}
     }
 }
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingLayoutCancelContractScreen() {

@@ -48,10 +48,11 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.components.Space
 import com.rentify.user.app.R
 @Composable
 fun ViewContractButton(onClick: () -> Unit) {
+
     Button(
         onClick = onClick,
         modifier = Modifier
-            .padding(20.dp)
+
             .fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xffffffff))
