@@ -47,7 +47,7 @@ const request_staffApi = require("./Api_Staff/Request");
 const login_staffApi = require("./Api_Staff/login");
 
 // nối
-router.use("/", authApi);
+
 router.use("", reportApiAdmin);
 router.use("/", serviceApi);
 router.use("/", roomApi);

@@ -14,7 +14,7 @@ router.get('/', function (req, res, next) {
   router.handle({ method: 'GET', url: '/api/home' }, res, next);
 });
 
-router.get('/api/home', authenticate, checkRole, (req, res, next) => {
+router.get('/api/home', (req, res, next) => {
   res.render('Home/Home', (err, html) => {
     if (err) {
       return res.status(500).send(err);
