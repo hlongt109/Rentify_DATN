@@ -60,8 +60,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.flowlayout.FlowRow
-import com.rentify.user.app.network.ApiClient
 import com.rentify.user.app.network.RegisterRequest
 import com.rentify.user.app.network.RegisterResponse
 import retrofit2.Call
@@ -91,18 +89,21 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                 .background(color = Color(0xff84d8ff))
                 .padding(10.dp)
         ) {
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
 
                     .background(color = Color(0xff84d8ff)), // Để IconButton nằm bên trái
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Row(   modifier = Modifier.width(100.dp).padding(5.dp)
-                    .clickable(onClick = { /**/ },
-                        indication = null, // Bỏ hiệu ứng tối khi nhấn
-                        interactionSource = remember { MutableInteractionSource() }),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .padding(5.dp)
+                        .clickable(onClick = { /**/ },
+                            indication = null, // Bỏ hiệu ứng tối khi nhấn
+                            interactionSource = remember { MutableInteractionSource() }),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
@@ -120,7 +121,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                     fontSize = 17.sp,
 
                     )
-                Row( modifier = Modifier.width(100.dp)) {
+                Row(modifier = Modifier.width(100.dp)) {
 
                 }
             }
@@ -135,65 +136,65 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                 .padding(15.dp)
         ) {
 // chọn phòg
-                Row(
-                    modifier = Modifier
-                        .height(80.dp)
-                        .fillMaxWidth()
-                        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                        .background(color = Color(0xFFffffff))
-                        .border(
-                            width = 0.dp,
-                            color = Color(0xFFEEEEEE),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                        .padding(15.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Row(
+                modifier = Modifier
+                    .height(80.dp)
+                    .fillMaxWidth()
+                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                    .background(color = Color(0xFFffffff))
+                    .border(
+                        width = 0.dp,
+                        color = Color(0xFFEEEEEE),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .padding(15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
 
-                ) {
-                    Column {
-                        Row {
-                            Text(
-
-                                text = "Chọn phòng",
-                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                                color = Color(0xff7f7f7f),
-                                // fontWeight = FontWeight(700),
-                                fontSize = 16.sp,
-
-                                )
-                            Text(
-
-                                text = " *",
-                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                                color = Color(0xffff1a1a),
-                                // fontWeight = FontWeight(700),
-                                fontSize = 16.sp,
-
-                                )
-                        }
-
-                        Spacer(modifier = Modifier.height(7.dp))
+            ) {
+                Column {
+                    Row {
                         Text(
 
                             text = "Chọn phòng",
                             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color.Black,
+                            color = Color(0xff7f7f7f),
                             // fontWeight = FontWeight(700),
-                            fontSize = 14.sp,
+                            fontSize = 16.sp,
+
+                            )
+                        Text(
+
+                            text = " *",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xffff1a1a),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 16.sp,
 
                             )
                     }
-                    Column {
-                        Image(
-                            painter = painterResource(id = R.drawable.next),
-                            contentDescription = null,
-                            modifier = Modifier.size(17.dp, 17.dp)
+
+                    Spacer(modifier = Modifier.height(7.dp))
+                    Text(
+
+                        text = "Chọn phòng",
+                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color.Black,
+                        // fontWeight = FontWeight(700),
+                        fontSize = 14.sp,
+
                         )
-
-
-                    }
                 }
+                Column {
+                    Image(
+                        painter = painterResource(id = R.drawable.next),
+                        contentDescription = null,
+                        modifier = Modifier.size(17.dp, 17.dp)
+                    )
+
+
+                }
+            }
 ///2
             Spacer(modifier = Modifier.height(20.dp))
             Column(
@@ -208,7 +209,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                     .padding(15.dp),
                 verticalArrangement = Arrangement.Center,
 
-            ) {
+                ) {
 // sự cố
                 Column(
                     modifier = Modifier
@@ -263,7 +264,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                     )
 
                 }
-              // mô tả sự cố
+                // mô tả sự cố
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -374,7 +375,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                             color = Color.Black,
                             // fontWeight = FontWeight(700),
                             fontSize = 14.sp,
-                            )
+                        )
                     }
 
 
@@ -439,84 +440,86 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                 }
                 //checkbox
                 Spacer(modifier = Modifier.height(10.dp))
-Column {
-    Text(
-        text = "Mức độ nghiêm trọng",
-        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-        color = Color.Black,
-        // fontWeight = FontWeight(700),
-        fontSize = 14.sp,
-    )
-    Row {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = isCheckedHigh,
-                onCheckedChange = { isCheckedHigh = it }
-            )
-            Text(
-                text = "Cao",
-                modifier = Modifier
-                    .background(
-                        color = Color(0xffff0000),
-                        shape = RoundedCornerShape(5.dp)
-                    ) // bo tròn nền
-                    .padding(5.dp),
-                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                color = Color.White,
-                // fontWeight = FontWeight(700),
-                fontSize = 14.sp,
-            ) }
+                Column {
+                    Text(
+                        text = "Mức độ nghiêm trọng",
+                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color.Black,
+                        // fontWeight = FontWeight(700),
+                        fontSize = 14.sp,
+                    )
+                    Row {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = isCheckedHigh,
+                                onCheckedChange = { isCheckedHigh = it }
+                            )
+                            Text(
+                                text = "Cao",
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(0xffff0000),
+                                        shape = RoundedCornerShape(5.dp)
+                                    ) // bo tròn nền
+                                    .padding(5.dp),
+                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color.White,
+                                // fontWeight = FontWeight(700),
+                                fontSize = 14.sp,
+                            )
+                        }
 
-        // Checkbox "Trung bình"
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = isCheckedMedium,
-                onCheckedChange = { isCheckedMedium = it }
-            )
-            Text(
-                text = "Trung bình",
-                modifier = Modifier
-                    .background(
-                        color = Color(0xffe40505),
-                        shape = RoundedCornerShape(5.dp)
-                    ) // bo tròn nền
-                    .padding(5.dp),
-                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                color = Color.White,
-                // fontWeight = FontWeight(700),
-                fontSize = 14.sp,
-            )
-        }
+                        // Checkbox "Trung bình"
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = isCheckedMedium,
+                                onCheckedChange = { isCheckedMedium = it }
+                            )
+                            Text(
+                                text = "Trung bình",
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(0xffe40505),
+                                        shape = RoundedCornerShape(5.dp)
+                                    ) // bo tròn nền
+                                    .padding(5.dp),
+                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color.White,
+                                // fontWeight = FontWeight(700),
+                                fontSize = 14.sp,
+                            )
+                        }
 
-        // Checkbox "Thấp"
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = isCheckedLow,
-                onCheckedChange = { isCheckedLow = it }
-            )
-            Text(
-                text = "Thấp",
-                modifier = Modifier
-                    .background(
-                        color = Color(0xfff1d22d),
-                        shape = RoundedCornerShape(5.dp)
-                    ) // bo tròn nền
-                    .padding(5.dp),
-                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                color = Color.White,
-                // fontWeight = FontWeight(700),
-                fontSize = 14.sp,
-            ) }
-    }
+                        // Checkbox "Thấp"
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = isCheckedLow,
+                                onCheckedChange = { isCheckedLow = it }
+                            )
+                            Text(
+                                text = "Thấp",
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(0xfff1d22d),
+                                        shape = RoundedCornerShape(5.dp)
+                                    ) // bo tròn nền
+                                    .padding(5.dp),
+                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color.White,
+                                // fontWeight = FontWeight(700),
+                                fontSize = 14.sp,
+                            )
+                        }
+                    }
 
-}
-}
+                }
+            }
             Spacer(modifier = Modifier.height(25.dp))
             Button(
                 onClick = {/**/
@@ -537,26 +540,28 @@ Column {
                     color = Color(0xffffffff)
                 )
             }
-            }
-
         }
 
     }
+
+}
 
 
 @Composable
 fun RoomTypeOption(
     text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
-    Row(modifier = Modifier
-        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
-            interactionSource = remember { MutableInteractionSource() })
-        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-        .border(
-            width = 2.dp,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-            shape = RoundedCornerShape(9.dp)
-        ), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
+                interactionSource = remember { MutableInteractionSource() })
+            .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+            .border(
+                width = 2.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
+                shape = RoundedCornerShape(9.dp)
+            ), verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
             modifier = Modifier
                 .background(color = Color(0xFFeeeeee))
@@ -572,15 +577,17 @@ fun RoomTypeOption(
 fun ComfortableOption(
     text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
-    Row(modifier = Modifier
-        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
-            interactionSource = remember { MutableInteractionSource() })
-        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-        .border(
-            width = 2.dp,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-            shape = RoundedCornerShape(9.dp)
-        ), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
+                interactionSource = remember { MutableInteractionSource() })
+            .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+            .border(
+                width = 2.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
+                shape = RoundedCornerShape(9.dp)
+            ), verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
             modifier = Modifier
                 .background(color = Color(0xFFeeeeee))
@@ -596,15 +603,17 @@ fun ComfortableOption(
 fun ServiceOption(
     text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
-    Row(modifier = Modifier
-        .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
-            interactionSource = remember { MutableInteractionSource() })
-        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-        .border(
-            width = 2.dp,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
-            shape = RoundedCornerShape(9.dp)
-        ), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .clickable(onClick = onClick, indication = null, // Bỏ hiệu ứng tối khi nhấn
+                interactionSource = remember { MutableInteractionSource() })
+            .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+            .border(
+                width = 2.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee), // Change border color if selected
+                shape = RoundedCornerShape(9.dp)
+            ), verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
             modifier = Modifier
                 .background(color = Color(0xFFeeeeee))
@@ -615,6 +624,7 @@ fun ServiceOption(
         )
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingLayoutAddPostScreen() {

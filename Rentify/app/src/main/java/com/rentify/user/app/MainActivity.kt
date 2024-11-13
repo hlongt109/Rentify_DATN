@@ -18,6 +18,7 @@ import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.ReportScreen.ReportScreen
 import com.rentify.user.app.view.staffScreens.personalScreen.PersonalScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
@@ -58,7 +59,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.PersonalStaff.name) {
+        NavHost(navController = navController, startDestination = ROUTER.ReportScreen.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -155,6 +156,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.PersonalProfileScreen.name) {
                 PersonalProfileScreen(navController = navController)
             }
+            composable(ROUTER.ReportScreen.name) {
+                ReportScreen(navController = navController)
+            }
         }
     }
 
@@ -178,12 +182,11 @@ class MainActivity : ComponentActivity() {
         SEARCHPOSTROOMATE,
         SEARCHPOSTROOM,
         TogeTher,
-        TINNHAN,// đoạn chat tin nhắn
-        PaymentConfirmation,// xác nhận thanh toán
-        Payments,// thanh toán
-        ConTract,// hợp đồng
+        TINNHAN,
+        PaymentConfirmation,
+        Payments,
+        ConTract,
         ADDINCIDENTREPORT,
-        FILTER,
         ADDEDITSERVICE,
         INCIDENTREPORT,
         CONTRACT,
@@ -193,5 +196,6 @@ class MainActivity : ComponentActivity() {
         Invoice_screen,
         PersonalStaff,
         PersonalProfileScreen,
+        ReportScreen,
     }
 }
