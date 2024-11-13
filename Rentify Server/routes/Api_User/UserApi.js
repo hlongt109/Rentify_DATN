@@ -64,7 +64,7 @@ router.post("/login-user", async (req, res) => {
           return res.status(400).send("Mật khẩu không khớp");
         }
       } else {
-        return res.status(400).send("Ta khoan chua duoc xac minh");
+        return res.status(400).send("Tài khoản của bạn chưa được xác minh");
       }
     } else {
       return res.status(400).send("Tài khoản không tồn tại");
@@ -78,7 +78,7 @@ router.post("/login-user", async (req, res) => {
 //active account
 router.get("/confirm-email/:userId", async (req, res) => {
   try {
-    console.log("Requesting userId:", req.params.userId); // Log ID
+    console.log("userId:", req.params.userId); // Log ID
     const user = await Account.findOne({
       _id: req.params.userId,
     });

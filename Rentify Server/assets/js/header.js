@@ -60,7 +60,7 @@ function renderNotificationList(notifications) {
             <div class="notification-title">${notification.title}</div>
             <div class="notification-content">${notification.content}</div>
             <div class="notification-time">${new Date(notification.created_at).toLocaleString()}</div>
-            <button class="delete-btn" onclick="deleteNotification('${notification._id}')">x</button>
+            <button class="delete-btn" onclick="event.stopPropagation(); deleteNotification('${notification._id}')">x</button>
         `;
 
         notificationElement.addEventListener('click', () => {
@@ -76,13 +76,14 @@ function viewNotificationDetail(notification) {
     document.getElementById('notification-detail-content').innerText = notification.content;
     document.getElementById('notification-detail-time').innerText = new Date(notification.created_at).toLocaleString();
 
+
     const modal = document.getElementById('notification-detail-modal');
     modal.style.display = 'block'; // Hiển thị modal
 }
 // Hàm để đóng modal
 function closeNotificationDetail() {
     const modal = document.getElementById('notification-detail-modal');
-    modal.style.display = 'none'; // Ẩn modal
+    modal.style.display = 'none'; // Ẩn modal chi tiet
 }
 
 // Đóng modal khi nhấn ra ngoài

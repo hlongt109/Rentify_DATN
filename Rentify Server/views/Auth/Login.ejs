@@ -117,6 +117,7 @@
             event.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+
             try {
                 // Gửi yêu cầu đăng nhập đến API
                 const response = await fetch('http://localhost:3000/api/rentify/login', {
@@ -129,69 +130,61 @@
 
                 const data = await response.json();
 
-                if (response.ok) {
-                    const token = data.token;
+
+                if (response.ok && data.accessToken) {
+                    localStorage.setItem('access_token', data.accessToken);
+                    console.log("Token đã lưu trong localStorage:", localStorage.getItem('access_token'));
                     const userData = data.data;
-                    const role = userData.role;
+                    if (userData && userData.role) {
+                        const role = userData.role;
+                        console.log("Vai trò người dùng:", role);
 
-                    // Lưu token và thông tin người dùng vào localStorage
-                    localStorage.setItem('token', token);
-                    localStorage.setItem('data', JSON.stringify(userData));
-
-                    // fetchData("api/post/list");
-                    // Phân quyền role
-                    console.log("Role:", role);
-                    if (role === 'admin') {
-                        window.location.href = '/api/home';
-                    } else if (role === 'landlord') {
-                        window.location.href = '/api/post/list';
+                        if (role === 'admin') {
+                            fetchData('http://localhost:3000/api/home');
+                        } else if (role === 'landlord') {
+                            fetchData('http://localhost:3000/api/home1');
+                        } else {
+                            alert('Bạn không có quyền truy cập vào trang này.');
+                        }
                     } else {
-                        alert('Bạn không có quyền truy cập vào trang này.');
+                        alert('Không tìm thấy thông tin người dùng hoặc vai trò.');
                     }
                 } else {
-                    if (response.status === 401) {
-                        // Kiểm tra và hiển thị thông báo từ `data.message`
-                        if (data.message === 'Tài khoản không tồn tại') {
-                            alert('Tên đăng nhập hoặc mật khẩu không đúng');
-                        } else if (data.message === 'Bạn không có quyền truy cập!') {
-                            alert('Bạn không có quyền truy cập!');
-                        } else if (data.message === 'Tài khoản của bạn đã bị khóa bởi ADMIN') {
-                            alert('Tài khoản của bạn đã bị khóa bởi ADMIN');
-                        }
-                    } else if (response.status === 400) {
-                        if (data.message === 'Thiếu username hoặc password') {
-                            alert('Vui lòng nhập đủ thông tin đăng nhập');
-                        }
-                    }
+                    console.error("Đăng nhập thất bại:", data.message || "Lỗi không xác định");
                 }
             } catch (error) {
                 console.error("Lỗi khi đăng nhập: ", error);
                 alert('Đã xảy ra lỗi, vui lòng thử lại.');
             }
         }
+
         function clickToRegister() {
             window.location.href = '/api/rentify/register'
         }
-        // async function fetchData(link) {
-        //     const token = localStorage.getItem('token');
-        //     if (!token) {
-        //         alert('Không có token, hãy kiểm tra đăng nhập.');
-        //         return;
-        //     }
+        async function fetchData(link) {
+            const token = localStorage.getItem('access_token');
+            console.log("Token gửi đi: ", token);
 
-        //     const response = await fetch(`${link}`, {
-        //         headers: {
-        //             'Authorization': `Bearer ${token}`
-        //         }
-        //     });
+            if (!token) {
+                alert('Không có token, hãy kiểm tra đăng nhập.');
+                return;
+            }
 
-        //     if (response.ok) {
-        //         const htmlContent = await response.text();
-        //         document.querySelector("body").innerHTML = htmlContent;
-        //     } else {
-        //         alert('Lỗi khi kiểm tra dữ liệu');
-        //     }
-        // }
+            const response = await fetch(link, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Thêm token vào tiêu đề Authorization
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                const htmlContent = await response.text();
+                document.querySelector("body").innerHTML = htmlContent;
+            } else {
+                alert('Lỗi khi kiểm tra dữ liệu');
+            }
+        }
         document.getElementById('loginForm').addEventListener('submit', login);
 
     </script>

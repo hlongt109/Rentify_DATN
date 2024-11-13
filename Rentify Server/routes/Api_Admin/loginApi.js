@@ -11,10 +11,11 @@ const User = require("../../models/User");
 const transporter = require("../../config/common/mailer")
 // upload file (image,images, video)
 const uploadFile = require("../../config/common/upload")
-
+const authenticate = require('../../middleware/authenticate');
+const checkRole = require('../../middleware/checkRole');
 
 // apis
-router.get("/home", (req, res) => {
+router.get("/home", authenticate, checkRole, (req, res) => {
     res.render('Home/Home');
 })
 //login
@@ -111,7 +112,7 @@ router.post("/login", async (req, res) => {
         const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
             expiresIn: '1y',
         });
-        console.log("token khi dang nhap: ", token)
+        console.log("Token khi đăng nhập: ", token)
         res.json({ message: "Đăng nhập thành công", token });
     } catch (error) {
         console.error(error, " Password: " + req.body.password);
@@ -132,20 +133,29 @@ router.post("/rentify/login", async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: 'Tài khoản không tồn tại' });
         }
-        if (user.role == 'ban') {
+        if (user.role === 'ban') {
             return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
         }
-        // Tạo JWT
-        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1000h' });
-        //token
-        // const token = await user.generateAuthToken()
-        // user.token = token;
-        const userID = user._id;
 
-        res.json({ message: "Đăng nhập thành công", token, data: user, userID });
+        // Tạo Access Token
+        const accessToken = jwt.sign({ username, role: user.role }, 'hoan', { expiresIn: '1h' });
+
+        // Tạo Refresh Token
+        const refreshToken = jwt.sign({ username, role: user.role }, 'hoan', { expiresIn: '7d' });
+
+        // Trả về accessToken, refreshToken và thông tin người dùng
+        return res.json({
+            accessToken,
+            refreshToken,
+            data: {
+                username: user.username,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error(error, " Password: " + req.body.password);
         return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
     }
 });
+
 module.exports = router

@@ -5,6 +5,8 @@ const Post = require('../models/Post')
 const Service = require('../models/Service');
 const User = require('../models/User');
 const Support = require('../models/Support');
+const authenticate = require('../middleware/authenticate');
+const checkRole = require('../middleware/checkRole');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -12,7 +14,7 @@ router.get('/', function (req, res, next) {
   router.handle({ method: 'GET', url: '/api/home' }, res, next);
 });
 
-router.get('/api/home', (req, res) => {
+router.get('/api/home', authenticate, checkRole, (req, res, next) => {
   res.render('Home/Home', (err, html) => {
     if (err) {
       return res.status(500).send(err);

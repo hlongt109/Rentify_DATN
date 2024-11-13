@@ -18,7 +18,7 @@ body {
 nav {
     width: 60px;
     height: 100vh;
-    background-color: #605bff;
+    background-color: #52ff69;
     position: fixed;
     top: 0;
     left: 0;
@@ -38,16 +38,19 @@ nav:hover {
 }
 
 .content {
-    margin-top: 80px; /* Khoảng cách từ header */
+    margin-top: 80px;
+    /* Khoảng cách từ header */
     transition: margin-left 0.3s ease;
-    width: calc(100% - 60px); /* Đảm bảo content không bị tràn ra ngoài */
-    height: calc(100vh - 80px); /* Chiều cao 100% trừ chiều cao của header */
-    overflow: auto; /* Thêm thanh cuộn nếu nội dung quá dài */
+    width: calc(100% - 60px);
+    /* Đảm bảo content không bị tràn ra ngoài */
+    height: calc(100vh - 80px);
+    /* Chiều cao 100% trừ chiều cao của header */
+    overflow: auto;
+    /* Thêm thanh cuộn nếu nội dung quá dài */
 }
 
 /* Khi hover vào nav, đẩy cả header và content */
-nav:hover ~ .header{
-    margin-left: 225px; /* Navbar mở rộng (250px) + khoảng cách 10px */
+nav:hover~.header {
+    margin-left: 225px;
+    /* Navbar mở rộng (250px) + khoảng cách 10px */
 }
-
-

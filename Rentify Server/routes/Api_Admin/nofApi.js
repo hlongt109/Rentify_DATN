@@ -12,19 +12,19 @@ function authenticate(req, res, next) {
     try {
         const authHeader = req.headers['authorization'];
         if (!authHeader) {
-            return res.status(403).json({ message: "Token is required" });
+            return res.status(403).json({ message: "Không có phản hồi từ Token" });
         }
 
         // Lấy token từ chuỗi "Bearer <token>"
         const token = authHeader.split(' ')[1];
         if (!token) {
-            return res.status(403).json({ message: "Token is required" });
+            return res.status(403).json({ message: "Không có phản hồi từ Token" });
         }
 
         // Xác thực token
         jwt.verify(token, 'hoan', (err, decoded) => {
             if (err) {
-                return res.status(403).json({ message: "Invalid or expired token" });
+                return res.status(403).json({ message: "Lỗi xác thực Token" });
             }
             req.user_id = decoded.id; // Gán thông tin người dùng từ token vào request
             next(); // Cho phép đi tiếp
@@ -55,7 +55,7 @@ router.post("/notifications", async (req, res) => {
             user_id: user_id,
             title: title,
             content: content,
-            created_at: getFormattedDate()  // Tùy chỉnh hàm này nếu cần
+            // created_at: getFormattedDate()  // Tùy chỉnh hàm này nếu cần
         });
 
         const result = await newNotification.save();
