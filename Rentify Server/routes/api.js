@@ -6,7 +6,7 @@ var router = express.Router();
 // router.use('',tentenRouter)
 
 //============================================
-const authApi = require("./Api_Auth/auth_Api");
+//admin
 const adminApi = require("./Api_Admin/loginApi");
 const postAdmin = require("./Api_Admin/postApi");
 const userAdmin = require("./Api_Admin/userApi");

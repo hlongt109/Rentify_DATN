@@ -2,68 +2,159 @@ var express = require('express');
 var router = express.Router();
 
 const Notification = require("../../models/Notification")
-const { getFormattedDate } = require('../../utils/dateUtils');
+const getFormattedDate = require('../../utils/dateUtils');
+
+const jwt = require('jsonwebtoken');
+
+// Middleware để xác thực và lấy user_id từ JWT token
+
+function authenticate(req, res, next) {
+    try {
+        const authHeader = req.headers['authorization'];
+        if (!authHeader) {
+            return res.status(403).json({ message: "Không có phản hồi từ Token" });
+        }
+
+        // Lấy token từ chuỗi "Bearer <token>"
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return res.status(403).json({ message: "Không có phản hồi từ Token" });
+        }
+
+        // Xác thực token
+        jwt.verify(token, 'hoan', (err, decoded) => {
+            if (err) {
+                return res.status(403).json({ message: "Lỗi xác thực Token" });
+            }
+            req.user_id = decoded.id; // Gán thông tin người dùng từ token vào request
+            next(); // Cho phép đi tiếp
+        });
+    } catch (error) {
+        return res.status(401).json({ message: "Lỗi xác thực", error: error.message });
+    }
+}
 
 // create
-router.post("/api/notifications", async(req, res) => {
+router.post("/notifications", async (req, res) => {
     try {
         const data = req.body;
-        const { user_id } = req.query;
+        console.log('Received data:', data);
 
-        if(!user_id){
+        const { user_id, title, content } = data;
+
+        // Kiểm tra nếu thiếu thông tin quan trọng
+        if (!user_id || !title || !content) { //nhập ID của ng nhận
             return res.status(400).json({
                 "status": 400,
-                "message": "user_id bị bỏ trống",
-            }); 
+                "message": "user_id, title và content là bắt buộc",
+            });
         }
 
+        // Tạo thông báo mới
         const newNotification = new Notification({
             user_id: user_id,
-            title: data.title,
-            content: data.content,
-            status: data.status,
-            read_status: 'unread',
-            created_at: getFormattedDate()
-        })
+            title: title,
+            content: content,
+            // created_at: getFormattedDate()  // Tùy chỉnh hàm này nếu cần
+        });
 
         const result = await newNotification.save();
-        if(result){
-            res.json({
-                "status": 200,
-                "message": "Create notification successfully",
-                "data": result
-            });
-        }else{
-            res.json({
-                "status": 400,
-                "message": "Error, Create notification failed",
-                "data": []
-            });
-        }
+        console.log('Notification saved:', result);
+
+        // Trả về thông báo nếu thành công
+        res.status(200).json({
+            "status": 200,
+            "message": "Create notification successfully",
+            "data": result
+        });
     } catch (error) {
-        handleServerError(req, res)
+        console.error('Server Error:', error);
+        res.status(500).json({
+            "status": 500,
+            "message": "Server error",
+            "error": error.message || "An error occurred"
+        });
     }
-})
+});
+
+
 // list
-router.get("/api/notifications/:user_id", async(req, res) => {
+router.get("/notifications/:user_id", authenticate, async (req, res) => {
     try {
-        const { user_id } = req.params; 
-        const data = await Notification.find({ user_id });
-        if(data){
-            res.status(200).send(data)
-        }else{
-            res.json({
-                "status": 400,
-                "messenger": "Get notification list failed",
+        const { user_id } = req.params;
+        const data = await Notification.find({ user_id }).sort({ created_at: -1 });
+
+        if (data.length === 0) {
+            return res.status(404).json({
+                "status": 404,
+                "message": "Không có thông báo nào cho user_id này",
                 "data": []
-            })
+            });
         }
+
+        res.status(200).json({
+            "status": 200,
+            "message": "Lấy thông báo thành công",
+            "data": data
+        });
     } catch (error) {
-        handleServerError(req, res)
+        console.error('Error fetching notifications:', error);
+        res.status(500).json({
+            "status": 500,
+            "message": "Server error",
+            "error": error.message || "An error occurred"
+        });
+    }
+});
+
+router.get('/notifications', authenticate, async (req, res) => {
+    try {
+        const notifications = await Notification.find({ user_id: req.user_id })
+            .sort({ created_at: -1 });
+        const unreadCount = await Notification.countDocuments({
+            user_id: req.user_id,
+            read_status: false
+        });
+        res.json({ notifications, unreadCount });
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi lấy thông báo", error });
     }
 })
+
+// API đánh dấu thông báo là đã đọc
+router.put('/notifications/:id/read', async (req, res) => {
+    try {
+        const notificationId = req.params.id;
+        await Notification.updateOne({ _id: notificationId, user_id: req.user.id }, { read_status: 'read' });
+        res.json({ message: "Notification marked as read" });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating notification status" });
+    }
+});
+
+router.patch('/notifications/:notificationId/read', async (req, res) => {
+    const { notificationId } = req.params;
+
+    try {
+        // Tìm thông báo với notificationId và cập nhật trạng thái read
+        const notification = await Notification.findOne({ _id: notificationId });
+        if (!notification) {
+            return res.status(404).json({ message: 'Notification not found' });
+        }
+
+        notification.read_status = 'read';
+
+        // Lưu lại thay đổi
+        await notification.save();
+
+        return res.json({ message: 'Notification đã read' });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error marking notification as read', error: error.message });
+    }
+});
+
 // details
-router.get("/api/notifications/:id", async(req, res) => {
+router.get("/notifications/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const result = await Notification.findById(id);
@@ -79,26 +170,32 @@ router.get("/api/notifications/:id", async(req, res) => {
     }
 })
 // delete
-router.delete("/api/notifications/:id", async(req, res) => {
+router.delete("/notifications/:id", authenticate, async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const result = await Notification.findByIdAndDelete(id);
+
         if (result) {
             res.json({
                 "status": 200,
-                "messenger": "Notification deleted successfully",
+                "message": "Thông báo đã được xóa thành công",
                 "data": result
-            })  
-
+            });
         } else {
-            res.json({
-                "status": 400,
-                "messenger": "Error, Notification deletion failed",
+            res.status(404).json({
+                "status": 404,
+                "message": "Thông báo không tìm thấy",
                 "data": []
-            })
+            });
         }
     } catch (error) {
-        handleServerError(req, res)
+        console.error('Error deleting notification:', error);
+        res.status(500).json({
+            "status": 500,
+            "message": "Lỗi server khi xóa thông báo",
+            "error": error.message || "An error occurred"
+        });
     }
-})
+});
+
 module.exports = router;

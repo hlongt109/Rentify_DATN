@@ -8,13 +8,15 @@
     <title>Đăng nhập </title>
     <style>
         body {
-            background-image: url('https://res.cloudinary.com/dzkzilpxs/image/upload/v1730381493/efp2ue2rkhgch2buflh9.jpg');          /* Đường dẫn đến ảnh nền */
+            background-image: url('https://res.cloudinary.com/dzkzilpxs/image/upload/v1730381493/efp2ue2rkhgch2buflh9.jpg');
+            /* Đường dẫn đến ảnh nền */
             background-size: cover;
             background-position: center;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;           /* justify-content: center; */
+            align-items: center;
+            /* justify-content: center; */
             margin: 0;
         }
 
@@ -27,7 +29,8 @@
 
 
         .login-card {
-            background-color: rgba(255, 255, 255, 0.9);    /* Make the form slightly transparent */
+            background-color: rgba(255, 255, 255, 0.9);
+            /* Make the form slightly transparent */
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 100%;
@@ -38,7 +41,8 @@
         }
 
         .logo {
-            max-width: 70px;   /* Adjust the logo size as necessary */
+            max-width: 70px;
+            /* Adjust the logo size as necessary */
             margin-right: 1rem;
             padding: 10px;
             /* background-color: white;  */
@@ -47,14 +51,17 @@
         }
 
         .sign-in-text {
-            margin-top: 1rem; /* Khoảng cách từ "Sign In" đến phần trên */
+            margin-top: 1rem;
+            /* Khoảng cách từ "Sign In" đến phần trên */
         }
 
         .form-label {
             text-align: left;
             color: #363636;
-            font-weight: bold; /* Font đậm */
-            display: block;/* Đảm bảo label chiếm toàn bộ chiều ngang */
+            font-weight: bold;
+            /* Font đậm */
+            display: block;
+            /* Đảm bảo label chiếm toàn bộ chiều ngang */
             width: 100%;
         }
 
@@ -75,7 +82,8 @@
 <body>
     <div class="welcome-card mb-4">
         <div class="text-center d-flex align-items-center">
-            <img src="https://res.cloudinary.com/dzkzilpxs/image/upload/v1730381491/jxa9tvds6jrldadauq93.png" alt="Logo" class="logo"> <!-- Đường dẫn đến logo -->
+            <img src="https://res.cloudinary.com/dzkzilpxs/image/upload/v1730381491/jxa9tvds6jrldadauq93.png" alt="Logo"
+                class="logo"> <!-- Đường dẫn đến logo -->
             <h2 class="fw-bold ms-3" style="color: #000000 ">Rentify Management</h2>
         </div>
     </div>
@@ -161,6 +169,7 @@
         }
         document.getElementById('loginForm').addEventListener('submit', login);
     </script> -->
+
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function (event) {
             event.preventDefault();
@@ -187,7 +196,7 @@
                     alert("Đăng nhập thành công!");
 
                     // Chuyển hướng hoặc thực hiện hành động khác
-                    window.location.href = "/";
+                    window.location.href = "/api/home";
                 } else {
                     const errorData = await response.json();
                     alert(`Đăng nhập thất bại: ${errorData.error}`);

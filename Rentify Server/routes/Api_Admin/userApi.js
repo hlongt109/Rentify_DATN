@@ -6,8 +6,8 @@ const User = require("../../models/User");
 
 router.get("/user/show-list", async (req, res) => {
     try {
-        const find = await User.find();
-        res.render('UserManagement/UserManagement', { find });
+        const data = await User.find();
+        res.render('UserManagement/UserManagement', { data });
     } catch (error) {
         console.error(error);
         res.status(500).send('Lỗi server');
@@ -28,7 +28,6 @@ router.get("/user/list", async (req, res) => {
     }
 });
 
-//sửa role người dùng
 // Sửa role người dùng
 router.put("/user/update/:id", async (req, res) => {
     try {
@@ -45,7 +44,6 @@ router.put("/user/update/:id", async (req, res) => {
         if (!upDB) {
             return res.status(404).json({ message: 'Không tìm thấy tài khoản' });
         }
-
         let msg = 'Sửa thành công id: ' + findID;
         console.log(msg);
         return res.status(200).json({ message: 'Cập nhật thành công', user: upDB });
@@ -54,7 +52,5 @@ router.put("/user/update/:id", async (req, res) => {
         return res.status(500).json({ message: msg });
     }
 });
-
-
 
 module.exports = router

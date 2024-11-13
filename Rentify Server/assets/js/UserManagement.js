@@ -87,16 +87,16 @@ const toggleEditForm = (userId) => {
 const selectRole = (role) => {
     document.getElementById('roleDropdownButton').innerText = role === 'Vai trò' ? 'Vai trò' : role; // Hiển thị 'All Users' khi chọn 'All'
     selectedRole = role;
-    
+
     // Lấy màu nền theo vai trò và áp dụng cho button
     const button = document.getElementById('roleDropdownButton');
     button.style.backgroundColor = getRoleColor(role);
-    
+
     renderTable(); // Rerender bảng khi chọn vai trò mới
 };
 
 const renderTable = () => {
-    const filteredUsers = users.filter(user => 
+    const filteredUsers = users.filter(user =>
         user.username &&
         removeAccents(user.username.toLowerCase()).includes(removeAccents(search.toLowerCase())) &&
         (selectedRole === '' || selectedRole === 'Vai trò' || user.role === selectedRole) // Kiểm tra vai trò
@@ -150,7 +150,7 @@ const renderTable = () => {
                     <label for="edit-email" class="form-label">Email</label>
                     <input type="email" id="edit-email" class="form-control" value="${user.email ?? ''}" placeholder="Email" readonly />
                 </div>
-            </div>
+            </div>            
             <div class="col">
                 <div class="form-group">
                     <label for="edit-phone" class="form-label">Phone Number</label>

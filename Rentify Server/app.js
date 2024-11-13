@@ -3,6 +3,8 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const cors = require('cors');
+
 
 //
 var indexRouter = require("./routes/index");
@@ -21,6 +23,12 @@ app.use(cookieParser());
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/api/assets', express.static(path.join(__dirname, 'assets')));
+
+app.use(cors({
+  origin: 'http://localhost:3000', // Đảm bảo cho phép frontend gửi yêu cầu
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'] // Cho phép header Authorization
+}));
 
 // connect
 app.use("/", indexRouter);

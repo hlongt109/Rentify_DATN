@@ -43,6 +43,10 @@
                 <input type="email" class="form-control" id="email" placeholder="Nhập email" required>
             </div>
             <div class="mb-3">
+                <label class="form-label">Full name</label>
+                <input type="text" class="form-control" id="name" placeholder="Nhập Full name" required>
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" placeholder="Nhập tên đăng nhập" required>
             </div>
@@ -63,6 +67,7 @@
         async function register(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             try {
@@ -71,7 +76,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email, username, password }),
+                    body: JSON.stringify({ email, name, username, password }),
                 });
 
                 if (response.ok) {
