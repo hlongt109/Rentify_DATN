@@ -132,7 +132,7 @@ fun LoginScreenApp(navigator: NavController) {
                     placeholder = "Email",
                     isFocused = remember { mutableStateOf(isFocusedEmail) },
 
-                )
+                    )
                 //loi cho email
                 errorEmail?.let { ShowReport.ShowError(message = it) }
                 Spacer(modifier = Modifier.padding(top = 30.dp))

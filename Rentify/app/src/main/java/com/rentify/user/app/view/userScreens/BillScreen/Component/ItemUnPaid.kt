@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
 import com.rentify.user.app.model.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
@@ -61,7 +62,8 @@ import com.rentify.user.app.utils.CheckUnit
 @Composable
 fun ItemUnPaid(
     item: RoomPaymentInfo,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     val amount = item.paymentDetails.calculateTotal()
     val formatPrice = CheckUnit.formattedPrice(amount.toFloat())
@@ -220,7 +222,7 @@ fun ItemUnPaid(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             Button(
-                                onClick = { /* TODO: Xử lý thanh toán */ },
+                                onClick = { navController.navigate("PaymentConfirmation") },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = colorHeaderSearch

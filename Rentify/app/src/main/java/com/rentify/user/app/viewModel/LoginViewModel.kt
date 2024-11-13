@@ -1,3 +1,4 @@
+
 package com.rentify.user.app.viewModel
 
 import android.util.Log

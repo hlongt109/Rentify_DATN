@@ -52,7 +52,7 @@ fun BillScreen(navController: NavController) {
                 // Nội dung của từng tab
 
                 when (selectedTabIndex) {
-                    0 -> UnPaidScreen()
+                    0 -> UnPaidScreen( navController )
                     1 -> PaidScreen()
                 }
 

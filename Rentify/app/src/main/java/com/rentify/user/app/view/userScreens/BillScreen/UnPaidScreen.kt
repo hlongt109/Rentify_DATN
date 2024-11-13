@@ -18,12 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.rentify.user.app.view.userScreens.BillScreen.Component.ItemUnPaid
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemPost
 import java.util.Calendar
 
 @Composable
-fun UnPaidScreen() {
+fun UnPaidScreen( navController: NavController ) {
     val list = FakeData().fakeRoomPayments
 
     // Lọc danh sách chỉ lấy các item có status == 0
@@ -46,15 +47,10 @@ fun UnPaidScreen() {
                 contentPadding = PaddingValues(7.dp)
             ) {
                 items(filteredList) { item ->
-                    ItemUnPaid(item)
+                    ItemUnPaid(item, navController = navController)
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewUnPaid() {
-    UnPaidScreen()
-}

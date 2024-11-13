@@ -72,7 +72,7 @@ fun HeaderServiceComponent(
             )
 
             IconButton(onClick = {
-                navController.navigate("${ROUTER.ADDEDITSERVICE.name}/false")
+                navController.navigate("${ROUTER.ADDINCIDENTREPORT.name}/false")
             }) {
                 Icon(
                     imageVector = Icons.Default.Add,

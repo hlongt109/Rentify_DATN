@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê người dùng</title>
+    <style>
+        .div1 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .square-box {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #209FA8;
+            color: rgb(0, 0, 0);
+            font-size: 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="div1">
+        <h1>Tổng số người dùng đã đăng ký</h1>
+        <div class="square-box">
+            <h2>
+                <%= totalAccounts %>
+            </h2>
+        </div>
+    </div>
+</body>
+
+</html>
