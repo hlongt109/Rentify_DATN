@@ -31,7 +31,7 @@ fun DoitacComponent() {
 @Composable
 fun LayotKhamPha() {
     Row (
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(20.dp)
     ){
         Image(painter = painterResource(id = R.drawable.iconkhampha),
             contentDescription ="" ,
@@ -47,7 +47,7 @@ fun LayotKhamPha() {
 @Composable
 fun LayotDoitac() {
     Row (
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(20.dp)
     ){
         Image(painter = painterResource(id = R.drawable.icondoitac),
             contentDescription ="" ,

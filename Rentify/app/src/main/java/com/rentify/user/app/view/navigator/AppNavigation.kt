@@ -28,18 +28,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.rentify.user.app.view.userScreens.homeScreen.LayoutHome
-import com.rentify.user.app.view.userScreens.messengerScreem.LayoutMessenger
+import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.R
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.auth.LoginScreenApp
+import com.rentify.user.app.view.auth.RegisterScreen
+import com.rentify.user.app.viewModel.LoginViewModel
+
 enum class ROUTER {
     HOME,
     SERVICE,
@@ -56,7 +65,7 @@ fun AppNavigation(navHostController: NavHostController) {
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.White,
-                modifier = Modifier.height(200.dp)
+                modifier = Modifier.height(100.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -111,27 +120,28 @@ fun AppNavigation(navHostController: NavHostController) {
                         )
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .offset(y = (-40).dp)
-                            .size(70.dp)
-                            .background(Color(0xFF059BEE), shape = CircleShape)
-                            .shadow(30.dp, shape = CircleShape)
-                            .clickable {
-                                isSelected = ROUTER.RENT.name
-                                navController.navigate(ROUTER.RENT.name) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        inclusive = true
-                                    }
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(painter = rememberImagePainter(data = R.drawable.rent),
-                            contentDescription = "",
-                            modifier = Modifier.size(25.dp)
+                    NavigationBarItem(
+                        selected = isSelected == ROUTER.RENT.name,
+                        onClick = {
+                            isSelected = ROUTER.RENT.name
+                            navController.navigate(ROUTER.RENT.name) {
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            }
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.rent),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp)
+                            )
+                        },
+                        label = { Text(text = "Rent",color = if (isSelected == ROUTER.SERVICE.name) Color(0xFF059BEE) else Color(color = 0xFFb7b7b7))},
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color(0xFF059BEE),
+                            unselectedIconColor = Color(color = 0xFFb7b7b7),
+                            indicatorColor = Color.White
                         )
-                    }
+                    )
 
                     // Tin nhắn
                     NavigationBarItem(
@@ -149,7 +159,7 @@ fun AppNavigation(navHostController: NavHostController) {
                                 modifier = Modifier.size(25.dp)
                             )
                         },
-                        label = { Text(text = "Mesenger",color = if (isSelected == ROUTER.MESSENGER.name) Color(0xFF059BEE) else Color(color = 0xFFb7b7b7))},
+                        label = { Text(text = "Tin nhăn",color = if (isSelected == ROUTER.MESSENGER.name) Color(0xFF059BEE) else Color(color = 0xFFb7b7b7))},
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Color(0xFF059BEE),
                             unselectedIconColor = Color(color = 0xFFb7b7b7),

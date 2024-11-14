@@ -25,21 +25,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ItemHomeComponent() {
-    LayoutItemHome()
+    LayoutItemHome(navController= rememberNavController())
 }
 
 @Composable
-fun LayoutItemHome() {
-    Spacer(modifier = Modifier.height(20.dp))
+fun LayoutItemHome(navController: NavHostController) {
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(9.dp)
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
     ) {
@@ -54,7 +56,9 @@ fun LayoutItemHome() {
                     color = Color(0xFFfafafa),
                     shape = RoundedCornerShape(12.dp)
                 )
-                .clickable { }
+                .clickable {
+                    navController.navigate("ROOMDETAILS")
+                }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.iconproduct),
@@ -117,6 +121,5 @@ fun LayoutItemHome() {
             }
 
         }
-        Spacer(modifier = Modifier.height(20.dp))
     }
 }

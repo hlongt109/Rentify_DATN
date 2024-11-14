@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Màn hình Welcome</title>
+    <style>
+        .hero-content {
+            position: absolute;
+            top: 10;
+            left: 0;
+            width: 100%;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            /* Hiệu ứng mờ nền */
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-content .btn {
+            font-size: 1.2rem;
+        }
+
+
+        #like-button {
+            position: relative;
+            padding: 20px 30px;
+            background-color: #605bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            outline: none;
+            overflow: hidden;
+        }
+
+        /* Hoạt ảnh trái tim */
+        .heart {
+            position: absolute;
+            color: #605bff;
+            font-size: 1.5rem;
+            animation: float 1s ease forwards;
+            opacity: 0;
+        }
+
+        /* Định nghĩa hoạt ảnh */
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-80px);
+                opacity: 0;
+            }
+        }
+
+
+        body {
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .carousel {
+            position: relative;
+            width: 96.9vw;
+            height: 80vh;
+        }
+
+        .carousel-images {
+            display: flex;
+            width: 300%;
+            /* Đủ chỗ cho 3 ảnh, điều chỉnh dựa trên số lượng ảnh */
+            transition: transform 1s ease;
+        }
+
+        .carousel img {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            flex-shrink: 0;
+
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- Phần chào mừng -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Chào mừng Admin đến với <span>Rentify</span></h1>
+            <p>Chúng tôi cung cấp các giải pháp tối ưu cho nhu cầu của bạn.</p>
+            <button id="like-button">Đồng ý</button>
+        </div>
+    </section>
+
+
+    <div class="carousel">
+        <div class="carousel-images">
+            <img src="../../public/image/background1.jpg" alt="Image 1">
+            <img src="../../public/image/background2.jpg" alt="Image 2">
+            <img src="../../public/image/background3.jpg" alt="Image 3">
+        </div>
+    </div>
+
+
+    <script>
+        const carouselImages = document.querySelector('.carousel-images');
+        const images = document.querySelectorAll('.carousel img');
+        let currentIndex = 0;
+
+        function showNextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            carouselImages.style.transform = `translateX(-${currentIndex * 100}vw)`;
+        }
+
+        // Chuyển ảnh tự động sau 3 giây
+        setInterval(showNextImage, 3000);
+
+        /////////////////////////////////////////////////////
+
+        const likeButton = document.getElementById('like-button');
+
+        likeButton.addEventListener('click', () => {
+            // Tạo một trái tim
+            const heart = document.createElement('span');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+
+            // Đặt vị trí trái tim ngẫu nhiên trong button
+            heart.style.left = `${Math.random() * 100}%`;
+            heart.style.top = '50%';
+
+            // Thêm trái tim vào button
+            likeButton.appendChild(heart);
+
+            // Xóa trái tim sau khi hoạt ảnh kết thúc
+            setTimeout(() => {
+                heart.remove();
+            }, 1000); // thời gian trùng với thời gian của animation (1s)
+        });
+    </script>
+
+</body>
+
+</html>

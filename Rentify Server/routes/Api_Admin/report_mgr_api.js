@@ -86,7 +86,7 @@ router.get("/get_report_details/:id", async (req, res) => {
 });
 
 // update status
-router.put("/report/:id", async (req, res) => {
+router.put("/api/report/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;

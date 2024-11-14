@@ -4,74 +4,55 @@ var router = express.Router();
 const Support = require("../../models/Support")
 
 // api
-router.get("/api/support_customer", async (req, res) => {
+router.get("/support_customer", async (req, res) => {
     try {
-        const data = await Support.find();
-        // if (data) {
-        //     res.status(200).send(data)
-        // } else {
-        //     res.json({
-        //         "status": 400,
-        //         "message": "Get support list failed",
-        //         "data": []
-        //     })
-        // }
-        res.render('Support/listSupport', { data })
+        res.render('Support/supportManagement');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Lỗi server');
+    }
+})
+router.get('/support/list', async (req, res) => {
+    try {
+        const find = await Support.find();
+
+        return res.status(200).json({
+            status: 200,
+            message: "Lấy dữ liệu thành công",
+            find
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Lỗi server');
     }
 })
 
-router.put("/api/support_customer/{id}", async (req, res) => {
+router.put("/support/update/:id", async (req, res) => {
     try {
-        const { id } = req.params;
-        const data = req.body;
-        const { file } = req
+        const findID = req.params.id;
 
-        const supportUpdate = await Support.findById(id)
-        if (!supportUpdate) {
-            return res.status(404).json({
-                status: 404,
-                messenger: 'No support found for update',
-                data: []
-            })
+        let { status } = req.body;
+
+        const upDB = await Support.findByIdAndUpdate(
+            findID,
+            {
+                status,
+                updated_at: new Date().toISOString(),
+            },
+            { new: true, runValidators: true }
+
+        )
+        if (!upDB) {
+            return res.status(404).json({ message: 'Không tìm thấy bài đăng' })
         }
-
-        let imageNew;
-        if (file && file.length > 0) {
-            imageNew = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
-        } else {
-            imageNew = supportUpdate.image
-        }
-
-        supportUpdate.user_id = data.user_id ?? supportUpdate.user_id;
-        supportUpdate.room_id = data.room_id ?? supportUpdate.room_id;
-        supportUpdate.title_support = data.title_support ?? supportUpdate.title_support;
-        supportUpdate.content_support = data.content_support ?? supportUpdate.content_support;
-        supportUpdate.image = imageNew;
-        supportUpdate.status = data.status ?? supportUpdate.status;
-        supportUpdate.created_at = supportUpdate.created_at;
-        supportUpdate.updated_at = getFormattedDate();
-
-        const result = await supportUpdate.save()
-
-        if (result) {
-            res.json({
-                status: 200,
-                messenger: 'support update successfully',
-                data: result
-            });
-        } else {
-            res.json({
-                status: 400,
-                messenger: 'support update failed',
-                data: []
-            });
-        }
+        let msg = 'Sửa trạng thái thành công của ID: ' + findID;
+        console.log(msg);
+        return res.status(200).json({ message: 'Cap nhat thanh cong', support: upDB })
     } catch (error) {
-        handleServerError(res, error);
+        let msg = "Lỗi: " + error.message;
+        return res.status(500).json({ message: msg });
     }
+
 })
 
 router.get("/api/support-customer/:id", async (req, res) => {

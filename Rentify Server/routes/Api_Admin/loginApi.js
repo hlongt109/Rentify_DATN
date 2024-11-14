@@ -11,9 +11,13 @@ const User = require("../../models/User");
 const transporter = require("../../config/common/mailer")
 // upload file (image,images, video)
 const uploadFile = require("../../config/common/upload")
-
+const authenticate = require('../../middleware/authenticate');
+const checkRole = require('../../middleware/checkRole');
 
 // apis
+router.get("/home", authenticate, checkRole, (req, res) => {
+    res.render('Home/Home');
+})
 //login
 router.get("/admin/login", (req, res) => {
     res.render('Login/Login');
@@ -26,7 +30,7 @@ router.post("/admin/login", async (req, res) => {
             return res.status(400).json({ message: 'Thiếu username hoặc password' });
         }
         // Tìm người dùng trong cơ sở dữ liệu
-        const user = await User.findOne({ username: username });
+        const user = await User.findOne({ username: username, password: password });
         if (!user) {
             return res.status(401).json({ message: 'Tài khoản không tồn tại' });
         }
@@ -37,10 +41,11 @@ router.post("/admin/login", async (req, res) => {
             return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
         }
         // Tạo JWT
-        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1w' });
-        console.log("Generated token:", token); // Kiểm tra token được tạo
+        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1000h' });
+        //token
+        // const token = await user.generateAuthToken()
+        // user.token = token;
         const userID = user._id;
-        console.log(user._id);
 
         res.json({ message: "Đăng nhập thành công", token, data: user, userID });
     } catch (error) {
@@ -107,11 +112,50 @@ router.post("/login", async (req, res) => {
         const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', {
             expiresIn: '1y',
         });
-        console.log("token khi dang nhap: ", token)
+        console.log("Token khi đăng nhập: ", token)
         res.json({ message: "Đăng nhập thành công", token });
     } catch (error) {
         console.error(error, " Password: " + req.body.password);
         return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
     }
 });
+router.get("/rentify/login", async (req, res) => {
+    res.render('Auth/Login');
+})
+router.post("/rentify/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Thiếu username hoặc password' });
+        }
+        // Tìm người dùng trong cơ sở dữ liệu
+        const user = await User.findOne({ username: username, password: password });
+        if (!user) {
+            return res.status(401).json({ message: 'Tài khoản không tồn tại' });
+        }
+        if (user.role === 'ban') {
+            return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
+        }
+
+        // Tạo Access Token
+        const accessToken = jwt.sign({ username, role: user.role }, 'hoan', { expiresIn: '1h' });
+
+        // Tạo Refresh Token
+        const refreshToken = jwt.sign({ username, role: user.role }, 'hoan', { expiresIn: '7d' });
+
+        // Trả về accessToken, refreshToken và thông tin người dùng
+        return res.json({
+            accessToken,
+            refreshToken,
+            data: {
+                username: user.username,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error(error, " Password: " + req.body.password);
+        return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
+    }
+});
+
 module.exports = router

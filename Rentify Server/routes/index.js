@@ -5,6 +5,9 @@ const Post = require('../models/Post')
 const Service = require('../models/Service');
 const User = require('../models/User');
 const Report = require('../models/Report');
+const Support = require('../models/Support');
+const authenticate = require('../middleware/authenticate');
+const checkRole = require('../middleware/checkRole');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -12,8 +15,8 @@ router.get('/', function (req, res, next) {
   router.handle({ method: 'GET', url: '/api/home' }, res, next);
 });
 
-router.get('/api/home', (req, res) => {
-  res.render('UserManagement/UserManagement', (err, html) => {
+router.get('/api/home', (req, res, next) => {
+  res.render('Home/Home', (err, html) => {
     if (err) {
       return res.status(500).send(err);
     }
@@ -36,9 +39,22 @@ router.get('/api/user/show-list', (req, res) => {
   });
 });
 
+router.get('/api/support_customer', (req, res) => {
+  res.render('Support/supportManagement', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Quản lý người dùng',
+      body: html
+    });
+  });
+});
+
+
 router.get('/api/post/list', async (req, res) => {
   try {
-    const showList = await Post.find(); // Lấy danh sách bài đăng từ MongoDB
+    const showList = await Post.find().populate('user_id', 'username'); // Lấy danh sách bài đăng từ MongoDB
     res.render('Posts/listPost', { list: showList }, (err, html) => { // Truyền biến list vào template
       if (err) {
         return res.status(500).send(err);
@@ -56,7 +72,7 @@ router.get('/api/post/list', async (req, res) => {
 router.get('/api/api/services', async (req, res) => {
   try {
     const showList = await Service.find(); // Lấy danh sách bài đăng từ MongoDB
-    res.render('Service/listService', { data: showList }, (err, html) => { // Truyền biến list vào template
+    res.render('Service/listService', { data: showList }, (err, html) => {
       if (err) {
         return res.status(500).send(err);
       }
@@ -93,5 +109,8 @@ router.get("/api/reports/list", async (req, res) => {
       body: html
     });
   })
-})
+});
+
+
+
 module.exports = router;

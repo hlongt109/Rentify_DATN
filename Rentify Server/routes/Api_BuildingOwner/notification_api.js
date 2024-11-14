@@ -4,16 +4,16 @@ const Notification = require("../../models/Notification")
 const { getFormattedDate } = require('../../utils/dateUtils');
 
 // create
-router.post("/api/notifications", async(req, res) => {
+router.post("/api/notifications", async (req, res) => {
     try {
         const data = req.body;
         const { user_id } = req.query;
 
-        if(!user_id){
+        if (!user_id) {
             return res.status(400).json({
                 "status": 400,
                 "message": "user_id bị bỏ trống",
-            }); 
+            });
         }
 
         const newNotification = new Notification({
@@ -26,13 +26,13 @@ router.post("/api/notifications", async(req, res) => {
         })
 
         const result = await newNotification.save();
-        if(result){
+        if (result) {
             res.json({
                 "status": 200,
                 "message": "Create notification successfully",
                 "data": result
             });
-        }else{
+        } else {
             res.json({
                 "status": 400,
                 "message": "Error, Create notification failed",
@@ -44,13 +44,13 @@ router.post("/api/notifications", async(req, res) => {
     }
 })
 // list
-router.get("/api/notifications/:user_id", async(req, res) => {
+router.get("/api/notifications/:user_id", async (req, res) => {
     try {
-        const { user_id } = req.params; 
+        const { user_id } = req.params;
         const data = await Notification.find({ user_id });
-        if(data){
+        if (data) {
             res.status(200).send(data)
-        }else{
+        } else {
             res.json({
                 "status": 400,
                 "messenger": "Get notification list failed",
@@ -62,7 +62,7 @@ router.get("/api/notifications/:user_id", async(req, res) => {
     }
 })
 // details
-router.get("/api/notifications/:id", async(req, res) => {
+router.get("/api/notifications/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const result = await Notification.findById(id);
@@ -78,16 +78,16 @@ router.get("/api/notifications/:id", async(req, res) => {
     }
 })
 // delete
-router.delete("/api/notifications/:id", async(req, res) => {
+router.delete("/api/notifications/:id", async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const result = await Notification.findByIdAndDelete(id);
         if (result) {
             res.json({
                 "status": 200,
                 "messenger": "Notification deleted successfully",
                 "data": result
-            })  
+            })
 
         } else {
             res.json({
