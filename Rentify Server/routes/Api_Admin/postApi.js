@@ -21,6 +21,38 @@ const verifyToken = (req, res, next) => {
     });
 };
 
+router.put("/api/post_update_status/:id", async(req, res) => {
+    try {
+        const {id} = req.params;
+        const data = req.body;
+        const post = await Post.findById(id);
+        if(!post){
+            return res.status(404).json({message: "Post not found"})
+        }
+        post.user_id = post.user_id;
+        post.title = post.title;
+        post.content = post.content;
+        post.status = data.status ?? post.status;
+        post.video = post.video;
+        post.photo = post.photo;
+        post.post_type = post.post_type;
+        post.created_at = post.created_at;
+        post.updated_at = new Date().toISOString();
+
+        const result = await post.save()
+
+        if (result) {
+            res.json({ status: 200, messenger: 'support update successfully',data: result
+            });
+        } else {
+            res.json({status: 400,messenger: 'support update failed',data: []
+            });
+        }
+    } catch (error) {
+        handleServerError(res, error);
+    }
+})
+
 //Lấy danh sách Post
 router.get("/post/list", async (req, res) => {
     try {

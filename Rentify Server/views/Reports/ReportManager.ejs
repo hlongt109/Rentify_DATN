@@ -579,7 +579,6 @@
             ${serviceManagerContact}
             ` : '';
 
-            // cần thêm nút cấm đăng cho post
             const isPost = type === "post" ? ` 
             <h6 class="mb-3 flex-grow-1" style="color: #007bff;">Thông bài đăng :</h6>
             <div class="mb-2"><span class="report-detail-label">Loại:</span> ${getPostType(dataDetails.post_type) ?? 'N/A'}</div>
@@ -612,10 +611,10 @@
                     </div>    
                 </div>
             ` : ''}
-
+            
             <div class="mb-3 border-bottom pb-4 d-flex justify-content-between align-items-center">
                 <div class=""><span class="report-detail-label">Thời gian đăng:</span> ${dataDetails.created_at ?? 'N/A'}</div>
-                <button class="btn btn-danger btn-sm">Cấm Đăng</button>
+                <button class="btn btn-danger btn-sm" onclick="">Cấm Đăng</button>
             </div>
             
 
@@ -744,6 +743,40 @@
             dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
         }
 
+        async function banPost(postId, reportId) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/post_update_status/${postId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ status: parseInt(2) })
+                })
+                const resReport = await fetch(`http://localhost:3000/api/report/${reportId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ status: parseInt(1) })
+
+                });
+                if (res.ok && resReport.ok) {
+                    Toastify({
+                        text: "Update successfully",
+                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
+                    }).showToast();
+                }else {
+                    Toastify({
+                        text: "Failed to update",
+                        style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error("Error updating status:", error);
+                alert("An error occurred while updating the status");
+            }
+        }
+
         async function updateReportStatus(reportId) {
             const selectedStatus = document.getElementById("statusSelect").value;
             try {
@@ -760,13 +793,13 @@
                     toggleEditForm(reportId)
                     Toastify({
                         text: "Update successfully",
-                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)"}
+                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
                     }).showToast();
                     document.getElementById("statusDropdown").style.display = "none";
                 } else {
                     Toastify({
                         text: "Failed to update",
-                        style: {background: "linear-gradient(to right, #ff5f6d, #ffc371)"}
+                        style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
                     }).showToast();
                 }
             } catch (error) {
