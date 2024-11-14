@@ -613,7 +613,11 @@
                 </div>
             ` : ''}
 
-            <div class="mb-3 border-bottom pb-4"><span class="report-detail-label">Thời gian đăng:</span> ${dataDetails.created_at ?? 'N/A'}</div>
+            <div class="mb-3 border-bottom pb-4 d-flex justify-content-between align-items-center">
+                <div class=""><span class="report-detail-label">Thời gian đăng:</span> ${dataDetails.created_at ?? 'N/A'}</div>
+                <button class="btn btn-danger btn-sm">Cấm Đăng</button>
+            </div>
+            
 
             <h6 class="mb-3 flex-grow-1" style="color: #007bff;">Người đăng bài viết :</h6>
             ${postContact}
