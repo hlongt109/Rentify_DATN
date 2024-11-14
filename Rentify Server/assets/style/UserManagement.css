@@ -195,7 +195,7 @@ h4 {
     border-radius: 8px; /* Bo tròn các góc */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng cho modal */
     width: 90%; /* Chiều rộng 90% */
-    max-width: 500px; /* Chiều rộng tối đa */
+    max-width: 70%; /* Chiều rộng tối đa */
     transition: transform 0.3s ease; /* Hiệu ứng chuyển động */
     transform: translateY(0); /* Đưa modal về giữa */
     margin: auto; /* Căn giữa */

@@ -128,24 +128,22 @@
                 });
 
                 const data = await response.json();
-                console.log("Data received: ", data);
-                console.log("User ID: ", data._id);
 
                 if (response.ok) {
                     const token = data.token;
                     const userData = data.data;
                     const role = userData.role;
-                    const userId = data._id;
-                    console.log("User ID: ", userId);
+
+                    console.log("user id:", userData._id)
 
                     // Lưu token và thông tin người dùng vào localStorage
                     localStorage.setItem('token', token);
-                    localStorage.setItem('data', JSON.stringify(userData));
-                    localStorage.setItem('_id', userId);
+                    localStorage.setItem('user_id', userData._id);
+                    localStorage.setItem('data_user', JSON.stringify(userData));
 
                     // fetchData("api/post/list");
                     // Phân quyền role
-                    // console.log("Role:", role);
+                    console.log("Role:", role);
                     if (role === 'admin') {
                         window.location.href = '/';
                     } else if (role === 'landlord') {
@@ -167,7 +165,7 @@
                         if (data.message === 'Thiếu username hoặc password') {
                             alert('Vui lòng nhập đủ thông tin đăng nhập');
                         }
-                    } else if (response.status === 500) {
+                    }else if (response.status === 500){
                         alert("Lỗi kết nốu với máy chủ, vui lòng thử lại")
                     }
                 }
@@ -176,7 +174,7 @@
                 alert('Đã xảy ra lỗi, vui lòng thử lại.');
             }
         }
-        function clickToRegister() {
+        function clickToRegister(){
             window.location.href = '/api/rentify/register'
         }
         // async function fetchData(link) {

@@ -39,8 +39,6 @@ router.post("/rentify/login", async (req, res) => {
         console.log(user._id);
 
         res.json({ message: "Đăng nhập thành công", token, data: user, userID });
-
-
     } catch (error) {
         console.error(error, " Password: " + req.body.password);
         return res.status(500).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });

@@ -13,7 +13,8 @@ const userAdmin = require("./Api_Admin/userApi");
 const nofAdmin = require("./Api_Admin/nofApi");
 const spAdmin = require("./Api_Admin/supportApi");
 const statAdmin = require("./Api_Admin/statsApi");
-const reportApiAdmin = require("./Api_Admin/reportApi");
+const reportApiAdmin = require("./Api_Admin/report_mgr_api");
+const authApi = require("./Api_Auth/auth_Api");
 // building_owner
 const supportManageApi = require("./Api_BuildingOwner/support_manage_api");
 const staffManageApi = require("./Api_BuildingOwner/staff_manage_api");
@@ -47,8 +48,8 @@ const request_staffApi = require("./Api_Staff/Request");
 const login_staffApi = require("./Api_Staff/login");
 
 // nối
-
-router.use("", reportApiAdmin);
+router.use("/", authApi);
+router.use("/", reportApiAdmin);
 router.use("/", serviceApi);
 router.use("/", roomApi);
 router.use("/", invoiceApi);

@@ -21,7 +21,7 @@ router.get("/api/support-customer", async (req, res) => {
     }
 })
 
-router.put("/api/support-customer/{id}", async (req, res) => {
+router.put("/api/support-customer/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;

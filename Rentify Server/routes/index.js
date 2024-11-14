@@ -4,6 +4,7 @@ var router = express.Router();
 const Post = require('../models/Post')
 const Service = require('../models/Service');
 const User = require('../models/User');
+const Report = require('../models/Report');
 const Support = require('../models/Support');
 const authenticate = require('../middleware/authenticate');
 const checkRole = require('../middleware/checkRole');
@@ -97,6 +98,18 @@ router.get('/api/stats/sum', async (req, res) => {
       body: html
     });
   });
+})
+// report
+router.get("/api/reports/list", async (req, res) => {
+  res.render("Reports/ReportManager", (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Quản lý báo cáo',
+      body: html
+    });
+  })
 });
 
 
