@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 
-router.get('/api/home1', (req, res) => {
-    res.render('chutoa_web/ejs/Home', (err, html) => {
+router.get('/api/staffs_mgr', (req, res) => {
+    res.render('chutoa_web/ejs/QuanLyNhanVien', (err, html) => {
         if (err) {
             return res.status(500).send(err);
         }
@@ -12,7 +12,6 @@ router.get('/api/home1', (req, res) => {
             body: html
         });
     });
-});
-
+})
 
 module.exports = router;

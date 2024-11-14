@@ -3,36 +3,36 @@ const jwt = require('jsonwebtoken');
 function authenticate(req, res, next) {
     try {
         const authHeader = req.headers['authorization'];
+        console.log("authHeader:", authHeader);
 
-        // Ghi log kiểm tra xem header Authorization có tồn tại không
-        console.log("Authorization Header:", authHeader);
-
+        // Kiểm tra nếu không có header Authorization
         if (!authHeader) {
-            return res.status(403).json({ message: "Không có phản hồi từ Token 1" });
+            return res.status(401).json({ message: 'Không có header Authorization' });
         }
 
-        // Lấy token từ chuỗi "Bearer <token>"
-        const token = authHeader.split(' ')[1];
-        console.log("Extracted Token:", token);
+        const token = authHeader.split(' ')[1]; // Lấy token sau từ khóa 'Bearer'
 
+        // Kiểm tra nếu không có token
         if (!token) {
-            return res.status(403).json({ message: "Không có phản hồi từ Token 2" });
+            return res.status(401).json({ message: 'Không có token trong header Authorization' });
         }
+
+        console.log("Extracted Token:", token);
 
         // Xác thực token
         jwt.verify(token, 'hoan', (err, decoded) => {
             if (err) {
                 console.log("Token verification error:", err.message);
-                return res.status(403).json({ message: "Lỗi xác thực Token" });
+                return res.status(403).json({ message: "Lỗi xác thực Token", error: err.message });
             }
 
-            req.user = decoded; // Gán thông tin người dùng từ token vào request
+            req.user = decoded; // Lưu thông tin người dùng vào request
             console.log("Token decoded successfully:", decoded);
-            next(); // Cho phép đi tiếp
+            next(); // Tiếp tục xử lý tiếp theo
         });
     } catch (error) {
         console.error("Unexpected error in authentication:", error.message);
-        return res.status(401).json({ message: "Lỗi xác thực", error: error.message });
+        return res.status(500).json({ message: "Lỗi không mong muốn trong quá trình xác thực", error: error.message });
     }
 }
 
