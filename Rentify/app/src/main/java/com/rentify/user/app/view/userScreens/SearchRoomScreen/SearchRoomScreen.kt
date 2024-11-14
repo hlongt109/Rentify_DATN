@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -100,13 +102,15 @@ fun PostRoomScreen(navController: NavController) {
                 maxHeight = bottomSheetHeight
             )
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
         sheetBackgroundColor = MaterialTheme.colors.surface,
         scrimColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
     ) {
         Box(
             modifier = Modifier
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .fillMaxSize()
                 .background(color = Color.White)
                 .clickable(

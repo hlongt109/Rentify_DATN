@@ -1,24 +1,20 @@
-package com.rentify.user.app.view.userScreens.BillScreen.Component
+package com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,8 +23,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.ripple
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -54,14 +47,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
-import com.rentify.user.app.model.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2
 import com.rentify.user.app.utils.CheckUnit
 
 @Composable
-fun ItemUnPaid(
+fun ItemUnPaidStaff(
     item: RoomPaymentInfo,
     modifier: Modifier = Modifier,
     navController: NavController
@@ -149,7 +141,7 @@ fun ItemUnPaid(
                         )
                     }
                 }
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -223,19 +215,16 @@ fun ItemUnPaid(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             Button(
-                                onClick = {},
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp)
-                                    .border(width = 1.dp, color = Color.Red, shape = RoundedCornerShape(8.dp)),
+                                onClick = { navController.navigate("PaymentConfirmation") },
+                                modifier = Modifier.fillMaxWidth().height(50.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White
+                                    containerColor = colorHeaderSearch
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Text(
-                                    text = "Chưa thanh toán",
-                                    color = Color.Red,
+                                    text = "Tiến hành thanh toán",
+                                    color = Color.White,
                                     modifier = Modifier.padding(vertical = 4.dp),
                                     fontWeight = FontWeight.Medium
                                 )

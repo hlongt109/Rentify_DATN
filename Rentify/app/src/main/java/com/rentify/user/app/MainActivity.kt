@@ -17,9 +17,11 @@ import com.rentify.user.app.view.auth.RegisterScreen
 import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
-import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
+import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
@@ -47,7 +49,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainNavigation()
+//            MainNavigation()
+            test()
+        }
+    }
+
+    @Composable
+    fun test(){
+        val navController = rememberNavController()
+        NavHost(navController, startDestination = ROUTER.BILL_STAFF.name){
+            composable(ROUTER.BILL_STAFF.name){
+                BillScreenStaff(navController)
+            }
+            composable(ROUTER.ADDBILL_STAFF.name){
+                AddBillStaff(navController)
+            }
         }
     }
 
@@ -183,5 +199,7 @@ class MainActivity : ComponentActivity() {
         Search_room,
         Filter_room,
         Invoice_screen,
+        BILL_STAFF,
+        ADDBILL_STAFF
     }
 }

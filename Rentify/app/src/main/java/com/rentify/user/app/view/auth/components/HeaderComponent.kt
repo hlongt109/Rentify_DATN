@@ -38,7 +38,7 @@ fun HeaderComponent(
         modifier = Modifier
             .background(backgroundColor)
             .fillMaxWidth()
-            .height(80.dp)
+            .height(40.dp)
     )
     {
         Row(

@@ -1,6 +1,5 @@
-package com.rentify.user.app.view.userScreens.BillScreen.Component
+package com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -9,23 +8,15 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FileCopy
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
@@ -43,25 +34,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
-import com.rentify.user.app.ui.theme.ColorBlack
-import com.rentify.user.app.ui.theme.file
-import com.rentify.user.app.ui.theme.iconColor
 import com.rentify.user.app.utils.CheckUnit
-import com.rentify.user.app.view.userScreens.BillScreen.FakeData
+import com.rentify.user.app.view.userScreens.BillScreen.Component.ItemPaidExpand
 import java.util.Calendar
 
 @Composable
-fun ItemPaid(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>) {
+fun ItemPaidStaff(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>) {
     var isExpanded by remember { mutableStateOf(false) }
-//    val year = CheckUnit.formatYear(item.invoiceDate)
-//    val list = FakeData().fakeRoomPayments.filter { it.status == 1 }
-//    val groupedByMonth = groupItemsByMonthYear(itemsByYear)
     // Card cho từng item
     Box (
         modifier = Modifier
@@ -107,7 +91,7 @@ fun ItemPaid(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>) {
             ) {
                 Text(
                     text = year,
-                    fontSize = 12.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold
                 )
 
@@ -137,21 +121,14 @@ fun ItemPaid(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     // Hiển thị các item theo tháng khi mở rộng
                     itemsByMonth.forEach { (monthYear, itemsInMonth) ->
-                        ItemPaidExpand(
+                        ItemPaidExpandStaff(
                             item = itemsInMonth.first(), // Sử dụng item đầu tiên làm thông tin tháng
+                            paidRooms = itemsInMonth // Truyền toàn bộ danh sách phòng trong tháng
                         )
                     }
                 }
             }
         }
-    }
-}
-fun groupItemsByMonthYear(items: List<RoomPaymentInfo>): Map<String, List<RoomPaymentInfo>> {
-    // Nhóm các item theo tháng và năm
-    return items.groupBy {
-        val calendar = Calendar.getInstance().apply { time = it.invoiceDate }
-        val monthYear = CheckUnit.formatMonth(calendar.time) // Định dạng "Tháng/Năm"
-        monthYear
     }
 }
 
