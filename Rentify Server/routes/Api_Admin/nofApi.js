@@ -109,17 +109,17 @@ router.get("/notifications/:user_id", authenticate, async (req, res) => {
 
 router.get('/notifications', authenticate, async (req, res) => {
     try {
-        const notifications = await Notification.find({ user_id: req.user_id })
-            .sort({ created_at: -1 });
-        const unreadCount = await Notification.countDocuments({
-            user_id: req.user_id,
-            read_status: false
-        });
+        const notifications = await Notification.find({ user_id: req.user_id }).sort({ created_at: -1 });
+        const unreadCount = await Notification.countDocuments({ user_id: req.user_id, read_status: false });
+
         res.json({ notifications, unreadCount });
     } catch (error) {
-        res.status(500).json({ message: "Lỗi khi lấy thông báo", error });
+        console.error('Lỗi khi lấy thông báo:', error);
+        res.status(500).json({ message: "Lỗi khi lấy thông báo từ server", error: error.message });
     }
-})
+});
+
+
 
 // API đánh dấu thông báo là đã đọc
 router.put('/notifications/:id/read', async (req, res) => {
@@ -132,26 +132,28 @@ router.put('/notifications/:id/read', async (req, res) => {
     }
 });
 
-router.patch('/notifications/:notificationId/read', async (req, res) => {
+router.patch('/notifications/:notificationId/read', authenticate, async (req, res) => {
     const { notificationId } = req.params;
-
     try {
-        // Tìm thông báo với notificationId và cập nhật trạng thái read
         const notification = await Notification.findOne({ _id: notificationId });
+
         if (!notification) {
             return res.status(404).json({ message: 'Notification not found' });
         }
 
-        notification.read_status = 'read';
+        if (notification.user_id.toString() !== req.user_id.toString()) {
+            return res.status(403).json({ message: 'Bạn không có quyền đánh dấu thông báo này' });
+        }
 
-        // Lưu lại thay đổi
+        notification.read_status = 'read';
         await notification.save();
 
-        return res.json({ message: 'Notification đã read' });
+        return res.json({ message: 'Notification đã được đánh dấu là đã đọc' });
     } catch (error) {
-        return res.status(500).json({ message: 'Error marking notification as read', error: error.message });
+        return res.status(500).json({ message: 'Lỗi khi đánh dấu thông báo là đã đọc', error: error.message });
     }
 });
+
 
 // details
 router.get("/notifications/:id", async (req, res) => {
@@ -173,21 +175,25 @@ router.get("/notifications/:id", async (req, res) => {
 router.delete("/notifications/:id", authenticate, async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await Notification.findByIdAndDelete(id);
+        const notification = await Notification.findById(id);
 
-        if (result) {
-            res.json({
-                "status": 200,
-                "message": "Thông báo đã được xóa thành công",
-                "data": result
-            });
-        } else {
-            res.status(404).json({
+        if (!notification) {
+            return res.status(404).json({
                 "status": 404,
                 "message": "Thông báo không tìm thấy",
-                "data": []
             });
         }
+
+        if (notification.user_id.toString() !== req.user_id.toString()) {
+            return res.status(403).json({ message: 'Bạn không có quyền xóa thông báo này' });
+        }
+
+        await notification.remove();
+        res.json({
+            "status": 200,
+            "message": "Thông báo đã được xóa thành công",
+            "data": notification
+        });
     } catch (error) {
         console.error('Error deleting notification:', error);
         res.status(500).json({
@@ -197,5 +203,6 @@ router.delete("/notifications/:id", authenticate, async (req, res) => {
         });
     }
 });
+
 
 module.exports = router;

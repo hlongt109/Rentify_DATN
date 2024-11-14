@@ -26,6 +26,17 @@ router.get('/api/home', (req, res, next) => {
     });
   });
 });
+router.get('/api/home1', (req, res, next) => {
+  res.render('chutoa_web/ejs/Home', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('chutoa_web/ejs/index', {
+      title: 'Quản lý người dùng',
+      body: html
+    });
+  });
+});
 
 router.get('/api/user/show-list', (req, res) => {
   res.render('UserManagement/UserManagement', (err, html) => {
