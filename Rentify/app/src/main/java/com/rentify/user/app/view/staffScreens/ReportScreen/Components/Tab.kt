@@ -72,8 +72,8 @@ fun CustomTab(
                         Text(
                             title,
                             color = when {
-                                selectedIndex == index && index == 0 -> Color.Red // Đang yêu cầu
-                                selectedIndex == index && index == 1 -> Color.Green // Đã hoàn thành
+                                selectedIndex == index && index == 0 -> Color(0xFFc24b2a) // Đang yêu cầu
+                                selectedIndex == index && index == 1 -> Color(0xFF79bb75) // Đã hoàn thành
                                 else -> Color(0xFFd8d8d8)
                             },
                             fontSize = 14.sp,
