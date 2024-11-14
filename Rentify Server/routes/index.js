@@ -85,6 +85,7 @@ router.get('/api/api/services', async (req, res) => {
     res.status(500).send('Lỗi server');
   }
 });
+
 router.get('/api/stats/sum', async (req, res) => {
   const totalAccounts = await User.countDocuments();
   res.render("Stats/listStats", { totalAccounts }, (err, html) => {
@@ -98,6 +99,30 @@ router.get('/api/stats/sum', async (req, res) => {
   });
 });
 
+
+router.get('/api/BuildingPage', (req, res) => {
+  res.render('Rooms/BuildingPage', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Toà nhà & căn hộ',
+      body: html
+    });
+  });
+});
+
+router.get('/api/AddBuildingPage', (req, res) => {
+  res.render('Rooms/AddBuildingPage', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Thêm toà nhà',
+      body: html
+    });
+  });
+});
 
 
 module.exports = router;

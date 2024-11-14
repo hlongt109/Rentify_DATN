@@ -6,6 +6,9 @@ const itemsPerPage = 5;
 let editingUserId = null; // Trạng thái ID user đang chỉnh sửa
 let currentUserId;
 
+const userId = localStorage.getItem('_id');
+console.log("User ID:", userId);
+
 const showConfirmModal = (userId) => {
     currentUserId = userId; // Lưu ID người dùng để sử dụng sau này
     const modal = document.getElementById('confirm-modal');

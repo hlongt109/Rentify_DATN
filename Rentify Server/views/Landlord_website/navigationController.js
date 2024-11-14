@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-router.get("/ld", function(req, res) {
+router.get("landlord/home", function(req, res) {
     res.render("Landlord_website/index");
 });
 
