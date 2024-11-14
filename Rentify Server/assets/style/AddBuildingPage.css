@@ -1,0 +1,35 @@
+body {
+    background-color: #f8f9fa;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.btn {
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #2ba8ca;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #23839c;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}

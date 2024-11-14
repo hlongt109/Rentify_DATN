@@ -4,6 +4,7 @@ var router = express.Router();
 const Post = require('../models/Post')
 const Service = require('../models/Service');
 const User = require('../models/User');
+const Report = require('../models/Report');
 const Support = require('../models/Support');
 const authenticate = require('../middleware/authenticate');
 const checkRole = require('../middleware/checkRole');
@@ -96,6 +97,7 @@ router.get('/api/api/services', async (req, res) => {
     res.status(500).send('Lỗi server');
   }
 });
+
 router.get('/api/stats/sum', async (req, res) => {
   const totalAccounts = await User.countDocuments();
   res.render("Stats/listStats", { totalAccounts }, (err, html) => {
@@ -107,8 +109,44 @@ router.get('/api/stats/sum', async (req, res) => {
       body: html
     });
   });
+})
+// report
+router.get("/api/reports/list", async (req, res) => {
+  res.render("Reports/ReportManager", (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Quản lý báo cáo',
+      body: html
+    });
+  })
 });
 
+
+router.get('/api/BuildingPage', (req, res) => {
+  res.render('Rooms/BuildingPage', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Toà nhà & căn hộ',
+      body: html
+    });
+  });
+});
+
+router.get('/api/AddBuildingPage', (req, res) => {
+  res.render('Rooms/AddBuildingPage', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Thêm toà nhà',
+      body: html
+    });
+  });
+});
 
 
 module.exports = router;
