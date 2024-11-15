@@ -54,7 +54,7 @@ fun HeaderSection() {
             )
         }
         Image(
-            painter = painterResource(id = R.drawable.noti),
+            painter = painterResource(id = R.drawable.logo),
             contentDescription = null,
             modifier = Modifier.size(40.dp, 40.dp)
         )

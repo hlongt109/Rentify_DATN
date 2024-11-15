@@ -18,6 +18,7 @@ import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
 import com.rentify.user.app.view.staffScreens.addRoomScreen.AddRoomScreen
+import com.rentify.user.app.view.staffScreens.building.BuildingScreen
 import com.rentify.user.app.view.staffScreens.homeScreen.HomeScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
@@ -155,6 +156,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.HOME_STAFF.name) {
                 HomeScreen(navController = navController)
             }
+            composable(ROUTER.BUILDING.name) {
+                BuildingScreen(navController = navController)
+            }
         }
     }
 
@@ -192,6 +196,7 @@ class MainActivity : ComponentActivity() {
         Filter_room,
         Invoice_screen,
         ADDROOM,
-        HOME_STAFF
+        HOME_STAFF,
+        BUILDING
     }
 }

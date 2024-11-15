@@ -58,6 +58,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.view.auth.components.HeaderComponent
 
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
@@ -99,47 +100,13 @@ fun AddRoomScreen(navController: NavHostController) {
             .statusBarsPadding()
             .navigationBarsPadding()
             .background(color = Color(0xfff7f7f7))
-            .padding(bottom = screenHeight.dp/7f)
+            .padding(bottom = screenHeight.dp / 7f)
 
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color(0xffffffff))
-                .padding(10.dp)
-
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-
-                    .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(onClick = {  navController.navigate("CATEGORYPOST" )}) {
-                    Image(
-                        painter = painterResource(id = R.drawable.back),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp, 30.dp)
-                    )
-
-                }
-
-                Text(
-                    text = "Thêm bài đăng",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color.Black,
-                    fontWeight = FontWeight(700),
-                    fontSize = 17.sp,
-
-                    )
-                IconButton(onClick = { /*TODO*/ }) {
 
 
-                }
-            }
-        }
+            HeaderComponent(backgroundColor = Color(0xffffffff) , title ="Thêm phòng", navController =navController )
+        Spacer(modifier = Modifier.height(10.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -670,12 +637,14 @@ fun AddRoomScreen(navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(screenHeight.dp/7f)
+                .height(screenHeight.dp / 7f)
                 .background(color = Color.White)
         ) {
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(
-                    onClick = {}, modifier = Modifier.height(50.dp).fillMaxWidth(),
+                    onClick = {}, modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth(),
                     //  .background(Color(0xffFE724C), RoundedCornerShape(25.dp)), // Bo tròn 12.dp
                     shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xff5dadff)

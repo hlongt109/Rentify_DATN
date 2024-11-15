@@ -44,9 +44,11 @@ fun ComfortableOption(
     Box(
         modifier = Modifier
             .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
-            .padding(10.dp)
+
+            .background(color = Color.White)
+            .padding(0.dp)
+            .height(90.dp)
+            .width(67.dp) // Cố định chiều rộng chiếm 40% chiều rộng của container (điều chỉnh giá trị tùy ý)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,22 +59,27 @@ fun ComfortableOption(
                 painter = painterResource(id = imageRes),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(55.dp) // Điều chỉnh kích thước ảnh
                     .border(
-                        width = 2.dp,
-                        color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-                        shape = RoundedCornerShape(50) // Bo tròn viền ảnh
+                        width = 3.dp,
+                        color = Color(0xFF209fa8) ,
+                        shape = RoundedCornerShape(20) // Bo tròn viền ảnh
                     )
-                    .padding(4.dp) // Khoảng cách cho viền
+                    .padding(10.dp) // Khoảng cách cho viền
             )
             Spacer(modifier = Modifier.height(5.dp))
+
+            // Text hiển thị
             Text(
                 text = text,
-              //  modifier = Modifier.width(55.dp) .align(Alignment.CenterHorizontally),
-                fontSize = 13.sp,
+                fontSize = 13.sp, // Điều chỉnh kích thước font
+                modifier = Modifier
+                    .fillMaxWidth() // Đảm bảo text chiếm hết chiều rộng của Column
+                    .padding(horizontal = 5.dp), // Khoảng cách từ 2 bên
+                textAlign = TextAlign.Center, // Căn giữa văn bản
                 maxLines = 2, // Giới hạn tối đa là 2 dòng
                 overflow = TextOverflow.Ellipsis, // Cắt bớt nếu quá dài
-                softWrap = true // Cho phép xuống dòng tự động   )
+                softWrap = true // Cho phép xuống dòng tự động
             )
         }
     }

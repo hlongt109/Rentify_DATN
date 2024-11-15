@@ -103,7 +103,7 @@ navController.navigate("CANCELCONTRACT")
 
                 .padding(bottom = screenHeight.dp / 6f)
         ) {
-            HeaderSection()
+            HeaderSection(backgroundColor = Color.White, title = "Xem hợp đồng", navController = navController)
             Spacer(modifier = Modifier.height(30.dp))
             Column( modifier = Modifier
                 .verticalScroll(scrollState)

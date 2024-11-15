@@ -84,25 +84,11 @@ fun HomeScreen(navController: NavHostController) {
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
 
-    var selectedService by remember { mutableStateOf(listOf<String>()) }
-    var expanded by remember { mutableStateOf(false) }
-    var selectedGender by remember { mutableStateOf("") }
-    val genderOptions = listOf("Nam", "Nữ", "Giới tính thứ 3")
     val scrollState = rememberScrollState()
-    var postTitle by remember { mutableStateOf("") }
-    var numberOfRoommates by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var currentPeopleCount by remember { mutableStateOf("") }
-    var area by remember { mutableStateOf("") }
-    var floor by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var roomPrice by remember { mutableStateOf("") }
-    // Danh sách các tiện nghi đã chọn
+  // Danh sách các tiện nghi đã chọn
     // Danh sách các tùy chọn đã chọn
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
-
     // Hàm xử lý khi người dùng nhấn vào một lựa chọn
     val onComfortableSelected: (String) -> Unit = { option ->
         selectedComfortable = if (selectedComfortable.contains(option)) {
@@ -114,22 +100,19 @@ fun HomeScreen(navController: NavHostController) {
         // Điều hướng tới màn hình mới khi lựa chọn được nhấn
         when (option) {
             "Tòa nhà & căn hộ" -> {
-                navController.navigate(MainActivity.ROUTER.ADDROOM.name) // Điều hướng đến màn hình tương ứng
+                navController.navigate(MainActivity.ROUTER.BUILDING.name) // Điều hướng đến màn hình tương ứng
             }
             "Hợp đồng" -> {
                 navController.navigate(MainActivity.ROUTER.ADDROOM.name)
             }
             "Hoá đơn" -> {
-                navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+             //   navController.navigate(MainActivity.ROUTER.ADDROOM.name)
             }
             "Sự cố & bảo trì" -> {
-                navController.navigate(MainActivity.ROUTER.ADDROOM.name)
-            }
-            "Nuôi pet" -> {
-                navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+            //    navController.navigate(MainActivity.ROUTER.ADDROOM.name)
             }
             "Tin nhắn" -> {
-                navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+            //    navController.navigate(MainActivity.ROUTER.ADDROOM.name)
             }
         }
     }
@@ -144,7 +127,7 @@ fun HomeScreen(navController: NavHostController) {
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
-            .padding(bottom = screenHeight.dp / 7f)
+            //.padding(bottom = screenHeight.dp / 10f)
 
     ) {
         HeaderSection()
@@ -177,6 +160,7 @@ fun HomeScreen(navController: NavHostController) {
 
             }
             Spacer(modifier = Modifier.height(15.dp))
+
             Column(
                 modifier = Modifier
                     .height(230.dp)
@@ -187,14 +171,43 @@ fun HomeScreen(navController: NavHostController) {
                         width = 0.dp, color = Color(0xFFEEEEEE), shape = RoundedCornerShape(10.dp)
                     ),
 
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+
             ) {
-                ComfortableOptionsDemo(
-                    selectedComfortable = selectedComfortable,
-                    onComfortableSelected = onComfortableSelected,
-                    navController = navController // Truyền NavController vào
-                )
+                Row(
+                    modifier = Modifier
+
+                        .padding(15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.function),
+                        contentDescription = null,
+                        modifier = Modifier.size(30.dp, 30.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(10.dp))
+                    androidx.compose.material.Text(
+                        text = "Các tính năng khác",
+                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color.Black,
+                        // fontWeight = FontWeight(700),
+                        fontSize = 13.sp,
+
+                        )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ComfortableOptionsDemo(
+                        selectedComfortable = selectedComfortable,
+                        onComfortableSelected = onComfortableSelected,
+                        navController = navController // Truyền NavController vào
+                    )
+                }
+
 
 
             }
@@ -218,12 +231,11 @@ fun ComfortableOptionsDemo(
     navController: NavController // Nhận NavController từ phía ngoài
 ) {
     val comfortableOptions = listOf(
-        ComfortableOptionData("Tòa nhà & căn hộ", R.drawable.ad),
-        ComfortableOptionData("Hợp đồng", R.drawable.ad),
-        ComfortableOptionData("Hoá đơn", R.drawable.ad),
-        ComfortableOptionData("Sự cố & bảo trì", R.drawable.ad),
-        ComfortableOptionData("Nuôi pet", R.drawable.ad),
-        ComfortableOptionData("Tin nhắn", R.drawable.a)
+        ComfortableOptionData("Tòa nhà & căn hộ", R.drawable.building),
+        ComfortableOptionData("Hợp đồng", R.drawable.contrac1),
+        ComfortableOptionData("Hoá đơn", R.drawable.bill1),
+        ComfortableOptionData("Sự cố & bảo trì", R.drawable.inciden),
+        ComfortableOptionData("Tin nhắn", R.drawable.mess)
     )
 
     FlowRow(
@@ -243,76 +255,3 @@ fun ComfortableOptionsDemo(
         }
     }
 }
-//@Composable
-//fun ComfortableOptionsDemo(
-//    selectedComfortable: List<String>,
-//    onComfortableSelected: (String) -> Unit
-//) {
-//    // List các lựa chọn tiện nghi
-//    val comfortableOptions = listOf(
-//        ComfortableOptionData("Tòa nhà & căn hộ", R.drawable.ad),
-//        ComfortableOptionData("Hợp đồng", R.drawable.ad),
-//        ComfortableOptionData("Hoá đơn", R.drawable.ad),
-//        ComfortableOptionData("Sự cố & bảo trì", R.drawable.ad),
-//        ComfortableOptionData("Nuôi pet", R.drawable.ad),
-//        ComfortableOptionData("Tin nhắn", R.drawable.a)
-//    )
-//
-//    FlowRow(
-//        modifier = Modifier.padding(5.dp),
-//        mainAxisSpacing = 10.dp,
-//        crossAxisSpacing = 10.dp
-//    ) {
-//        comfortableOptions.forEach { option ->
-//            ComfortableOption(
-//                text = option.text,
-//                imageRes = option.imageRes,
-//                isSelected = selectedComfortable.contains(option.text),
-//                onClick = { onComfortableSelected(option.text) }
-//            )
-//        }
-//    }
-//}
-//
-
-//@Composable
-//fun ComfortableOption(
-//    text: String,
-//    imageRes: Int,
-//    isSelected: Boolean,
-//    onClick: () -> Unit
-//) {
-//    Box(
-//        modifier = Modifier
-//            .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
-//            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
-//            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
-//            .padding(10.dp)
-//    ) {
-//        Column(
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            // Ảnh có viền
-//            Image(
-//                painter = painterResource(id = imageRes),
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .size(30.dp)
-//                    .border(
-//                        width = 2.dp,
-//                        color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-//                        shape = RoundedCornerShape(50) // Bo tròn viền ảnh
-//                    )
-//                    .padding(4.dp) // Khoảng cách cho viền
-//            )
-//            Spacer(modifier = Modifier.height(5.dp))
-//            Text(
-//                text = text,
-//                color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-//                fontSize = 13.sp
-//            )
-//        }
-//    }
-
-//}

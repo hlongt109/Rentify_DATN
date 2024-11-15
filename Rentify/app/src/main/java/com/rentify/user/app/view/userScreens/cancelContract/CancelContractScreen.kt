@@ -72,7 +72,7 @@ fun CancelContractScreen(navController: NavController) {
 
                 .padding(bottom = screenHeight.dp / 3.7f)
         ) {
-            HeaderSection()
+            HeaderSection(backgroundColor = Color.White, title = "Xem hợp đồng", navController = navController)
             Spacer(modifier = Modifier.height(30.dp))
             Column( modifier = Modifier
                 .verticalScroll(scrollState)

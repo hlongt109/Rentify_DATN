@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,34 +23,41 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.rentify.user.app.R
 
 @Composable
-fun HeaderSection() {
+fun HeaderSection(
+    backgroundColor: Color,
+    title: String,
+    navController: NavController
+) {
     Row(
         modifier = Modifier
             .height(80.dp)
             .fillMaxWidth()
-            .background(color = Color(0xffffffff)),
+            .background(backgroundColor),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
             modifier = Modifier
                 .width(100.dp)
-                .padding(5.dp)
-                .clickable(onClick = { /**/ }, indication = null, interactionSource = remember { MutableInteractionSource() }),
-            horizontalArrangement = Arrangement.Center
+                .padding(5.dp),
+             horizontalArrangement = Arrangement.Center
         ) {
+            IconButton(onClick = {
+                navController.navigateUp()
+            }){
             Image(
                 painter = painterResource(id = R.drawable.left),
                 contentDescription = null,
                 modifier = Modifier.size(30.dp, 30.dp)
-            )
+            )}
         }
 
         Text(
-            text = "Xem hợp đồng",
+            text = title,
             color = Color.Black,
             fontWeight = FontWeight(700),
             fontSize = 17.sp
