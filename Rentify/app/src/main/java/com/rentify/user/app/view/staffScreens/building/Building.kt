@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.rentify.user.app.view.staffScreens.ReportScreen.Components.FeetReportyeucau
+import com.rentify.user.app.view.staffScreens.ReportScreen.Components.FeetBuilding
 import com.rentify.user.app.view.userScreens.cancelContract.components.HeaderSection
 
 @Composable
@@ -38,7 +38,7 @@ fun BuildingScreen(navController: NavController){
         ) {
             HeaderSection(backgroundColor = Color.White, title = "Tòa nhà và căn hộ", navController = navController)
             Spacer(modifier = Modifier.height(20.dp))
-            FeetReportyeucau(navController )
+            FeetBuilding(navController )
         }
     }
     }
