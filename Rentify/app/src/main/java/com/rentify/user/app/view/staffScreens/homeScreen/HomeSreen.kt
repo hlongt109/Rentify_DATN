@@ -64,11 +64,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.MainActivity
-import com.rentify.user.app.ui.theme.colorHeaderSearch
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
 
-import com.rentify.user.app.view.staffScreens.homeScreen.Components.ComfortableOption
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.HeaderSection
+import com.rentify.user.app.view.staffScreens.homeScreen.Components.ListFunction
 
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableOptions
@@ -244,7 +242,7 @@ fun ComfortableOptionsDemo(
         crossAxisSpacing = 10.dp
     ) {
         comfortableOptions.forEach { option ->
-            ComfortableOption(
+            ListFunction(
                 text = option.text,
                 imageRes = option.imageRes,
                 isSelected = selectedComfortable.contains(option.text),
