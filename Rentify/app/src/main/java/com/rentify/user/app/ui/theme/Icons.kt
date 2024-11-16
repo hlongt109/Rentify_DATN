@@ -19,3 +19,9 @@ val delete = R.drawable.delete
 val camera = R.drawable.camera
 //image
 val image_service = R.drawable.imgservice
+val bill_staff = R.drawable.bill_staff
+val washing = R.drawable.washing
+val elevator = R.drawable.elevator
+val parking = R.drawable.parking
+val wifi = R.drawable.wifi_staff
+val calender = R.drawable.calender

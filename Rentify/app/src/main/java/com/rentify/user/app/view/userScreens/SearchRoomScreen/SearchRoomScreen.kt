@@ -15,18 +15,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.model.Room
@@ -48,15 +54,19 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemPost
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemTypeRoom
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.LocationComponent
+import com.rentify.user.app.viewModel.LocationViewModel
+import com.rentify.user.app.viewModel.UiState
 import kotlinx.coroutines.launch
 
+enum class LocationLevel {
+    PROVINCE, DISTRICT, WARD
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PostRoomScreen(navController: NavController) {
     val list = FakeData().rooms
     val listPost = FakeData().listPost
-    val listLocation = FakeData().listLocations
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
@@ -65,6 +75,10 @@ fun PostRoomScreen(navController: NavController) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var bottomSheetHeight by remember { mutableStateOf(0.6f) }
     var selectedRoom by remember { mutableStateOf<Room?>(null) }
+    val viewModel: LocationViewModel = viewModel()
+    val provincesState by viewModel.provinces.collectAsState()
+    var currentLevel by remember { mutableStateOf(LocationLevel.PROVINCE) }
+
     // Theo dõi trạng thái của BottomSheet
     LaunchedEffect(sheetState.currentValue) {
         showBottomSheet = sheetState.currentValue != ModalBottomSheetValue.Hidden
@@ -92,20 +106,48 @@ fun PostRoomScreen(navController: NavController) {
 //                    ChangeLocation(listLocation) { isFocused ->
 //                        bottomSheetHeight = if (isFocused) 0.8f else 0.6f
 //                    }
-                    ChangeLocation(listLocation) { isFocused ->
-                        bottomSheetHeight = if (isFocused) 0.8f else 0.6f
+                    when (val state = provincesState) {
+                        is UiState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+
+                        is UiState.Success -> {
+                            ChangeLocation(
+                                listLocation = state.data,
+                                onKeyboardVisibilityChanged = { isVisible ->
+                                    // Xử lý khi bàn phím hiện/ẩn
+                                },
+                                onLocationSelected = { province ->
+                                    // Xử lý khi chọn tỉnh/thành phố
+                                },
+                                onFocusChanged = { isFocused ->
+                                    bottomSheetHeight = if (isFocused) 0.8f else 0.6f
+                                }
+                            )
+                        }
+
+                        is UiState.Error -> {
+                            Text(
+                                text = "Error: ${state.message}",
+                                color = MaterialTheme.colors.error
+                            )
+                        }
                     }
                 },
                 maxHeight = bottomSheetHeight
             )
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
         sheetBackgroundColor = MaterialTheme.colors.surface,
         scrimColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
     ) {
         Box(
             modifier = Modifier
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .fillMaxSize()
                 .background(color = Color.White)
                 .clickable(

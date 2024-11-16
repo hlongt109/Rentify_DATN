@@ -25,8 +25,11 @@ import com.rentify.user.app.view.staffScreens.building.BuildingScreen
 import com.rentify.user.app.view.staffScreens.homeScreen.HomeScreen
 import com.rentify.user.app.view.staffScreens.personalScreen.PersonalScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
+import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
@@ -63,7 +66,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.ADDROOM.name) {
+        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -203,6 +206,7 @@ class MainActivity : ComponentActivity() {
         Payments,
         ConTract,
         ADDINCIDENTREPORT,
+        FILTER,
         ADDEDITSERVICE,
         INCIDENTREPORT,
         CONTRACT,
@@ -216,6 +220,8 @@ class MainActivity : ComponentActivity() {
         ADDROOM,
         HOME_STAFF,
         BUILDING,
-        RoomDetailScreen
+        RoomDetailScreen,
+        BILL_STAFF,
+        ADDBILL_STAFF
     }
 }
