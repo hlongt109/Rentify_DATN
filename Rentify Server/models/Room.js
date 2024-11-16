@@ -7,7 +7,6 @@ const Room = new Schema({
         ref: "Building",
         required: true
     },
-    room_name: { type: String, required: true },
     room_type: { type: String, required: true },
     room_name: {type: String}, // ví dụ P202
     description: { type: String, required: true },

@@ -17,6 +17,7 @@ router.get('/list', async (req, res) => {
 router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_room' }]), async (req, res) => {
     const room = new Room({
         building_id: req.body.building_id,
+        room_name:req.body.room_name,
         room_type: req.body.room_type,
         description: req.body.description,
         price: req.body.price,
