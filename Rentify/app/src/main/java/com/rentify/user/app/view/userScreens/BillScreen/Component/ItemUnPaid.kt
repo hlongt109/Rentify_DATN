@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
-import com.rentify.user.app.model.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2

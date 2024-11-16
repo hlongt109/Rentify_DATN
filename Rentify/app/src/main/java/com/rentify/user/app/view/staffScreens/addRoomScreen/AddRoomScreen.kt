@@ -120,7 +120,7 @@ fun AddRoomScreen(navController: NavHostController) {
                     .padding(5.dp)
             ) {
                 Text(
-                    text = "Tiêu đề bài đăng *", color = Color(0xFF7c7b7b), fontSize = 13.sp
+                    text = "Tên tòa nhà*", color = Color(0xFF7c7b7b), fontSize = 13.sp
                 )
                 TextField(
                     value = postTitle,
@@ -138,7 +138,7 @@ fun AddRoomScreen(navController: NavHostController) {
                     ),
                     placeholder = {
                         Text(
-                            text = "Nhập tiêu đề bài đăng",
+                            text = "Nhập tên tòa nhà ",
                             fontSize = 14.sp,
                             color = Color(0xFF898888),
                             fontFamily = FontFamily(Font(R.font.cairo_regular))
@@ -410,152 +410,7 @@ fun AddRoomScreen(navController: NavHostController) {
                     )
                 )
             }
-            // tầnng
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Text(
-                    text = "Tầng *",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color(0xFF7c7b7b),
-                    //  fontWeight = FontWeight(700),
-                    fontSize = 13.sp,
 
-                    )
-                TextField(
-                    value = floor,
-                    onValueChange = { floor = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color.White
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập số tầng",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
-            //siis đ thoại
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Text(
-                    text = "Số điện thoại *",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color(0xFF7c7b7b),
-                    //  fontWeight = FontWeight(700),
-                    fontSize = 13.sp,
-
-                    )
-                TextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color.White
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập số điện thoại",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
-            // giới tính
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Text(
-                    text = "Giới tính *", color = Color(0xFF7c7b7b), fontSize = 13.sp
-                )
-                ExposedDropdownMenuBox(expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }) {
-                    TextField(
-                        value = selectedGender,
-                        onValueChange = { /* Không cần thay đổi giá trị ở đây */ },
-                        readOnly = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(53.dp)
-                            .menuAnchor(),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color.White
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Nhập giới tính",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        trailingIcon = {
-                            Icon(imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null,
-                                Modifier.clickable { expanded = !expanded })
-                        },
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        genderOptions.forEach { gender ->
-                            DropdownMenuItem(text = { Text(gender) }, onClick = {
-                                selectedGender = gender
-                                expanded = false
-                            })
-                        }
-                    }
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-
-            }
             // giá phòng
             Column(
                 modifier = Modifier
@@ -642,7 +497,9 @@ fun AddRoomScreen(navController: NavHostController) {
         ) {
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(
-                    onClick = {}, modifier = Modifier
+                    onClick = {
+                        navController.navigate("RoomDetailScreen")
+                    }, modifier = Modifier
                         .height(50.dp)
                         .fillMaxWidth(),
                     //  .background(Color(0xffFE724C), RoundedCornerShape(25.dp)), // Bo tròn 12.dp

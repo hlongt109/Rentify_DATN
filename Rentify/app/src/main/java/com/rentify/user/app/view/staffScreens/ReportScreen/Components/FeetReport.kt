@@ -359,13 +359,3 @@ fun FeetReportyeucau(navController: NavHostController) {
         }
     }
 }
-
-@Composable
-fun FeetReporthoanthanh() {
-    Column (
-        modifier = Modifier.fillMaxSize()
-    ){
-        Text(text = "Ok,hiểu rồi",
-            textAlign = TextAlign.Center)
-    }
-}

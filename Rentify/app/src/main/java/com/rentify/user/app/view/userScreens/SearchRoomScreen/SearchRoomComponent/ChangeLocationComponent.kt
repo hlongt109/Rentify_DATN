@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.rentify.user.app.model.Location
+import com.rentify.user.app.model.Model.Location
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.location

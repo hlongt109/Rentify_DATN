@@ -1,11 +1,11 @@
 package com.rentify.user.app.view.userScreens.SearchRoomScreen
 
 import com.rentify.user.app.model.FakeModel.FakeService
-import com.rentify.user.app.model.Location
 import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostType
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.FakeModel.FakeTypeArrange
+import com.rentify.user.app.model.Model.Location
 import com.rentify.user.app.ui.theme.arrangeDown
 import com.rentify.user.app.ui.theme.arrangeTop
 import com.rentify.user.app.ui.theme.clock

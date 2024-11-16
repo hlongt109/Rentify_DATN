@@ -40,7 +40,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.rentify.user.app.model.Location
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ArrangeComponent
