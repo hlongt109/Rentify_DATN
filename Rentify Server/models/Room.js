@@ -2,11 +2,6 @@ const { type } = require('express/lib/response');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Room = new Schema({
-    landlord_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Landlord',
-        required: true
-    },
     building_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Building",

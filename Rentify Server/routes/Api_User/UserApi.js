@@ -17,7 +17,7 @@ const key = "Rentify_token_key";
 const transporter = require("../../config/common/mailer");
 //bcrypt bam mat khau
 const bcrypt = require("bcrypt");
-const verifiedEmail = require("../../config/common/mailer");
+const {verifiedEmail} = require("../../config/common/mailer");
 const Booking = require("../../models/Booking");
 //url
 const url = "http://localhost:3000/api/confirm-email/";
