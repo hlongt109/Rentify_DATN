@@ -43,7 +43,7 @@ import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorBgItem
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2
-import com.rentify.user.app.view.userScreens.SearchRoomScreen.FakeData
+//import com.rentify.user.app.view.userScreens.SearchRoomScreen.FakeData
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput

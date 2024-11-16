@@ -16,6 +16,7 @@ class FakeData {
         Room(
             landlordId = "landlord_001",
             buildingId = "building_001",
+            roomName = "P501",
             roomType = "phòng trọ",
             description = "Phòng trọ sạch sẽ, thoáng mát",
             price = 2000000.0,
@@ -34,6 +35,7 @@ class FakeData {
         Room(
             landlordId = "landlord_002",
             buildingId = "building_002",
+            roomName = "P501",
             roomType = "nguyên căn",
             description = "Nhà nguyên căn rộng rãi, thích hợp cho gia đình",
             price = 15000000.0,
@@ -52,6 +54,7 @@ class FakeData {
         Room(
             landlordId = "landlord_003",
             buildingId = "building_003",
+            roomName = "P501",
             roomType = "chung cư",
             description = "Chung cư cao cấp, view đẹp",
             price = 10000000.0,
@@ -70,6 +73,7 @@ class FakeData {
         Room(
             landlordId = "landlord_004",
             buildingId = "building_004",
+            roomName = "P501",
             roomType = "homestay",
             description = "Homestay gần biển, tiện nghi đầy đủ",
             price = 5000000.0,
@@ -88,6 +92,7 @@ class FakeData {
         Room(
             landlordId = "landlord_005",
             buildingId = "building_005",
+            roomName = "P501",
             roomType = "chung cư mini",
             description = "Chung cư mini tiện lợi, gần trung tâm",
             price = 3000000.0,
