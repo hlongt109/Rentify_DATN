@@ -8,6 +8,7 @@ var router = express.Router();
 //============================================
 //admin
 const adminApi = require("./Api_Admin/loginApi");
+const notificationAdmin = require("./Api_Admin/notificationApi");
 const postAdmin = require("./Api_Admin/postApi");
 const userAdmin = require("./Api_Admin/userApi");
 const nofAdmin = require("./Api_Admin/nofApi");
@@ -51,6 +52,7 @@ const login_staffApi = require("./Api_Staff/login");
 
 // nối
 router.use("/", authApi);
+router.use("/", notificationAdmin);
 router.use("/", reportApiAdmin);
 router.use("", QuanLy);
 router.use("/", serviceApi);

@@ -502,14 +502,14 @@
             // ==================
 
             const roomManagerContact = type === "room" ? `
-            <div class="mb-2"><span class="report-detail-label">Họ và tên:</span> ${dataDetails.landlord_id.user_id.name ?? 'N/A'}</div>
-            <div class="mb-2"><span class="report-detail-label">Điện thoại:</span> ${dataDetails.landlord_id.contact_number ?? 'N/A'}</div>
-            <div class="mb-2"><span class="report-detail-label">Email:</span> ${dataDetails.landlord_id.email ?? 'N/A'}</div>
+            <div class="mb-2"><span class="report-detail-label">Họ và tên:</span> ${dataDetails.building_id.landlord_id.name ?? 'N/A'}</div>
+            <div class="mb-2"><span class="report-detail-label">Điện thoại:</span> ${dataDetails.building_id.landlord_id.phoneNumber ?? 'N/A'}</div>
+            <div class="mb-2"><span class="report-detail-label">Email:</span> ${dataDetails.building_id.landlord_id.email ?? 'N/A'}</div>
             
             ` : '';
             const serviceManagerContact = type === "service" ? `
-            <div class="mb-2"><span class="report-detail-label">Họ và tên:</span> ${dataDetails.landlord_id.user_id.name ?? 'N/A'}</div>
-            <div class="mb-2"><span class="report-detail-label">Điện thoại:</span> ${dataDetails.landlord_id.contact_number ?? 'N/A'}</div>
+            <div class="mb-2"><span class="report-detail-label">Họ và tên:</span> ${dataDetails.landlord_id.name ?? 'N/A'}</div>
+            <div class="mb-2"><span class="report-detail-label">Điện thoại:</span> ${dataDetails.landlord_id.phoneNumber ?? 'N/A'}</div>
             <div class="mb-2"><span class="report-detail-label">Email:</span> ${dataDetails.landlord_id.email ?? 'N/A'}</div>
             ` : '';
 
@@ -581,6 +581,7 @@
 
             const isPost = type === "post" ? ` 
             <h6 class="mb-3 flex-grow-1" style="color: #007bff;">Thông bài đăng :</h6>
+            <div class="mb-2"><span class="report-detail-label">Trạng thái:</span> ${getStatusPost(dataDetails.status) ?? 'N/A'}</div>
             <div class="mb-2"><span class="report-detail-label">Loại:</span> ${getPostType(dataDetails.post_type) ?? 'N/A'}</div>
             <div class="mb-2"><span class="report-detail-label">Tiêu đề:</span> ${dataDetails.title ?? 'N/A'}</div>
             <div class="mb-2"><span class="report-detail-label">Nội dung:</span> ${dataDetails.content ?? 'N/A'}</div>
@@ -614,7 +615,12 @@
             
             <div class="mb-3 border-bottom pb-4 d-flex justify-content-between align-items-center">
                 <div class=""><span class="report-detail-label">Thời gian đăng:</span> ${dataDetails.created_at ?? 'N/A'}</div>
-                <button class="btn btn-danger btn-sm" onclick="">Cấm Đăng</button>
+                ${dataDetails.status !== 2 ? `
+                   <button class="btn btn-danger btn-sm" onclick="banPost('${dataDetails._id}','${data._id}', '${2}')">Cấm Đăng</button>
+                ` : `
+                   <button class="btn btn-warning btn-sm text-white" onclick="banPost('${dataDetails._id}','${data._id}', '${0}')">Hủy Cấm Đăng</button>
+                `}
+                
             </div>
             
 
@@ -738,42 +744,59 @@
             }
         }
 
+        function getStatusPost(status) {
+            switch (status) {
+                case 0:
+                    return '<span style="background-color: #28a745; color: white; padding: 0px 10px; border-radius: 5px; display: inline-flex; align-items: center;">Bài viết đang hoạt động</span>';
+                case 1:
+                    return '<span style="background-color: #ffc107; color: white; padding: 0px 10px; border-radius: 5px; display: inline-flex; align-items: center;">Bài viết đã ẩn</span>';
+                case 2:
+                    return '<span style="background-color: #dc3545; color: white; padding: 0px 10px; border-radius: 5px; display: inline-flex; align-items: center;">Đã bị cấm đăng</span>';
+                default:
+                    return '<span style="background-color: #6c757d; color: white; padding: 2px 10px; border-radius: 5px; display: inline-flex; align-items: center;">Unknown</span>';
+            }
+        }
+
         function toggleStatusDropdown() {
             const dropdown = document.getElementById("statusDropdown");
             dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
         }
 
-        async function banPost(postId, reportId) {
-            try {
-                const res = await fetch(`http://localhost:3000/api/post_update_status/${postId}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ status: parseInt(2) })
-                })
-                const resReport = await fetch(`http://localhost:3000/api/report/${reportId}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ status: parseInt(1) })
-
-                });
-                if (res.ok && resReport.ok) {
-                    Toastify({
-                        text: "Update successfully",
-                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
-                    }).showToast();
-                }else {
-                    Toastify({
-                        text: "Failed to update",
-                        style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
-                    }).showToast();
+        async function banPost(postId, reportId, sts) {
+            const isConfirmed = confirm(`${parseInt(sts) === 2 ? "Xác nhận cấm đăng bài viết này ?" : "Xác nhận hủy cấm đăng bài viết này !!!"}`);
+            if (isConfirmed) {
+                try {
+                    const res = await fetch(`http://localhost:3000/api/post_update_status/${postId}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ status: parseInt(sts) })
+                    })
+                    const resReport = await fetch(`http://localhost:3000/api/report/${reportId}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ status: parseInt(1) })
+                    });
+                    
+                    if (res.ok && resReport.ok) {
+                        toggleEditForm(reportId)
+                        Toastify({
+                            text: "Post has been banned",
+                            style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
+                        }).showToast();
+                    } else {
+                        Toastify({
+                            text: "Post ban failed",
+                            style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
+                        }).showToast();
+                    }
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                    alert("An error occurred while updating the status");
                 }
-            } catch (error) {
-                console.error("Error updating status:", error);
-                alert("An error occurred while updating the status");
             }
         }
 
@@ -805,6 +828,29 @@
             } catch (error) {
                 console.error("Error updating status:", error);
                 alert("An error occurred while updating the status");
+            }
+        }
+
+        async function sendNotification(userId, title, content) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/notification_reply`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        title: title,
+                        content: content
+                    })
+                })
+                if(res.ok){
+                    console.log("Send notification successfully")
+                }else{
+                    console.log("Send notification failed")
+                }
+            } catch (error) {
+                console.error("Send notification error:", error);
             }
         }
 
