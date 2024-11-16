@@ -112,6 +112,11 @@ fun RentalPostSearchBar() {
             .padding(horizontal = 16.dp)
             .padding(bottom = 3.dp)
             .height(55.dp)
-            .clip(RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(15.dp)),
+        colors = TextFieldDefaults.textFieldColors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
+
     )
 }
