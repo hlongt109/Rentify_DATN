@@ -6,14 +6,15 @@ var router = express.Router();
 // router.use('',tentenRouter)
 
 //============================================
-const authApi = require("./Api_Auth/auth_Api");
+//admin
 const adminApi = require("./Api_Admin/loginApi");
 const postAdmin = require("./Api_Admin/postApi");
 const userAdmin = require("./Api_Admin/userApi");
 const nofAdmin = require("./Api_Admin/nofApi");
 const spAdmin = require("./Api_Admin/supportApi");
 const statAdmin = require("./Api_Admin/statsApi");
-const reportApiAdmin = require("./Api_Admin/reportApi");
+const reportApiAdmin = require("./Api_Admin/report_mgr_api");
+const authApi = require("./Api_Auth/auth_Api");
 // building_owner
 const supportManageApi = require("./Api_BuildingOwner/support_manage_api");
 const staffManageApi = require("./Api_BuildingOwner/staff_manage_api");
@@ -26,6 +27,7 @@ const PostManage = require("./Api_BuildingOwner/PostManageApi");
 const PaymentManage = require("./Api_BuildingOwner/PaymentManageApi");
 const ContractManage = require("./Api_BuildingOwner/ContractManageApi");
 const BuildingManage = require("./Api_BuildingOwner/BuildingManageApi");
+const QuanLy = require('./Api_BuildingOwner/UserNV');
 // user
 const roomApi = require("./Api_User/roomApi");
 const invoiceApi = require("./Api_User/invoiceApi");
@@ -36,6 +38,7 @@ const apiUser = require("./Api_User/UserApi");
 const personalContractApi = require("./Api_User/personalContractApi");
 const bookingApi = require("./Api_User/RoomBookingApi");
 const findPostApi = require("./Api_User/findPostApi");
+
 // staff
 const post_staffApi = require("./Api_Staff/Post");
 const contract_staffApi = require("./Api_Staff/Contract");
@@ -48,7 +51,8 @@ const login_staffApi = require("./Api_Staff/login");
 
 // nối
 router.use("/", authApi);
-router.use("", reportApiAdmin);
+router.use("/", reportApiAdmin);
+router.use("", QuanLy);
 router.use("/", serviceApi);
 router.use("/", roomApi);
 router.use("/", invoiceApi);
@@ -60,7 +64,7 @@ router.use("", serviceManageApi);
 router.use("", statisticApi);
 router.use("", paymentApi_BuildingOwner);
 router.use("", UserManage);
-router.use("", notificationApi);
+router.use("/api", notificationApi);
 router.use("", apiUser);
 router.use("", personalContractApi);
 router.use("", bookingApi);

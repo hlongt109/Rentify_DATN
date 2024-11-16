@@ -87,16 +87,16 @@ const toggleEditForm = (userId) => {
 const selectRole = (role) => {
     document.getElementById('roleDropdownButton').innerText = role === 'Vai trò' ? 'Vai trò' : role; // Hiển thị 'All Users' khi chọn 'All'
     selectedRole = role;
-    
+
     // Lấy màu nền theo vai trò và áp dụng cho button
     const button = document.getElementById('roleDropdownButton');
     button.style.backgroundColor = getRoleColor(role);
-    
+
     renderTable(); // Rerender bảng khi chọn vai trò mới
 };
 
 const renderTable = () => {
-    const filteredUsers = users.filter(user => 
+    const filteredUsers = users.filter(user =>
         user.username &&
         removeAccents(user.username.toLowerCase()).includes(removeAccents(search.toLowerCase())) &&
         (selectedRole === '' || selectedRole === 'Vai trò' || user.role === selectedRole) // Kiểm tra vai trò
@@ -127,7 +127,7 @@ const renderTable = () => {
                 <button class="btn text-white shadow-button" style="font-size: 0.75rem; background-color: ${getRoleColor(user.role)}; width: 70px;">${user.role ?? 'N/A'}</button>
             </td>
             <td>
-                <button class="btn btn-primary shadow-button" style="font-size: 0.75rem;" onclick="toggleEditForm('${user._id}')">Update</button>
+                <button class="btn btn-primary shadow-button" style="font-size: 0.75rem;" onclick="toggleEditForm('${user._id}')">Cập nhật</button>
             </td>
         `;
 
@@ -150,7 +150,7 @@ const renderTable = () => {
                     <label for="edit-email" class="form-label">Email</label>
                     <input type="email" id="edit-email" class="form-control" value="${user.email ?? ''}" placeholder="Email" readonly />
                 </div>
-            </div>
+            </div>            
             <div class="col">
                 <div class="form-group">
                     <label for="edit-phone" class="form-label">Phone Number</label>
@@ -189,8 +189,8 @@ const renderTable = () => {
             </div>
         </div>
         <div class="d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="cancelEdit()">Cancel</button>
-            <button type="button" class="btn btn-primary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="showConfirmModal('${user._id}')">Update</button>
+            <button type="button" class="btn btn-secondary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="cancelEdit()">Huỷ</button>
+            <button type="button" class="btn btn-primary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="showConfirmModal('${user._id}')">Cập nhật</button>
         </div>
     </form>
 </td>

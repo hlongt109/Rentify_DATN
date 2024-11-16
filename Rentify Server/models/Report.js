@@ -12,7 +12,7 @@ const Report = new Schema({  // bảng hỏng hóc
     title_support: { type: String, require: true },
     content_support: { type: String, require: true },
     image: { type: Array },
-    status: { type: Number, enum: [0, 1], default: 1 },
+    status: { type: Number, enum: [0, 1], default: 0 },
     created_at: { type: String },
     updated_at: { type: String }
 })

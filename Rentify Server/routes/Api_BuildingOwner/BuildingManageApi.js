@@ -29,16 +29,20 @@ router.post('/buildings', async (req, res) => {
 });
 
 
-// #2. Lấy danh sách tất cả tòa nhà (GET): http://localhost:3000/api/buildings
-router.get('/buildings', async (req, res) => {
+// #2. Lấy danh sách tất cả tòa nhà
+router.get('/buildings/:id', async (req, res) => {
+    const userId = req.params.id;
     try {
-        const buildings = await Building.find({});
+        const buildings = await Building.find({ landlord_id: userId })
+            .populate('manager_id', 'username phoneNumber');
+
         res.status(200).json(buildings);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to retrieve buildings.' });
     }
 });
+
 
 
 // #3. Xem chi tiết tòa nhà (GET): http://localhost:3000/api/buildings/{id}

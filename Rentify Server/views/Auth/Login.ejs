@@ -134,9 +134,12 @@
                     const userData = data.data;
                     const role = userData.role;
 
+                    console.log("user id:", userData._id)
+
                     // Lưu token và thông tin người dùng vào localStorage
                     localStorage.setItem('token', token);
-                    localStorage.setItem('data', JSON.stringify(userData));
+                    localStorage.setItem('user_id', userData._id);
+                    localStorage.setItem('data_user', JSON.stringify(userData));
 
                     // fetchData("api/post/list");
                     // Phân quyền role
@@ -144,7 +147,7 @@
                     if (role === 'admin') {
                         window.location.href = '/';
                     } else if (role === 'landlord') {
-                        window.location.href = '/api/post/list';
+                        window.location.href = '/landlord';
                     } else {
                         alert('Bạn không có quyền truy cập vào trang này.');
                     }                  

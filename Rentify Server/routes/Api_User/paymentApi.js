@@ -45,4 +45,47 @@ router.put('/update-payment-status/:id', async (req, res) => {
     }
 });
 
+// create
+// notification_api.js
+router.post("/api/post/notifications", async (req, res) => {
+    console.log("Request Body:", req.body);
+    try {
+        const data = req.body;
+        const { user_id } = data; // Đọc user_id từ request body, không phải query
+
+        if (!user_id) {
+            return res.status(400).json({
+                "status": 400,
+                "message": "user_id bị bỏ trống",
+            });
+        }
+
+        const newNotification = new Notification({
+            user_id: user_id,
+            title: data.title,
+            content: data.content,
+            status: data.status,
+            read_status: 'unread',
+            created_at: getFormattedDate()
+        });
+
+        const result = await newNotification.save();
+        if (result) {
+            res.json({
+                "status": 200,
+                "message": "Create notification successfully",
+                "data": result
+            });
+        } else {
+            res.json({
+                "status": 400,
+                "message": "Error, Create notification failed",
+                "data": []
+            });
+        }
+    } catch (error) {
+        handleServerError(req, res);
+    }
+});
+
 module.exports = router;
