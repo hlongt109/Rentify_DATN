@@ -616,9 +616,14 @@
             <div class="mb-3 border-bottom pb-4 d-flex justify-content-between align-items-center">
                 <div class=""><span class="report-detail-label">Thời gian đăng:</span> ${dataDetails.created_at ?? 'N/A'}</div>
                 ${dataDetails.status !== 2 ? `
-                   <button class="btn btn-danger btn-sm" onclick="banPost('${dataDetails._id}','${data._id}', '${2}')">Cấm Đăng</button>
+                   <button class="btn btn-danger btn-sm" 
+                        onclick="banPost('${dataDetails._id}','${data._id}', '${2}'); 
+                        sendNotification('${data.user_id._id}', 'Phản hồi báo cáo', '${`Vấn đề bạn đã báo cáo (${data.title_support}) hiện đã được giải quyết. Xin cảm ơn bạn đã thông báo và đồng hành cùng chúng tôi!`}');
+                        sendNotification('${dataDetails.user_id._id}', '${"Thông báo bài đăng vi phạm"}', 'Chúng tôi đã cấm đăng bài viết của bạn gần đây do vấn đề vi phạm quy tắc cộng đồng')">
+                        Cấm Đăng
+                   </button>
                 ` : `
-                   <button class="btn btn-warning btn-sm text-white" onclick="banPost('${dataDetails._id}','${data._id}', '${0}')">Hủy Cấm Đăng</button>
+                   <button class="btn btn-warning btn-sm text-white" onclick="banPost('${dataDetails._id}','${data._id}', '${0}'); ">Hủy Cấm Đăng</button>
                 `}
                 
             </div>
@@ -675,7 +680,10 @@
                         <option value="0">Chưa xử lý</option>
                         <option value="1">Đã xử lý</option>
                     </select>
-                    <button id="saveButton" class="btn btn-primary" style="margin-left: 10px; width: 148px;" onclick="updateReportStatus('${data._id}')">Lưu</button>
+                    <button id="saveButton" class="btn btn-primary" style="margin-left: 10px; width: 148px;" 
+                        onclick="updateReportStatus('${data._id}', '${data.user_id._id}', '${data.title_support}')">
+                        Lưu
+                    </button>
                 </div>
             </div>
             `;
@@ -780,7 +788,7 @@
                         },
                         body: JSON.stringify({ status: parseInt(1) })
                     });
-                    
+
                     if (res.ok && resReport.ok) {
                         toggleEditForm(reportId)
                         Toastify({
@@ -800,7 +808,7 @@
             }
         }
 
-        async function updateReportStatus(reportId) {
+        async function updateReportStatus(reportId, userId, problem) {
             const selectedStatus = document.getElementById("statusSelect").value;
             try {
                 const response = await fetch(`http://localhost:3000/api/report/${reportId}`, {
@@ -813,6 +821,9 @@
 
                 if (response.ok) {
                     const result = await response.json();
+                    if(parseInt(selectedStatus) === 1){
+                        sendNotification(userId, "Phản hồi báo cáo", `Vấn đề bạn đã báo cáo (${problem}) hiện đã được giải quyết. Xin cảm ơn bạn đã thông báo và đồng hành cùng chúng tôi!`)
+                    }
                     toggleEditForm(reportId)
                     Toastify({
                         text: "Update successfully",
@@ -844,9 +855,9 @@
                         content: content
                     })
                 })
-                if(res.ok){
+                if (res.ok) {
                     console.log("Send notification successfully")
-                }else{
+                } else {
                     console.log("Send notification failed")
                 }
             } catch (error) {
