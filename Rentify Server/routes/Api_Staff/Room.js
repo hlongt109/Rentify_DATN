@@ -13,10 +13,9 @@ router.get('/list', async (req, res) => {
     }
 });
 
-// Thêm phòng mới với video và hình ảnh
+// _vanphuc : Thêm phòng mới với video và hình ảnh: http://localhost:3000/api/staff/rooms/AddRoom
 router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_room' }]), async (req, res) => {
     const room = new Room({
-        landlord_id: req.body.landlord_id,
         building_id: req.body.building_id,
         room_type: req.body.room_type,
         description: req.body.description,

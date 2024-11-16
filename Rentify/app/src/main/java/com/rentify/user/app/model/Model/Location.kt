@@ -1,4 +1,4 @@
-package com.rentify.user.app.model
+package com.rentify.user.app.model.Model
 
 data class Location(
     val city: String,      // Tỉnh/Thành phố
