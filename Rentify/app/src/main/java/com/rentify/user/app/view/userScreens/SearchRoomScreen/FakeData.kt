@@ -1,7 +1,7 @@
 package com.rentify.user.app.view.userScreens.SearchRoomScreen
 
 import com.rentify.user.app.model.FakeModel.FakeService
-import com.rentify.user.app.model.Location
+
 import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostType
 import com.rentify.user.app.model.Room
@@ -166,29 +166,6 @@ class FakeData {
     )
 
     val listPost = listOf(post1, post2, post3, post4, post5)
-    val listLocations = listOf(
-        Location("Hà Nội", "Quận Hoàn Kiếm", "Phường Tràng Tiền", 21.0285, 105.8542),
-        Location("Thành phố Hồ Chí Minh", "Quận 1", "Phường Bến Nghé", 10.7769, 106.6951),
-        Location("Đà Nẵng", "Quận Hải Châu", "Phường Thạch Thang", 16.0545, 108.2022),
-        Location("Hải Phòng", "Quận Lê Chân", "Phường Trại Cau", 20.9948, 106.3272),
-        Location("Cần Thơ", "Quận Ninh Kiều", "Phường An Hội", 10.0255, 105.7842),
-        Location("Hà Nội", "Quận Hoàn Kiếm", "Phường Tràng Tiền", 21.0285, 105.8542),
-        Location("Thành phố Hồ Chí Minh", "Quận 1", "Phường Bến Nghé", 10.7769, 106.6951),
-        Location("Đà Nẵng", "Quận Hải Châu", "Phường Thạch Thang", 16.0545, 108.2022),
-        Location("Hải Phòng", "Quận Lê Chân", "Phường Trại Cau", 20.9948, 106.3272),
-        Location("Cần Thơ", "Quận Ninh Kiều", "Phường An Hội", 10.0255, 105.7842),
-        Location("Hà Nội", "Quận Hoàn Kiếm", "Phường Tràng Tiền", 21.0285, 105.8542),
-        Location("Thành phố Hồ Chí Minh", "Quận 1", "Phường Bến Nghé", 10.7769, 106.6951),
-        Location("Đà Nẵng", "Quận Hải Châu", "Phường Thạch Thang", 16.0545, 108.2022),
-        Location("Hải Phòng", "Quận Lê Chân", "Phường Trại Cau", 20.9948, 106.3272),
-        Location("Cần Thơ", "Quận Ninh Kiều", "Phường An Hội", 10.0255, 105.7842),
-        Location("Hà Nội", "Quận Hoàn Kiếm", "Phường Tràng Tiền", 21.0285, 105.8542),
-        Location("Thành phố Hồ Chí Minh", "Quận 1", "Phường Bến Nghé", 10.7769, 106.6951),
-        Location("Đà Nẵng", "Quận Hải Châu", "Phường Thạch Thang", 16.0545, 108.2022),
-        Location("Hải Phòng", "Quận Lê Chân", "Phường Trại Cau", 20.9948, 106.3272),
-        Location("Cần Thơ", "Quận Ninh Kiều", "Phường An Hội", 10.0255, 105.7842)
-    )
-
     val listFakeTypeArrange_1s = listOf(
         FakeTypeArrange(icon = clock, title = "Tin mới"),
         FakeTypeArrange(icon = arrangeTop, title = "Giá cao nhất"),

@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
 //            MainNavigation()
-            test()
+            PostRoomScreen(navController = rememberNavController())
         }
     }
 
