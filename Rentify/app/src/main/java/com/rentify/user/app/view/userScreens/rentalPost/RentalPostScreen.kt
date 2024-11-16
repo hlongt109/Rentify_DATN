@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.model.Room
-import com.rentify.user.app.view.userScreens.SearchRoomScreen.FakeData
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ArrangeComponent
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemTypeRoom
 import com.rentify.user.app.view.userScreens.rentalPost.rentalPostComponents.RentalPostArrange
@@ -42,7 +41,7 @@ fun RentalPostScreenPreview() {
 
 @Composable
 fun RentalPostScreen(navController: NavHostController) {
-    val list = FakeData().rooms
+
     var selectedRoom by remember { mutableStateOf<Room?>(null) }
     Column(
         modifier = Modifier
