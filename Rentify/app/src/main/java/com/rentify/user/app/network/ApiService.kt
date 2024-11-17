@@ -38,12 +38,10 @@ interface APIService {
         @Part("price") price: RequestBody,
         @Part("size") size: RequestBody,
         @Part("status") status: RequestBody,
-        @Part("availability_status") availabilityStatus: RequestBody,
         @Part videoRoom: MultipartBody.Part?,
         @Part photosRoom: List<MultipartBody.Part>?,
-        @Part("service_ids") serviceIds: RequestBody?,
+        @Part("service") service: RequestBody?,
         @Part("amenities") amenities: RequestBody?,
-        @Part("service_fees") serviceFees: RequestBody?,
-        @Part("limit_person") limitPerson: RequestBody
+        @Part("limit_person") limitPerson: RequestBody,
     ): Response<AddRoomResponse>
 }

@@ -1,11 +1,8 @@
 package com.rentify.user.app.view.staffScreens.addRoomScreen
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-
-
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -33,8 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -55,8 +48,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.auth.components.HeaderComponent
-
-
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
@@ -68,7 +59,7 @@ import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= viewModel()) {
+fun AddRoomScreen(navController: NavHostController, viewModel: RoomViewModel = viewModel()) {
 
 
     val configuration = LocalConfiguration.current
@@ -76,17 +67,11 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     var selectedService by remember { mutableStateOf(listOf<String>()) }
-    var expanded by remember { mutableStateOf(false) }
-    var selectedGender by remember { mutableStateOf("") }
-    val genderOptions = listOf("Nam", "Nữ", "Giới tính thứ 3")
     val scrollState = rememberScrollState()
     var postTitle by remember { mutableStateOf("") }
     var numberOfRoommates by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
-    var floor by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
@@ -100,14 +85,12 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                 .navigationBarsPadding()
                 .background(color = Color(0xfff7f7f7))
                 .padding(bottom = screenHeight.dp / 7f)
-
-
         ) {
-
-
-
-
-            HeaderComponent(backgroundColor = Color(0xffffffff) , title ="Thêm phòng", navController =navController )
+            HeaderComponent(
+                backgroundColor = Color(0xffffffff),
+                title = "Thêm phòng",
+                navController = navController
+            )
             Spacer(modifier = Modifier.height(10.dp))
             Column(
                 modifier = Modifier
@@ -152,9 +135,7 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                         )
                     )
                 }
-
-
-// TextField cho số người tìm ghép
+                // TextField cho số người tìm ghép
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -245,12 +226,8 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
 
 
                             )
-
-
                         Text(
                             text = "Tối đa 10 ảnh",
-
-
                             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color(0xFFBFBFBF),
                             // fontWeight = FontWeight(700),
@@ -259,12 +236,8 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
 
                             )
                     }
-
-
-
-
                 }
-//video
+                //video
                 Spacer(modifier = Modifier.height(17.dp))
                 Column(
                     modifier = Modifier
@@ -273,11 +246,11 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                         .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                         .background(color = Color(0xFFffffff))
                         .border(
-                            width = 0.dp, color = Color(0xFFEEEEEE), shape = RoundedCornerShape(10.dp)
+                            width = 0.dp,
+                            color = Color(0xFFEEEEEE),
+                            shape = RoundedCornerShape(10.dp)
                         )
                         .padding(25.dp),
-
-
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -288,18 +261,14 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                     )
                     Spacer(modifier = Modifier.height(7.dp))
                     Text(
-
-
                         text = "Video",
                         //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         color = Color.Black,
                         // fontWeight = FontWeight(700),
                         fontSize = 13.sp,
-
-
-                        )
+                    )
                 }
-// số người hiện tại
+                // số người hiện tại
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -311,9 +280,7 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                         color = Color(0xFF7c7b7b),
                         //  fontWeight = FontWeight(700),
                         fontSize = 13.sp,
-
-
-                        )
+                    )
                     TextField(
                         value = currentPeopleCount,
                         onValueChange = { currentPeopleCount = it },
@@ -342,7 +309,7 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                         )
                     )
                 }
-//  diền tích
+                //  diền tích
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -354,9 +321,7 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                         color = Color(0xFF7c7b7b),
                         //  fontWeight = FontWeight(700),
                         fontSize = 13.sp,
-
-
-                        )
+                    )
                     TextField(
                         value = area,
                         onValueChange = { area = it },
@@ -385,8 +350,6 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                         )
                     )
                 }
-
-
                 // giá phòng
                 Column(
                     modifier = Modifier
@@ -430,12 +393,8 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                 }
                 //  Tiện nghi
                 Spacer(modifier = Modifier.height(3.dp))
-
-
                 Column {
                     ComfortableLabel()
-
-
                     ComfortableOptions(
                         selectedComfortable = selectedComfortable,
                         onComfortableSelected = { comfortable ->
@@ -451,8 +410,6 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                 Spacer(modifier = Modifier.height(10.dp))
                 Column {
                     ServiceLabel()
-
-
                     ServiceOptions(
                         selectedService = selectedService,
                         onServiceSelected = { service ->
@@ -464,8 +421,6 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                         }
                     )
                 }
-
-
             }
         }
         Box(
@@ -494,15 +449,10 @@ fun AddRoomScreen(navController: NavHostController,viewModel: RoomViewModel= vie
                         color = Color(0xffffffff)
                     )
                 }
-
-
             }
         }
-
-
     }
 }
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

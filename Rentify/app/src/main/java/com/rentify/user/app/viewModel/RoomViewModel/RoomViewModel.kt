@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.AddRoomResponse
-import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitService
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -39,7 +38,7 @@ class RoomViewModel: ViewModel() {
         availabilityStatus: String,
         videoFile: MultipartBody.Part?,
         photoFiles: List<MultipartBody.Part>?,
-        serviceIds: List<String>?,
+        service: List<String>?,
         amenities: List<String>?,
         serviceFees: List<Double>?,
         limitPerson: Int
@@ -54,13 +53,11 @@ class RoomViewModel: ViewModel() {
                     price = createPartFromString(price.toString()),
                     size = createPartFromString(size),
                     status = createPartFromString(status.toString()),
-                    availabilityStatus = createPartFromString(availabilityStatus),
                     videoRoom = videoFile,
                     photosRoom = photoFiles,
-                    serviceIds = serviceIds?.let { createPartFromString(it.joinToString(",")) },
+                    service = service?.let { createPartFromString(it.joinToString(",")) },
                     amenities = amenities?.let { createPartFromString(it.joinToString(",")) },
-                    serviceFees = serviceFees?.let { createPartFromString(it.joinToString(",")) },
-                    limitPerson = createPartFromString(limitPerson.toString())
+                    limitPerson = createPartFromString(limitPerson.toString()),
                 )
 
                 if (response.isSuccessful) {

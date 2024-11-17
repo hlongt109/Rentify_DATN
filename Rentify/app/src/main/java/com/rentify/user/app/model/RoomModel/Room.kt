@@ -6,19 +6,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Room(
-    val landlordId: String?,        // ID của chủ nhà
     val buildingId: String,         // ID của tòa nhà
     val roomName: String?,          // Tên phòng
     val roomType: String,           // Loại phòng
     val description: String,        // Mô tả phòng
     val price: Double,              // Giá phòng
     val size: String,               // Kích thước phòng (ví dụ: "40m2")
-    val availabilityStatus: String, // Trạng thái sẵn có
     val videoRoom: String? = null,  // URL video của phòng (nếu có)
     val photosRoom: List<String>? = null, // Danh sách URL ảnh của phòng
-    val serviceIds: List<String>? = null, // Danh sách ID dịch vụ liên quan đến phòng
+    val service: List<String>? = null, // Danh sách ID dịch vụ liên quan đến phòng
     val amenities: List<String>? = null,  // Tiện nghi của phòng
-    val serviceFees: List<String>? = null, // Danh sách phí dịch vụ
     val limitPerson: Int,           // Giới hạn số người
     val status: Int,                // 0: Chưa cho thuê, 1: Đã cho thuê
     val createdAt: String? = null,  // Ngày tạo
