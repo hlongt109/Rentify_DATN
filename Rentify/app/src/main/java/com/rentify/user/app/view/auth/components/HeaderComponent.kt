@@ -48,7 +48,7 @@ fun HeaderComponent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = {
-                navController.navigateUp()
+                navController.popBackStack()
             }) {
                 Icon(
                     painter = painterResource(id = iconBack),

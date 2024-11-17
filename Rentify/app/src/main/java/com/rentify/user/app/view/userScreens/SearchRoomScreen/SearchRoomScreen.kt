@@ -106,33 +106,7 @@ fun PostRoomScreen(navController: NavController) {
 //                    ChangeLocation(listLocation) { isFocused ->
 //                        bottomSheetHeight = if (isFocused) 0.8f else 0.6f
 //                    }
-                    when (val state = provincesState) {
-                        is UiState.Loading -> {
-                            CircularProgressIndicator()
-                        }
 
-                        is UiState.Success -> {
-                            ChangeLocation(
-                                listLocation = state.data,
-                                onKeyboardVisibilityChanged = { isVisible ->
-                                    // Xử lý khi bàn phím hiện/ẩn
-                                },
-                                onLocationSelected = { province ->
-                                    // Xử lý khi chọn tỉnh/thành phố
-                                },
-                                onFocusChanged = { isFocused ->
-                                    bottomSheetHeight = if (isFocused) 0.8f else 0.6f
-                                }
-                            )
-                        }
-
-                        is UiState.Error -> {
-                            Text(
-                                text = "Error: ${state.message}",
-                                color = MaterialTheme.colors.error
-                            )
-                        }
-                    }
                 },
                 maxHeight = bottomSheetHeight
             )

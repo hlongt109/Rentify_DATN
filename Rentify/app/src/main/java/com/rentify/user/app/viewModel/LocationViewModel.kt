@@ -2,10 +2,10 @@ package com.rentify.user.app.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rentify.user.app.model.District
-import com.rentify.user.app.model.Location
-import com.rentify.user.app.model.Province
-import com.rentify.user.app.model.Ward
+import com.rentify.user.app.model.Model.District
+import com.rentify.user.app.model.Model.Location
+import com.rentify.user.app.model.Model.Province
+import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.repository.GetLocationRepository.LocationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

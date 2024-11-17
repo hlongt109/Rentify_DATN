@@ -29,7 +29,9 @@ fun ContractScreen(navController: NavHostController) {
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ContractTopBar()
+        ContractTopBar(
+            onClickGoBack = {navController.popBackStack()}
+        )
         ContractRoomListScreen()
     }
 }

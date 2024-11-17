@@ -1,8 +1,7 @@
 package com.rentify.user.app.repository.GetLocationRepository
 
-import com.rentify.user.app.model.District
-import com.rentify.user.app.model.Province
-import com.rentify.user.app.model.Ward
+import com.rentify.user.app.model.Model.District
+import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.LocationService
 

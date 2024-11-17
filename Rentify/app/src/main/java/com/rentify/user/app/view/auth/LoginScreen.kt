@@ -43,6 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.Navigator
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.ui.theme.ColorBlack
@@ -83,13 +84,11 @@ fun LoginScreenApp(navigator: NavController) {
     LaunchedEffect(successMessage) {
         successMessage?.let {
             // Xử lý chuyển màn khi đăng nhập thành công
-            // Định nghĩa hàm này để chuyển đến màn hình chính
                 role ->
             if (role == "user") {
                 navigator.navigate(ROUTER.HOME.name)
             } else if (role == "staffs") {
-                //chua co man nay
-                //navigator.navigate(ROUTER.HOME.name)
+                navigator.navigate(MainActivity.ROUTER.HOME_STAFF.name)
             }
         }
     }

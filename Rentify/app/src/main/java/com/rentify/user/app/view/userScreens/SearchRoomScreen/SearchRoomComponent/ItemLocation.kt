@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.rentify.user.app.model.Province
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.colorLocation

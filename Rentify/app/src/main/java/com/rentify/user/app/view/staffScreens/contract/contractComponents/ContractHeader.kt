@@ -31,7 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun ContractTopBar() {
+fun ContractTopBar(
+    onClickGoBack: () -> Unit
+) {
     val searchQuery = remember { mutableStateOf(TextFieldValue("")) }
     Box(
         modifier = Modifier
@@ -46,7 +48,7 @@ fun ContractTopBar() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(onClick = { /* Xử lý sự kiện khi nhấn nút back */ }) {
+            IconButton(onClick = onClickGoBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
                     contentDescription = "Back"
