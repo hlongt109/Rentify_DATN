@@ -23,12 +23,10 @@ router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_r
         price: req.body.price,
         size: req.body.size,
         status: req.body.status,
-        availability_status: req.body.availability_status,
         video_room: req.files['video_room'] ? req.files['video_room'][0].path.replace('public/', '') : '', // Lưu đường dẫn video
         photos_room: req.files['photos_room'] ? req.files['photos_room'].map(file => file.path.replace('public/', '')) : [], // Lưu mảng đường dẫn hình ảnh
-        service_ids: req.body.service_ids || [],
+        service: req.body.service || [],
         amenities: req.body.amenities || [],
-        service_fees: req.body.service_fees || [],
         limit_person: req.body.limit_person,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
