@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rentify</title>
+  <link rel="stylesheet" href="../../assets/style/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Thêm Axios từ CDN -->
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Include Navbar -->
+    <%- include('./components/navbar.ejs') %>
+
+      <!-- Include Header -->
+      <%- include('./components/header.ejs') %>
+        <div class="content">
+          <%- body %> <!-- Hoặc sử dụng include để hiển thị một view khác -->
+        </div>
+  </div>
+</body>
+</html>

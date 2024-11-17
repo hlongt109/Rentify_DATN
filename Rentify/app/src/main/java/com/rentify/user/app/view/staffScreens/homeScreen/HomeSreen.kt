@@ -101,16 +101,16 @@ fun HomeScreen(navController: NavHostController) {
                 navController.navigate(MainActivity.ROUTER.BUILDING.name) // Điều hướng đến màn hình tương ứng
             }
             "Hợp đồng" -> {
-                navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+                navController.navigate(MainActivity.ROUTER.CONTRACT_STAFF.name)
             }
             "Hoá đơn" -> {
-             //   navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+                navController.navigate(MainActivity.ROUTER.BILL_STAFF.name)
             }
             "Sự cố & bảo trì" -> {
-            //    navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+                navController.navigate(MainActivity.ROUTER.REPORT_STAFF.name)
             }
             "Tin nhắn" -> {
-            //    navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+                navController.navigate(MainActivity.ROUTER.ADDROOM.name)
             }
         }
     }
@@ -128,7 +128,7 @@ fun HomeScreen(navController: NavHostController) {
             //.padding(bottom = screenHeight.dp / 10f)
 
     ) {
-        HeaderSection()
+        HeaderSection(navController)
         Spacer(modifier = Modifier.height(15.dp))
         Column(
             modifier = Modifier

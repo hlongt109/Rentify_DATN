@@ -2,6 +2,11 @@ const { type } = require('express/lib/response');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Service = new Schema({
+    landlord_id: { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     name: { type: String, require: true },
     description: { type: String, require: true },// mô tả
     price: { type: Number, require: true },

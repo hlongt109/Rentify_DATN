@@ -3,6 +3,7 @@ package com.rentify.user.app.view.userScreens.laundryScreen.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,17 +31,15 @@ fun TenPreview() {
 
 @Composable
 fun TenComponent(navController: NavHostController) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(color = Color(0xffd2f1ff))
-    ) {
-        Spacer(modifier = Modifier.padding(top = 50.dp))
+    Column (
+        modifier = Modifier.fillMaxWidth()
+            .height(100.dp)
+            .background(color = Color(0xff84d8ff))
+    ){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .padding(top = 50.dp)
                 .background(color = Color(0xff84d8ff))
         ) {
             Image(
@@ -53,7 +52,8 @@ fun TenComponent(navController: NavHostController) {
                         navController.popBackStack()
                     },
             )
-            Text(text = "Giặt là ",
+            Text(
+                text = "Giặt là ",
                 modifier = Modifier.padding(15.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp

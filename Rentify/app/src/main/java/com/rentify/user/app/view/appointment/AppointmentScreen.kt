@@ -47,9 +47,15 @@ import androidx.compose.material.icons.filled.LocationOn
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun AppointmentScreen() {
+fun AppointmentScreenPreview() {
+    AppointmentScreen(navController = rememberNavController())
+}
+
+
+@Composable
+fun AppointmentScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,7 +64,9 @@ fun AppointmentScreen() {
     ) {
         AppointmentTopAppBarWithActions(
             onBackClick = { /* Handle back icon click */ },
-            canlendarClick = { /* Handle  icon click */ }
+            canlendarClick = {
+
+            }
         )
         SearchBar()
         AppointmentTabRow()

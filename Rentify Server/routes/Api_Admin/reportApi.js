@@ -81,5 +81,69 @@ router.put("/api/report:id", async(req, res) => {
     }
 })
 
+router.get("/reports/post", async (req, res) => {
+    try {
+        // Tìm tất cả các báo cáo có type là "post"
+        const reports = await Report.find({ type: "post" });
+
+        // Kiểm tra nếu không có báo cáo nào
+        if (reports.length === 0) {
+            return res.status(404).json({ message: "No posts found" });
+        }
+
+        // Trả về danh sách các báo cáo
+        return res.status(200).json({ message: "Reports fetched successfully", data: reports });
+    } catch (error) {
+        console.log("Error:", error);
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+router.get("/reports/post/:id", async (req, res) => {
+    try {
+        const { id } = req.params;  // Lấy id từ params
+
+        // Tìm báo cáo với id tương ứng
+        const report = await Report.findById(id);
+
+        // Kiểm tra nếu báo cáo không tồn tại
+        if (!report) {
+            return res.status(404).json({ message: "Report not found" });
+        }
+
+        // Trả về dữ liệu chi tiết báo cáo
+        return res.status(200).json({ message: "Report fetched successfully", data: report });
+    } catch (error) {
+        console.log("Error:", error);
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// Route để cập nhật status của báo cáo thành 0
+router.put("/reports/post/:id/status", async (req, res) => {
+    try {
+        const { id } = req.params; // Lấy id từ params
+
+        // Tìm và cập nhật báo cáo với id tương ứng
+        const updatedReport = await Report.findByIdAndUpdate(
+            id,
+            { status: 0, updated_at: new Date().toISOString() }, // Cập nhật status thành 0 và updated_at
+            { new: true } // Tùy chọn để trả về tài liệu đã cập nhật
+        );
+
+        // Kiểm tra nếu báo cáo không tồn tại
+        if (!updatedReport) {
+            return res.status(404).json({ message: "Report not found" });
+        }
+
+        // Trả về dữ liệu báo cáo đã cập nhật
+        return res.status(200).json({ message: "Status updated successfully", data: updatedReport });
+    } catch (error) {
+        console.log("Error:", error);
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+
 module.exports = router;
 

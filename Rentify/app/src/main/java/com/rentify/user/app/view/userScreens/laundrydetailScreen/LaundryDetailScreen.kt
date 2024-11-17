@@ -30,12 +30,6 @@ fun LaundryDetailScreenScreen(navController: NavHostController) {
             .fillMaxWidth()
             .verticalScroll(scrollState)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-        }
         tenchitietComponent(navController)
         anhComponent()
         NDComponent(navController)

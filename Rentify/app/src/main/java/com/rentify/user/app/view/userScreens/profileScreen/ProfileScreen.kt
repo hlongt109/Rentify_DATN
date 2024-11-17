@@ -28,12 +28,6 @@ fun ProfileScreen(navController: NavHostController){
             .fillMaxWidth()
             .verticalScroll(scrollState)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-        }
         ProfileComponent(navController)
         Row(
             modifier = Modifier
