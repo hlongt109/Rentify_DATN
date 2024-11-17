@@ -25,23 +25,7 @@ class RoomViewModel(private val apiService: APIService) : ViewModel() {
     // LiveData để theo dõi lỗi
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
-
-    // Lấy danh sách phòng
-    fun fetchRooms() {
-        viewModelScope.launch {
-            try {
-                val response = apiService.getRooms()
-                if (response.isSuccessful) {
-                    _rooms.value = response.body()
-                } else {
-                    _error.value = "Lỗi khi lấy danh sách phòng: ${response.message()}"
-                }
-            } catch (e: Exception) {
-                _error.value = "Lỗi khi lấy danh sách phòng: ${e.message}"
-            }
-        }
-    }
-
+    
     // Thêm phòng mới
     fun addRoom(
         buildingId: String,
@@ -88,39 +72,6 @@ class RoomViewModel(private val apiService: APIService) : ViewModel() {
             }
         }
     }
-
-    // Upload video
-    fun uploadVideo(videoFile: MultipartBody.Part) {
-        viewModelScope.launch {
-            try {
-                val response = apiService.uploadVideo(videoFile)
-                if (response.isSuccessful) {
-                    // Xử lý kết quả sau khi upload video thành công
-                } else {
-                    _error.value = "Lỗi khi tải video: ${response.message()}"
-                }
-            } catch (e: Exception) {
-                _error.value = "Lỗi khi tải video: ${e.message}"
-            }
-        }
-    }
-
-    // Upload ảnh
-    fun uploadPhotos(photoFiles: List<MultipartBody.Part>) {
-        viewModelScope.launch {
-            try {
-                val response = apiService.uploadPhotos(photoFiles)
-                if (response.isSuccessful) {
-                    // Xử lý kết quả sau khi upload ảnh thành công
-                } else {
-                    _error.value = "Lỗi khi tải ảnh: ${response.message()}"
-                }
-            } catch (e: Exception) {
-                _error.value = "Lỗi khi tải ảnh: ${e.message}"
-            }
-        }
-    }
-
     // Tạo RequestBody từ String
     private fun createPartFromString(value: String): RequestBody {
         return RequestBody.create("text/plain".toMediaTypeOrNull(), value)

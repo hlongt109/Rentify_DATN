@@ -46,21 +46,4 @@ interface APIService {
         @Part("service_fees") serviceFees: RequestBody?,
         @Part("limit_person") limitPerson: RequestBody
     ): Response<AddRoomResponse>
-
-    // Lấy danh sách phòng _vanphuc :
-    @GET("api/staff/rooms/list")
-    suspend fun getRooms(): Response<List<Room>>
-    // Upload video (mới)
-    @Multipart
-    @POST("api/staff/rooms/uploadVideo")
-    suspend fun uploadVideo(
-        @Part video: MultipartBody.Part
-    ): Response<ApiResponse>
-
-    // Upload ảnh (mới)
-    @Multipart
-    @POST("api/staff/rooms/uploadPhotos")
-    suspend fun uploadPhotos(
-        @Part photos: List<MultipartBody.Part>
-    ): Response<ApiResponse>
 }
