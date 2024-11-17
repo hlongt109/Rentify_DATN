@@ -6,14 +6,15 @@ import androidx.lifecycle.viewModelScope
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.network.APIService
+import com.rentify.user.app.network.RetrofitService
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 
-class RoomViewModel(private val apiService: APIService) : ViewModel() {
-
+class RoomViewModel: ViewModel() {
+    private val apiService = RetrofitService().ApiService
     // LiveData cho danh sách phòng
     private val _rooms = MutableLiveData<List<Room>>()
     val rooms: LiveData<List<Room>> get() = _rooms
