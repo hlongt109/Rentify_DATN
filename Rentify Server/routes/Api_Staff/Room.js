@@ -13,7 +13,7 @@ router.get('/list', async (req, res) => {
     }
 });
 
-// _vanphuc : Thêm phòng mới với video và hình ảnh: http://localhost:3000/api/staff/rooms/AddRoom
+// _vanphuc :thêm phòng 
 router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_room' }]), async (req, res) => {
     const room = new Room({
         building_id: req.body.building_id,
@@ -102,5 +102,4 @@ router.get('/search', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
 module.exports = router;
