@@ -10,11 +10,11 @@ router.get("/contracts_mgr", async(req, res) => {
 })
 
 router.get("/payments_mgr", async(req, res) => {
-    res.render("Landlord_website/screens/HomePage")
+    res.render("Landlord_website/screens/PaymentManage")
 })
 
-router.get("/posts_mgr", async(req, res) => {
-    res.render("Landlord_website/screens/HomePage")
+router.get("/api/posts_mgr", async(req, res) => {
+    res.render("Landlord_website/screens/PostManage")
 })
 
 router.get("/staffs_mgr", async(req, res) => {
