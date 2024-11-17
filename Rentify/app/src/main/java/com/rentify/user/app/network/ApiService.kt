@@ -29,7 +29,7 @@ interface APIService {
 
     // Thêm phòng mới _vanphuc:
     @Multipart
-    @POST("api/staff/rooms/AddRoom")
+    @POST("staff/rooms/AddRoom")
     suspend fun addRoom(
         @Part("building_id") buildingId: RequestBody,
         @Part("room_name") roomName: RequestBody,

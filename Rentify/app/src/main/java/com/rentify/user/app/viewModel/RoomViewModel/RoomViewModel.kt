@@ -3,7 +3,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.network.RetrofitService
 import kotlinx.coroutines.launch
@@ -14,19 +13,11 @@ import retrofit2.Response
 
 class RoomViewModel: ViewModel() {
     private val apiService = RetrofitService().ApiService
-    // LiveData cho danh sách phòng
-    private val _rooms = MutableLiveData<List<Room>>()
-    val rooms: LiveData<List<Room>> get() = _rooms
-
-    // LiveData cho trạng thái thêm phòng
     private val _addRoomResponse = MutableLiveData<Response<AddRoomResponse>>()
     val addRoomResponse: LiveData<Response<AddRoomResponse>> get() = _addRoomResponse
-
-    // LiveData để theo dõi lỗi
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
-    
-    // Thêm phòng mới
+
     fun addRoom(
         buildingId: String,
         roomName: String,
@@ -35,12 +26,10 @@ class RoomViewModel: ViewModel() {
         price: Double,
         size: String,
         status: Int,
-        availabilityStatus: String,
         videoFile: MultipartBody.Part?,
         photoFiles: List<MultipartBody.Part>?,
         service: List<String>?,
         amenities: List<String>?,
-        serviceFees: List<Double>?,
         limitPerson: Int
     ) {
         viewModelScope.launch {
@@ -70,7 +59,7 @@ class RoomViewModel: ViewModel() {
             }
         }
     }
-    // Tạo RequestBody từ String
+
     private fun createPartFromString(value: String): RequestBody {
         return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
     }
