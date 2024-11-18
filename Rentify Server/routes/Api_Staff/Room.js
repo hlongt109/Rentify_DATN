@@ -2,16 +2,27 @@ const express = require('express');
 const router = express.Router();
 const Room = require('../../models/Room');
 const upload = require('../../config/common/upload');
-// Lấy danh sách phòng
-router.get('/list', async (req, res) => {
+// _vanphuc : Lấy danh sách phòng theo ID tòa
+router.get('/listRoom/:buildingId', async (req, res) => {
+    const { buildingId } = req.params;
+
     try {
-        const rooms = await Room.find();
-        //res.json(rooms);
-        res.render('Rooms/listRoom', { listData: rooms })
+        // Tìm các phòng theo buildingId
+        const rooms = await Room.find({ building_id: buildingId });
+
+        // Kiểm tra xem có phòng nào không
+        if (!rooms || rooms.length === 0) {
+            return res.status(404).json({ message: "Không tìm thấy phòng cho tòa nhà này." });
+        }
+
+        // Nếu tìm thấy phòng, trả về dữ liệu phòng
+        res.status(200).json(rooms);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error); // Ghi lại lỗi để dễ dàng theo dõi
+        res.status(500).json({ message: "Đã xảy ra lỗi khi lấy danh sách phòng." });
     }
 });
+
 
 // _vanphuc :thêm phòng 
 router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_room' }]), async (req, res) => {

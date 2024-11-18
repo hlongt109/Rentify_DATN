@@ -22,4 +22,3 @@ const Room = new Schema({
     updated_at: { type: String }
 })
 module.exports = mongoose.model("Room", Room);
-// gộp service
