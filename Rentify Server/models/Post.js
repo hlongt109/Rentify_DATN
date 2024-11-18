@@ -11,6 +11,12 @@ const Post = new Schema({
     status: { type: Number, enum: [0, 1, 2], default: 0},
     video: { type: Array },
     photo: { type: Array },
+    price: {type: Number},
+    address: { type: String },
+    phoneNumber: { type: String },
+    room_type: { type: String },
+    amenities: { type: Array }, // tiện nghi 
+    services: { type: Array }, // dịch vụ lưu dạng string
     post_type: { type: String, enum: ['roomate', 'rent', 'seek'], require: true },
     created_at: { type: String },
     updated_at: { type: String }
