@@ -60,7 +60,7 @@ router.use("/", reportApi);
 router.use("/", paymentApi);
 router.use("", supportManageApi);
 router.use("", staffManageApi);
-router.use("", serviceManageApi);
+router.use("/", serviceManageApi);
 router.use("", statisticApi);
 router.use("", paymentApi_BuildingOwner);
 router.use("", UserManage);
