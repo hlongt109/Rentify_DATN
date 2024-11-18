@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Room = require('../../models/Room');
 const upload = require('../../config/common/upload');
-// _vanphuc : Lấy danh sách phòng theo ID tòa
+// Lấy danh sách phòng
 router.get('/listRoom/:buildingId', async (req, res) => {
     const { buildingId } = req.params;
 
@@ -22,8 +22,6 @@ router.get('/listRoom/:buildingId', async (req, res) => {
         res.status(500).json({ message: "Đã xảy ra lỗi khi lấy danh sách phòng." });
     }
 });
-
-
 // _vanphuc :thêm phòng 
 router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_room' }]), async (req, res) => {
     const room = new Room({
@@ -34,8 +32,8 @@ router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_r
         price: req.body.price,
         size: req.body.size,
         status: req.body.status,
-        video_room: req.files['video_room'] ? req.files['video_room'][0].path.replace('public/', '') : '', // Lưu đường dẫn video
-        photos_room: req.files['photos_room'] ? req.files['photos_room'].map(file => file.path.replace('public/', '')) : [], // Lưu mảng đường dẫn hình ảnh
+        video_room: req.files['video_room'] ? req.files['video_room'][0].path.replace('public/', '') : req.body.video_room, // Giữ nguyên nếu không cập nhật
+        photos_room: req.files['photos_room'] ? req.files['photos_room'].map(file => file.path.replace('public/', '')) : req.body.photos_room, // Giữ nguyên nếu không cập nhật
         service: req.body.service || [],
         amenities: req.body.amenities || [],
         limit_person: req.body.limit_person,
