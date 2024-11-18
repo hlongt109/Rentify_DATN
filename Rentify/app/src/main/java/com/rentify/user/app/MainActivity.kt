@@ -59,7 +59,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainNavigation()
+//            MainNavigation()
+            PostRoomScreen(navController = rememberNavController())
         }
     }
 

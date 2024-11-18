@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent
 
 
+import LocationState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,7 +48,8 @@ import com.rentify.user.app.ui.theme.location
 @Composable
 fun LocationComponent(
     enabled: Boolean,
-    onShowBottomSheet: () -> Unit
+    onShowBottomSheet: () -> Unit,
+    locationState: LocationState
 ) {
     var isPressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
@@ -97,7 +99,7 @@ fun LocationComponent(
             color = ColorBlack
         )
         Text(
-            text = "Toàn quốc",
+            text = locationState.fullAddress,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
             color = ColorBlack

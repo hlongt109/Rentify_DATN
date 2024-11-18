@@ -1,6 +1,8 @@
 package com.rentify.user.app.view.userScreens.SearchRoomScreen
 
 import BottomSheetContent
+import LocationViewModel
+import LocationViewModelFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,6 +50,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.repository.GetLocationRepository.LocationRepository
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ArrangeComponent
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ChangeLocation
@@ -54,8 +58,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemPost
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemTypeRoom
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.LocationComponent
-import com.rentify.user.app.viewModel.LocationViewModel
-import com.rentify.user.app.viewModel.UiState
+
 import kotlinx.coroutines.launch
 
 enum class LocationLevel {
@@ -75,13 +78,73 @@ fun PostRoomScreen(navController: NavController) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var bottomSheetHeight by remember { mutableStateOf(0.6f) }
     var selectedRoom by remember { mutableStateOf<Room?>(null) }
-    val viewModel: LocationViewModel = viewModel()
-    val provincesState by viewModel.provinces.collectAsState()
-    var currentLevel by remember { mutableStateOf(LocationLevel.PROVINCE) }
+
+    // Khởi tạo LocationViewModel
+    val repository = remember { LocationRepository() } // Hoặc inject từ DI container
+    val factory = remember { LocationViewModelFactory(repository) }
+    val locationViewModel: LocationViewModel = viewModel(factory = factory)
+    val provinces by locationViewModel.provinces.observeAsState(initial = Result.success(emptyList()))
+    val currentProvinceWithDistricts by locationViewModel.provinceWithDistricts.observeAsState(
+        initial = Result.success(null)
+    )
+    val currentDistrictWithWards by locationViewModel.districtWithWards.observeAsState(
+        initial = Result.success(
+            null
+        )
+    )
+    var selectionLevel by remember { mutableStateOf(0) } // 0: Province, 1: District, 2: Ward
+
+    //
+    var selectedProvinceName by remember { mutableStateOf("") }
+    var selectedDistrictName by remember { mutableStateOf("") }
+    var selectedWardName by remember { mutableStateOf("") }
+    var fullAddress by remember { mutableStateOf("") }
+    val locationState by locationViewModel.locationState.collectAsState()
+
+    // Hàm cập nhật địa chỉ đầy đủ
+    fun updateFullAddress() {
+        fullAddress = buildString {
+            append(selectedProvinceName)
+            if (selectedDistrictName.isNotEmpty()) {
+                append(", ")
+                append(selectedDistrictName)
+            }
+            if (selectedWardName.isNotEmpty()) {
+                append(", ")
+                append(selectedWardName)
+            }
+        }
+    }
+
+    // Nhận danh sách và tiêu đề phù hợp dựa trên mức độ lựa chọn
+    val (currentList, currentTitle) = when (selectionLevel) {
+        0 -> Pair(
+            provinces.getOrNull()?.map { it.name } ?: emptyList(),
+            "Chọn Tỉnh/Thành phố"
+        )
+
+        1 -> Pair(
+            currentProvinceWithDistricts.getOrNull()?.districts?.map { it.name } ?: emptyList(),
+            "Chọn Quận/Huyện"
+        )
+
+        2 -> Pair(
+            currentDistrictWithWards.getOrNull()?.wards?.map { it.name } ?: emptyList(),
+            "Chọn Phường/Xã"
+        )
+
+        else -> Pair(emptyList(), "")
+    }
+
+    LaunchedEffect(Unit) {
+        locationViewModel.fetchProvinces()
+    }
 
     // Theo dõi trạng thái của BottomSheet
     LaunchedEffect(sheetState.currentValue) {
-        showBottomSheet = sheetState.currentValue != ModalBottomSheetValue.Hidden
+        if (!sheetState.isVisible && selectedProvinceName.isNotEmpty()) {
+            updateFullAddress()
+        }
     }
 
     // Xử lý back press
@@ -103,9 +166,58 @@ fun PostRoomScreen(navController: NavController) {
                     }
                 },
                 content = {
-//                    ChangeLocation(listLocation) { isFocused ->
-//                        bottomSheetHeight = if (isFocused) 0.8f else 0.6f
-//                    }
+                    ChangeLocation(
+                        locations = currentList,
+                        title = currentTitle,
+                        onItemSelected = { selectedLocation ->
+                            when (selectionLevel) {
+                                0 -> {
+                                    val selectedProvince =
+                                        provinces.getOrNull()?.find { it.name == selectedLocation }
+                                    selectedProvince?.let {
+                                        locationViewModel.updateLocation(province = it.name)
+                                        locationViewModel.fetchDistrictsByProvince(it.code)
+                                        selectionLevel = 1
+                                    }
+                                }
+
+                                1 -> {
+                                    val selectedDistrict =
+                                        currentProvinceWithDistricts.getOrNull()?.districts?.find { it.name == selectedLocation }
+                                    selectedDistrict?.let {
+                                        locationViewModel.updateLocation(
+                                            province = locationState.provinceName,
+                                            district = it.name
+                                        )
+                                        locationViewModel.fetchWardsByDistrict(it.code)
+                                        selectionLevel = 2
+                                    }
+                                }
+
+                                2 -> {
+                                    locationViewModel.updateLocation(
+                                        province = locationState.provinceName,
+                                        district = locationState.districtName,
+                                        ward = selectedLocation
+                                    )
+                                    scope.launch {
+                                        sheetState.hide()
+                                        showBottomSheet = false
+                                        selectionLevel = 0
+                                    }
+                                }
+                            }
+                        },
+                        onKeyboardVisibilityChanged = { isVisible ->
+                            bottomSheetHeight = if (isVisible) 0.8f else 0.6f
+                        },
+                        onFocusChanged = { isFocused ->
+                            bottomSheetHeight = if (isFocused) 0.8f else 0.6f
+                        },
+                        onLocationSelected = { province ->
+                            // Handle final location selection if needed
+                        }
+                    )
 
                 },
                 maxHeight = bottomSheetHeight
@@ -175,7 +287,8 @@ fun PostRoomScreen(navController: NavController) {
                                     showBottomSheet = true
                                     sheetState.show()
                                 }
-                            }
+                            },
+                            locationState = locationState
                         )
                     }
                     Divider(color = colorInput, thickness = 1.dp)
@@ -193,11 +306,4 @@ fun PostRoomScreen(navController: NavController) {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSearch() {
-    val navController = rememberNavController()
-    PostRoomScreen(navController)
 }
