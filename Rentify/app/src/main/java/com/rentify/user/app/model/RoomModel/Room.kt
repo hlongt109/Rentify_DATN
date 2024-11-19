@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Room(
     val buildingId: String,         // ID của tòa nhà
-    val roomName: String?,          // Tên phòng
+    val room_name: String?,          // Tên phòng
     val roomType: String,           // Loại phòng
     val description: String,        // Mô tả phòng
     val price: Double,              // Giá phòng
@@ -59,5 +59,13 @@ data class AddRoomResponse(
 
 @Serializable
 data class RoomListResponseWrapper(
-    val data: List<Room>             // Danh sách các phòng
+    val data: List<Room>
 )
+
+data class BuildingWithRooms(
+    val nameBuilding: String,
+    val address: String,
+    val rooms: List<Room>
+)
+
+

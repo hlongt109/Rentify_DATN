@@ -86,23 +86,19 @@ fun SelectMedia(
     val selectedVideos = remember { mutableStateListOf<Uri>() }
 
     val context = LocalContext.current
-    // Launcher cho viá»‡c chá»n nhiá»u áº£nh tá»« album
     val launcherImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
             uris?.let {
-                // ThÃªm áº£nh Ä‘Ã£ chá»n vÃ o danh sÃ¡ch
                 selectedImages.addAll(it)
             }
         }
     )
 
-    // Launcher cho viá»‡c chá»n nhiá»u video tá»« album
     val launcherVideo = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
             uris?.let {
-                // ThÃªm video Ä‘Ã£ chá»n vÃ o danh sÃ¡ch
                 selectedVideos.addAll(it)
             }
         }
@@ -113,7 +109,6 @@ fun SelectMedia(
             .fillMaxSize()
 
     ) {
-        // NÃºt chá»n nhiá»u áº£nh tá»« album
         Row(
             modifier = Modifier.padding(5.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -136,21 +131,20 @@ fun SelectMedia(
             Spacer(modifier = Modifier.width(15.dp))
             Column {
                 Text(
-                    text = "áº¢nh PhÃ²ng trá»",
+                    text = "Thêm ảnh từ máy ",
                     color = Color.Black,
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "Tá»‘i Ä‘a 10 áº£nh",
+                    text = "giới hạn 10 ảnh ",
                     color = Color(0xFFBFBFBF),
                     fontSize = 13.sp
                 )
             }
         }
-        // Hiá»ƒn thá»‹ áº£nh Ä‘Ã£ chá»n
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "áº¢nh Ä‘Ã£ chá»n:",
+            text = "Thêm video từ máy ",
             color = Color.Black,
             fontSize = 16.sp
         )
@@ -170,10 +164,9 @@ fun SelectMedia(
         }
         Spacer(modifier = Modifier.height(17.dp))
 
-        // NÃºt chá»n nhiá»u video tá»« album
         Column(
             modifier = Modifier
-                .clickable { launcherVideo.launch(arrayOf("video/*")) } // "video/*" Ä‘á»ƒ chá»n video tá»« album
+                .clickable { launcherVideo.launch(arrayOf("video/*")) }
                 .fillMaxWidth()
                 .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                 .background(Color.White)

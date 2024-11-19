@@ -2,6 +2,7 @@ package com.rentify.user.app.network
 
 import androidx.room.Query
 import com.rentify.user.app.model.AddRoomResponse
+import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
@@ -37,11 +38,17 @@ interface APIService {
         @Part("description") description: RequestBody,
         @Part("price") price: RequestBody,
         @Part("size") size: RequestBody,
-        @Part("status") status: RequestBody,
         @Part videoRoom: MultipartBody.Part?,
         @Part photosRoom: List<MultipartBody.Part>?,
         @Part("service") service: RequestBody?,
         @Part("amenities") amenities: RequestBody?,
         @Part("limit_person") limitPerson: RequestBody,
+        @Part("status") status: RequestBody,
     ): Response<AddRoomResponse>
+//    get danh sách
+    @GET("staff/rooms/buildings-by-manager/{manager_id}")
+    suspend fun getBuildingsWithRooms(
+        @Path("manager_id") managerId: String
+    ): Response<List<BuildingWithRooms>>
+
 }

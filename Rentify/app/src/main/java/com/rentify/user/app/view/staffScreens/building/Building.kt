@@ -38,7 +38,8 @@ fun BuildingScreen(navController: NavController){
         ) {
             HeaderSection(backgroundColor = Color.White, title = "Tòa nhà và căn hộ", navController = navController)
             Spacer(modifier = Modifier.height(20.dp))
-            FeetBuilding(navController )
+//            danh sách tòa
+            FeetBuilding(navController)
         }
     }
     }

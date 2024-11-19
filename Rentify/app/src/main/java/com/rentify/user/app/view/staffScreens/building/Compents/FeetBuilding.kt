@@ -7,34 +7,21 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,21 +32,64 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
+import com.rentify.user.app.model.BuildingWithRooms
+import com.rentify.user.app.model.Room
+import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewFeetBuilding() {
     FeetBuilding(navController = rememberNavController())
 }
+
 @Composable
-fun FeetBuilding(navController: NavController) {
+fun FeetBuilding(navController: NavController, viewModel: RoomViewModel = viewModel()) {
+    // Quan sát LiveData buildingWithRooms
+    val buildingWithRooms by viewModel.buildingWithRooms.observeAsState(emptyList())
+
+    // Lấy dữ liệu khi composable được tạo lần đầu
+    LaunchedEffect(Unit) {
+        try {
+            viewModel.fetchBuildingsWithRooms("6724a0eace87343d0e701018")
+        } catch (e: Exception) {
+            e.printStackTrace() // Ghi log lỗi nếu có
+        }
+    }
+
+    // Hiển thị danh sách hoặc thông báo nếu không có dữ liệu
+    if (buildingWithRooms.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
+            buildingWithRooms.forEach { building ->
+                BuildingCard(building = building, navController = navController)
+            }
+        }
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Không có dữ liệu tòa nhà.",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
+fun BuildingCard(building: BuildingWithRooms, navController: NavController) {
     var isExpanded by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
-
-    var vacantRoom by remember { mutableStateOf("20 phòng") }
 
     Box(
         modifier = Modifier
@@ -67,7 +97,6 @@ fun FeetBuilding(navController: NavController) {
             .padding(15.dp)
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
-
     ) {
         Column {
             Row(
@@ -75,7 +104,7 @@ fun FeetBuilding(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp)
-                    .background(color = Color.White) // Đã xóa đường viền
+                    .background(color = Color.White)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.building),
@@ -91,24 +120,21 @@ fun FeetBuilding(navController: NavController) {
                         .weight(1f)
                 ) {
                     Text(
-                        text = "Phòng 2001",
+                        text = building.nameBuilding ?: "Tên tòa nhà không xác định",
                         fontSize = 14.sp,
-                        color = Color.Black,
-
+                        color = Color.Black
                     )
                 }
                 Row {
                     Text(
-                        text ="Còn trống: ",
+                        text = "Còn trống: ",
                         fontSize = 14.sp,
-                        color = Color.Black,
-
+                        color = Color.Black
                     )
                     Text(
-                        text =vacantRoom,
+                        text = "${building.rooms?.size ?: 0} phòng", // Xử lý nếu `rooms` là null
                         fontSize = 14.sp,
-                        color = Color.Black,
-
+                        color = Color.Black
                     )
                 }
 
@@ -116,17 +142,14 @@ fun FeetBuilding(navController: NavController) {
                     onClick = { isExpanded = !isExpanded }
                 ) {
                     Icon(
-                        imageVector = if (isExpanded)
-                            Icons.Default.KeyboardArrowUp
-                        else
-                            Icons.Default.KeyboardArrowDown,
-                        contentDescription = if (isExpanded) "Collapse" else "Expand",
+                        imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (isExpanded) "Thu gọn" else "Mở rộng",
                         tint = Color.Black
                     )
                 }
             }
 
-            // Sử dụng AnimatedVisibility để xử lý việc mở rộng
+            // Hiển thị phòng khi mở rộng
             AnimatedVisibility(
                 visible = isExpanded,
                 enter = fadeIn() + expandVertically(),
@@ -137,349 +160,21 @@ fun FeetBuilding(navController: NavController) {
                         .fillMaxWidth()
                         .background(color = Color.White)
                         .padding(15.dp)
-                    .verticalScroll(scrollState),
-                    verticalArrangement = Arrangement.Center,
-
+                        .verticalScroll(scrollState),
+                    verticalArrangement = Arrangement.Center
                 ) {
-//item1
-                    Row(
-    modifier = Modifier
-        .fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.SpaceBetween
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.roomm),
-            contentDescription = null,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .padding(start = 15.dp)
-        )
-        Text(
-            text ="101",
-            fontSize = 14.sp,
-            color = Color.Black,
-            modifier = Modifier
-                .padding(start = 7.dp)
-            )
-    }
-    Icon(
-        imageVector = Icons.Default.KeyboardArrowRight,
-        contentDescription = "Arrow Right",
-        tint = Color.Black,
-    )
-}
-            // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-                    // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-                    // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-                    // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-                    // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-                    // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-                    // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-                    // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-                    // item2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-
-                            ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.roomm),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .padding(start = 15.dp)
-                            )
-                            Text(
-                                text ="101",
-                                fontSize = 14.sp,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 7.dp)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow Right",
-                            tint = Color.Black,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(25.dp))
+                    building.rooms?.forEach { room ->
+                        RoomCard(room = room)
+                    } ?: Text( // Nếu rooms là null hoặc rỗng
+                        text = "Không có phòng nào.",
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
                     Button(
                         onClick = { navController.navigate("ADDROOM") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xfffb6b53)
-                        )
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xfffb6b53))
                     ) {
                         Text(
                             modifier = Modifier.padding(6.dp),
@@ -495,11 +190,39 @@ fun FeetBuilding(navController: NavController) {
 }
 
 @Composable
+fun RoomCard(room: Room) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+            .background(Color(0xffe0e0e0))
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.roomm),
+            contentDescription = null,
+            modifier = Modifier.size(40.dp)
+        )
+        Text(
+            text = room.room_name ?: "Phòng không xác định",
+            fontSize = 14.sp,
+            color = Color.Black,
+            modifier = Modifier.padding(start = 10.dp)
+        )
+        // Thêm thông tin phòng khác nếu cần
+    }
+}
+
+
+@Composable
 fun FeetReporthoanthanh() {
-    Column (
+    Column(
         modifier = Modifier.fillMaxSize()
-    ){
-        Text(text = "Ok,hiểu rồi",
-            textAlign = TextAlign.Center)
+    ) {
+        Text(
+            text = "Ok, hiểu rồi",
+            textAlign = TextAlign.Center
+        )
     }
 }
