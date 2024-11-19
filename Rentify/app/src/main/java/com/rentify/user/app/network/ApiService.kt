@@ -3,15 +3,21 @@ package com.rentify.user.app.network
 import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
+import com.rentify.user.app.model.PostRequest
+import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
 import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 
@@ -56,5 +62,25 @@ interface APIService {
 
     @GET("d/{code}?depth=2")
     suspend fun getDistrictWithWards(@Path("code") code: String): District
+
+
+    @Multipart
+    @POST("add")
+    suspend fun addPost(
+        @Part("user_id") userId: RequestBody,
+        @Part("title") title: RequestBody,
+        @Part("content") content: RequestBody,
+        @Part("status") status: RequestBody,
+        @Part("post_type") postType: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("address") address: RequestBody,
+        @Part("phoneNumber") phoneNumber: RequestBody,
+        @Part("room_type") roomType: RequestBody,
+        @Part("amenities") amenities: RequestBody,
+        @Part("services") services: RequestBody,
+        @Part videos: List<MultipartBody.Part>,
+        @Part photos: List<MultipartBody.Part>
+    ): Response<PostResponse>
+
 
 }

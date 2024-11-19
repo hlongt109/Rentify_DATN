@@ -30,6 +30,8 @@ import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProf
 import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
+
+import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
@@ -193,6 +195,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.PersonalProfileScreen.name) {
                 PersonalProfileScreen(navController = navController)
             }
+            composable(ROUTER.ADDPOST_staff.name) {
+                AddPostScreens(navController = navController)
+            }
         }
     }
 
@@ -242,6 +247,6 @@ class MainActivity : ComponentActivity() {
         CONTRACT_STAFF,
         POSTING_STAFF,
         REPORT_STAFF,
-
+        ADDPOST_staff
     }
 }

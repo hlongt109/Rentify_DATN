@@ -112,6 +112,9 @@ fun HomeScreen(navController: NavHostController) {
             "Tin nhắn" -> {
                 navController.navigate(MainActivity.ROUTER.ADDROOM.name)
             }
+            "Bài đăng" -> {
+                navController.navigate(MainActivity.ROUTER.ADDPOST_staff.name)
+            }
         }
     }
     Box(
@@ -233,7 +236,8 @@ fun ComfortableOptionsDemo(
         ComfortableOptionData("Hợp đồng", R.drawable.contrac1),
         ComfortableOptionData("Hoá đơn", R.drawable.bill1),
         ComfortableOptionData("Sự cố & bảo trì", R.drawable.inciden),
-        ComfortableOptionData("Tin nhắn", R.drawable.mess)
+        ComfortableOptionData("Tin nhắn", R.drawable.mess),
+                ComfortableOptionData("Bài đăng", R.drawable.post)
     )
 
     FlowRow(

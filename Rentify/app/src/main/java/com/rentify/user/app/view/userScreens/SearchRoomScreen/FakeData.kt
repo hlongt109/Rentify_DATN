@@ -135,7 +135,7 @@ class FakeData {
         title = "Tìm người ở ghép căn hộ tại quận 7",
         content = "Căn hộ cao cấp, có phòng gym và hồ bơi. Cần tìm bạn nam ở ghép, sạch sẽ và ngăn nắp.",
         status = 0, // 0: bài đăng chưa hoạt động
-        video = null,
+        video =  listOf("https://example.com/video2.mp4"),
         photo = listOf("https://example.com/photo5.jpg"),
         postType = PostType.ROOMATE,
         createdAt = "2023-08-15T15:45:00Z",
@@ -147,7 +147,7 @@ class FakeData {
         title = "Cho thuê phòng trọ giá rẻ quận 5",
         content = "Phòng trọ rộng rãi, thoáng mát. Gần chợ, khu ăn uống và các tiện ích.",
         status = 1,
-        video = null,
+        video =  listOf("https://example.com/video2.mp4"),
         photo = listOf("https://example.com/photo6.jpg", "https://example.com/photo7.jpg"),
         postType = PostType.RENT,
         createdAt = "2023-07-10T10:20:00Z",
