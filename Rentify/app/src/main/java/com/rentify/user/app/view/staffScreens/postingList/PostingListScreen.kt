@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingListTopBar
 
@@ -31,7 +32,7 @@ fun PostingListScreen(navController: NavHostController) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Xử lý sự kiện click của FAB */ },
+                onClick = {     navController.navigate(MainActivity.ROUTER.ADDPOST_staff.name) },
                 containerColor = Color(0xFF2196F3),
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier.padding(bottom = 30.dp).padding(end = 20.dp)

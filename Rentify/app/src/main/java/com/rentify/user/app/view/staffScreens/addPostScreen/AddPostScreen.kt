@@ -131,7 +131,8 @@ fun AddPostScreens(navController: NavHostController) {
     var roomPrice by remember { mutableStateOf("") }
 
     suspend fun addPost(context: Context, apiService:APIService ) {
-        val userId = "672490e5ce87343d0e701012".toRequestBody("multipart/form-data".toMediaTypeOrNull())
+        val userId = "672490e5ce87343d0e701012".toRequestBody("text/plain".toMediaTypeOrNull())
+
         val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
