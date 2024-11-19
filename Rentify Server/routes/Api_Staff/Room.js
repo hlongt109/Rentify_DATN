@@ -32,13 +32,13 @@ router.post('/addRoom', upload.fields([
     { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
 ]), async (req, res) => {
     try {
-        const {building_id,room_name,room_type,description,price,size,service,amenities,limit_person,status,} = req.body;
+        const { building_id, room_name, room_type, description, price, size, service, amenities, limit_person, status, } = req.body;
 
         // Kiểm tra dữ liệu bắt buộc
-        if (!building_id || !room_name || !room_type || !description || !price || !size || !limit_person || status === undefined) {
+        if (!building_id || !room_name || !room_type || !description || !price || !size || status === undefined) {
             return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
         }
-        
+
         // Lưu đường dẫn ảnh và video
         const photos_room = req.files.photos_room ? req.files.photos_room.map(file => file.path) : [];
         const video_room = req.files.video_room ? req.files.video_room.map(file => file.path) : [];
@@ -53,8 +53,8 @@ router.post('/addRoom', upload.fields([
             size,
             video_room,
             photos_room,
-            service, 
-            amenities, 
+            service,
+            amenities,
             limit_person,
             status,
             created_at: new Date().toISOString(),
