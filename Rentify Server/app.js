@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // to parse URL-encoded bodies
 app.use(cookieParser());
 app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static('public/uploads'));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/api/assets', express.static(path.join(__dirname, 'assets')));
 

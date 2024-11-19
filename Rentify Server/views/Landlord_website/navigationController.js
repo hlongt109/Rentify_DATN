@@ -1,39 +1,39 @@
 var express = require('express');
 var router = express.Router();
 
-router.get("landlord/home", function(req, res) {
+router.get("landlord/home", function (req, res) {
     res.render("Landlord_website/index");
 });
 
-router.get("/contracts_mgr", async(req, res) => {
+router.get("/contracts_mgr", async (req, res) => {
     res.render("Landlord_website/screens/HomePage")
 })
 
-router.get("/payments_mgr", async(req, res) => {
+router.get("/payments_mgr", async (req, res) => {
     res.render("Landlord_website/screens/HomePage")
 })
 
-router.get("/posts_mgr", async(req, res) => {
+router.get("/posts_mgr", async (req, res) => {
     res.render("Landlord_website/screens/HomePage")
 })
 
-router.get("/staffs_mgr", async(req, res) => {
+router.get("/api/staffs_mgr/list/:id", async (req, res) => {
     res.render("Landlord_website/screens/HomePage")
 })
 
-router.get("/services_mgr", async(req, res) => {
+router.get("/services_mgr/list/:id", async (req, res) => {
+    res.render("Landlord_website/screens/QuanLydichVu")
+})
+
+router.get("/supports_mgr", async (req, res) => {
     res.render("Landlord_website/screens/HomePage")
 })
 
-router.get("/supports_mgr", async(req, res) => {
+router.get("/statistics_ld", async (req, res) => {
     res.render("Landlord_website/screens/HomePage")
 })
 
-router.get("/statistics_ld", async(req, res) => {
-    res.render("Landlord_website/screens/HomePage")
-})
-
-router.get("/payments_ld", async(req, res) => {
+router.get("/payments_ld", async (req, res) => {
     res.render("Landlord_website/screens/HomePage")
 })
 
@@ -51,6 +51,6 @@ module.exports = router;
 // thanh toan
 
 // thong bao
-// nhan tin 
+// nhan tin
 // chia se
 // phan hoi danh gia 

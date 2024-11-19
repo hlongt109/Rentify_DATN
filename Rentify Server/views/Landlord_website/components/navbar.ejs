@@ -29,7 +29,8 @@
       </li>
       <li>
         <a href="/api/payments_mgr">
-          <i class="fas fa-money-check-alt"></i> <span>Quản lý thanh toán</span> <!-- Thay đổi: biểu tượng thanh toán -->
+          <i class="fas fa-money-check-alt"></i> <span>Quản lý thanh toán</span>
+          <!-- Thay đổi: biểu tượng thanh toán -->
         </a>
       </li>
       <li>
@@ -38,13 +39,13 @@
         </a>
       </li>
       <li>
-        <a href="/api/services_mgr">
-          <i class="fas fa-cogs"></i> <span>Quản lý dịch vụ</span> <!-- Thay đổi: biểu tượng dịch vụ -->
+        <a id="service-link">
+          <i class="fas fa-cogs"></i> <span>Quản lý dịch vụ</span>
         </a>
       </li>
       <li>
-        <a href="/api/staffs_mgr">
-          <i class="fas fa-user-tie"></i> <span>Quản lý nhân viên</span> <!-- Thay đổi: biểu tượng nhân viên -->
+        <a id="user-link">
+          <i class="fas fa-cogs"></i> <span>Quản lý nhân viên</span>
         </a>
       </li>
       <li>
@@ -64,6 +65,14 @@
       </li>
     </ul>
   </nav>
+  <script>
+
+    // list service theo ID cua account login 
+    let userId = localStorage.getItem('user_id');
+    document.getElementById('service-link').href = `/api/services_mgr/list/${userId}`;
+    //list user theo ID cuar landlord
+    document.getElementById('user-link').href = `/api/staffs_mgr/list/${userId}`;
+  </script>
 </body>
 
 </html>

@@ -138,6 +138,8 @@
 
                     // Lưu token và thông tin người dùng vào localStorage
                     localStorage.setItem('token', token);
+                    console.log("token dax gui di: ", token);
+
                     localStorage.setItem('user_id', userData._id);
                     localStorage.setItem('data_user', JSON.stringify(userData));
 
@@ -150,7 +152,7 @@
                         window.location.href = '/landlord';
                     } else {
                         alert('Bạn không có quyền truy cập vào trang này.');
-                    }                  
+                    }
                 } else {
                     if (response.status === 401) {
                         // Kiểm tra và hiển thị thông báo từ `data.message`
@@ -165,7 +167,7 @@
                         if (data.message === 'Thiếu username hoặc password') {
                             alert('Vui lòng nhập đủ thông tin đăng nhập');
                         }
-                    }else if (response.status === 500){
+                    } else if (response.status === 500) {
                         alert("Lỗi kết nốu với máy chủ, vui lòng thử lại")
                     }
                 }
@@ -174,7 +176,7 @@
                 alert('Đã xảy ra lỗi, vui lòng thử lại.');
             }
         }
-        function clickToRegister(){
+        function clickToRegister() {
             window.location.href = '/api/rentify/register'
         }
         // async function fetchData(link) {

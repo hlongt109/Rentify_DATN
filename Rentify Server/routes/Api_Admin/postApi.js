@@ -51,13 +51,13 @@ function checkUserRole(req, res, next) {
     }
 }
 
-router.put("/api/post_update_status/:id", async(req, res) => {
+router.put("/api/post_update_status/:id", async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const data = req.body;
         const post = await Post.findById(id);
-        if(!post){
-            return res.status(404).json({message: "Post not found"})
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" })
         }
         post.user_id = post.user_id;
         post.title = post.title;
@@ -72,10 +72,12 @@ router.put("/api/post_update_status/:id", async(req, res) => {
         const result = await post.save()
 
         if (result) {
-            res.json({ status: 200, messenger: 'support update successfully',data: result
+            res.json({
+                status: 200, messenger: 'support update successfully', data: result
             });
         } else {
-            res.json({status: 400,messenger: 'support update failed',data: []
+            res.json({
+                status: 400, messenger: 'support update failed', data: []
             });
         }
     } catch (error) {
@@ -129,7 +131,6 @@ router.post('/post/add', authenticate, upload.fields([{ name: 'video' }, { name:
     // }
 
     // Lấy ID người dùng từ token
-
     const userId = data.user._id; // Giả sử bạn đã lưu ID người dùng trong req.user khi xác thực
     console.log(data);
     const post = new Post({
