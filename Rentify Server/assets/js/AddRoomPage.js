@@ -187,7 +187,7 @@ document.getElementById('addUpdateRoomForm').addEventListener('submit', async fu
 
     console.log("Filtered Service IDs:", service);
 
-    if (!id || !roomName || !roomType || !description || !price || !size || !limitPerson || !status) {
+    if (!id || !roomName || !roomType || !description || !price || !size || !status) {
         alert('Một số trường dữ liệu không hợp lệ hoặc không tìm thấy.');
         return;
     }

@@ -70,35 +70,6 @@ router.get("/api/services", async (req, res) => {
 router.get("/api/services1", async (req, res) => {
     res.render("Service/addService");
 })
-// router.post("/api/services/add", async (req, res) => {
-//     try {
-//         const data = req.body;
-
-//         const newService = new Service({
-//             name: data.name,
-//             description: data.description,
-//             price: data.price,
-//             created_at: getFormattedDate(),
-//             updated_at: ""
-//         })
-//         const result = await newService.save()
-//         if (result) {
-//             res.json({
-//                 "status": 200,
-//                 "message": "Add service successfully",
-//                 "data": result
-//             });
-//         } else {
-//             res.json({
-//                 "status": 400,
-//                 "message": "Error, Add service failed",
-//                 "data": []
-//             });
-//         }
-//     } catch (error) {
-//         handleServerError(res, error);
-//     }
-// })
 
 router.post("/api/services/add", uploadFile.array('photos'), async (req, res) => {
     try {

@@ -19,7 +19,7 @@ const Room = new Schema({
         ref: "Service",
     }],
     amenities: { type: Array }, // tiện nghi
-    limit_person: { type: Number, required: true }, // giới hạn người ở
+    limit_person: { type: Number}, // giới hạn người ở
     status: { type: Number, required: true }, // 0: chua cho thue, 1: cho thue
     created_at: { type: String },
     updated_at: { type: String }

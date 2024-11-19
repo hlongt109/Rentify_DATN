@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const Building = require('../../models/Building');
 const Room = require('../../models/Room')
 const upload = require('../../config/common/uploadImageRoom')
+const fs = require('fs');
+const path = require('path');
 
 // #2. Lấy danh sách tất cả tòa nhà
 router.get('/buildings/:id', async (req, res) => {
@@ -39,7 +41,7 @@ router.delete('/buildings/:id', async (req, res) => {
 // các api thiên viết
 router.post('/add-building', async (req, res) => {
     try {
-        const { landlord_id,manager_id,service,nameBuilding,address,description,number_of_floors,} = req.body;
+        const { landlord_id, manager_id, service, nameBuilding, address, description, number_of_floors, } = req.body;
         // Kiểm tra các trường bắt buộc
         if (!landlord_id || !manager_id || !nameBuilding || !address || !number_of_floors) {
             return res.status(400).json({ message: 'Vui lòng điền đầy đủ thông tin!' });
@@ -102,7 +104,7 @@ router.put('/buildings/:id', async (req, res) => {
         // Tìm tòa nhà bằng ID và cập nhật
         const updatedBuilding = await Building.findByIdAndUpdate(
             id,
-            { 
+            {
                 nameBuilding,
                 address,
                 description,
@@ -155,13 +157,13 @@ router.post('/add-room', upload.fields([
     { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
 ]), async (req, res) => {
     try {
-        const {building_id,room_name,room_type,description,price,size,service,amenities,limit_person,status,} = req.body;
+        const { building_id, room_name, room_type, description, price, size, service, amenities, limit_person, status, } = req.body;
 
         // Kiểm tra dữ liệu bắt buộc
-        if (!building_id || !room_name || !room_type || !description || !price || !size || !limit_person || status === undefined) {
+        if (!building_id || !room_name || !room_type || !description || !price || !size || status === undefined) {
             return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
         }
-        
+
         // Lưu đường dẫn ảnh và video
         const photos_room = req.files.photos_room ? req.files.photos_room.map(file => file.path) : [];
         const video_room = req.files.video_room ? req.files.video_room.map(file => file.path) : [];
@@ -176,8 +178,8 @@ router.post('/add-room', upload.fields([
             size,
             video_room,
             photos_room,
-            service, 
-            amenities, 
+            service,
+            amenities,
             limit_person,
             status,
             created_at: new Date().toISOString(),
@@ -202,7 +204,6 @@ const normalizePaths = (room) => {
     room.video_room = room.video_room.map(video => removeUnnecessaryPath(video.replace(/\\/g, '/')));
     return room;
 };
-
 
 router.get('/room/:id', async (req, res) => {
     const { id } = req.params;
@@ -231,5 +232,274 @@ router.get('/room/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch room details. Please try again later.' });
     }
 });
+
+// API cập nhật phòng
+router.put('/update-room/:id', upload.fields([
+    { name: 'photos_room', maxCount: 10 }, // Tối đa 10 ảnh
+    { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
+]), async (req, res) => {
+    const { id } = req.params;
+    const { room_name, room_type, description, price, size, service, amenities, limit_person, status } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid room ID.' });
+    }
+
+    if (!room_name || !room_type || !description || !price || !size || !limit_person || status === undefined) {
+        return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
+    }
+
+    try {
+        // Lấy thông tin phòng cũ từ database
+        const room = await Room.findById(id);
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found.' });
+        }
+
+        // Lưu đường dẫn ảnh và video mới
+        const photos_room = req.files.photos_room ? req.files.photos_room.map(file => file.path) : null;
+        const video_room = req.files.video_room ? req.files.video_room.map(file => file.path) : null;
+
+        // Xóa file ảnh cũ nếu có ảnh mới
+        if (photos_room) {
+            room.photos_room.forEach(photo => {
+                const photoPath = path.join(photo); // Đường dẫn ảnh cũ
+                if (fs.existsSync(photoPath)) {
+                    try {
+                        fs.unlinkSync(photoPath); // Xóa file
+                        console.log(`Đã xóa ảnh: ${photoPath}`);
+                    } catch (err) {
+                        console.error(`Không thể xóa ảnh: ${photoPath}, lỗi: ${err.message}`);
+                    }
+                } else {
+                    console.log(`Ảnh không tồn tại để xóa: ${photoPath}`);
+                }
+            });
+        }
+
+        // Xóa file video cũ nếu có video mới
+        if (video_room) {
+            room.video_room.forEach(video => {
+                const videoPath = path.join(video); // Đường dẫn video cũ
+                if (fs.existsSync(videoPath)) {
+                    try {
+                        fs.unlinkSync(videoPath); // Xóa file
+                        console.log(`Đã xóa video: ${videoPath}`);
+                    } catch (err) {
+                        console.error(`Không thể xóa video: ${videoPath}, lỗi: ${err.message}`);
+                    }
+                } else {
+                    console.log(`Video không tồn tại để xóa: ${videoPath}`);
+                }
+            });
+        }
+
+        // Tạo đối tượng cập nhật
+        const updateData = {
+            room_name,
+            room_type,
+            description,
+            price,
+            size,
+            service,
+            amenities,
+            limit_person,
+            status,
+            updated_at: new Date().toISOString(),
+        };
+
+        // Ghi đè hoàn toàn nếu có ảnh/video mới
+        if (photos_room) {
+            updateData.photos_room = photos_room;
+        }
+        if (video_room) {
+            updateData.video_room = video_room;
+        }
+
+        // Cập nhật phòng
+        const updatedRoom = await Room.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+
+        res.status(200).json({ message: 'Room updated successfully!', room: updatedRoom });
+    } catch (error) {
+        console.error('Error updating room:', error.message);
+        res.status(500).json({ error: 'Failed to update room. Please try again later.' });
+    }
+});
+
+// API xóa phòng
+router.delete('/delete-room/:id', async (req, res) => {
+    const { id } = req.params;
+
+    // Kiểm tra ID là ObjectId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid room ID.' });
+    }
+
+    try {
+        // Tìm phòng theo ID
+        const room = await Room.findById(id);
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found.' });
+        }
+
+        // Xóa file ảnh
+        room.photos_room.forEach(photo => {
+            const photoPath = path.join(photo);
+            if (fs.existsSync(photoPath)) {
+                try {
+                    fs.unlinkSync(photoPath);
+                    console.log(`Đã xóa ảnh: ${photoPath}`);
+                } catch (err) {
+                    console.error(`Không thể xóa ảnh: ${photoPath}, lỗi: ${err.message}`);
+                }
+            } else {
+                console.log(`Ảnh không tồn tại để xóa: ${photoPath}`);
+            }
+        });
+
+        // Xóa file video
+        room.video_room.forEach(video => {
+            const videoPath = path.join(video);
+            if (fs.existsSync(videoPath)) {
+                try {
+                    fs.unlinkSync(videoPath);
+                    console.log(`Đã xóa video: ${videoPath}`);
+                } catch (err) {
+                    console.error(`Không thể xóa video: ${videoPath}, lỗi: ${err.message}`);
+                }
+            } else {
+                console.log(`Video không tồn tại để xóa: ${videoPath}`);
+            }
+        });
+
+        // Xóa phòng khỏi database
+        await Room.findByIdAndDelete(id);
+
+        res.status(200).json({ message: 'Room deleted successfully!' });
+    } catch (error) {
+        console.error('Error deleting room:', error.message);
+        res.status(500).json({ error: 'Failed to delete room. Please try again later.' });
+    }
+});
+
+// API xóa tòa nhà với kiểm tra trạng thái phòng
+router.delete('/delete-buildings/:id', async (req, res) => {
+    const { id } = req.params;
+
+    // Validate ID là ObjectId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid building ID.' });
+    }
+
+    try {
+        // Tìm tất cả phòng trong tòa nhà
+        const rooms = await Room.find({ building_id: id });
+
+        // Kiểm tra nếu có phòng nào đang cho thuê
+        const rentedRooms = rooms.filter(room => room.status === 1);
+        if (rentedRooms.length > 0) {
+            const rentedRoomNames = rentedRooms.map(room => room.room_name).join(', ');
+            return res.status(400).json({
+                error: `Không thể xóa tòa nhà phòng vẫn đang cho thuê: ${rentedRoomNames}.`
+            });
+        }
+
+        // Xóa tất cả ảnh và video của các phòng
+        rooms.forEach(room => {
+            room.photos_room.forEach(photo => {
+                const photoPath = path.join(photo);
+                if (fs.existsSync(photoPath)) {
+                    try {
+                        fs.unlinkSync(photoPath);
+                        console.log(`Đã xóa ảnh: ${photoPath}`);
+                    } catch (err) {
+                        console.error(`Failed to delete photo: ${photoPath}, error: ${err.message}`);
+                    }
+                }
+            });
+
+            room.video_room.forEach(video => {
+                const videoPath = path.join(video);
+                if (fs.existsSync(videoPath)) {
+                    try {
+                        fs.unlinkSync(videoPath);
+                        console.log(`Đã xóa video: ${videoPath}`);
+                    } catch (err) {
+                        console.error(`Failed to delete video: ${videoPath}, error: ${err.message}`);
+                    }
+                }
+            });
+        });
+
+        // Xóa tất cả phòng liên quan đến tòa nhà
+        await Room.deleteMany({ building_id: id });
+
+        // Xóa tòa nhà
+        const deletedBuilding = await Building.findByIdAndDelete(id);
+        if (!deletedBuilding) {
+            return res.status(404).json({ error: 'Building not found.' });
+        }
+
+        res.status(200).json({ message: 'Building and related rooms deleted successfully!', building: deletedBuilding });
+    } catch (error) {
+        console.error('Error deleting building:', error.message);
+        res.status(500).json({ error: 'Failed to delete building. Please try again later.' });
+    }
+});
+
+// API lấy danh sách dịch vụ của một tòa nhà cụ thể
+router.get('/building/:id/services', async (req, res) => {
+    const { id } = req.params;
+
+    // Kiểm tra ID là ObjectId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid building ID.' });
+    }
+
+    try {
+        // Tìm tòa nhà theo ID và populate dịch vụ
+        const building = await Building.findById(id)
+            .populate('service', 'name');
+
+        // Nếu không tìm thấy tòa nhà
+        if (!building) {
+            return res.status(404).json({ error: 'Building not found.' });
+        }
+
+        // Trả về danh sách dịch vụ của tòa nhà
+        res.status(200).json(building.service);
+    } catch (error) {
+        console.error('Error fetching building services:', error.message);
+        res.status(500).json({ error: 'Failed to fetch building services. Please try again later.' });
+    }
+});
+
+// API lấy danh sách tiện nghi của một phòng cụ thể
+router.get('/room/:id/amenities', async (req, res) => {
+    const { id } = req.params;
+
+    // Kiểm tra ID là ObjectId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid room ID.' });
+    }
+
+    try {
+        // Tìm phòng theo ID
+        const room = await Room.findById(id).select('amenities');
+
+        // Nếu không tìm thấy phòng
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found.' });
+        }
+
+        // Trả về danh sách tiện nghi của phòng
+        res.status(200).json(room.amenities);
+    } catch (error) {
+        console.error('Error fetching room amenities:', error.message);
+        res.status(500).json({ error: 'Failed to fetch room amenities. Please try again later.' });
+    }
+});
+
+
 
 module.exports = router;

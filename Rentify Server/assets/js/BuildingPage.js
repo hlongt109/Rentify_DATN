@@ -29,18 +29,20 @@ const renderTable = () => {
         row.style.backgroundColor = isEvenRow ? '#ffffff' : '#fafafb';
 
         row.innerHTML = `
-            <td style="vertical-align: middle;">${item.nameBuilding}</td>
-            <td style="vertical-align: middle;">${item.manager_id.username}</td>
-            <td style="vertical-align: middle;">${item.manager_id.phoneNumber || ""}</td>
-            <td style="vertical-align: middle;">${item.address}</td>
-            <td style="vertical-align: middle;">${item.number_of_floors}</td>
-            <td style="vertical-align: middle;">${item.service.length > 0 ? "Có" : "Không"}</td>
-            <td> 
-                <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" data-id="${item._id}">Chi tiết</button>
-                <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" data-id="${item._id}">Chỉnh sửa</button>
-                <button class="btn btn-danger shadow-button" style="font-size: 0.85rem;">Xoá</button>
-            </td>
-        `;
+    <td style="vertical-align: middle;">${item.nameBuilding}</td>
+    <td style="vertical-align: middle;">${item.manager_id.username}</td>
+    <td style="vertical-align: middle;">${item.manager_id.phoneNumber || ""}</td>
+    <td style="vertical-align: middle;">${item.address}</td>
+    <td style="vertical-align: middle;">${item.number_of_floors}</td>
+    <td style="vertical-align: middle;">${item.service.length > 0 ? "Có" : "Không"}</td>
+    <td> 
+        <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" data-id="${item._id}">Chi tiết</button>
+        <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" data-id="${item._id}">Chỉnh sửa</button>
+        <button class="btn btn-danger shadow-button" style="font-size: 0.85rem;" data-id="${item._id}" data-toggle="modal" data-target="#deleteBuildingModal">Xoá</button>
+    </td>
+`;
+        console.log('Render dòng, ID:', item._id);
+
 
         // Thêm sự kiện cho nút "Xem chi tiết"
         const detailButton = row.querySelector('button[data-id]');
@@ -144,5 +146,99 @@ const toggleRoomDetails = async (buildingId, row, services) => {
 const init = () => {
     fetchBuildings();
 };
+
+window.addEventListener('load', function () {
+    const deleteRoomMessage = localStorage.getItem('deleteRoomMessage');
+
+    if (deleteRoomMessage) {
+        // Hiển thị thông báo Toastify
+        Toastify({
+            text: deleteRoomMessage,
+            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+            duration: 3000,
+        }).showToast();
+
+        // Xóa thông báo khỏi localStorage để không hiển thị lại khi reload trang
+        localStorage.removeItem('deleteRoomMessage');
+    }
+});
+
+window.addEventListener('load', function () {
+    const deleteRoomMessage = localStorage.getItem('updateRoomMessage');
+
+    if (deleteRoomMessage) {
+        // Hiển thị thông báo Toastify
+        Toastify({
+            text: deleteRoomMessage,
+            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+            duration: 3000,
+        }).showToast();
+
+        // Xóa thông báo khỏi localStorage để không hiển thị lại khi reload trang
+        localStorage.removeItem('updateRoomMessage');
+    }
+});
+
+const deleteBuilding = async (buildingId) => {
+    try {
+        const response = await axios.delete(`/api/delete-buildings/${buildingId}`);
+
+        // Nếu thành công
+        console.log(response.data.message);
+
+        // Hiển thị thông báo thành công
+        Toastify({
+            text: "Xóa tòa nhà thành công!",
+            backgroundColor: "green",
+            duration: 3000
+        }).showToast();
+
+        // Reload bảng
+        await fetchBuildings();
+    } catch (error) {
+        // Xử lý lỗi
+        if (error.response) {
+            // Lỗi từ phía server (status code ngoài 2xx)
+            console.error(error.response.data.error);
+
+            Toastify({
+                text: error.response.data.error,
+                backgroundColor: "red",
+                duration: 3000
+            }).showToast();
+        } else {
+            // Lỗi khi gửi request hoặc lỗi khác
+            console.error('Lỗi khi xóa tòa nhà:', error.message);
+
+            Toastify({
+                text: "Có lỗi xảy ra. Vui lòng thử lại!",
+                backgroundColor: "red",
+                duration: 3000
+            }).showToast();
+        }
+    } finally {
+        // Đóng modal
+        $('#deleteBuildingModal').modal('hide');
+    }
+};
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    let deleteBuildingId = null;
+    $('#deleteBuildingModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget); 
+        deleteBuildingId = button.data('id'); 
+    });
+
+    // Xử lý sự kiện khi nhấn "Xác nhận Xoá"
+    document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+        if (deleteBuildingId) {
+            deleteBuilding(deleteBuildingId);
+        } else {
+            console.error('Không có ID nào để xóa!');
+        }
+    });
+
+});
 
 window.onload = init;
