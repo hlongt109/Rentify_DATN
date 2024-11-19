@@ -27,13 +27,19 @@ router.get('/buildings_mgr/:landlord_id', async(req, res) => {
 
 // Route để lấy danh sách hóa đơn cho phòng của một tòa nhà, lọc theo trạng thái thanh toán và tháng/năm
 router.get("/buildings_mgr/:buildingId/invoices", async(req, res) => {
-    const { buildingId } = req.params;
-    const { month, year, paymentStatus } = req.query;
-
-    const currentDate = new Date();
-    const selectedMonth = month || currentDate.getMonth() + 1; // Tháng hiện tại
-    const selectedYear = year || currentDate.getFullYear(); // Năm hiện tại
     try {
+        const { buildingId } = req.params;
+
+        const { month, year, paymentStatus } = req.query;
+    
+        const currentDate = new Date();
+        const selectedMonth = month || currentDate.getMonth() + 1; 
+        const selectedYear = year || currentDate.getFullYear(); 
+
+        if (!buildingId) {
+            return res.status(400).json({ message: 'Building ID trống' });
+        }
+
         const rooms = await Room.find({ building_id: buildingId }).exec();
         if (!rooms || rooms.length === 0) {
             return res.status(404).json({ message: 'Không tìm thấy phòng trong tòa nhà này.' });
@@ -41,12 +47,12 @@ router.get("/buildings_mgr/:buildingId/invoices", async(req, res) => {
         // Lọc hóa đơn theo tháng/năm và trạng thái thanh toán
         const invoices = await Invoice.find({
             room_id: { $in: rooms.map(room => room._id) },
-            payment_status: paymentStatus || { $exists: true }, // Nếu không có trạng thái thanh toán, lấy tất cả
+            payment_status: paymentStatus || { $exists: true },
             created_at: {
-                $gte: new Date(`${selectedYear}-${selectedMonth}-01T00:00:00`), // Từ đầu tháng
-                $lt: new Date(`${selectedYear}-${selectedMonth + 1}-01T00:00:00`), // Đến cuối tháng
+                $gte: `${selectedYear}-${selectedMonth}-01T00:00:00`, 
+                $lt: `${selectedYear}-${selectedMonth + 1}-01T00:00:00`
             }
-        }).exec();
+        }).populate('room_id').exec();
 
         // Tách hóa đơn đã thanh toán và chưa thanh toán
         const paidInvoices = invoices.filter(invoice => invoice.payment_status === 'paid');
