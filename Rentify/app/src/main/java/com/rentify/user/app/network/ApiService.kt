@@ -3,23 +3,26 @@ package com.rentify.user.app.network
 import androidx.room.Query
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
+import com.rentify.user.app.model.Model.District
+import com.rentify.user.app.model.Model.Province
+import com.rentify.user.app.model.Model.Ward
+import com.rentify.user.app.model.PostResponse
+import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Multipart
 import retrofit2.http.PUT
-import retrofit2.http.Part
-import retrofit2.http.Path
-import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Multipart
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -109,6 +112,10 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
-
-
+    @GET("list/{user_id}")
+    suspend fun getPosts(@Path("user_id") userId: String): List<PostingList>
+    @DELETE("delete/{id}")
+    suspend fun deletePost(@Path("id") postId: String): Response<Unit> // Giả sử API trả về `Unit` khi xóa thành công
+    @GET("detail/{id}")
+    suspend fun getPostDetail(@Path("id") postId: String): PostingDetail
 }

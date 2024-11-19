@@ -56,3 +56,25 @@ data class PostRequest(
     val services: List<String>,
     // Danh sách ảnh
 )
+data class PostingDetail(
+    val id: String,
+    val title: String,
+    val content: String,
+    val price: Double?,
+    val address: String?,
+    val phoneNumber: String?,
+    val room_type: String?,
+    val amenities: List<String>?,
+    val services: List<String>?,
+    val post_type: String,
+    val status: Int,
+    val photos: List<String>?, // Tên trường đúng với JSON
+    val videos: List<String>?, // Tên trường đúng với JSON
+    val created_at: String?,
+    val updated_at: String?,
+    val user: UserDetail?
+)
+data class UserDetail(
+    val id: String,
+    val email: String
+)
