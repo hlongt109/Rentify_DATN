@@ -104,6 +104,10 @@ dependencies {
     //wipe to delete
     implementation ("androidx.compose.foundation:foundation:1.7.5")
     implementation ("androidx.compose.material:material-icons-extended:1.7.5")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation ("io.ktor:ktor-client-android:2.3.3")
+    implementation ("io.ktor:ktor-client-json:2.3.3")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
 }
 // Allow references to generated code

@@ -113,7 +113,7 @@ fun HomeScreen(navController: NavHostController) {
                 navController.navigate(MainActivity.ROUTER.ADDROOM.name)
             }
             "Bài đăng" -> {
-                navController.navigate(MainActivity.ROUTER.ADDPOST_staff.name)
+                navController.navigate(MainActivity.ROUTER.POSTING_STAFF.name)
             }
         }
     }
