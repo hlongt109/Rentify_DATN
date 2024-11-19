@@ -44,7 +44,7 @@ import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.colorText
 import com.rentify.user.app.ui.theme.search
 import com.rentify.user.app.ui.theme.textFieldBackgroundColor
-import com.rentify.user.app.view.userScreens.SearchRoomScreen.FakeData
+//import com.rentify.user.app.view.userScreens.SearchRoomScreen.FakeData
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable

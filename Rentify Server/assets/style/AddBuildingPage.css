@@ -1,35 +1,154 @@
 body {
-    background-color: #f8f9fa;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
     margin: 0;
+    padding: 0;
+    margin-top: 0;  /* Đảm bảo không có khoảng cách trên */
 }
 
-.form-container {
-    width: 100%;
-    max-width: 500px;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    background-color: white;
+.container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin-bottom: 20px;
+    margin-top: 0;  /* Đảm bảo không có khoảng cách trên container */
+}
+
+h2 {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #007bff;
+    text-align: center;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.form-text {
+    font-size: 0.9rem;
+    color: #6c757d;
 }
 
 .btn {
-    transition: background-color 0.3s ease;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
 }
 
 .btn-primary {
-    background-color: #2ba8ca;
-    color: white;
+    background-color: #007bff;
+    border-color: #007bff;
 }
 
 .btn-primary:hover {
-    background-color: #23839c;
+    background-color: #0056b3;
+    border-color: #0056b3;
 }
 
 .btn-secondary {
-    background-color: #6c757d;
+    background-color: #f8f9fa;
+    border-color: #ddd;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e6ea;
+    border-color: #d6d8db;
+}
+
+.service-item {
+    margin: 5px;
+    padding: 10px 10px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    color: #007bff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.service-item.active {
+    background-color: #007bff;
     color: white;
+    border-color: #0056b3;
+}
+
+.service-item:hover {
+    background-color: #e2e6ea;
+}
+
+
+#staff-list {
+    display: none;  /* Ẩn danh sách mặc định */
+    position: absolute;  /* Đặt dropdown bên dưới ô text */
+    width: 95%;  /* Đảm bảo chiều rộng của dropdown khớp với ô input */
+    margin-left: 15px;
+    margin-right: 80px;
+    max-height: 200px;  /* Giới hạn chiều cao */
+    overflow-y: auto;  /* Thêm thanh cuộn khi quá nhiều item */
+    background-color: #ffffff;  /* Màu nền trắng */
+    border: 1px solid #ccc;  /* Đường viền xung quanh dropdown */
+    border-radius: 4px;  /* Bo góc */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Đổ bóng cho dropdown */
+    z-index: 1000;  /* Đảm bảo dropdown ở trên các phần tử khác */
+}
+
+#address-list {
+    display: none;  /* Ẩn danh sách mặc định */
+    position: absolute;  /* Đặt dropdown bên dưới ô text */
+    width: 95%;  /* Đảm bảo chiều rộng của dropdown khớp với ô input */
+    margin-left: 15px;
+    margin-right: 80px;
+    max-height: 200px;  /* Giới hạn chiều cao */
+    overflow-y: auto;  /* Thêm thanh cuộn khi quá nhiều item */
+    background-color: #ffffff;  /* Màu nền trắng */
+    border: 1px solid #ccc;  /* Đường viền xung quanh dropdown */
+    border-radius: 4px;  /* Bo góc */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Đổ bóng cho dropdown */
+    z-index: 1000;  /* Đảm bảo dropdown ở trên các phần tử khác */
+}
+
+#manager_id {
+    background-color: transparent; /* Đặt nền trong suốt */
+    border: 1px solid #ccc; /* Giữ viền của ô input */
+    padding: 10px; /* Đảm bảo padding đủ để nội dung không bị cắt */
+}
+
+#manager_id:focus {
+    border-color: #007bff; /* Màu viền khi ô input được chọn */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Hiệu ứng khi chọn */
+}
+
+
+#address-list {
+    max-height: 200px; /* Giới hạn chiều cao danh sách */
+    overflow-y: auto; /* Cuộn dọc khi danh sách dài */
+    position: absolute; /* Để danh sách gợi ý hiển thị phía dưới ô nhập liệu */
+    width: 100%; /* Đảm bảo độ rộng của danh sách trùng với input */
+    z-index: 1000; /* Đảm bảo danh sách gợi ý hiển thị trên các phần tử khác */
+}
+
+#address-list li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#address-list li:hover {
+    background-color: #f1f1f1; /* Hiển thị hiệu ứng hover */
 }

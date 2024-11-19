@@ -53,21 +53,29 @@ h4 {
     box-shadow: none !important; /* Đảm bảo không có đường viền hoặc bóng đổ */
 }
 
+.table th:nth-child(7),
+.table td:nth-child(7) {
+    width: 250px;
+    /* Đặt chiều rộng cho cột Trạng thái */
+    text-align: center;
+    /* Canh giữa nội dung nếu cần */
+}
+
 .table th {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     line-height: normal;
     color: rgb(3, 2, 41);
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
 .table td {
-    font-size: 0.75rem;
+    font-size: 0.80rem;
     font-family: Nunito, sans-serif;
     line-height: 1.66;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .label-left {
@@ -144,4 +152,67 @@ h4 {
 
 .input-spacing {
     margin-right: 10px; /* Thay đổi giá trị này để điều chỉnh khoảng cách */
+}
+
+/* Container chứa các phòng */
+.rooms-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.8); /* Nền trong suốt */
+    border: 1px solid #ddd; /* Đường viền tổng */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng mờ */
+}
+
+/* Item từng phòng */
+.room-item {
+    width: 90px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #007bff;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+/* Hiệu ứng hover cho phòng */
+.room-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Container cho nút thêm phòng */
+.add-room-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    
+}
+
+/* Nút thêm phòng */
+.add-room-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
+/* Hiệu ứng hover cho nút thêm phòng */
+.add-room-button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
 }

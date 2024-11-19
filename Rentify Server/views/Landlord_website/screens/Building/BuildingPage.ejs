@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách phòng</title>
+    <link rel="stylesheet" href="../../assets/style/BuildingPage.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+</head>
+<body>
+    
+    <div class="containerhaha">
+        <div class="table-container">
+            <h4>Toà nhà & căn hộ</h4>
+            <div class="search-input-container1 d-flex align-items-center justify-content-between">
+                <!-- Nút Thêm toà nhà nằm ở bên trái -->
+                <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" onclick="window.location.href='/landlord/AddBuildingPage';">Thêm toà nhà</button>
+                
+                <!-- Dropdown Vai trò nằm ở bên phải -->
+                <div class="dropdown input-spacing ml-auto"> <!-- Thêm ml-auto để đẩy dropdown sang phải -->
+                    <button id="roleDropdownButton" class="btn text-white shadow-button dropdown-toggle" style="font-size:0.85rem; background-color: #007bff; width: 100px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Vai trò
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="roleDropdownButton">
+                        <a class="dropdown-item" href="#" onclick="selectRole('Vai trò')">Vai trò</a>
+                        <a class="dropdown-item" href="#" onclick="selectRole('admin')">Admin</a>
+                        <a class="dropdown-item" href="#" onclick="selectRole('user')">User</a>
+                        <a class="dropdown-item" href="#" onclick="selectRole('staffs')">Staffs</a>
+                        <a class="dropdown-item" href="#" onclick="selectRole('landlord')">Landlord</a>
+                        <a class="dropdown-item" href="#" onclick="selectRole('ban')">Ban</a>
+                    </div>
+                </div>
+                
+                <!-- Ô tìm kiếm nằm ở bên phải -->
+                <div class="search-input-container">
+                    <input type="text" id="search-input" placeholder="Tìm kiếm ..." class="search-input" />
+                    <span class="search-icon">&#128269;</span>
+                </div>
+            </div>
+            
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Tên toà nhà</th>
+                        <th>Nhân viên</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ</th>
+                        <th>Số tầng</th>
+                        <th>Còn trống</th>
+                        <th>Hàng động</th>
+                    </tr>
+                </thead>
+                <tbody id="building-table-body">
+                    <!-- Dữ liệu phòng sẽ được thêm vào đây -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/BuildingPage.js"></script>
+</body>
+</html>

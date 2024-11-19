@@ -21,12 +21,4 @@ const User = new Schema({
   created_at: { type: String },
   updated_at: { type: String },
 });
-
-// Phương thức để tạo token
-// User.methods.generateAuthToken = function () {
-//   const user = this;  // Dữ liệu người dùng hiện tại
-//   const payload = { id: user._id, role: user.role }; // Payload của token (ID và role người dùng)
-//   const token = jwt.sign(payload, 'hoan', { expiresIn: '1000h' }); // Tạo token với thời gian hết hạn 10 giờ
-//   return token;
-// };
 module.exports = mongoose.model("User", User);

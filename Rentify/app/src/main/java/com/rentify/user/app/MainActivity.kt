@@ -54,6 +54,7 @@ import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoon
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
+import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)

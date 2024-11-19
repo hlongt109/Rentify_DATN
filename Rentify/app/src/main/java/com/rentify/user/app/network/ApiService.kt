@@ -1,19 +1,22 @@
 package com.rentify.user.app.network
 
-import com.rentify.user.app.model.Model.District
-import com.rentify.user.app.model.Model.Province
-import com.rentify.user.app.model.Model.Ward
-import com.rentify.user.app.model.PostRequest
-import com.rentify.user.app.model.PostResponse
+import androidx.room.Query
+import com.rentify.user.app.model.AddRoomResponse
+import com.rentify.user.app.model.BuildingWithRooms
+import com.rentify.user.app.model.Room
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
-import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Multipart
+import retrofit2.http.PUT
+import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -37,9 +40,34 @@ interface APIService {
     // dang nhap
     @POST("login-user")
     suspend fun LoginUser(@Body loginRequest: LoginRequest): Response<ApiResponse>
+
     //phong bao to 123456789
     @POST("register")
     suspend fun registerUser(@Body request: RegisterRequest): Response<ApiResponse>
+
+    // Thêm phòng mới _vanphuc:
+    @Multipart
+    @POST("staff/rooms/AddRoom")
+    suspend fun addRoom(
+        @Part("building_id") buildingId: RequestBody,
+        @Part("room_name") roomName: RequestBody,
+        @Part("room_type") roomType: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("size") size: RequestBody,
+        @Part videoRoom: MultipartBody.Part?,
+        @Part photosRoom: List<MultipartBody.Part>?,
+        @Part("service") service: RequestBody?,
+        @Part("amenities") amenities: RequestBody?,
+        @Part("limit_person") limitPerson: RequestBody,
+        @Part("status") status: RequestBody,
+    ): Response<AddRoomResponse>
+//    get danh sách
+    @GET("staff/rooms/buildings-by-manager/{manager_id}")
+    suspend fun getBuildingsWithRooms(
+        @Path("manager_id") managerId: String
+    ): Response<List<BuildingWithRooms>>
+
 
     //getLocation
     @GET("p")
