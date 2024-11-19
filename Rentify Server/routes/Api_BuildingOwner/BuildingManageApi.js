@@ -500,6 +500,27 @@ router.get('/room/:id/amenities', async (req, res) => {
     }
 });
 
+// API đếm số phòng còn trống trong tòa nhà
+router.get('/building/:id/available-rooms', async (req, res) => {
+    const { id } = req.params;
+
+    // Kiểm tra ID là ObjectId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid building ID.' });
+    }
+
+    try {
+        // Đếm số phòng còn trống (status = 0) trong tòa nhà
+        const availableRoomsCount = await Room.countDocuments({ building_id: id, status: 0 });
+
+        // Trả về kết quả
+        res.status(200).json({ availableRooms: availableRoomsCount });
+    } catch (error) {
+        console.error('Error counting available rooms:', error.message);
+        res.status(500).json({ error: 'Failed to count available rooms. Please try again later.' });
+    }
+});
+
 
 
 module.exports = router;
