@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.staffScreens.ReportScreen.Components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -55,7 +56,7 @@ fun FeetBuilding(navController: NavController, viewModel: RoomViewModel = viewMo
     // Lấy dữ liệu khi composable được tạo lần đầu
     LaunchedEffect(Unit) {
         try {
-            viewModel.fetchBuildingsWithRooms("6724a0eace87343d0e701018")
+            viewModel.fetchBuildingsWithRooms("67341debe7ebaed7c9c038a2")
         } catch (e: Exception) {
             e.printStackTrace() // Ghi log lỗi nếu có
         }
@@ -171,7 +172,9 @@ fun BuildingCard(building: BuildingWithRooms, navController: NavController) {
                         fontSize = 14.sp
                     )
                     Button(
-                        onClick = { navController.navigate("ADDROOM") },
+                        onClick = {
+                            navController.navigate("ADDROOM/${building._id}")
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xfffb6b53))

@@ -113,23 +113,23 @@ fun RoomTypeOptions(
     Row(
         modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically
     ) {
-        RoomTypeOption(text = "Phòng trọ",
-            isSelected = selectedRoomTypes.contains("Phòng trọ"),
-            onClick = { onRoomTypeSelected("Phòng trọ") }
+        RoomTypeOption(text = "Phòng Đơn",
+            isSelected = selectedRoomTypes.contains("Phòng Đơn"),
+            onClick = { onRoomTypeSelected("Phòng Đơn") }
         )
 
         Spacer(modifier = Modifier.width(10.dp))
 
-        RoomTypeOption(text = "Nguyên căn",
-            isSelected = selectedRoomTypes.contains("Nguyên căn"),
-            onClick = { onRoomTypeSelected("Nguyên căn") }
+        RoomTypeOption(text = "HomeStay",
+            isSelected = selectedRoomTypes.contains("HomeStay"),
+            onClick = { onRoomTypeSelected("HomeStay") }
         )
 
         Spacer(modifier = Modifier.width(10.dp))
 
-        RoomTypeOption(text = "Chung cư",
-            isSelected = selectedRoomTypes.contains("Chung cư"),
-            onClick = { onRoomTypeSelected("Chung cư") }
+        RoomTypeOption(text = "Studio",
+            isSelected = selectedRoomTypes.contains("Studio"),
+            onClick = { onRoomTypeSelected("Studio") }
         )
     }
 }

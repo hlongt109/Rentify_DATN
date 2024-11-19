@@ -106,7 +106,6 @@ fun ComfortableOptions(
             "Vệ sinh khép kín",
             "Gác xép",
             "Ra vào vân tay",
-            "Ban công",
             "Nuôi pet",
             "Không chung chủ"
         ).forEach { option ->

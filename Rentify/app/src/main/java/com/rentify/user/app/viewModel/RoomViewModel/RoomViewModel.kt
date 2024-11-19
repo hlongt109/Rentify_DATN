@@ -1,5 +1,6 @@
 package com.rentify.user.app.viewModel.RoomViewModel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,7 +14,9 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
+import java.io.File
 
 class RoomViewModel : ViewModel() {
     private val apiService = RetrofitService().ApiService
@@ -55,14 +58,29 @@ class RoomViewModel : ViewModel() {
         price: Double,
         size: String,
         status: Int,
-        videoFile: MultipartBody.Part?,
-        photoFiles: List<MultipartBody.Part>?,
+        videoFile: List<Uri>?,
+        photoFiles: List<Uri>?,
         service: List<String>?,
         amenities: List<String>?,
         limitPerson: Int
     ) {
         viewModelScope.launch {
             try {
+                // Convert photo URIs to MultipartBody.Part
+                val photosPart = photoFiles?.map { uri ->
+                    val file = File(uri.path!!)
+                    val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull()) // Assuming JPEG format
+                    MultipartBody.Part.createFormData("photos_room", file.name, requestBody)
+                }
+
+                // Convert video URIs to MultipartBody.Part (assuming video format is MP4)
+                val videoPart = videoFile?.map { uri ->
+                    val file = File(uri.path!!)
+                    val requestBody = file.asRequestBody("video/mp4".toMediaTypeOrNull()) // Assuming MP4 format
+                    MultipartBody.Part.createFormData("video_room", file.name, requestBody)
+                }
+
+                // Prepare the rest of the request data as RequestBody
                 val response = apiService.addRoom(
                     buildingId = createPartFromString(buildingId),
                     roomName = createPartFromString(roomName),
@@ -71,11 +89,11 @@ class RoomViewModel : ViewModel() {
                     price = createPartFromString(price.toString()),
                     size = createPartFromString(size),
                     status = createPartFromString(status.toString()),
-                    videoRoom = videoFile,
-                    photosRoom = photoFiles,
+                    video_room = videoPart, // Include the video part here
+                    photos_room = photosPart, // Include the photos part here
                     service = service?.let { createPartFromString(it.joinToString(",")) },
                     amenities = amenities?.let { createPartFromString(it.joinToString(",")) },
-                    limitPerson = createPartFromString(limitPerson.toString()),
+                    limitPerson = createPartFromString(limitPerson.toString())
                 )
 
                 if (response.isSuccessful) {

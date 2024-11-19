@@ -57,12 +57,8 @@ data class AddRoomResponse(
     }
 }
 
-@Serializable
-data class RoomListResponseWrapper(
-    val data: List<Room>
-)
-
 data class BuildingWithRooms(
+    val _id: String,
     val nameBuilding: String,
     val address: String,
     val rooms: List<Room>

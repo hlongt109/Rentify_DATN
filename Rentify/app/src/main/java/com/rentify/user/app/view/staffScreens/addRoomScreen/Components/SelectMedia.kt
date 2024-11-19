@@ -190,10 +190,10 @@ fun SelectMedia(
 
 
 
-        // Hiá»ƒn thá»‹ video Ä‘Ã£ chá»n
+
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "Video Ä‘Ã£ chá»n:",
+            text = "Video từ máy ",
             color = Color.Black,
             fontSize = 16.sp
         )
@@ -202,8 +202,6 @@ fun SelectMedia(
             contentPadding = PaddingValues(8.dp)
         ) {
             items(selectedVideos) { videoUri ->
-                // Sá»­ dá»¥ng ExoPlayer hoáº·c má»™t thÆ° viá»‡n khÃ¡c Ä‘á»ƒ hiá»ƒn thá»‹ video
-                // VÃ­ dá»¥ dÆ°á»›i Ä‘Ã¢y chá»‰ lÃ  placeholder
                 Box(
                     modifier = Modifier
                         .size(100.dp)

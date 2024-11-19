@@ -1,23 +1,16 @@
 package com.rentify.user.app.view.staffScreens.addRoomScreen
 
 import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,9 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -45,9 +36,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
@@ -59,7 +48,11 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOp
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRoomScreen(navController: NavHostController, viewModel: RoomViewModel = viewModel()) {
+fun AddRoomScreen(
+    navController: NavHostController,
+    viewModel: RoomViewModel = viewModel(),
+    buildingId: String?
+) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
@@ -67,7 +60,6 @@ fun AddRoomScreen(navController: NavHostController, viewModel: RoomViewModel = v
     var selectedService by remember { mutableStateOf(listOf<String>()) }
     val scrollState = rememberScrollState()
 
-    var buildingId by remember { mutableStateOf("") }
     var postTitle by remember { mutableStateOf("") }
     var numberOfRoommates by remember { mutableStateOf("") }
     var currentPeopleCount by remember { mutableStateOf("") }
@@ -81,11 +73,6 @@ fun AddRoomScreen(navController: NavHostController, viewModel: RoomViewModel = v
             HeaderComponent(backgroundColor = Color(0xffffffff), title = "Thêm phòng", navController = navController)
             Spacer(modifier = Modifier.height(10.dp))
             Column(modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).background(color = Color(0xfff7f7f7)).padding(15.dp)) {
-                // Tên phòng
-                Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
-                    Text(text = "Tên tòa *", color = Color(0xFF7c7b7b), fontSize = 13.sp)
-                    TextField(value = buildingId, onValueChange = { buildingId = it }, modifier = Modifier.fillMaxWidth().height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập tên tòa ", fontSize = 14.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
-                }
                 // Tên phòng
                 Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
                     Text(text = "Tên phòng*", color = Color(0xFF7c7b7b), fontSize = 13.sp)
@@ -175,20 +162,22 @@ fun AddRoomScreen(navController: NavHostController, viewModel: RoomViewModel = v
                     } else {
                         errorMessage = "" // Reset thông báo lỗi
                         // Gọi hàm thêm phòng
-                        viewModel.addRoom(
-                            buildingId = buildingId, // Thay thế bằng ID thực tế
-                            roomName = postTitle,
-                            roomType = selectedRoomTypes.joinToString(","),
-                            description = numberOfRoommates,
-                            price = roomPrice.toDoubleOrNull() ?: 0.0,
-                            size = area,
-                            status = 1, // Hoặc giá trị thực tế
-                            videoFile = null, // Thay thế nếu có video
-                            photoFiles = null, // Thay thế nếu có ảnh
-                            service = selectedService,
-                            amenities = selectedComfortable,
-                            limitPerson = currentPeopleCount.toIntOrNull() ?: 0
-                        )
+                        if (buildingId != null) {
+                            viewModel.addRoom(
+                                buildingId = buildingId, // Thay thế bằng ID thực tế
+                                roomName = postTitle,
+                                roomType = selectedRoomTypes.joinToString(","),
+                                description = numberOfRoommates,
+                                price = roomPrice.toDoubleOrNull() ?: 0.0,
+                                size = area,
+                                status = 1, // Hoặc giá trị thực tế
+                                videoFile = null, // Thay thế nếu có video
+                                photoFiles = null, // Thay thế nếu có ảnh
+                                service = listOf("671b0981991ace13719990eb"),
+                                amenities = selectedComfortable,
+                                limitPerson = currentPeopleCount.toIntOrNull() ?: 0
+                            )
+                        }
                     }
                 }, modifier = Modifier.height(50.dp).fillMaxWidth(), shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xff5dadff))) {
                     Text(text = "Thêm Phòng", fontSize = 16.sp, fontFamily = FontFamily(Font(R.font.cairo_regular)), color = Color(0xffffffff))
@@ -197,10 +186,3 @@ fun AddRoomScreen(navController: NavHostController, viewModel: RoomViewModel = v
         }
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun GreetingLayoutAddRoomScreen() {
-    AddRoomScreen(navController = rememberNavController())
-}
-

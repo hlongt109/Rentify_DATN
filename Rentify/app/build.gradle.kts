@@ -48,6 +48,9 @@ dependencies {
     implementation ("io.ktor:ktor-client-core:2.2.3")
     implementation ("io.ktor:ktor-client-cio:2.2.3")
     implementation ("io.ktor:ktor-client-serialization:2.2.3")
+    // thư viện tải ảnh _vanphuc :
+    implementation ("com.github.bumptech.glide:glide:4.14.2")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -105,9 +108,7 @@ dependencies {
     //
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
-    // thư viện tải ảnh _vanphuc :
-    implementation ("com.github.bumptech.glide:glide:4.14.2")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+
 
 }
 // Allow references to generated code

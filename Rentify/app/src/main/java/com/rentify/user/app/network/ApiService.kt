@@ -1,9 +1,7 @@
 package com.rentify.user.app.network
 
-import androidx.room.Query
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
-import com.rentify.user.app.model.Room
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
@@ -14,7 +12,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Multipart
-import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -30,7 +27,7 @@ interface APIService {
 
     // Thêm phòng mới _vanphuc:
     @Multipart
-    @POST("staff/rooms/AddRoom")
+    @POST("staff/rooms/addRoom")
     suspend fun addRoom(
         @Part("building_id") buildingId: RequestBody,
         @Part("room_name") roomName: RequestBody,
@@ -38,17 +35,21 @@ interface APIService {
         @Part("description") description: RequestBody,
         @Part("price") price: RequestBody,
         @Part("size") size: RequestBody,
-        @Part videoRoom: MultipartBody.Part?,
-        @Part photosRoom: List<MultipartBody.Part>?,
+        @Part video_room: List<MultipartBody.Part>?,
+        @Part photos_room: List<MultipartBody.Part>?,
         @Part("service") service: RequestBody?,
         @Part("amenities") amenities: RequestBody?,
         @Part("limit_person") limitPerson: RequestBody,
         @Part("status") status: RequestBody,
     ): Response<AddRoomResponse>
-//    get danh sách
+
+
+    //    get danh sách _vanphuc:
     @GET("staff/rooms/buildings-by-manager/{manager_id}")
     suspend fun getBuildingsWithRooms(
         @Path("manager_id") managerId: String
     ): Response<List<BuildingWithRooms>>
+
+
 
 }

@@ -47,7 +47,6 @@ import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoon
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
-import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -164,14 +163,15 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ReportScreen.name) {
                 ReportScreen(navController = navController)
             }
-            composable(ROUTER.ADDROOM.name) {
-                AddRoomScreen(navController = navController)
+            composable("ADDROOM/{buildingId}") { backStackEntry ->
+                val buildingId = backStackEntry.arguments?.getString("buildingId")
+                AddRoomScreen(navController = navController, buildingId = buildingId)
             }
             composable(ROUTER.HOME_STAFF.name) {
                 HomeScreen(navController = navController)
             }
             composable(ROUTER.BUILDING.name) {
-                BuildingScreen(navController = navController)
+                BuildingScreen(navController = navController,)
             }
             composable(ROUTER.RoomDetailScreen.name) {
                 RoomDetailScreen(navController = navController)
