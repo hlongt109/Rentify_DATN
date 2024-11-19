@@ -1,5 +1,6 @@
 let building = []
 let userId = localStorage.getItem('user_id');
+let search = '';
 
 // Lấy thông tin các tòa nhà
 const fetchBuildings = async () => {
@@ -8,7 +9,20 @@ const fetchBuildings = async () => {
         console.log(response.data); // Kiểm tra cấu trúc dữ liệu
 
         if (Array.isArray(response.data)) {
-            building = response.data;
+            // Thêm logic lấy số phòng trống
+            building = await Promise.all(
+                response.data.map(async (item) => {
+                    try {
+                        const availableRoomsResponse = await axios.get(`/api/building/${item._id}/available-rooms`);
+                        const availableRooms = availableRoomsResponse.data.availableRooms;
+                        return { ...item, availableRooms }; // Gắn số phòng trống vào từng tòa nhà
+                    } catch (error) {
+                        console.error(`Lỗi khi lấy số phòng trống cho tòa nhà ${item._id}:`, error);
+                        return { ...item, availableRooms: 0 }; // Mặc định 0 nếu lỗi
+                    }
+                })
+            );
+
             renderTable();
         } else {
             console.error('Dữ liệu không phải là mảng:', response.data);
@@ -19,44 +33,41 @@ const fetchBuildings = async () => {
 };
 
 // Render danh sách tòa nhà và thêm sự kiện cho các nút
-const renderTable = () => {
+const renderTable = (filteredBuildings = building) => {
     const tableBody = document.getElementById("building-table-body");
     tableBody.innerHTML = "";
 
-    building.forEach((item, index) => {
+    filteredBuildings.forEach((item, index) => {
         const isEvenRow = index % 2 === 0;
         const row = document.createElement('tr');
         row.style.backgroundColor = isEvenRow ? '#ffffff' : '#fafafb';
 
         row.innerHTML = `
-    <td style="vertical-align: middle;">${item.nameBuilding}</td>
-    <td style="vertical-align: middle;">${item.manager_id.username}</td>
-    <td style="vertical-align: middle;">${item.manager_id.phoneNumber || ""}</td>
-    <td style="vertical-align: middle;">${item.address}</td>
-    <td style="vertical-align: middle;">${item.number_of_floors}</td>
-    <td style="vertical-align: middle;">${item.service.length > 0 ? "Có" : "Không"}</td>
-    <td> 
-        <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" data-id="${item._id}">Chi tiết</button>
-        <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" data-id="${item._id}">Chỉnh sửa</button>
-        <button class="btn btn-danger shadow-button" style="font-size: 0.85rem;" data-id="${item._id}" data-toggle="modal" data-target="#deleteBuildingModal">Xoá</button>
-    </td>
-`;
-        console.log('Render dòng, ID:', item._id);
+        <td style="vertical-align: middle;">${item.nameBuilding}</td>
+        <td style="vertical-align: middle;">${item.manager_id.username}</td>
+        <td style="vertical-align: middle;">${item.manager_id.phoneNumber || ""}</td>
+        <td style="vertical-align: middle;">${item.address}</td>
+        <td style="vertical-align: middle;">${item.number_of_floors}</td>
+        <td style="vertical-align: middle;">${item.availableRooms} phòng</td>
+        <td> 
+            <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" data-id="${item._id}">Chi tiết</button>
+            <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" data-id="${item._id}">Chỉnh sửa</button>
+            <button class="btn btn-danger shadow-button" style="font-size: 0.85rem;" data-id="${item._id}" data-toggle="modal" data-target="#deleteBuildingModal">Xoá</button>
+        </td>
+        `;
 
-
-        // Thêm sự kiện cho nút "Xem chi tiết"
+        // Thêm sự kiện nút "Xem chi tiết" và "Chỉnh sửa"
         const detailButton = row.querySelector('button[data-id]');
         if (!detailButton.dataset.initialized) {
             detailButton.dataset.initialized = true; // Đánh dấu nút đã được khởi tạo
             detailButton.addEventListener('click', (event) => {
                 const buildingId = event.target.getAttribute('data-id');
-                const services = item.service || []; // Lấy dịch vụ từ item
-                toggleRoomDetails(buildingId, row, services); // Truyền services vào toggleRoomDetails
+                const services = item.service || [];
+                toggleRoomDetails(buildingId, row, services);
             });
         }
 
-        // Thêm sự kiện cho nút "Chỉnh sửa"
-        const editButton = row.querySelectorAll('button[data-id]')[1]; // Chỉnh sửa là nút thứ 2
+        const editButton = row.querySelectorAll('button[data-id]')[1];
         editButton.addEventListener('click', (event) => {
             const buildingId = event.target.getAttribute('data-id');
             const buildingData = JSON.stringify(item);
@@ -66,6 +77,32 @@ const renderTable = () => {
         tableBody.appendChild(row);
     });
 };
+
+// Lắng nghe sự kiện tìm kiếm
+const searchInput = document.getElementById("search-input");
+searchInput.addEventListener("input", (event) => {
+    const normalizeString = (str) => {
+        return str
+            .toLowerCase() // Chuyển thành chữ thường
+            .replace(/\s+/g, '') // Loại bỏ tất cả khoảng trắng
+            .normalize("NFD") // Chuẩn hóa ký tự có dấu
+            .replace(/[\u0300-\u036f]/g, ''); // Loại bỏ dấu
+    };
+
+    const searchTerm = normalizeString(event.target.value);
+
+    // Lọc danh sách tòa nhà
+    const filteredBuildings = building.filter((item) => 
+        normalizeString(item.nameBuilding).includes(searchTerm) ||
+        normalizeString(item.manager_id.username).includes(searchTerm) ||
+        normalizeString(item.address).includes(searchTerm)
+    );
+
+    // Render lại bảng với danh sách đã lọc
+    renderTable(filteredBuildings);
+});
+
+
 
 const toggleRoomDetails = async (buildingId, row, services) => {
     // Kiểm tra nếu hàng hiển thị phòng đã tồn tại

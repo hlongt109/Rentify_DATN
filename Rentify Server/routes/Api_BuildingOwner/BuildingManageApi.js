@@ -521,6 +521,4 @@ router.get('/building/:id/available-rooms', async (req, res) => {
     }
 });
 
-
-
 module.exports = router;
