@@ -74,8 +74,7 @@ router.post('/addRoom', upload.fields([
 const normalizePaths = (room) => {
     // Loại bỏ '/landlord/' nếu có trong đường dẫn
     const removeUnnecessaryPath = (path) => path.replace(/^\/landlord\//, '');
-
-    room.photos_room = room.photos_room.map(photo => removeUnnecessaryPath(photo.replace(/\\/g, '/')));
+room.photos_room = room.photos_room.map(photo => removeUnnecessaryPath(photo.replace(/\\/g, '/')));
     room.video_room = room.video_room.map(video => removeUnnecessaryPath(video.replace(/\\/g, '/')));
     return room;
 };
