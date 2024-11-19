@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Invoice = new Schema({
-    user_id: {
+    user_id: { // id nhân viên thu tiền
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -20,7 +20,7 @@ const Invoice = new Schema({
     amount: { type: Number, require: true }, // số tien
     transaction_type: { type: String, enum: ['income', 'expense'], require: true },
     due_date: { type: String }, // hạn chót
-    payment_status: { type: String },
+    payment_status: { type: String, enum: ["paid", "unpaid"]},
     created_at: { type: String }
 })
 module.exports = mongoose.model("Invoice", Invoice);

@@ -7,7 +7,7 @@ const Building = new Schema({
         ref: 'User',
         required: true
     },
-    manager_id: { 
+    manager_id: { // id nhân viên quản lý tòa nhà 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true

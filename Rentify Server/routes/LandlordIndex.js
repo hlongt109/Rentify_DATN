@@ -17,7 +17,7 @@ router.get('/home', (req, res, next) => {
       });
     });
 });
-
+// payment manager
 router.get('/payment_mgr', (req, res, next) => {
   res.render('Landlord_website/screens/PaymentManage', (err, html) => {
     if (err) {
@@ -31,6 +31,54 @@ router.get('/payment_mgr', (req, res, next) => {
   });
 });
 
+router.get('/payment_mgr/MaintenanceCosts', (req, res, next) => {
+  res.render('Landlord_website/screens/payment_mgr/MaintenanceCosts', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Quản lý bài đăng',
+      body: html
+    });
+  });
+});
+
+router.get('/payment_mgr/StaffSalaries', (req, res, next) => {
+  res.render('Landlord_website/screens/payment_mgr/StaffSalaries', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Quản lý bài đăng',
+      body: html
+    });
+  });
+});
+
+router.get('/payment_mgr/ServiceFees', (req, res, next) => {
+  res.render('Landlord_website/screens/payment_mgr/ServiceFees', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Quản lý bài đăng',
+      body: html
+    });
+  });
+});
+
+router.get('/payment_mgr/RoomRent', (req, res, next) => {
+  res.render('Landlord_website/screens/payment_mgr/RoomRent', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Quản lý bài đăng',
+      body: html
+    });
+  });
+});
+// post manager
 router.get('/post_mgr', (req, res, next) => {
   res.render('Landlord_website/screens/PostManage', (err, html) => {
     if (err) {

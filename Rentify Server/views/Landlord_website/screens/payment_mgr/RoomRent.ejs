@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+    <title>Document</title>
+    <style>
+        .selected {
+            border: 2px solid #007bff; /* Màu xanh cho border khi item được chọn */
+            background-color: #f0f8ff; /* Màu nền sáng khi item được chọn */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="d-flex align-items-center mb-4 position-relative" style="height: 100px;">
+            <!-- Back button -->
+            <button class="btn btn-light position-absolute border" style="left: 0; background-color: #f4f6f6; font-weight: 600;" onclick="goBack()">
+                <i class="fa fa-chevron-left" aria-hidden="true"></i> Quay lại
+            </button>
+            <!-- Centered title -->
+            <div class="mx-auto text-center">
+                <h1 class="text-primary mb-1">Quản lý tiền thuê phòng</h1>
+                <p class="text-muted mb-0">Quản lý tiền thuê hàng tháng.</p>
+            </div>
+        </div>
+
+        <div class="border-top column">
+            <h5 class="text-primary mb-0 mt-3">Tòa nhà</h5>
+            <div id="buildings-list" class="row mt-4">
+                <!-- Danh sách tòa nhà sẽ được hiển thị ở đây -->
+            </div>
+        </div>
+
+    </div>
+</body>
+<script>
+    function goBack() { window.history.back();}
+    // 
+    let userId = localStorage.getItem('user_id');
+    console.log("userId :", userId)
+    let buildings = [];
+    let selectedBuildingId = null;
+
+    // ======================
+    const getListBuildings = async () => {
+        try {
+            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${userId}`);
+            const data = await res.json();
+            if(res.ok){
+               buildings = data.data;
+               console.log("buildings : ",buildings)
+               displayBuildings(); // Hiển thị danh sách tòa nhà khi nhận được dữ liệu
+                // Mặc định chọn tòa nhà đầu tiên
+                if (buildings.length > 0) {
+                    selectBuilding(buildings[0]._id);
+                }
+            }else{
+                Toastify({
+                    text: "Failed to load buildings",
+                    style: {
+                        background: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                    }
+                }).showToast();
+            }
+        } catch (error) {
+            console.error("Error fetching buildings:", error);
+        }
+    }
+    getListBuildings()
+    // =======================
+    
+    // Hàm hiển thị danh sách tòa nhà
+    const displayBuildings = () => {
+        const buildingsListDiv = document.getElementById('buildings-list');
+        buildingsListDiv.innerHTML = ''; // Xóa nội dung cũ trước khi thêm mới
+
+        buildings.forEach(building => {
+            const buildingRow = document.createElement('div');
+            buildingRow.classList.add('col-md-4', 'mb-4', 'building-item'); // Cột kiểu bootstrap
+
+            buildingRow.innerHTML = `
+                <div class="card ${selectedBuildingId === building._id ? 'selected' : ''}" data-id="${building._id}" style="font-size: 14px; padding: 10px;">
+                    <div class="card-body" style="padding: 12px;">
+                        <h6 class="card-title" style="font-size: 16px; margin-bottom: 8px;">${building.nameBuilding}</h6>
+                        <div class="mb-2" style="font-size: 14px;">
+                            <span style="font-size: small; color: #777;">Địa chỉ:</span>
+                            <h6 class="card-title" style="color: #363636; font-size: 14px; margin-bottom: 0;">${building.address ?? 'N/A'}</h6>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Thêm sự kiện click để chọn tòa nhà
+            buildingRow.addEventListener('click', () => selectBuilding(building._id));
+
+            buildingsListDiv.appendChild(buildingRow); // Thêm phần tử vào danh sách
+        });
+    }
+    // Hàm để chọn tòa nhà
+    const selectBuilding = (buildingId) => {
+        selectedBuildingId = buildingId;
+        console.log("Selected Building ID: ", selectedBuildingId);
+
+        // Cập nhật lại giao diện để đánh dấu item đã chọn
+        const buildingItems = document.querySelectorAll('.building-item .card');
+        buildingItems.forEach(item => {
+            item.classList.remove('selected'); // Xóa class 'selected' khỏi tất cả các item
+        });
+
+        const selectedItem = document.querySelector(`.building-item .card[data-id="${buildingId}"]`);
+        if (selectedItem) {
+            selectedItem.classList.add('selected'); // Thêm class 'selected' vào item được chọn
+        }
+    }
+</script>
+</html>
