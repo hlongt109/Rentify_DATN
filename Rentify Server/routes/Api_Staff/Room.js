@@ -26,6 +26,35 @@ router.get('/buildings-by-manager/:manager_id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch buildings. Please try again later.' });
     }
 });
+// API to get rooms by building ID
+router.get('/rooms-by-building/:building_id', async (req, res) => {
+    const { building_id } = req.params;
+
+    // Validate if the building_id is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(building_id)) {
+        return res.status(400).json({ error: 'Invalid building ID.' });
+    }
+
+    try {
+        // Find all rooms associated with the given building_id
+        const rooms = await Room.find({ building_id })
+            .populate('service', 'name')  // Populate the services related to the room
+            .populate('building_id', 'building_name address')  // Populate building details (optional)
+            .lean(); // Using lean to get plain JavaScript objects
+
+        if (!rooms || rooms.length === 0) {
+            return res.status(404).json({ error: 'No rooms found for this building.' });
+        }
+
+        // Return the list of rooms
+        res.status(200).json(rooms);
+    } catch (error) {
+        console.error('Error fetching rooms by building:', error.message);
+        res.status(500).json({ error: 'Failed to fetch rooms. Please try again later.' });
+    }
+});
+
+
 // _vanphuc :thêm phòng 
 router.post('/addRoom', upload.fields([
     { name: 'photos_room', maxCount: 10 }, // Tối đa 10 ảnh
