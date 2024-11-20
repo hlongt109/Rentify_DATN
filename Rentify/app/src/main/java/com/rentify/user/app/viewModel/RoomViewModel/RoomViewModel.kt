@@ -19,6 +19,8 @@ import retrofit2.Response
 import java.io.File
 
 class RoomViewModel : ViewModel() {
+    private val _roomNames = MutableLiveData<List<String>>()
+    val roomNames: LiveData<List<String>> get() = _roomNames
     private val apiService = RetrofitService().ApiService
     private val _addRoomResponse = MutableLiveData<Response<AddRoomResponse>>()
     val addRoomResponse: LiveData<Response<AddRoomResponse>> get() = _addRoomResponse
@@ -49,7 +51,32 @@ class RoomViewModel : ViewModel() {
         }
     }
 
+    // lấy tên danh sách phòng theo tòa
+    fun fetchRoomNamesByBuildingId(buildingId: String) {
+        viewModelScope.launch {
+            try {
+                // Gọi API lấy danh sách phòng theo building_id
+                val response = apiService.getRoomsByBuildingId(buildingId)
 
+                if (response.isSuccessful) {
+                    // Lưu kết quả vào LiveData
+                    response.body()?.let { rooms ->
+                        // Lấy danh sách tên phòng từ mảng phòng và lọc bỏ các giá trị null
+                        val roomNames = rooms.map { it.roomName }.filterNotNull()
+                        _roomNames.value = roomNames
+                    }
+                } else {
+                    _error.value = "Failed to fetch room names: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                _error.value = "Error: ${e.message}"
+            }
+        }
+    }
+
+
+
+    //    api add
     fun addRoom(
         buildingId: String,
         roomName: String,
@@ -69,14 +96,16 @@ class RoomViewModel : ViewModel() {
                 // Convert photo URIs to MultipartBody.Part
                 val photosPart = photoFiles?.map { uri ->
                     val file = File(uri.path!!)
-                    val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull()) // Assuming JPEG format
+                    val requestBody =
+                        file.asRequestBody("image/jpeg".toMediaTypeOrNull()) // Assuming JPEG format
                     MultipartBody.Part.createFormData("photos_room", file.name, requestBody)
                 }
 
                 // Convert video URIs to MultipartBody.Part (assuming video format is MP4)
                 val videoPart = videoFile?.map { uri ->
                     val file = File(uri.path!!)
-                    val requestBody = file.asRequestBody("video/mp4".toMediaTypeOrNull()) // Assuming MP4 format
+                    val requestBody =
+                        file.asRequestBody("video/mp4".toMediaTypeOrNull()) // Assuming MP4 format
                     MultipartBody.Part.createFormData("video_room", file.name, requestBody)
                 }
 
@@ -106,6 +135,7 @@ class RoomViewModel : ViewModel() {
             }
         }
     }
+
     private fun createPartFromString(value: String): RequestBody {
         return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
     }

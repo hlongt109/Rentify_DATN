@@ -1,6 +1,4 @@
 package com.rentify.user.app.view.staffScreens.ReportScreen.Components
-
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -29,17 +27,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 import com.rentify.user.app.model.BuildingWithRooms
-import com.rentify.user.app.model.Room
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -56,7 +51,7 @@ fun FeetBuilding(navController: NavController, viewModel: RoomViewModel = viewMo
     // Lấy dữ liệu khi composable được tạo lần đầu
     LaunchedEffect(Unit) {
         try {
-            viewModel.fetchBuildingsWithRooms("67341debe7ebaed7c9c038a2")
+            viewModel.fetchBuildingsWithRooms("6727bee93361c4e22f074cd5")
         } catch (e: Exception) {
             e.printStackTrace() // Ghi log lỗi nếu có
         }
@@ -70,7 +65,7 @@ fun FeetBuilding(navController: NavController, viewModel: RoomViewModel = viewMo
                 .padding(10.dp)
         ) {
             buildingWithRooms.forEach { building ->
-                BuildingCard(building = building, navController = navController)
+                BuildingCard(building = building, navController = navController, viewModel = viewModel)
             }
         }
     } else {
@@ -86,11 +81,13 @@ fun FeetBuilding(navController: NavController, viewModel: RoomViewModel = viewMo
         }
     }
 }
-
 @Composable
-fun BuildingCard(building: BuildingWithRooms, navController: NavController) {
+fun BuildingCard(building: BuildingWithRooms, navController: NavController, viewModel: RoomViewModel) {
     var isExpanded by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+
+    // Quan sát danh sách phòng
+    val rooms by viewModel.roomNames.observeAsState(emptyList())
 
     Box(
         modifier = Modifier
@@ -133,14 +130,21 @@ fun BuildingCard(building: BuildingWithRooms, navController: NavController) {
                         color = Color.Black
                     )
                     Text(
-                        text = "${building.rooms?.size ?: 0} phòng", // Xử lý nếu `rooms` là null
+                        text = "${building.rooms?.size ?: 0} phòng",
                         fontSize = 14.sp,
                         color = Color.Black
                     )
                 }
 
+                // Nút mở rộng/thu gọn
                 IconButton(
-                    onClick = { isExpanded = !isExpanded }
+                    onClick = {
+                        isExpanded = !isExpanded
+                        // Khi mở rộng, lấy danh sách phòng cho tòa nhà này
+                        if (isExpanded && building._id != null) {
+                            viewModel.fetchRoomNamesByBuildingId(building._id)
+                        }
+                    }
                 ) {
                     Icon(
                         imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -164,13 +168,18 @@ fun BuildingCard(building: BuildingWithRooms, navController: NavController) {
                         .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    building.rooms?.forEach { room ->
-                        RoomCard(room = room)
-                    } ?: Text( // Nếu rooms là null hoặc rỗng
-                        text = "Không có phòng nào.",
-                        color = Color.Gray,
-                        fontSize = 14.sp
-                    )
+                    if (rooms.isNotEmpty()) {
+                        rooms.forEach { roomName ->
+                            RoomCard(roomName)
+                        }
+                    } else {
+                        Text(
+                            text = "Không có phòng nào.",
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    }
+
                     Button(
                         onClick = {
                             navController.navigate("ADDROOM/${building._id}")
@@ -193,7 +202,7 @@ fun BuildingCard(building: BuildingWithRooms, navController: NavController) {
 }
 
 @Composable
-fun RoomCard(room: Room) {
+fun RoomCard(roomName: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -208,24 +217,11 @@ fun RoomCard(room: Room) {
             modifier = Modifier.size(40.dp)
         )
         Text(
-            text = room.room_name ?: "Phòng không xác định",
+            text = roomName ?: "Phòng không xác định",
             fontSize = 14.sp,
             color = Color.Black,
             modifier = Modifier.padding(start = 10.dp)
         )
-        // Thêm thông tin phòng khác nếu cần
     }
 }
 
-
-@Composable
-fun FeetReporthoanthanh() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(
-            text = "Ok, hiểu rồi",
-            textAlign = TextAlign.Center
-        )
-    }
-}

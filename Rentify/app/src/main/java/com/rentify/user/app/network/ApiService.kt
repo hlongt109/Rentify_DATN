@@ -2,6 +2,7 @@ package com.rentify.user.app.network
 
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
+import com.rentify.user.app.model.Room
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
@@ -49,7 +50,11 @@ interface APIService {
     suspend fun getBuildingsWithRooms(
         @Path("manager_id") managerId: String
     ): Response<List<BuildingWithRooms>>
-
+    // Lấy tên danh sách phòng theo tòa nhà
+    @GET("staff/rooms/GetNameRoomBuilding/{building_id}")
+    suspend fun getRoomsByBuildingId(
+        @Path("building_id") buildingId: String
+    ): Response<List<Room>>
 
 
 }

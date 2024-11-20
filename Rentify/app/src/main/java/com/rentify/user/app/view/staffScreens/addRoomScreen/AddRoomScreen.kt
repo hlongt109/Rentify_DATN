@@ -88,13 +88,12 @@ fun AddRoomScreen(
                 // Loại phòng
                 Column {
                     RoomTypeLabel()
-                    RoomTypeOptions(selectedRoomTypes = selectedRoomTypes, onRoomTypeSelected = { roomType ->
-                        selectedRoomTypes = if (selectedRoomTypes.contains(roomType)) {
-                            selectedRoomTypes - roomType
-                        } else {
-                            selectedRoomTypes + roomType
+                    RoomTypeOptions(
+                        selectedRoomTypes = selectedRoomTypes,
+                        onRoomTypeSelected = { roomType ->
+                            selectedRoomTypes = listOf(roomType)  // Ensure only one room type is selected at a time
                         }
-                    })
+                    )
                 }
                 SelectMedia { images, videos ->
                     selectedImages = images
@@ -171,8 +170,8 @@ fun AddRoomScreen(
                                 price = roomPrice.toDoubleOrNull() ?: 0.0,
                                 size = area,
                                 status = 1, // Hoặc giá trị thực tế
-                                videoFile = null, // Thay thế nếu có video
-                                photoFiles = null, // Thay thế nếu có ảnh
+                                videoFile = selectedVideos, // Thay thế nếu có video
+                                photoFiles = selectedImages, // Thay thế nếu có ảnh
                                 service = listOf("671b0981991ace13719990eb"),
                                 amenities = selectedComfortable,
                                 limitPerson = currentPeopleCount.toIntOrNull() ?: 0
