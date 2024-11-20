@@ -5,7 +5,6 @@ const Building = require('../../models/Building');
 const Room = require('../../models/Room');
 const upload = require('../../config/common/uploadImageRoom')
 
-// API lấy danh sách tòa nhà theo manager_id
 router.get('/buildings-by-manager/:manager_id', async (req, res) => {
     const { manager_id } = req.params;
 
@@ -15,44 +14,62 @@ router.get('/buildings-by-manager/:manager_id', async (req, res) => {
     }
 
     try {
+        // Lấy danh sách tòa nhà của manager
         const buildings = await Building.find({ manager_id })
             .populate('landlord_id', 'username phoneNumber')
             .populate('manager_id', 'username phoneNumber')
             .populate('service', 'name');
 
-        res.status(200).json(buildings);
-    } catch (error) {
-        console.error('Error fetching buildings by manager:', error.message);
-        res.status(500).json({ error: 'Failed to fetch buildings. Please try again later.' });
-    }
-});
-// API to get rooms by building ID
-router.get('/rooms-by-building/:building_id', async (req, res) => {
-    const { building_id } = req.params;
-
-    // Validate if the building_id is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(building_id)) {
-        return res.status(400).json({ error: 'Invalid building ID.' });
-    }
-
-    try {
-        // Find all rooms associated with the given building_id
-        const rooms = await Room.find({ building_id })
-            .populate('service', 'name')  // Populate the services related to the room
-            .populate('building_id', 'building_name address')  // Populate building details (optional)
-            .lean(); // Using lean to get plain JavaScript objects
-
-        if (!rooms || rooms.length === 0) {
-            return res.status(404).json({ error: 'No rooms found for this building.' });
+        // Kiểm tra nếu không có tòa nhà nào
+        if (!buildings || buildings.length === 0) {
+            return res.status(404).json({ message: 'No buildings found for this manager.' });
         }
 
-        // Return the list of rooms
-        res.status(200).json(rooms);
+        // Lặp qua tất cả các tòa nhà và lấy danh sách phòng của từng tòa
+        const buildingsWithRooms = [];
+
+        for (let building of buildings) {
+            // Lấy danh sách phòng cho mỗi tòa nhà
+            const rooms = await Room.find({ building_id: building._id }).select('room_name room_type price status');
+
+            // Thêm danh sách phòng vào đối tượng building
+            building = building.toObject(); // Chuyển đổi building thành đối tượng JavaScript để có thể chỉnh sửa
+            building.rooms = rooms; // Thêm trường rooms vào building
+
+            buildingsWithRooms.push(building);
+        }
+
+        // Trả về danh sách các tòa nhà và phòng của chúng
+        res.status(200).json(buildingsWithRooms);
     } catch (error) {
-        console.error('Error fetching rooms by building:', error.message);
-        res.status(500).json({ error: 'Failed to fetch rooms. Please try again later.' });
+        console.error('Error fetching buildings and rooms:', error.message);
+        res.status(500).json({ error: 'Failed to fetch buildings and rooms. Please try again later.' });
     }
 });
+
+
+router.get('/RoomsForBuilding/:building_id', async (req, res) => {
+    try {
+        // Lấy building_id từ tham số URL
+        const { building_id } = req.params;
+
+        // Tìm tất cả phòng trong tòa nhà đó
+        const rooms = await Room.find({ building_id }).select('room_name room_type price status');
+
+        // Kiểm tra nếu không có phòng nào
+        if (!rooms || rooms.length === 0) {
+            // Nếu không có phòng, trả về danh sách rỗng
+            return res.json([]);
+        }
+
+        // Trả về kết quả là danh sách các phòng với các trường được chọn
+        return res.status(200).json(rooms);
+    } catch (error) {
+        // Nếu có lỗi xảy ra
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 
 
 // _vanphuc :thêm phòng 
