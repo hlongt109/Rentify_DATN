@@ -94,21 +94,7 @@
 </body>
 
 <script>
-    
-    $(document).ready(function() {
-        $('#monthYear').datepicker({
-            format: "mm/yyyy",        // Format to show month and year
-            startView: "months",      // Start view as months
-            minViewMode: "months",    // Min view mode is months
-            autoclose: true           // Auto-close once a date is selected
-        });
 
-        // Xử lý sự kiện khi nhấn nút lọc
-        $('#filterBtn').click(function() {
-            const selectedDate = $('#monthYear').val();
-            alert("Bạn đã chọn: " + selectedDate);
-        });
-    });
 
     function goBack() { window.history.back(); }
     // 
