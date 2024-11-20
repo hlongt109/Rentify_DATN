@@ -26,6 +26,8 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static('public/uploads'));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/api/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/landlord/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/landlord/api/assets', express.static(path.join(__dirname, 'assets')));
 
 app.use(cors({
   origin: 'http://localhost:3000', // Đảm bảo cho phép frontend gửi yêu cầu
