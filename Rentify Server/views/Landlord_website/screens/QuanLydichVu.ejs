@@ -6,6 +6,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách bài đăng</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            /* Thay đổi thành fixed */
+            max-width: 100%;
+            /* Giữ bảng bên trong container */
+        }
+
+
+        .table thead {
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+
+        .table td:first-child,
+        .table th:first-child {
+            width: 50px;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            border: none;
+            width: 100%;
+            vertical-align: middle;
+            /* Đảm bảo căn giữa theo chiều dọc */
+            align-items: center;
+            /* Căn giữa theo chiều dọc */
+            justify-content: center;
+            /* Căn giữa theo chiều ngang */
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: none;
+            /* Loại bỏ giới hạn chiều rộng tối đa cho các cột */
+            border: none !important;
+            /* Loại bỏ tất cả các đường viền */
+            box-shadow: none !important;
+            /* Đảm bảo không có đường viền hoặc bóng đổ */
+        }
+
+        .table th {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: normal;
+            color: rgb(3, 2, 41);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .table td {
+            font-size: 0.75rem;
+            font-family: Nunito, sans-serif;
+            line-height: 1.66;
+            font-weight: 600;
+        }
+    </style>
 </head>
 
 <body>
@@ -98,8 +159,8 @@
         </div>
 
 
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
+        <div class="table table-striped">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>STT</th>
