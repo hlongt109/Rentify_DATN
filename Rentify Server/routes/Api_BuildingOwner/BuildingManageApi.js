@@ -41,10 +41,37 @@ router.delete('/buildings/:id', async (req, res) => {
 // các api thiên viết
 router.post('/add-building', async (req, res) => {
     try {
-        const { landlord_id, manager_id, service, nameBuilding, address, description, number_of_floors, } = req.body;
+        const { 
+            landlord_id, 
+            manager_id, 
+            service, 
+            serviceFees, // Thêm phí dịch vụ
+            nameBuilding, 
+            address, 
+            description, 
+            number_of_floors 
+        } = req.body;
+
         // Kiểm tra các trường bắt buộc
         if (!landlord_id || !manager_id || !nameBuilding || !address || !number_of_floors) {
             return res.status(400).json({ message: 'Vui lòng điền đầy đủ thông tin!' });
+        }
+
+        // Kiểm tra tính hợp lệ của serviceFees (nếu có)
+        if (serviceFees && !Array.isArray(serviceFees)) {
+            return res.status(400).json({ message: 'Dữ liệu serviceFees không hợp lệ!' });
+        }
+
+        // Validate từng phí dịch vụ
+        if (serviceFees) {
+            for (const fee of serviceFees) {
+                if (!fee.name || typeof fee.name !== 'string') {
+                    return res.status(400).json({ message: 'Tên dịch vụ không hợp lệ!' });
+                }
+                if (!fee.price || typeof fee.price !== 'number') {
+                    return res.status(400).json({ message: `Giá dịch vụ ${fee.name} không hợp lệ!` });
+                }
+            }
         }
 
         // Tạo đối tượng building mới
@@ -52,6 +79,7 @@ router.post('/add-building', async (req, res) => {
             landlord_id,
             manager_id,
             service, // Đây là mảng ID các dịch vụ
+            serviceFees, // Lưu phí dịch vụ vào cơ sở dữ liệu
             nameBuilding,
             address,
             description,
@@ -75,29 +103,53 @@ router.post('/add-building', async (req, res) => {
 
 router.put('/buildings/:id', async (req, res) => {
     const { id } = req.params;
-    const { address, description, number_of_floors, nameBuilding, service, manager_id } = req.body;
+    const { 
+        address, 
+        description, 
+        number_of_floors, 
+        nameBuilding, 
+        service, 
+        serviceFees, // Thêm phí dịch vụ
+        manager_id 
+    } = req.body;
 
     // Validate ID là ObjectId hợp lệ
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid building ID.' });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(manager_id)) {
-        return res.status(400).json({ error: 'Invalid building ID.' });
+    if (manager_id && !mongoose.Types.ObjectId.isValid(manager_id)) {
+        return res.status(400).json({ error: 'Invalid manager ID.' });
     }
 
-    // Kiểm tra dữ liệu đầu vào (đảm bảo các trường không rỗng)
+    // Kiểm tra dữ liệu đầu vào
     if (!address || !description || !number_of_floors || !nameBuilding) {
         return res.status(400).json({ error: 'All fields (address, description, number_of_floors, nameBuilding) are required.' });
     }
 
-    // Kiểm tra service có phải là một mảng và mỗi phần tử là một ObjectId hợp lệ
+    // Kiểm tra service (nếu có)
     if (service && !Array.isArray(service)) {
         return res.status(400).json({ error: 'Service should be an array of ObjectIds.' });
     }
 
     if (service && !service.every(s => mongoose.Types.ObjectId.isValid(s))) {
         return res.status(400).json({ error: 'Each service ID must be a valid ObjectId.' });
+    }
+
+    // Kiểm tra serviceFees (nếu có)
+    if (serviceFees && !Array.isArray(serviceFees)) {
+        return res.status(400).json({ error: 'Service fees should be an array of objects.' });
+    }
+
+    if (serviceFees) {
+        for (const fee of serviceFees) {
+            if (!fee.name || typeof fee.name !== 'string') {
+                return res.status(400).json({ error: `Service fee name is invalid.` });
+            }
+            if (!fee.price || typeof fee.price !== 'number') {
+                return res.status(400).json({ error: `Service fee price for "${fee.name}" is invalid.` });
+            }
+        }
     }
 
     try {
@@ -110,6 +162,7 @@ router.put('/buildings/:id', async (req, res) => {
                 description,
                 number_of_floors,
                 service, // Cập nhật dịch vụ
+                serviceFees, // Cập nhật phí dịch vụ
                 manager_id,
                 updated_at: new Date().toISOString(),
             },
@@ -518,6 +571,32 @@ router.get('/building/:id/available-rooms', async (req, res) => {
     } catch (error) {
         console.error('Error counting available rooms:', error.message);
         res.status(500).json({ error: 'Failed to count available rooms. Please try again later.' });
+    }
+});
+
+// API lấy danh sách phí dịch vụ của một tòa nhà cụ thể
+router.get('/building/:id/service-fees', async (req, res) => {
+    const { id } = req.params;
+
+    // Kiểm tra ID là ObjectId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid building ID.' });
+    }
+
+    try {
+        // Tìm tòa nhà theo ID và lấy danh sách phí dịch vụ
+        const building = await Building.findById(id).select('serviceFees');
+
+        // Nếu không tìm thấy tòa nhà
+        if (!building) {
+            return res.status(404).json({ error: 'Building not found.' });
+        }
+
+        // Trả về danh sách phí dịch vụ của tòa nhà
+        res.status(200).json(building.serviceFees);
+    } catch (error) {
+        console.error('Error fetching building service fees:', error.message);
+        res.status(500).json({ error: 'Failed to fetch building service fees. Please try again later.' });
     }
 });
 
