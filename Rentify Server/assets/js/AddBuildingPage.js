@@ -221,21 +221,21 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
         if (buildingId) {
             // API PUT cập nhật tòa nhà
             response = await axios.put(`/api/buildings/${buildingId}`, data);
+            if (response.status === 200 || response.status === 201) {
+                // Hiển thị thông báo cập nhật thành công
+                localStorage.setItem('updateBuildingMessage', 'Cập nhật tòa nhà thành công!');
+                window.location.href = "/landlord/BuildingPage";
+            }
         } else {
             // API POST thêm mới tòa nhà (khi buildingId không tồn tại)
             response = await axios.post('/api/add-building', data);
+            if (response.status === 200 || response.status === 201) {
+                // Hiển thị thông báo cập nhật thành công
+                localStorage.setItem('addBuildingMessage', 'Thêm tòa nhà thành công!');
+                window.location.href = "/landlord/BuildingPage";
+            }
         }
 
-        if (response.status === 200 || response.status === 201) {
-            Toastify({
-                text: "Cập nhật tòa nhà thành công!",
-                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-                duration: 3000,
-            }).showToast();
-            // Điều hướng hoặc reset form
-            window.location.href = "/landlord/BuildingPage";
-            document.getElementById("addBuildingForm").reset();
-        }
     } catch (error) {
         console.error("Lỗi khi cập nhật tòa nhà:", error);
         Toastify({
@@ -263,50 +263,40 @@ const fetchBuildingServiceFees = async () => {
 };
 
 const mergeServiceFees = () => {
-    // Gộp danh sách serviceFees và allServiceFees lại với nhau
     const merged = [...serviceFees, ...allServiceFees];
-    console.log("Merged service fees:", merged);  // Log kết quả sau khi gộp
-
-    // Loại bỏ các dịch vụ trùng lặp dựa trên tên (name)
     const uniqueServiceFees = merged.filter((value, index, self) =>
         index === self.findIndex((t) => t.name === value.name)
     );
-    console.log("Unique service fees (after removing duplicates):", uniqueServiceFees);  // Log kết quả sau khi lọc trùng lặp
-
     return uniqueServiceFees;
 };
 
 const servicesContainer = document.getElementById("servicesFee-container");
 
-// Render các dịch vụ đã được gộp
 const renderServiceFees = (selectedServices = []) => {
-    const uniqueServices = mergeServiceFees(); // Lấy danh sách dịch vụ đã gộp
-
+    const uniqueServices = mergeServiceFees();
     uniqueServices.forEach(service => {
-        console.log("Rendering service:", service);  // Log từng dịch vụ đang được render
-
-        const safeName = service.name.replace(/\s+/g, '_');  // Thay dấu cách thành dấu gạch dưới
+        const safeName = service.name.replace(/\s+/g, '_');
         const checkbox = document.querySelector(`input[type="checkbox"][value="${service.name}"]`);
         const feeInput = document.querySelector(`input[name="fee_${safeName}"]`);
-        console.log("Checkbox:", checkbox, "Fee Input:", feeInput);  // Log để kiểm tra phần tử
-
-        // Tìm dịch vụ có trong selectedServices (dữ liệu tòa nhà) và đánh dấu checkbox
         const selectedService = selectedServices.find(selected => selected.name === service.name);
-
+        
         if (checkbox && feeInput) {
-            checkbox.checked = selectedService ? true : false; // Đánh dấu checkbox nếu dịch vụ có trong selectedServices
-            feeInput.disabled = !checkbox.checked; // Kích hoạt hoặc vô hiệu hóa trường nhập phí
-            feeInput.value = selectedService ? selectedService.price || "" : ""; // Gán giá trị nếu có
+            checkbox.checked = selectedService ? true : false; 
+            feeInput.disabled = !checkbox.checked; 
+            feeInput.value = selectedService ? selectedService.price || "" : ""; 
+            console.log(`Service: ${service.name}, Checked: ${checkbox.checked}`);
         } else {
-            // Nếu checkbox hoặc feeInput không tồn tại, tạo mới chúng
             createServiceItem(service, servicesContainer, selectedService);
+            console.log(`Service: ${service.name}, Created new checkbox, Checked: ${!!selectedService}`);
         }
     });
 };
 
 const init = async () => {
     await fetchService(); // Tải dữ liệu dịch vụ và nhân viên
-    await fetchBuildingServiceFees();
+    if(buildingId){
+        await fetchBuildingServiceFees();
+    }
 
     if (buildingData) {
         // Gọi renderServices sau khi `services` đã sẵn sàng
@@ -332,31 +322,34 @@ const createServiceItem = (service, servicesContainer, selectedService = null) =
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    const safeName = service.name.replace(/\s+/g, '_');  // Thay dấu cách thành dấu gạch dưới
-    checkbox.id = safeName;  // Sử dụng tên hợp lệ
+    const safeName = service.name.replace(/\s+/g, '_');
+    checkbox.id = safeName;
     checkbox.name = "services";
     checkbox.value = service.name;
 
     const label = document.createElement("label");
-    label.htmlFor = safeName; // Liên kết label với id của checkbox
+    label.htmlFor = safeName;
     label.textContent = service.name;
 
     const feeInput = document.createElement("input");
     feeInput.type = "number";
-    feeInput.name = `fee_${safeName}`; // Sử dụng tên hợp lệ
+    feeInput.name = `fee_${safeName}`;
     feeInput.placeholder = "Phí (VNĐ)";
     feeInput.classList.add("form-control", "form-control-sm");
-    feeInput.value = service.price || ""; // Nếu không có giá trị `price`, gán giá trị mặc định là rỗng
-    feeInput.disabled = true;  // Mặc định là `disabled`
+    feeInput.step = "0.01"; 
+    feeInput.min = "0"; 
 
-    // Nếu `selectedService` tồn tại, thiết lập giá trị ban đầu
+    // Đặt trạng thái mặc định cho "add"
     if (selectedService) {
-        checkbox.checked = true;
-        feeInput.disabled = false;
-        feeInput.value = selectedService.fee || "";
+        checkbox.checked = false;
+        feeInput.disabled = true;
+        feeInput.value = selectedService.price || "";
+    } else {
+        checkbox.checked = false; // Không tích khi thêm mới
+        feeInput.disabled = true; // Vô hiệu hóa input phí
+        feeInput.value = ""; // Đảm bảo input trống
     }
 
-    // Kích hoạt trường nhập phí khi checkbox được chọn
     checkbox.addEventListener("change", () => {
         feeInput.disabled = !checkbox.checked;
         if (!checkbox.checked) {
@@ -364,46 +357,32 @@ const createServiceItem = (service, servicesContainer, selectedService = null) =
         }
     });
 
-    // Thêm vào container
-    if (servicesContainer && servicesContainer.appendChild) {
-        // Đảm bảo servicesContainer là một phần tử DOM và có phương thức appendChild
-        serviceItem.appendChild(checkbox);
-        serviceItem.appendChild(label);
-        serviceItem.appendChild(feeInput);
-        servicesContainer.appendChild(serviceItem);
-    } else {
-        console.error('servicesContainer không phải là phần tử DOM hợp lệ');
-    }
-    
+    // Append các phần tử vào container
+    serviceItem.appendChild(checkbox);
+    serviceItem.appendChild(label);
+    serviceItem.appendChild(feeInput);
+    servicesContainer.appendChild(serviceItem);
 };
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const newServiceInput = document.getElementById("new-service");
     const addServiceButton = document.getElementById("add-service");
 
-    // Tạo giao diện cho các dịch vụ mặc định
     serviceFees.forEach(service => {
-        createServiceItem(service, servicesContainer, servicesContainer);  // Truyền servicesContainer vào
+        createServiceItem(service, servicesContainer, servicesContainer); 
     });
 
-    // Xử lý thêm dịch vụ mới
     addServiceButton.addEventListener("click", () => {
         const newServiceName = newServiceInput.value.trim();
         if (newServiceName) {
-            // Kiểm tra nếu dịch vụ đã tồn tại
             if (serviceFees.some(service => service.name === newServiceName)) {
                 alert("Dịch vụ này đã tồn tại!");
                 return;
             }
-
-            // Thêm dịch vụ mới vào danh sách
             const newService = { name: newServiceName };
             serviceFees.push(newService);
-
-            // Tạo giao diện cho dịch vụ mới
-            createServiceItem(newService, servicesContainer, servicesContainer);  // Truyền servicesContainer vào
-
-            // Xóa giá trị nhập vào trường
+            createServiceItem(newService, servicesContainer, servicesContainer);
             newServiceInput.value = "";
         } else {
             alert("Vui lòng nhập tên dịch vụ!");

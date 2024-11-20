@@ -216,6 +216,38 @@ window.addEventListener('load', function () {
     }
 });
 
+window.addEventListener('load', function () {
+    const deleteRoomMessage = localStorage.getItem('updateBuildingMessage');
+
+    if (deleteRoomMessage) {
+        // Hiển thị thông báo Toastify
+        Toastify({
+            text: deleteRoomMessage,
+            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+            duration: 3000,
+        }).showToast();
+
+        // Xóa thông báo khỏi localStorage để không hiển thị lại khi reload trang
+        localStorage.removeItem('updateBuildingMessage');
+    }
+});
+
+window.addEventListener('load', function () {
+    const deleteRoomMessage = localStorage.getItem('addBuildingMessage');
+
+    if (deleteRoomMessage) {
+        // Hiển thị thông báo Toastify
+        Toastify({
+            text: deleteRoomMessage,
+            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+            duration: 3000,
+        }).showToast();
+
+        // Xóa thông báo khỏi localStorage để không hiển thị lại khi reload trang
+        localStorage.removeItem('addBuildingMessage');
+    }
+});
+
 const deleteBuilding = async (buildingId) => {
     try {
         const response = await axios.delete(`/api/delete-buildings/${buildingId}`);
