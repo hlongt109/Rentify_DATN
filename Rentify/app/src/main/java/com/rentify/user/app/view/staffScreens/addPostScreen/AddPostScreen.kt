@@ -89,26 +89,32 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
-fun getFileFromUri(context: Context, uri: Uri): File? {
+fun prepareMultipartBody(
+    context: Context,
+    uri: Uri,
+    partName: String,
+    defaultExtension: String,
+    mimeType: String
+): MultipartBody.Part? {
     return try {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val tempFile = File.createTempFile("upload", ".tmp", context.cacheDir)
+        // Lấy input stream từ Uri
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+
+        // Tạo file tạm
+        val tempFile = File.createTempFile("upload", defaultExtension, context.cacheDir)
         tempFile.outputStream().use { outputStream ->
-            inputStream?.copyTo(outputStream)
+            inputStream.copyTo(outputStream)
         }
-        tempFile
+
+        // Tạo MultipartBody.Part
+        val requestFile = tempFile.asRequestBody(mimeType.toMediaTypeOrNull())
+        MultipartBody.Part.createFormData(partName, tempFile.name, requestFile)
     } catch (e: Exception) {
-        Log.e("getFileFromUri", "Error: ${e.message}, URI: $uri")
+        Log.e("prepareMultipartBody", "Error: ${e.message}")
         null
     }
 }
 
-
-
-fun prepareMultipartBody(partName: String, file: File): MultipartBody.Part {
-    val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-    return MultipartBody.Part.createFormData(partName, file.name, requestFile)
-}
 
 
 
@@ -130,9 +136,11 @@ fun AddPostScreens(navController: NavHostController) {
     var phoneNumber by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
 
-    suspend fun addPost(context: Context, apiService:APIService ) {
+    suspend fun addPost( context: Context,
+                         apiService: APIService,
+                         selectedImages: List<Uri>,
+                         selectedVideos: List<Uri> ) {
         val userId = "672490e5ce87343d0e701012".toRequestBody("text/plain".toMediaTypeOrNull())
-
         val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
@@ -144,40 +152,25 @@ fun AddPostScreens(navController: NavHostController) {
         val amenities = selectedComfortable.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val services = selectedService.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
 
-        val photoParts = selectedImages.mapNotNull { uri ->
-            val file = getFileFromUri(context, uri)
-            if (file == null) {
-                Log.e("AddPost", "Failed to process photo URI: $uri")
-                null
-            } else {
-                Log.d("AddPost", "Photo file: ${file.absolutePath}")
-                prepareMultipartBody("photo", file)
-            }
-        }
-
         val videoParts = selectedVideos.mapNotNull { uri ->
-            val file = getFileFromUri(context, uri)
-            if (file == null) {
-                Log.e("AddPost", "Failed to process video URI: $uri")
-                null
-            } else {
-                Log.d("AddPost", "Video file: ${file.absolutePath}")
-                prepareMultipartBody("video", file)
-            }
+            val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
+            prepareMultipartBody(context, uri, "video", ".mp4", mimeType)
         }
-
+        val photoParts = selectedImages.mapNotNull { uri ->
+            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+            prepareMultipartBody(context, uri, "photo", ".jpg", mimeType)
+        }
 
 
         try {
             val response = apiService.addPost(
                 userId, title, content, status, postType, price, address, phoneNumber,
-                roomType, amenities, services,  videos = videoParts, photos = photoParts
+                roomType, amenities, services, videos = videoParts, photos = photoParts
             )
-
             if (response.isSuccessful) {
                 Log.d("addPost", "Post created successfully: ${response.body()}")
             } else {
-                Log.e("addPost", "Error: ${response.code()} - ${response.errorBody()?.string()}")
+                Log.e("addPost", "Error: ${response.errorBody()?.string()}")
             }
         } catch (e: Exception) {
             Log.e("addPost", "Exception: ${e.message}")
@@ -603,7 +596,7 @@ fun AddPostScreens(navController: NavHostController) {
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
                             val apiService = RetrofitClient.apiService  // Sử dụng apiService đã có sẵn
-                            addPost(context, apiService)
+                            addPost(context, apiService,selectedImages,selectedVideos)
                         }
                     }, modifier = Modifier.height(50.dp).fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
