@@ -72,7 +72,7 @@ router.get('/RoomsForBuilding/:building_id', async (req, res) => {
 
 
 
-// _vanphuc :thêm phòng 
+// _vanphuc :thêm phòng  theo tòa 
 router.post('/addRoom', upload.fields([
     { name: 'photos_room', maxCount: 10 }, // Tối đa 10 ảnh
     { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
@@ -125,8 +125,8 @@ const normalizePaths = (room) => {
     room.video_room = room.video_room.map(video => removeUnnecessaryPath(video.replace(/\\/g, '/')));
     return room;
 };
-
-router.get('/room/:id', async (req, res) => {
+// API HIỂN THỊ CHI TIẾT PHÒNG : 
+router.get('/RoomDetail/:id', async (req, res) => {
     const { id } = req.params;
 
     // Kiểm tra ID là ObjectId hợp lệ
