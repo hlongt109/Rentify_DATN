@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Room(
     val buildingId: String,         // ID của tòa nhà
-    val roomName: String?,          // Tên phòng
+    val room_name: String?,          // Tên phòng
     val roomType: String,           // Loại phòng
     val description: String,        // Mô tả phòng
     val price: Double,              // Giá phòng
@@ -25,7 +25,7 @@ data class Room(
 @Serializable
 data class AddRoomResponse(
     val id: String,                  // ID của phòng
-    val roomName: String,            // Tên phòng
+    val room_name: String,            // Tên phòng
     val price: Double,               // Giá phòng
     val description: String,         // Mô tả phòng
     val image: String,               // URL ảnh đại diện
@@ -42,7 +42,7 @@ data class AddRoomResponse(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
-        parcel.writeString(roomName)
+        parcel.writeString(room_name)
         parcel.writeDouble(price)
         parcel.writeString(description)
         parcel.writeString(image)

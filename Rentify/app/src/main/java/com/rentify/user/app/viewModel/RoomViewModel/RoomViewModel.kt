@@ -50,31 +50,18 @@ class RoomViewModel : ViewModel() {
             }
         }
     }
-
-    // lấy tên danh sách phòng theo tòa
-    fun fetchRoomNamesByBuildingId(buildingId: String) {
+    fun fetchRoomsForBuilding(buildingId: String) {
         viewModelScope.launch {
             try {
-                // Gọi API lấy danh sách phòng theo building_id
-                val response = apiService.getRoomsByBuildingId(buildingId)
-
-                if (response.isSuccessful) {
-                    // Lưu kết quả vào LiveData
-                    response.body()?.let { rooms ->
-                        // Lấy danh sách tên phòng từ mảng phòng và lọc bỏ các giá trị null
-                        val roomNames = rooms.map { it.roomName }.filterNotNull()
-                        _roomNames.value = roomNames
-                    }
-                } else {
-                    _error.value = "Failed to fetch room names: ${response.message()}"
-                }
+                // Giả sử bạn có hàm API này để lấy phòng cho tòa nhà
+                val rooms = apiService.getRoomsForBuilding(buildingId) // Thực hiện gọi API
+                _rooms.postValue(rooms)
             } catch (e: Exception) {
-                _error.value = "Error: ${e.message}"
+                _rooms.postValue(emptyList()) // Xử lý lỗi nếu cần
+                e.printStackTrace()
             }
         }
     }
-
-
 
     //    api add
     fun addRoom(

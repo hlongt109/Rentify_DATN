@@ -50,11 +50,12 @@ interface APIService {
     suspend fun getBuildingsWithRooms(
         @Path("manager_id") managerId: String
     ): Response<List<BuildingWithRooms>>
+
     // Lấy tên danh sách phòng theo tòa nhà
-    @GET("staff/rooms/GetNameRoomBuilding/{building_id}")
-    suspend fun getRoomsByBuildingId(
-        @Path("building_id") buildingId: String
-    ): Response<List<Room>>
+
+    @GET("staff/rooms/RoomsForBuilding/{building_id}")
+    suspend fun getRoomsForBuilding(@Path("building_id") buildingId: String): List<Room>
+
 
 
 }

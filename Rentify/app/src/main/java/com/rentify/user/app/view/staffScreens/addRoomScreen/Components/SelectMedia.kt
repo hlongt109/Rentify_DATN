@@ -45,6 +45,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.rememberImagePainter
 
+
+
 @Composable
 fun SelectMedia(
     onMediaSelected: (List<Uri>, List<Uri>) -> Unit
@@ -62,6 +64,7 @@ fun SelectMedia(
                 if (remainingSpace > 0) {
                     val toAdd = it.take(remainingSpace)
                     selectedImages.addAll(toAdd)
+                    onMediaSelected(selectedImages, selectedVideos) // Gọi callback
                 }
                 if (it.size > remainingSpace) {
                     Toast.makeText(context, "Giới hạn tối đa 10 ảnh.", Toast.LENGTH_SHORT).show()
@@ -78,6 +81,7 @@ fun SelectMedia(
                 if (remainingSpace > 0) {
                     val toAdd = it.take(remainingSpace)
                     selectedVideos.addAll(toAdd)
+                    onMediaSelected(selectedImages, selectedVideos) // Gọi callback
                 }
                 if (it.size > remainingSpace) {
                     Toast.makeText(context, "Giới hạn tối đa 5 video.", Toast.LENGTH_SHORT).show()
@@ -86,11 +90,8 @@ fun SelectMedia(
         }
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        // Image Selection Section
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Phần chọn ảnh
         Row(
             modifier = Modifier.padding(5.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -148,6 +149,7 @@ fun SelectMedia(
                                     .background(Color.Red, shape = RoundedCornerShape(10.dp))
                                     .clickable {
                                         selectedImages.remove(imageUri)
+                                        onMediaSelected(selectedImages, selectedVideos) // Gọi callback
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -166,7 +168,7 @@ fun SelectMedia(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Video Selection Section
+        // Phần chọn video
         Column(
             modifier = Modifier
                 .clickable { launcherVideo.launch(arrayOf("video/*")) }
@@ -220,6 +222,7 @@ fun SelectMedia(
                                 .background(Color.Red, shape = RoundedCornerShape(10.dp))
                                 .clickable {
                                     selectedVideos.remove(videoUri)
+                                    onMediaSelected(selectedImages, selectedVideos) // Gọi callback
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -237,8 +240,196 @@ fun SelectMedia(
     }
 }
 
-
-
-
+//@Composable
+//fun SelectMedia(
+//    onMediaSelected: (List<Uri>, List<Uri>) -> Unit
+//) {
+//    val selectedImages = remember { mutableStateListOf<Uri>() }
+//    val selectedVideos = remember { mutableStateListOf<Uri>() }
+//
+//    val context = LocalContext.current
+//
+//    val launcherImage = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.OpenMultipleDocuments(),
+//        onResult = { uris ->
+//            uris?.let {
+//                val remainingSpace = 10 - selectedImages.size
+//                if (remainingSpace > 0) {
+//                    val toAdd = it.take(remainingSpace)
+//                    selectedImages.addAll(toAdd)
+//                }
+//                if (it.size > remainingSpace) {
+//                    Toast.makeText(context, "Giới hạn tối đa 10 ảnh.", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
+//    )
+//
+//    val launcherVideo = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.OpenMultipleDocuments(),
+//        onResult = { uris ->
+//            uris?.let {
+//                val remainingSpace = 5 - selectedVideos.size
+//                if (remainingSpace > 0) {
+//                    val toAdd = it.take(remainingSpace)
+//                    selectedVideos.addAll(toAdd)
+//                }
+//                if (it.size > remainingSpace) {
+//                    Toast.makeText(context, "Giới hạn tối đa 5 video.", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
+//    )
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//    ) {
+//        // Image Selection Section
+//        Row(
+//            modifier = Modifier.padding(5.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .clickable { launcherImage.launch(arrayOf("image/*")) }
+//                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+//                    .background(Color.White)
+//                    .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+//                    .padding(25.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.image),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(30.dp)
+//                )
+//            }
+//            Spacer(modifier = Modifier.width(15.dp))
+//            Column {
+//                if (selectedImages.isEmpty()) {
+//                    Text(
+//                        text = "Thêm ảnh từ máy",
+//                        color = Color.Black,
+//                        fontSize = 14.sp
+//                    )
+//                    Text(
+//                        text = "Giới hạn 10 ảnh",
+//                        color = Color(0xFFBFBFBF),
+//                        fontSize = 13.sp
+//                    )
+//                }
+//                LazyRow(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    contentPadding = PaddingValues(8.dp)
+//                ) {
+//                    items(selectedImages) { imageUri ->
+//                        Box(
+//                            modifier = Modifier
+//                                .size(100.dp)
+//                                .padding(4.dp)
+//                        ) {
+//                            Image(
+//                                painter = rememberImagePainter(imageUri),
+//                                contentDescription = null,
+//                                modifier = Modifier
+//                                    .fillMaxSize()
+//                                    .clip(RoundedCornerShape(10.dp))
+//                            )
+//                            Box(
+//                                modifier = Modifier
+//                                    .size(20.dp)
+//                                    .align(Alignment.TopEnd)
+//                                    .background(Color.Red, shape = RoundedCornerShape(10.dp))
+//                                    .clickable {
+//                                        selectedImages.remove(imageUri)
+//                                    },
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                Text(
+//                                    text = "X",
+//                                    color = Color.White,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.Bold
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(20.dp))
+//
+//        // Video Selection Section
+//        Column(
+//            modifier = Modifier
+//                .clickable { launcherVideo.launch(arrayOf("video/*")) }
+//                .fillMaxWidth()
+//                .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+//                .background(Color.White)
+//                .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+//                .padding(25.dp),
+//            verticalArrangement = Arrangement.Center,
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            if (selectedVideos.isEmpty()) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.video),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(30.dp)
+//                )
+//                Spacer(modifier = Modifier.height(7.dp))
+//                Text(
+//                    text = "Video",
+//                    color = Color.Black,
+//                    fontSize = 13.sp
+//                )
+//            }
+//            LazyRow(
+//                modifier = Modifier.fillMaxWidth(),
+//                contentPadding = PaddingValues(8.dp)
+//            ) {
+//                items(selectedVideos) { videoUri ->
+//                    Box(
+//                        modifier = Modifier
+//                            .size(100.dp)
+//                            .padding(4.dp)
+//                    ) {
+//                        Box(
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .background(Color.Gray, shape = RoundedCornerShape(8.dp)),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            Text(
+//                                text = "Video",
+//                                color = Color.White,
+//                                fontSize = 14.sp
+//                            )
+//                        }
+//                        Box(
+//                            modifier = Modifier
+//                                .size(20.dp)
+//                                .align(Alignment.TopEnd)
+//                                .background(Color.Red, shape = RoundedCornerShape(10.dp))
+//                                .clickable {
+//                                    selectedVideos.remove(videoUri)
+//                                },
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            Text(
+//                                text = "X",
+//                                color = Color.White,
+//                                fontSize = 12.sp,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
 
