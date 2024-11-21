@@ -63,7 +63,7 @@ fun RoomDetailScreen(navController: NavHostController) {
 
             HeaderComponent(
                 backgroundColor = Color(0xffffffff),
-                title = "Hiển thị Thêm phòng",
+                title = "Hiển thị chi tiết phòng ",
                 navController = navController
             )
             Spacer(modifier = Modifier.height(10.dp))

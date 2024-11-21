@@ -7,14 +7,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +64,33 @@ fun ListRoomScreen(
         rooms.forEach { room ->
             RoomItem(room = room)
         }
+
+        Row(
+            modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .padding(start = 15.dp, end = 15.dp, top = 10.dp)
+                .background(color = Color(0xFF84d8ff))
+                .border(width = 1.dp, color = Color(0xFF84d8ff), shape = RoundedCornerShape(20.dp))
+                .clickable(
+                    onClick = {
+                        navController.navigate("ADDROOM/${buildingId}")
+                    },
+                    indication = null, // Tắt hiệu ứng gợn sóng
+                    interactionSource = remember { MutableInteractionSource() }
+                ),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
+        ) {
+            androidx.compose.material3.Text(
+                text = "Thêm phòng",
+                modifier = Modifier.padding(5.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold, // Đậm chữ
+                color = Color.White, // Màu chữ trắng
+                lineHeight = 24.sp // Khoảng cách giữa các dòng
+            )
+        }
     }
 }
 
@@ -86,7 +116,6 @@ fun RoomItem(room: Room) {
                 )
                 .padding(start = 20.dp)
                 .clickable {
-                    // Xử lý sự kiện click ở đây
                 }
         ) {
             Image(

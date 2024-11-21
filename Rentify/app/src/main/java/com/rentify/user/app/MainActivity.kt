@@ -223,6 +223,5 @@ class MainActivity : ComponentActivity() {
         HOME_STAFF,
         BUILDING,
         RoomDetailScreen,
-        ListRoom,
     }
 }
