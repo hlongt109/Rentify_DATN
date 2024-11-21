@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
+import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.file
 import com.rentify.user.app.ui.theme.iconColor
@@ -57,7 +58,7 @@ import com.rentify.user.app.view.userScreens.BillScreen.FakeData
 import java.util.Calendar
 
 @Composable
-fun ItemPaid(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>) {
+fun ItemPaid(year: String, itemsByMonth: Map<String, List<Invoice>>) {
     var isExpanded by remember { mutableStateOf(false) }
 //    val year = CheckUnit.formatYear(item.invoiceDate)
 //    val list = FakeData().fakeRoomPayments.filter { it.status == 1 }
@@ -146,10 +147,10 @@ fun ItemPaid(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>) {
         }
     }
 }
-fun groupItemsByMonthYear(items: List<RoomPaymentInfo>): Map<String, List<RoomPaymentInfo>> {
+fun groupItemsByMonthYear(items: List<Invoice>): Map<String, List<Invoice>> {
     // Nhóm các item theo tháng và năm
     return items.groupBy {
-        val calendar = Calendar.getInstance().apply { time = it.invoiceDate }
+        val calendar = Calendar.getInstance().apply { time = CheckUnit.parseDate(it.created_at ?: "") }
         val monthYear = CheckUnit.formatMonth(calendar.time) // Định dạng "Tháng/Năm"
         monthYear
     }

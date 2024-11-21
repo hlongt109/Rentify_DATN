@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
+import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.file
 import com.rentify.user.app.ui.theme.iconColor
@@ -49,14 +50,15 @@ import com.rentify.user.app.utils.CheckUnit
 
 @Composable
 fun ItemPaidExpandStaff(
-    item: RoomPaymentInfo,
-    paidRooms: List<RoomPaymentInfo>
+    monthYear: String,
+    invoices: List<Invoice>
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    val monthYear = CheckUnit.formatMonth(item.invoiceDate)
-    val totalAmount = paidRooms.sumOf{ roomItem ->
-        roomItem.paymentDetails.calculateTotal()
-    }
+//    val monthYear = CheckUnit.formatMonth(CheckUnit.parseDate(invoice.created_at?:""))
+//    val totalAmount = paidRooms.sumOf{ roomItem ->
+//        roomItem.paymentDetails.calculateTotal()
+//    }
+    val totalAmount = invoices.sumOf { it.amount.toDouble() ?: 0.0 }
     val formatMoney = CheckUnit.formattedPrice(totalAmount.toFloat())
     Card(
         modifier = Modifier
@@ -144,8 +146,8 @@ fun ItemPaidExpandStaff(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    paidRooms.forEach { roomItem ->
-                        ItemPaidRoom(roomItem)
+                    invoices.forEach { invoice ->
+                        ItemPaidRoom(room = invoice.room_id, invoice = invoice)
                     }
                 }
             }

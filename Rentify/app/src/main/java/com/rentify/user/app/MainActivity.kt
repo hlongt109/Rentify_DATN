@@ -59,8 +59,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-//            MainNavigation()
-            PostRoomScreen(navController = rememberNavController())
+            MainNavigation()
+//            PostRoomScreen(navController = rememberNavController())
         }
     }
 
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.HOME_STAFF.name) {
+        NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -193,6 +193,9 @@ class MainActivity : ComponentActivity() {
             }
             composable(ROUTER.PersonalProfileScreen.name) {
                 PersonalProfileScreen(navController = navController)
+            }
+            composable(ROUTER.ADDBILL_STAFF.name){
+                AddBillStaff(navController = navController)
             }
         }
     }

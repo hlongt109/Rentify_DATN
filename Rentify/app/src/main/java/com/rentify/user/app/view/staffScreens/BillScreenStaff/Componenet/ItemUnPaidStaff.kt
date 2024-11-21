@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,20 +48,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
+import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2
 import com.rentify.user.app.utils.CheckUnit
+import com.rentify.user.app.viewModel.StaffViewModel.InvoiceStaffViewModel
 
 @Composable
 fun ItemUnPaidStaff(
-    item: RoomPaymentInfo,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    invoice: Invoice,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit
 ) {
-    val amount = item.paymentDetails.calculateTotal()
-    val formatPrice = CheckUnit.formattedPrice(amount.toFloat())
-    var isExpanded by remember { mutableStateOf(false) }
+    var formatPrice = CheckUnit.formattedPrice(invoice.amount.toFloat())
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -77,7 +80,7 @@ fun ItemUnPaidStaff(
                     spotColor = Color.Black
                 )
                 .clickable {
-                    isExpanded = !isExpanded
+                    onToggleExpand()
                 }
                 .clip(shape = RoundedCornerShape(8.dp)),
             shape = RoundedCornerShape(8.dp),
@@ -121,7 +124,7 @@ fun ItemUnPaidStaff(
                             color = ColorBlack,
                         )
                         Text(
-                            text = item.roomInfo.roomNumber,
+                            text = invoice.room_id.room_name,
                             fontSize = 13.sp,
                             color = ColorBlack,
                             fontWeight = FontWeight.Medium
@@ -134,7 +137,7 @@ fun ItemUnPaidStaff(
                             color = ColorBlack,
                         )
                         Text(
-                            text = item.roomInfo.numberOfPeople.toString(),
+                            text = "${invoice.room_id.limit_person}",
                             fontSize = 13.sp,
                             color = ColorBlack,
                             fontWeight = FontWeight.Medium
@@ -162,7 +165,7 @@ fun ItemUnPaidStaff(
                     }
 
                     IconButton(
-                        onClick = { isExpanded = !isExpanded }
+                        onClick = { onToggleExpand()  }
                     ) {
                         Icon(
                             imageVector = if (isExpanded)
@@ -197,34 +200,32 @@ fun ItemUnPaidStaff(
                         ) {
                             PaymentDetailRow(
                                 "Tiền phòng",
-                                CheckUnit.formattedPrice(item.paymentDetails.roomCharge.toFloat())
+                                CheckUnit.formattedPrice(invoice.room_id.price.toFloat())
                             )
-                            PaymentDetailRow(
-                                "Tiền điện",
-                                CheckUnit.formattedPrice(item.paymentDetails.electricityCharge.toFloat())
-                            )
-                            PaymentDetailRow(
-                                "Tiền nước",
-                                CheckUnit.formattedPrice(item.paymentDetails.waterCharge.toFloat())
-                            )
-                            PaymentDetailRow(
-                                "Tiền dịch vụ",
-                                CheckUnit.formattedPrice(item.paymentDetails.serviceCharge.toFloat())
-                            )
+                            // Hiển thị các dịch vụ từ invoice.description
+                            invoice.room_id.service.forEach { service ->
+                               PaymentDetailRow(
+                                    service.name,
+                                    CheckUnit.formattedPrice(service.price.toFloat())
+                                )
+                            }
 
                             Spacer(modifier = Modifier.height(12.dp))
 
                             Button(
-                                onClick = { navController.navigate("PaymentConfirmation") },
-                                modifier = Modifier.fillMaxWidth().height(50.dp),
+                                onClick = {},
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                                    .border(width = 1.dp, color = Color.Red, shape = RoundedCornerShape(8.dp)),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = colorHeaderSearch
+                                    containerColor = Color.White
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Text(
-                                    text = "Tiến hành thanh toán",
-                                    color = Color.White,
+                                    text = "Chưa thanh toán",
+                                    color = Color.Red,
                                     modifier = Modifier.padding(vertical = 4.dp),
                                     fontWeight = FontWeight.Medium
                                 )
