@@ -10,8 +10,6 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.network.RetrofitService
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -51,23 +49,13 @@ class RoomViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                // Convert photo URIs to MultipartBody.Part
-                val photosPart = photoFiles?.map { uri ->
-                    val file = File(uri.path!!)
-                    val requestBody =
-                        file.asRequestBody("image/jpeg".toMediaTypeOrNull()) // Assuming JPEG format
-                    MultipartBody.Part.createFormData("photos_room", file.name, requestBody)
+                // Convert video URIs to URLs (Assuming you upload them somewhere and get the URLs)
+                val videoUrls = videoFile?.map { uri ->
+                    uploadFileToServer(uri, "video/mp4")
                 }
-
-                // Convert video URIs to MultipartBody.Part (assuming video format is MP4)
-                val videoPart = videoFile?.map { uri ->
-                    val file = File(uri.path!!)
-                    val requestBody =
-                        file.asRequestBody("video/mp4".toMediaTypeOrNull()) // Assuming MP4 format
-                    MultipartBody.Part.createFormData("video_room", file.name, requestBody)
+                val photoUrls = photoFiles?.map { uri ->
+                    uploadFileToServer(uri, "image/jpeg")
                 }
-
-                // Prepare the rest of the request data as RequestBody
                 val response = apiService.addRoom(
                     building_id = createPartFromString(buildingId),
                     room_name = createPartFromString(roomName),
@@ -76,8 +64,8 @@ class RoomViewModel : ViewModel() {
                     price = createPartFromString(price.toString()),
                     size = createPartFromString(size),
                     status = createPartFromString(status.toString()),
-                    video_room = videoPart, // Include the video part here
-                    photos_room = photosPart, // Include the photos part here
+                    video_room = videoUrls,
+                    photos_room = photoUrls,
                     service = service?.let { createPartFromString(it.joinToString(",")) },
                     amenities = amenities?.let { createPartFromString(it.joinToString(",")) },
                     limit_person = createPartFromString(limitPerson.toString())
@@ -93,10 +81,22 @@ class RoomViewModel : ViewModel() {
             }
         }
     }
-
+    private suspend fun uploadFileToServer(uri: Uri, mimeType: String): String {
+        try {
+            val file = File(uri.path!!)
+            val requestBody = file.asRequestBody(mimeType.toMediaTypeOrNull())
+            val multipart = MultipartBody.Part.createFormData("file", file.name, requestBody)
+            val response = apiService.uploadFile(multipart)
+            return response.body()?.fileUrl ?: ""
+        } catch (e: Exception) {
+            Log.e("UploadError", "File upload failed: ${e.message}", e)
+            return ""
+        }
+    }
     private fun createPartFromString(value: String): RequestBody {
         return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
     }
+
     // API LẤY DANH SÁCH TÒA THEO MANAGERID
     fun fetchBuildingsWithRooms(manager_id: String) {
         viewModelScope.launch {

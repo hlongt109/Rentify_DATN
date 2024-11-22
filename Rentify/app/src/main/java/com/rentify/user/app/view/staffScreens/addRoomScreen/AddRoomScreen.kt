@@ -69,8 +69,8 @@ fun AddRoomScreen(
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(emptyList<Uri>()) }
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
-
     Log.d("ImageRoom", "AddRoomScreen: $selectedImages")
+    Log.d("selectedVideos", "AddRoomScreen: $selectedVideos")
     Box(modifier = Modifier
         .fillMaxSize()
         .background(color = Color(0xfff7f7f7))) {
@@ -119,9 +119,10 @@ fun AddRoomScreen(
                 }
                 SelectMedia { images, videos ->
                     selectedImages = images
+                    Log.d("images", "AddRoomScreen: ${images}")
                     selectedVideos = videos
+                    Log.d("videos", "AddRoomScreen: ${videos}")
                 }
-
                 // Giới hạn người
                 Column(modifier = Modifier
                     .fillMaxWidth()
@@ -182,7 +183,6 @@ fun AddRoomScreen(
                 if (errorMessage.isNotEmpty()) {
                     Text(text = errorMessage, color = Color.Red, fontSize = 14.sp, modifier = Modifier.padding(5.dp))
                 }
-
             }
         }
 
@@ -199,7 +199,6 @@ fun AddRoomScreen(
                         errorMessage = "Vui lòng điền đầy đủ thông tin."
                     } else {
                         errorMessage = "" // Reset thông báo lỗi
-                        navController.popBackStack()
                         // Gọi hàm thêm phòng
                         if (buildingId != null) {
                             viewModel.addRoom(

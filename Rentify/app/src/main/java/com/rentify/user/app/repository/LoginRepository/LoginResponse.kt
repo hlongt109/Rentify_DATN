@@ -18,5 +18,6 @@ data class LoginResponse(
 data class ApiResponse(
     @SerializedName("status") val status: Int,
     @SerializedName("message") val message: String,
-    @SerializedName("data") val data: LoginResponse
+    @SerializedName("data") val data: LoginResponse,
+    @SerializedName("fileUrl") val fileUrl: String?
 )

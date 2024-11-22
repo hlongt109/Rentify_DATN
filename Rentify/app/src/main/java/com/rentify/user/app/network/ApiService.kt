@@ -37,13 +37,20 @@ interface APIService {
         @Part("description") description: RequestBody,
         @Part("price") price: RequestBody,
         @Part("size") size: RequestBody,
-        @Part video_room: List<MultipartBody.Part>?,
-        @Part photos_room: List<MultipartBody.Part>?,
+//        @Part video_room: List<MultipartBody.Part>?,
+//        @Part photos_room: List<MultipartBody.Part>?,
+        @Part("video_room") video_room: List<String>?,
+        @Part("photos_room") photos_room: List<String>?,
         @Part("service") service: RequestBody?,
         @Part("amenities") amenities: RequestBody?,
         @Part("limit_person") limit_person: RequestBody,
         @Part("status") status: RequestBody,
     ): Response<AddRoomResponse>
+    @Multipart
+    @POST("upload-file")
+    suspend fun uploadFile(
+        @Part file: MultipartBody.Part // Tệp file cần upload
+    ): Response<ApiResponse>
 
     //    get danh sách _vanphuc:
     @GET("staff/rooms/buildings-by-manager/{manager_id}")
@@ -60,6 +67,7 @@ interface APIService {
     suspend fun getRoomDetailById(
         @Path("id") id: String
     ): Response<Room>
+
     // xóa phòng 👽:
     @DELETE("staff/rooms/DeleteRooms/{id}")
     suspend fun deleteRoom(

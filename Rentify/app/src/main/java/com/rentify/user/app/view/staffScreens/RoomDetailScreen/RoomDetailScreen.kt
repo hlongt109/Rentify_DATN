@@ -68,6 +68,7 @@ import androidx.compose.material3.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import coil.compose.AsyncImage
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -171,8 +172,8 @@ fun RoomDetailScreen(
                         )
                     }
                     room.photos_room.forEach { photoUrl ->
-                        Image(
-                            painter = rememberImagePainter(photoUrl),
+                        AsyncImage(
+                            model = photoUrl,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -181,7 +182,7 @@ fun RoomDetailScreen(
                                 .clip(RoundedCornerShape(10.dp))
                         )
                     }
-                    Log.d("TAG", "RoomDetailScreen:${room.photos_room} ")
+                    Log.d("imgea", "RoomDetailScreen:${room.photos_room} ")
                     // Hiển thị video
 
                     room.video_room.forEach { videoUrl ->

@@ -56,6 +56,7 @@ fun SelectMedia(
 
     val context = LocalContext.current
 
+    // Image picker
     val launcherImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
@@ -64,7 +65,7 @@ fun SelectMedia(
                 if (remainingSpace > 0) {
                     val toAdd = it.take(remainingSpace)
                     selectedImages.addAll(toAdd)
-                    onMediaSelected(selectedImages, selectedVideos) // Gọi callback
+                    onMediaSelected(selectedImages, selectedVideos) // Call callback with updated images
                 }
                 if (it.size > remainingSpace) {
                     Toast.makeText(context, "Giới hạn tối đa 10 ảnh.", Toast.LENGTH_SHORT).show()
@@ -73,6 +74,7 @@ fun SelectMedia(
         }
     )
 
+    // Video picker
     val launcherVideo = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
@@ -81,7 +83,7 @@ fun SelectMedia(
                 if (remainingSpace > 0) {
                     val toAdd = it.take(remainingSpace)
                     selectedVideos.addAll(toAdd)
-                    onMediaSelected(selectedImages, selectedVideos) // Gọi callback
+                    onMediaSelected(selectedImages, selectedVideos) // Call callback with updated videos
                 }
                 if (it.size > remainingSpace) {
                     Toast.makeText(context, "Giới hạn tối đa 5 video.", Toast.LENGTH_SHORT).show()
@@ -91,7 +93,7 @@ fun SelectMedia(
     )
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Phần chọn ảnh
+        // Select images section
         Row(
             modifier = Modifier.padding(5.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -149,7 +151,7 @@ fun SelectMedia(
                                     .background(Color.Red, shape = RoundedCornerShape(10.dp))
                                     .clickable {
                                         selectedImages.remove(imageUri)
-                                        onMediaSelected(selectedImages, selectedVideos) // Gọi callback
+                                        onMediaSelected(selectedImages, selectedVideos) // Call callback on remove
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -168,7 +170,7 @@ fun SelectMedia(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Phần chọn video
+        // Select videos section
         Column(
             modifier = Modifier
                 .clickable { launcherVideo.launch(arrayOf("video/*")) }
@@ -222,7 +224,7 @@ fun SelectMedia(
                                 .background(Color.Red, shape = RoundedCornerShape(10.dp))
                                 .clickable {
                                     selectedVideos.remove(videoUri)
-                                    onMediaSelected(selectedImages, selectedVideos) // Gọi callback
+                                    onMediaSelected(selectedImages, selectedVideos) // Call callback on remove
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -239,4 +241,3 @@ fun SelectMedia(
         }
     }
 }
-
