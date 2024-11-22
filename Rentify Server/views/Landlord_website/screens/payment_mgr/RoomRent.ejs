@@ -124,7 +124,7 @@
     let userId = localStorage.getItem('user_id');
     console.log("userId :", userId)
     let buildings = [];
-    let selectedBuildingId = null;
+    let selectedBuildingId;
     let currentDate = new Date();
     let selectedYear = currentDate.getFullYear();
     let selectedMonth = currentDate.getMonth() + 1;
@@ -287,6 +287,10 @@
                 html += `<div class="col-md-4 mb-4"> <!-- Mỗi mục chiếm 1/3 chiều rộng trên màn hình lớn --> 
                             <div class="border p-3 rounded shadow-sm">
                                 <strong>Phòng: ${invoice.room_id.room_name}</strong><br>
+                                <div class="mb-0 mt-1" style="font-size: 14px;">
+                                    <span style="font-size: small; color: #777; padding-right:9px;">Tháng:</span>
+                                    <span>${new Date(invoice.created_at).toLocaleString('vi-VN', { month: 'long' })}</span>
+                                </div>
                                 <div class="mb-0 mt-1" style="font-size: 14px;">
                                     <span style="font-size: small; color: #777;padding-right:5px;">Thành tiền:</span>
                                     <span>${invoice.amount} VND</span><br>
