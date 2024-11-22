@@ -119,7 +119,9 @@ fun AddPostScreens(navController: NavHostController) {
      var content by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
-
+    fun onRoomTypeSelected(roomType: String) {
+        selectedRoomTypes = listOf(roomType) // Cập nhật loại phòng đã chọn
+    }
     suspend fun addPost(
         context: Context,
         apiService: APIService,
@@ -277,14 +279,9 @@ fun AddPostScreens(navController: NavHostController) {
 
                 RoomTypeOptions(
                     selectedRoomTypes = selectedRoomTypes,
-                    onRoomTypeSelected = { roomType ->
-                        selectedRoomTypes = if (selectedRoomTypes.contains(roomType)) {
-                            selectedRoomTypes - roomType
-                        } else {
-                            selectedRoomTypes + roomType
-                        }
-                    }
+                    onRoomTypeSelected = { selectedRoomTypes = listOf(it) }
                 )
+
             }
 //video
             SelectMedia { images, videos ->

@@ -107,28 +107,28 @@ fun RoomTypeLabel() {
 
 @Composable
 fun RoomTypeOptions(
-    selectedRoomTypes: List<String>,
+    selectedRoomType: String?,  // Thay đổi từ List<String> thành String?
     onRoomTypeSelected: (String) -> Unit
 ) {
     Row(
         modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         RoomTypeOption(text = "Phòng trọ",
-            isSelected = selectedRoomTypes.contains("Phòng trọ"),
+            isSelected = selectedRoomType == "Phòng trọ",  // Kiểm tra loại phòng đã chọn
             onClick = { onRoomTypeSelected("Phòng trọ") }
         )
 
         Spacer(modifier = Modifier.width(10.dp))
 
         RoomTypeOption(text = "Nguyên căn",
-            isSelected = selectedRoomTypes.contains("Nguyên căn"),
+            isSelected = selectedRoomType == "Nguyên căn",  // Kiểm tra loại phòng đã chọn
             onClick = { onRoomTypeSelected("Nguyên căn") }
         )
 
         Spacer(modifier = Modifier.width(10.dp))
 
         RoomTypeOption(text = "Chung cư",
-            isSelected = selectedRoomTypes.contains("Chung cư"),
+            isSelected = selectedRoomType == "Chung cư",  // Kiểm tra loại phòng đã chọn
             onClick = { onRoomTypeSelected("Chung cư") }
         )
     }
@@ -144,13 +144,13 @@ fun RoomTypeOption(
                 onClick = onClick,
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() })
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
             .border(
                 width = 1.dp,
                 color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
                 shape = RoundedCornerShape(9.dp)
             )
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
             .padding(0.dp)
     ) {
         Text(

@@ -33,9 +33,11 @@ import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -45,15 +47,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.window.Dialog
+import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitClient
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.ComfortableOptions
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.TriangleShape
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.ComfortableLabel
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.ServiceLabel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,6 +72,7 @@ import kotlinx.coroutines.withContext
 fun PostDetailScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
     val postDetail by viewModel.postDetail.observeAsState()
     val scrollState = rememberScrollState()
+    var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     // Gọi API lấy chi tiết bài đăng
     LaunchedEffect(postId) {
         viewModel.getPostDetail(postId)
@@ -78,6 +87,14 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+            detail.room_type?.let { room_type ->
+                val room_typeString = room_type.toString() // Chuyển sang chuỗi nếu cần
+                val selectedServices = room_type
+                    .removeSurrounding("[", "]") // Loại bỏ dấu []
+                    .split(",") // Tách thành danh sách
+                    .map { it.trim() } // Loại bỏ khoảng trắng thừa
+                RoomTypeDisplay(it = selectedServices)
+            }
             Row(   verticalAlignment = Alignment.CenterVertically, ) {
                 // Loại phòng
                 Text(color = Color(0xfffeb051), fontSize = 16.sp, text = " ${detail.room_type ?: "Chưa có loại phòng"}")
@@ -130,15 +147,27 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
             // Tiện ích
 
-            detail.amenities?.let {
-                Text("Tiện ích: ${it.joinToString(", ")}")
+            detail.amenities?.let { amenities ->
+                val amenitiesString = amenities.toString() // Chuyển sang chuỗi nếu cần
+                val selectedAmenities = amenitiesString
+                    .removeSurrounding("[", "]") // Loại bỏ dấu []
+                    .split(",") // Tách thành danh sách
+                    .map { it.trim() } // Loại bỏ khoảng trắng thừa
+                AmenitiesDisplay(it = selectedAmenities)
             }
+
             Spacer(modifier = Modifier.height(8.dp))
 
 
             // Dịch vụ
-            detail.services?.let {
-                Text("Dịch vụ: ${it.joinToString(", ")}")
+
+            detail.services?.let { services ->
+                val servicesString = services.toString() // Chuyển sang chuỗi nếu cần
+                val selectedServices = servicesString
+                    .removeSurrounding("[", "]") // Loại bỏ dấu []
+                    .split(",") // Tách thành danh sách
+                    .map { it.trim() } // Loại bỏ khoảng trắng thừa
+                ServicesDisplay(it = selectedServices)
             }
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -291,7 +320,7 @@ fun VideoPlayer(videoUrl: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-           // .aspectRatio(16f / 9f) // Đảm bảo tỷ lệ 16:9
+            // .aspectRatio(16f / 9f) // Đảm bảo tỷ lệ 16:9
             .background(Color.Black) // Màu nền để đảm bảo không bị trống
     ) {
         AndroidView(
@@ -313,5 +342,296 @@ fun VideoPlayer(videoUrl: String) {
             },
             modifier = Modifier.fillMaxSize()
         )
+    }
+}
+@Composable
+fun StaticamenitiesOptions(
+    amenities: List<String>, // Danh sách tiện ích từ dữ liệu
+    allOptions: List<String> = listOf(
+        "Vệ sinh khép kín",
+        "Gác xép",
+        "Ra vào vân tay",
+        "Ban công",
+        "Nuôi pet",
+        "Không chung chủ"
+    )
+) {
+    FlowRow(
+        modifier = Modifier.padding(0.dp),
+        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
+        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+    ) {
+        allOptions.forEach { option ->
+            StaticamenitiesOption(
+                text = option,
+                isSelected = amenities.contains(option) // Hiển thị dấu tích nếu có trong danh sách tiện ích
+            )
+        }
+    }
+}
+
+@Composable
+fun StaticamenitiesOption(
+    text: String,
+    isSelected: Boolean
+) {
+    Box(
+        modifier = Modifier
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
+            .border(
+                width = 1.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
+                shape = RoundedCornerShape(9.dp)
+            )
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
+            .padding(0.dp)
+    ) {
+        Text(
+            text = text,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
+            fontSize = 13.sp,
+            modifier = Modifier
+                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
+                .padding(14.dp)
+                .align(Alignment.Center)
+        )
+
+        // Hiển thị dấu tích nếu được chọn
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .size(23.dp)
+                    .align(Alignment.TopStart)
+                    .background(
+                        color = Color(0xFF44acfe),
+                        shape = TriangleShape()
+                    ),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.tick),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(10.dp)
+                        .offset(x = 3.dp, y = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AmenitiesDisplay(it: List<String>?) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        ComfortableLabel()
+
+        if (it != null && it.isNotEmpty()) {
+            StaticamenitiesOptions(amenities = it)
+        } else {
+            Text(
+                text = "Không có tiện ích nào.",
+                color = Color.Gray,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+////
+@Composable
+fun StaticServicesOptions(
+    services: List<String>, // Danh sách tiện ích từ dữ liệu
+    allservicesOptions: List<String> = listOf(
+        "Điều hoà",
+        "Kệ bếp",
+        "Tủ lạnh",
+        "Bình nóng lạnh",
+        "Máy giặt",
+        "Bàn ghế"
+    )
+) {
+    FlowRow(
+        modifier = Modifier.padding(0.dp),
+        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
+        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+    ) {
+        allservicesOptions.forEach { option ->
+            StaticServicesOption(
+                text = option,
+                isSelected = services.contains(option) // Hiển thị dấu tích nếu có trong danh sách tiện ích
+            )
+        }
+    }
+}
+
+@Composable
+fun StaticServicesOption(
+    text: String,
+    isSelected: Boolean
+) {
+    Box(
+        modifier = Modifier
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
+            .border(
+                width = 1.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
+                shape = RoundedCornerShape(9.dp)
+            )
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
+            .padding(0.dp)
+    ) {
+        Text(
+            text = text,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
+            fontSize = 13.sp,
+            modifier = Modifier
+                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
+                .padding(14.dp)
+                .align(Alignment.Center)
+        )
+
+        // Hiển thị dấu tích nếu được chọn
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .size(23.dp)
+                    .align(Alignment.TopStart)
+                    .background(
+                        color = Color(0xFF44acfe),
+                        shape = TriangleShape()
+                    ),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.tick),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(10.dp)
+                        .offset(x = 3.dp, y = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ServicesDisplay(it: List<String>?) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        ServiceLabel()
+
+        if (it != null && it.isNotEmpty()) {
+            StaticServicesOptions(services = it)
+        } else {
+            Text(
+                text = "Không có tiện ích nào.",
+                color = Color.Gray,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+////
+@Composable
+fun StaticRoomTypeOptions(
+    services: List<String>, // Danh sách tiện ích từ dữ liệu
+    allservicesOptions: List<String> = listOf(
+        "Phòng trọ",
+        "Nguyên căn",
+        "Chung cư"
+
+    )
+) {
+    FlowRow(
+        modifier = Modifier.padding(0.dp),
+        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
+        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+    ) {
+        allservicesOptions.forEach { option ->
+            StaticRoomTypeOption(
+                text = option,
+                isSelected = services.contains(option) // Hiển thị dấu tích nếu có trong danh sách tiện ích
+            )
+        }
+    }
+}
+
+@Composable
+fun StaticRoomTypeOption(
+    text: String,
+    isSelected: Boolean
+) {
+    Box(
+        modifier = Modifier
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
+            .border(
+                width = 1.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
+                shape = RoundedCornerShape(9.dp)
+            )
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
+            .padding(0.dp)
+    ) {
+        Text(
+            text = text,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
+            fontSize = 13.sp,
+            modifier = Modifier
+                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
+                .padding(14.dp)
+                .align(Alignment.Center)
+        )
+
+        // Hiển thị dấu tích nếu được chọn
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .size(23.dp)
+                    .align(Alignment.TopStart)
+                    .background(
+                        color = Color(0xFF44acfe),
+                        shape = TriangleShape()
+                    ),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.tick),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(10.dp)
+                        .offset(x = 3.dp, y = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RoomTypeDisplay(it: List<String>?) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        ServiceLabel()
+
+        if (it != null && it.isNotEmpty()) {
+            StaticRoomTypeOptions(services = it)
+        } else {
+            Text(
+                text = "Không có tiện ích nào.",
+                color = Color.Gray,
+                fontSize = 14.sp
+            )
+        }
     }
 }
