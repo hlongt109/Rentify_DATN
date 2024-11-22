@@ -67,4 +67,28 @@ router.get('/UpdateRoom', (req, res) => {
   });
 });
 
+router.get('/ContractPage', (req, res) => {
+  res.render('Landlord_website/screens/Contract/ContractPage', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Quản lý hợp đồng',
+      body: html
+    });
+  });
+});
+
+router.get('/AddContractPage', (req, res) => {
+  res.render('Landlord_website/screens/Contract/AddContractPage', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Thêm hợp đồng',
+      body: html
+    });
+  });
+});
+
 module.exports = router;

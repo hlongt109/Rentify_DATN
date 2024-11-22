@@ -11,6 +11,7 @@ const Contract = new Schema({
     ref: "Room",
     required: true,
   },
+  photos_contract: { type: Array },
   content: { type: String, require: true },
   start_date: { type: String, require: true },
   end_date: { type: String, require: true },
