@@ -8,56 +8,51 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Room(
     @SerializedName("_id") val id: String = "",
-    val building_id: String,         // ID của tòa nhà
+    val buildingId: String,         // ID của tòa nhà
     val room_name: String?,          // Tên phòng
-    val room_type: String,           // Loại phòng
+    val roomType: String,           // Loại phòng
     val description: String,        // Mô tả phòng
     val price: Double,              // Giá phòng
     val size: String,               // Kích thước phòng (ví dụ: "40m2")
-    val video_room: List<String>,  // URL video của phòng (nếu có)
-    val photos_room: List<String>, // Danh sách URL ảnh của phòng
+    val video_room: List<String>? = null,  // URL video của phòng (nếu có)
+    val photos_room: List<String>? = null, // Danh sách URL ảnh của phòng
     val service: List<String>? = null, // Danh sách ID dịch vụ liên quan đến phòng
     val amenities: List<String>? = null,  // Tiện nghi của phòng
-    val limit_person: Int,           // Giới hạn số người
+    val limitPerson: Int,           // Giới hạn số người
     val status: Int,                // 0: Chưa cho thuê, 1: Đã cho thuê
     val createdAt: String? = null,  // Ngày tạo
     val updatedAt: String? = null   // Ngày cập nhật
 )
 
-@Serializable
 data class AddRoomResponse(
-    val id: String,                  // ID của phòng
-    val room_name: String,            // Tên phòng
-    val price: Double,               // Giá phòng
-    val description: String,         // Mô tả phòng
-    val image: String,               // URL ảnh đại diện
-    val type: String? = null         // Loại phòng
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readDouble(),
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()
-    )
+    val success: Boolean,
+    val message: String,
+    val room: RoomDetail
+)
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
-        parcel.writeString(room_name)
-        parcel.writeDouble(price)
-        parcel.writeString(description)
-        parcel.writeString(image)
-        parcel.writeString(type)
-    }
+@Serializable
+data class RoomDetail(
+    val _id: String,
+    val building_id: String,
+    val room_name: String,
+    val room_type: String,
+    val description: String,
+    val price: Double,
+    val size: String,
+    val video_room: List<String> = emptyList(),
+    val photos_room: List<String> = emptyList(),
+    val service: List<String> = emptyList(),
+    val amenities: List<String> = emptyList(),
+    val limit_person: Int,
+    val status: Int,
+    val created_at: String,
+    val updated_at: String
+)
 
-    override fun describeContents(): Int = 0
-
-    companion object CREATOR : Parcelable.Creator<AddRoomResponse> {
-        override fun createFromParcel(parcel: Parcel): AddRoomResponse = AddRoomResponse(parcel)
-        override fun newArray(size: Int): Array<AddRoomResponse?> = arrayOfNulls(size)
-    }
-}
+@Serializable
+data class PhotoRoom(
+    val url: String
+)
 
 data class BuildingWithRooms(
     val _id: String,
@@ -65,6 +60,5 @@ data class BuildingWithRooms(
     val address: String,
     val rooms: List<Room>
 )
-
 
 

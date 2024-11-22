@@ -1,24 +1,30 @@
 package com.rentify.user.app.viewModel.RoomViewModel
 
+import android.content.Context
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.network.RetrofitService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
-import java.io.File
+import java.io.IOException
 
-class RoomViewModel : ViewModel() {
+class RoomViewModel(private val context: Context) : ViewModel() {
     private val _roomNames = MutableLiveData<List<String>>()
     val roomNames: LiveData<List<String>> get() = _roomNames
     private val apiService = RetrofitService().ApiService
@@ -32,70 +38,9 @@ class RoomViewModel : ViewModel() {
     val roomDetail: LiveData<Room?> get() = _roomDetail
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> get() = _error
-    //    API ADD PHÒNG
-    fun addRoom(
-        buildingId: String,
-        roomName: String,
-        roomType: String,
-        description: String,
-        price: Double,
-        size: String,
-        status: Int,
-        videoFile: List<Uri>?,
-        photoFiles: List<Uri>?,
-        service: List<String>?,
-        amenities: List<String>?,
-        limitPerson: Int
-    ) {
-        viewModelScope.launch {
-            try {
-                // Convert video URIs to URLs (Assuming you upload them somewhere and get the URLs)
-                val videoUrls = videoFile?.map { uri ->
-                    uploadFileToServer(uri, "video/mp4")
-                }
-                val photoUrls = photoFiles?.map { uri ->
-                    uploadFileToServer(uri, "image/jpeg")
-                }
-                val response = apiService.addRoom(
-                    building_id = createPartFromString(buildingId),
-                    room_name = createPartFromString(roomName),
-                    room_type = createPartFromString(roomType),
-                    description = createPartFromString(description),
-                    price = createPartFromString(price.toString()),
-                    size = createPartFromString(size),
-                    status = createPartFromString(status.toString()),
-                    video_room = videoUrls,
-                    photos_room = photoUrls,
-                    service = service?.let { createPartFromString(it.joinToString(",")) },
-                    amenities = amenities?.let { createPartFromString(it.joinToString(",")) },
-                    limit_person = createPartFromString(limitPerson.toString())
-                )
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
-                if (response.isSuccessful) {
-                    _addRoomResponse.value = response
-                } else {
-                    _error.value = "Lỗi khi thêm phòng: ${response.message()}"
-                }
-            } catch (e: Exception) {
-                _error.value = "Lỗi khi thêm phòng: ${e.message}"
-            }
-        }
-    }
-    private suspend fun uploadFileToServer(uri: Uri, mimeType: String): String {
-        try {
-            val file = File(uri.path!!)
-            val requestBody = file.asRequestBody(mimeType.toMediaTypeOrNull())
-            val multipart = MultipartBody.Part.createFormData("file", file.name, requestBody)
-            val response = apiService.uploadFile(multipart)
-            return response.body()?.fileUrl ?: ""
-        } catch (e: Exception) {
-            Log.e("UploadError", "File upload failed: ${e.message}", e)
-            return ""
-        }
-    }
-    private fun createPartFromString(value: String): RequestBody {
-        return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
-    }
 
     // API LẤY DANH SÁCH TÒA THEO MANAGERID
     fun fetchBuildingsWithRooms(manager_id: String) {
@@ -171,5 +116,154 @@ class RoomViewModel : ViewModel() {
             }
         }
     }
+    //    API ADD PHÒNG
+    fun addRoom(
+        buildingId: String,
+        roomName: String,
+        roomType: String,
+        description: String,
+        price: Double,
+        size: String,
+        service: List<String>,
+        amenities: List<String>,
+        limitPerson: Int,
+        status: Int,
+        photoUris: List<Uri>,
+        videoUris: List<Uri>
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _isLoading.postValue(true)
+
+
+                // Kiểm tra số lượng ảnh và video trước khi gửi
+                if (photoUris.size > 10 || videoUris.size > 2) {
+                    _error.postValue("Chỉ được phép tải lên tối đa 10 ảnh và 2 video.")
+                    _isLoading.postValue(false)
+                    return@launch
+                }
+
+
+                // Tạo request body cho các trường văn bản
+                val buildingIdBody = createPartFromString(buildingId)
+                val roomNameBody = createPartFromString(roomName)
+                val roomTypeBody = createPartFromString(roomType)
+                val descriptionBody = createPartFromString(description)
+                val priceBody = createPartFromString(price.toString())
+                val sizeBody = createPartFromString(size)
+                val limitPersonBody = createPartFromString(limitPerson.toString())
+                val statusBody = createPartFromString(status.toString())
+
+
+                // Tạo list request body cho các dịch vụ và tiện nghi
+                val serviceJson = Gson().toJson(service)
+                val amenitiesJson = Gson().toJson(amenities)
+                val serviceBody = createPartFromString(service.joinToString(","))
+                val amenitiesBody = createPartFromString(amenities.joinToString(","))
+                Log.d("Service", "addRoom: $serviceBody")
+                Log.d("AmenitiesBody", "addRoom: $amenitiesBody")
+                Log.d("ImageUpload", "addRoom: $photoUris")
+                // Xử lý các URI hình ảnh và video thành MultipartBody.Part
+                val photoParts = photoUris.mapIndexed { index, uri ->
+                    processUri(context, Uri.parse(uri.toString()), "photos_room", "photo_$index.jpg")
+                }
+
+
+
+
+                val videoParts = videoUris.mapIndexed { index, uriString ->
+                    val uri = Uri.parse(uriString.toString()) // Chuyển đổi String thành Uri
+                    processUri(context, uri, "video_room", "video_$index.mp4")
+                }
+
+
+                // Gửi yêu cầu API
+                val response = apiService.addRoom(
+                    buildingId = buildingIdBody,
+                    roomName = roomNameBody,
+                    roomType = roomTypeBody,
+                    description = descriptionBody,
+                    price = priceBody,
+                    size = sizeBody,
+                    service = serviceBody,
+                    amenities = amenitiesBody,
+                    limitPerson = limitPersonBody,
+                    status = statusBody,
+                    photos_room = photoParts,
+                    video_room = videoParts
+                )
+
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        _addRoomResponse.value = response
+                    } else {
+                        _error.value = "Lỗi: ${response.message()}"
+                    }
+                    _isLoading.value = false
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.d("ErrorUpload", "addRoom: ${e.message}")
+                    _error.value = "Lỗi: ${e.message}"
+                    _isLoading.value = false
+                }
+            }
+        }
+    }
+
+
+
+
+    private fun createPartFromString(value: String): RequestBody {
+        return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
+    }
+    fun processUri(context: Context, uri: Uri, paramName: String, fileName: String): MultipartBody.Part {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+                ?: throw IOException("Không thể mở InputStream từ URI: $uri")
+
+
+            val byteArray = inputStream.readBytes()
+
+
+            val requestBody = byteArray.toRequestBody("application/octet-stream".toMediaTypeOrNull())
+            MultipartBody.Part.createFormData(paramName, fileName, requestBody)
+        } catch (e: Exception) {
+            Log.e("ProcessUriError", "Error processing URI $uri: ${e.message}", e)
+            throw e
+        }
+    }
+
+
+    fun getRealPathFromURI(context: Context, uri: Uri): String? {
+        // Kiểm tra xem URI là kiểu content hay file
+        return if (uri.scheme == "content") {
+            val cursor = context.contentResolver.query(uri, null, null, null, null)
+            cursor?.use {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                if (it.moveToFirst()) it.getString(columnIndex) else null
+            }
+        } else if (uri.scheme == "file") {
+            uri.path
+        } else {
+            null
+        }
+    }
+
+
+
+
+    class RoomViewModeFactory(private val context: Context) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(RoomViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return RoomViewModel(context) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
+
 
 }

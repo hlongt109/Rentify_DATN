@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,9 +42,12 @@ fun PreviewFeetBuilding() {
 }
 
 @Composable
-fun FeetBuilding(navController: NavController, viewModel: RoomViewModel = viewModel()) {
+fun FeetBuilding(navController: NavController){
+    val context = LocalContext.current
+    val viewModel: RoomViewModel = viewModel(
+        factory = RoomViewModel.RoomViewModeFactory(context)
+    )
     val buildingWithRooms by viewModel.buildingWithRooms.observeAsState(emptyList())
-
     LaunchedEffect(Unit) {
         try {
             viewModel.fetchBuildingsWithRooms("6727bee93361c4e22f074cd5")

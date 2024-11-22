@@ -72,7 +72,7 @@ fun ItemTypeRoom(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = itemType.room_type,
+            text = itemType.roomType,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
             color = colorText,

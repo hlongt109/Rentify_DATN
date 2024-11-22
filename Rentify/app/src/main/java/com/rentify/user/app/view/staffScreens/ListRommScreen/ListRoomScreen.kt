@@ -1,7 +1,9 @@
 package com.rentify.user.app.view.staffScreens.ListRommScreen
 
+
 import android.util.Log
 import androidx.compose.runtime.livedata.observeAsState
+
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,20 +36,33 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.view.userScreens.cancelContract.components.HeaderSection
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ListRoomScreenPreview() {
-    ListRoomScreen(navController = rememberNavController(), viewModel = RoomViewModel(), buildingId = "sample_building_id")
+    val context = LocalContext.current
+    val roomViewModel: RoomViewModel = viewModel(
+        factory = RoomViewModel.RoomViewModeFactory(context = context)
+    )
+    ListRoomScreen(
+        navController = rememberNavController(),
+        buildingId = "sample_building_id"
+    )
 }
+
 
 @Composable
 fun ListRoomScreen(
     navController: NavHostController,
-    viewModel: RoomViewModel = viewModel(),
     buildingId: String?
 ) {
+    val context = LocalContext.current
+    val viewModel: RoomViewModel = viewModel(
+        factory = RoomViewModel.RoomViewModeFactory(context)
+    )
     // Gọi hàm fetchRoomsForBuilding khi buildingId không null
     LaunchedEffect(buildingId) {
         buildingId?.let {
@@ -54,16 +70,23 @@ fun ListRoomScreen(
         }
     }
 
+
     // Sử dụng observeAsState để lấy danh sách phòng
     val rooms by viewModel.rooms.observeAsState(initial = emptyList())
 
-    Column (
+
+    Column(
         modifier = Modifier.padding(top = 20.dp)
-    ){
-        HeaderSection(backgroundColor = Color.White, title = "Danh sách phòng", navController = navController)
+    ) {
+        HeaderSection(
+            backgroundColor = Color.White,
+            title = "Danh sách phòng",
+            navController = navController
+        )
         rooms.forEach { room ->
             RoomItem(room = room,navController)
         }
+
 
         Row(
             modifier = Modifier
@@ -94,19 +117,15 @@ fun ListRoomScreen(
     }
 }
 
+
 @Composable
-fun RoomItem(room: Room, navController: NavHostController) {
+fun RoomItem(room: Room,navController: NavHostController) {
     Log.d("UpdatePostScreen", "Post Detail: ${room.room_name}")
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(9.dp)
             .border(width = 1.dp, color = Color(0xffdddddd), shape = RoundedCornerShape(20.dp))
-            .clickable {
-                val id=room.id
-                navController.navigate("RoomDetailScreen/${id}")
-
-            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -120,6 +139,10 @@ fun RoomItem(room: Room, navController: NavHostController) {
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(start = 20.dp)
+                .clickable {
+                    val id=room.id
+                    navController.navigate("RoomDetailScreen/${id}")
+                }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.roomm),
@@ -133,10 +156,10 @@ fun RoomItem(room: Room, navController: NavHostController) {
             Column(
                 modifier = Modifier
                     .padding(top = 10.dp)
-                    .weight(1f)
+                    .weight(1f) // Cho phép cột chiếm không gian còn lại
             ) {
                 Text(
-                    text =  "${room.room_name}",
+                    text = "${room.room_name}",
                     fontSize = 18.sp,
                     color = Color.Black,
                     modifier = Modifier.padding(start = 5.dp),
@@ -157,4 +180,3 @@ fun RoomItem(room: Room, navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
-

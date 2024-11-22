@@ -3,6 +3,7 @@ package com.rentify.user.app.network
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
@@ -31,20 +32,18 @@ interface APIService {
     @Multipart
     @POST("staff/rooms/addRoom")
     suspend fun addRoom(
-        @Part("building_id") building_id: RequestBody,
-        @Part("room_name") room_name: RequestBody,
-        @Part("room_type") room_type: RequestBody,
+        @Part("building_id") buildingId: RequestBody,
+        @Part("room_name") roomName: RequestBody,
+        @Part("room_type") roomType: RequestBody,
         @Part("description") description: RequestBody,
         @Part("price") price: RequestBody,
         @Part("size") size: RequestBody,
-//        @Part video_room: List<MultipartBody.Part>?,
-//        @Part photos_room: List<MultipartBody.Part>?,
-        @Part("video_room") video_room: List<String>?,
-        @Part("photos_room") photos_room: List<String>?,
-        @Part("service") service: RequestBody?,
-        @Part("amenities") amenities: RequestBody?,
-        @Part("limit_person") limit_person: RequestBody,
+        @Part("service") service: RequestBody,  // Gửi dưới dạng JSON string
+        @Part("amenities") amenities: RequestBody, // Gửi dưới dạng JSON string
+        @Part("limit_person") limitPerson: RequestBody,
         @Part("status") status: RequestBody,
+        @Part photos_room: List<MultipartBody.Part>,
+        @Part video_room: List<MultipartBody.Part>
     ): Response<AddRoomResponse>
     @Multipart
     @POST("upload-file")
@@ -73,4 +72,9 @@ interface APIService {
     suspend fun deleteRoom(
         @Path("id") id: String
     ): Response<ApiResponse>
+    // LẤY THÔNG TIN NGƯỜI DÙNG
+    @GET("staff/users/userr/{id}")
+    suspend fun getUserDetail(
+        @Path("id") id: String
+    ): Response<User>
 }

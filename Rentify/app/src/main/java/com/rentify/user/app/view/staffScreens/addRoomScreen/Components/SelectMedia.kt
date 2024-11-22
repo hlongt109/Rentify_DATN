@@ -1,15 +1,20 @@
 package com.rentify.user.app.view.staffScreens.addRoomScreen.Components
 
+
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 
+
 import androidx.compose.foundation.layout.Box
 
+
 import androidx.compose.foundation.layout.padding
+
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -39,11 +44,18 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import com.rentify.user.app.R
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.rememberImagePainter
+import com.rentify.user.app.utils.CheckUnit
+import java.io.File
+
 
 
 
@@ -51,21 +63,20 @@ import coil.compose.rememberImagePainter
 fun SelectMedia(
     onMediaSelected: (List<Uri>, List<Uri>) -> Unit
 ) {
-    val selectedImages = remember { mutableStateListOf<Uri>() }
-    val selectedVideos = remember { mutableStateListOf<Uri>() }
+    var selectedImages by rememberSaveable{ mutableStateOf(listOf<Uri>())}
+    var selectedVideos by rememberSaveable {mutableStateOf(listOf<Uri>())}
+
 
     val context = LocalContext.current
-
-    // Image picker
     val launcherImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
             uris?.let {
                 val remainingSpace = 10 - selectedImages.size
                 if (remainingSpace > 0) {
-                    val toAdd = it.take(remainingSpace)
-                    selectedImages.addAll(toAdd)
-                    onMediaSelected(selectedImages, selectedVideos) // Call callback with updated images
+                    selectedImages = selectedImages + uris
+                    onMediaSelected(selectedImages, selectedVideos)
+                    Log.d("ImageUploadSelect", "Selected image URI: $uris")
                 }
                 if (it.size > remainingSpace) {
                     Toast.makeText(context, "Giới hạn tối đa 10 ảnh.", Toast.LENGTH_SHORT).show()
@@ -73,34 +84,31 @@ fun SelectMedia(
             }
         }
     )
-
-    // Video picker
     val launcherVideo = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenMultipleDocuments(),
-        onResult = { uris ->
-            uris?.let {
-                val remainingSpace = 5 - selectedVideos.size
-                if (remainingSpace > 0) {
-                    val toAdd = it.take(remainingSpace)
-                    selectedVideos.addAll(toAdd)
-                    onMediaSelected(selectedImages, selectedVideos) // Call callback with updated videos
-                }
-                if (it.size > remainingSpace) {
-                    Toast.makeText(context, "Giới hạn tối đa 5 video.", Toast.LENGTH_SHORT).show()
-                }
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri? ->
+        uri?.let {
+            try {
+                // Lưu URI trực tiếp
+                selectedVideos = selectedVideos + uri
+                onMediaSelected(selectedImages, selectedVideos)
+                Log.d("VideoUploadSelect", "Selected video URI: $uri")
+            } catch (e: Exception) {
+                Log.e("VideoUploadError", "Error selecting video: ${e.message}")
             }
         }
-    )
+    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Select images section
+        // Phần chọn ảnh
         Row(
             modifier = Modifier.padding(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 modifier = Modifier
-                    .clickable { launcherImage.launch(arrayOf("image/*")) }
+                    .clickable { launcherImage.launch(arrayOf("image/*"))}
                     .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                     .background(Color.White)
                     .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
@@ -150,8 +158,8 @@ fun SelectMedia(
                                     .align(Alignment.TopEnd)
                                     .background(Color.Red, shape = RoundedCornerShape(10.dp))
                                     .clickable {
-                                        selectedImages.remove(imageUri)
-                                        onMediaSelected(selectedImages, selectedVideos) // Call callback on remove
+                                        selectedImages.filterNot { it == imageUri}
+                                        onMediaSelected(selectedImages, selectedVideos) // Gọi callback
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -168,12 +176,14 @@ fun SelectMedia(
             }
         }
 
+
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Select videos section
+
+        // Phần chọn video
         Column(
             modifier = Modifier
-                .clickable { launcherVideo.launch(arrayOf("video/*")) }
+                .clickable { launcherVideo.launch("video/*") }
                 .fillMaxWidth()
                 .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                 .background(Color.White)
@@ -223,8 +233,8 @@ fun SelectMedia(
                                 .align(Alignment.TopEnd)
                                 .background(Color.Red, shape = RoundedCornerShape(10.dp))
                                 .clickable {
-                                    selectedVideos.remove(videoUri)
-                                    onMediaSelected(selectedImages, selectedVideos) // Call callback on remove
+                                    selectedVideos.filterNot {it == videoUri}
+                                    onMediaSelected(selectedImages, selectedVideos) // Gọi callback
                                 },
                             contentAlignment = Alignment.Center
                         ) {

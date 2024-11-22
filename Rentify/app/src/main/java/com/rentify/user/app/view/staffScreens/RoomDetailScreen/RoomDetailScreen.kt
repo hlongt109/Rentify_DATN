@@ -77,7 +77,6 @@ fun RoomDetailScreenPreview() {
     RoomDetailScreen(
         navController = rememberNavController(),
         id = "",
-        viewModel = RoomViewModel()
     )
 }
 
@@ -85,15 +84,17 @@ fun RoomDetailScreenPreview() {
 fun RoomDetailScreen(
     navController: NavHostController,
     id: String,
-    viewModel: RoomViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val viewModel: RoomViewModel = viewModel(
+        factory = RoomViewModel.RoomViewModeFactory(context)
+    )
     // Lấy thông tin chi tiết phòng từ ViewModel
     val roomDetail by viewModel.roomDetail.observeAsState()
     val error by viewModel.error.observeAsState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     val scrollState = rememberScrollState()
-    val context= LocalContext.current
     // Gọi API để lấy thông tin phòng chi tiết, chỉ khi id thay đổi
     LaunchedEffect(id) {
         // Kiểm tra xem đã có dữ liệu phòng chưa, nếu chưa thì gọi API
@@ -166,12 +167,12 @@ fun RoomDetailScreen(
                         RoomTypeLabel()
 
                         Text(
-                            text = "${roomDetail?.room_type}",
+                            text = "${roomDetail?.roomType}",
                             color = Color(0xFF7c7b7b),
                             fontSize = 13.sp
                         )
                     }
-                    room.photos_room.forEach { photoUrl ->
+                    room.photos_room?.forEach { photoUrl ->
                         AsyncImage(
                             model = photoUrl,
                             contentDescription = null,
@@ -185,7 +186,7 @@ fun RoomDetailScreen(
                     Log.d("imgea", "RoomDetailScreen:${room.photos_room} ")
                     // Hiển thị video
 
-                    room.video_room.forEach { videoUrl ->
+                    room.video_room?.forEach { videoUrl ->
                         VideoPlayer(videoUrl)
                     }
 
@@ -205,7 +206,7 @@ fun RoomDetailScreen(
 
                             )
                         Text(
-                            text = " ${roomDetail?.limit_person}",
+                            text = " ${roomDetail?.limitPerson}",
                             color = Color(0xFF7c7b7b),
                             fontSize = 13.sp
                         )
