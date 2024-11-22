@@ -10,6 +10,7 @@ import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Multipart
@@ -59,4 +60,9 @@ interface APIService {
     suspend fun getRoomDetailById(
         @Path("id") id: String
     ): Response<Room>
+    // xóa phòng 👽:
+    @DELETE("staff/rooms/DeleteRooms/{id}")
+    suspend fun deleteRoom(
+        @Path("id") id: String
+    ): Response<ApiResponse>
 }

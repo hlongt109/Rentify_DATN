@@ -26,8 +26,6 @@ class RoomViewModel : ViewModel() {
     private val apiService = RetrofitService().ApiService
     private val _addRoomResponse = MutableLiveData<Response<AddRoomResponse>>()
     val addRoomResponse: LiveData<Response<AddRoomResponse>> get() = _addRoomResponse
-//    private val _error = MutableLiveData<String>()
-//    val error: LiveData<String> get() = _error
     private val _rooms = MutableLiveData<List<Room>>()
     val rooms: LiveData<List<Room>> get() = _rooms
     private val _buildingWithRooms = MutableLiveData<List<BuildingWithRooms>>()
@@ -151,4 +149,27 @@ class RoomViewModel : ViewModel() {
             }
         }
     }
+    fun deleteRoomById(id: String) {
+        viewModelScope.launch {
+            try {
+                // Gọi API để xóa phòng
+                val response = apiService.deleteRoom(id)
+
+                if (response.isSuccessful) {
+                    // Xử lý thành công
+                    _error.value = null // Reset lỗi (nếu có)
+                    Log.d("RoomViewModel", "Room deleted successfully.")
+                } else {
+                    // Xử lý thất bại
+                    _error.value = "Failed to delete room: ${response.message()}"
+                    Log.e("RoomViewModel", "Failed to delete room: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                // Xử lý lỗi khi gọi API
+                _error.value = "Exception: ${e.message}"
+                Log.e("RoomViewModel", "Exception: ${e.message}", e)
+            }
+        }
+    }
+
 }

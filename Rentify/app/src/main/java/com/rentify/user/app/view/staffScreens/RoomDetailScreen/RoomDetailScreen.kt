@@ -5,6 +5,7 @@ import android.os.Looper.prepare
 import android.util.Log
 import android.view.Gravity
 import android.widget.FrameLayout
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -65,6 +66,7 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLa
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import androidx.compose.material3.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 
 
@@ -90,7 +92,7 @@ fun RoomDetailScreen(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     val scrollState = rememberScrollState()
-
+    val context= LocalContext.current
     // Gọi API để lấy thông tin phòng chi tiết, chỉ khi id thay đổi
     LaunchedEffect(id) {
         // Kiểm tra xem đã có dữ liệu phòng chưa, nếu chưa thì gọi API
@@ -98,6 +100,7 @@ fun RoomDetailScreen(
             viewModel.fetchRoomDetailById(id)
         }
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -308,7 +311,8 @@ fun RoomDetailScreen(
                             )
                             .clickable(
                                 onClick = {
-                                    // Xử lý sự kiện nhấn nút
+                                    viewModel.deleteRoomById(id)
+                                    navController.popBackStack()
                                 },
                                 indication = null, // Tắt hiệu ứng gợn sóng
                                 interactionSource = remember { MutableInteractionSource() }
@@ -332,8 +336,9 @@ fun RoomDetailScreen(
 
                 // Hiển thị thông báo lỗi nếu có
                 if (error != null) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "Error: $error", color = androidx.compose.ui.graphics.Color.Red)
+                    Toast.makeText(context,"thất bại: $error ",Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context,"thành công  ",Toast.LENGTH_SHORT).show()
                 }
 
             }
