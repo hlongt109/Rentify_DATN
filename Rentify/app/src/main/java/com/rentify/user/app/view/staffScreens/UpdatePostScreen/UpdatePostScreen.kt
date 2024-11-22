@@ -67,6 +67,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Size
@@ -98,6 +100,7 @@ import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.RoomTy
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceOptions
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.StaticServicesOptions
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -105,8 +108,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Buffer
 import java.io.File
 
 fun prepareMultipartBody(
@@ -159,8 +164,12 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
+
+    var selectedComfortable_up by remember { mutableStateOf(listOf<String>()) }
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     var selectedService by remember { mutableStateOf(listOf<String>()) }
+    var selectedService_up by remember { mutableStateOf(listOf<String>()) }
+
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     var address by remember { mutableStateOf("") }
@@ -185,8 +194,21 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
         address = detail.address ?: ""
         phoneNumber = detail.phoneNumber ?: ""
         selectedRoomTypes = detail.room_type?.split(",")?.toList() ?: listOf()
-        selectedComfortable = detail.amenities ?: listOf()
-        selectedService = detail.services ?: listOf()
+        selectedComfortable = detail.amenities?.let { amenities ->
+            amenities.toString() // Chuyển thành chuỗi
+                .removeSurrounding("[", "]") // Loại bỏ ký tự không mong muốn
+                .split(",") // Tách thành danh sách
+                .map { it.trim() } // Xóa khoảng trắng dư thừa
+                .filter { it.isNotEmpty() } // Lọc bỏ chuỗi rỗng
+        } ?: listOf()
+        selectedService = detail.services?.let { services ->
+            services.toString() // Chuyển thành chuỗi
+                .removeSurrounding("[", "]") // Loại bỏ ký tự không mong muốn
+                .split(",") // Tách thành danh sách
+                .map { it.trim() } // Xóa khoảng trắng dư thừa
+                .filter { it.isNotEmpty() } // Lọc bỏ chuỗi rỗng
+        } ?: listOf()
+        Log.d("postlist", "Updated serrvide: $selectedService")
 
         val images = detail.photos ?: listOf()
         val videos = detail.videos ?: listOf()
@@ -538,15 +560,11 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 Spacer(modifier = Modifier.height(3.dp))
                 Column {
                     ComfortableLabel()
-
-                    ComfortableOptions(
-                        selectedComfortable = selectedComfortable,
-                        onComfortableSelected = { comfortable ->
-                            selectedComfortable = if (selectedComfortable.contains(comfortable)) {
-                                selectedComfortable - comfortable
-                            } else {
-                                selectedComfortable + comfortable
-                            }
+                    AmenitiesDisplay(
+                        amenities = selectedComfortable, // Danh sách tiện ích đã chọn
+                        onAmenitiesChange = { updatedAmenities ->
+                            selectedComfortable_up = updatedAmenities // Cập nhật danh sách tiện ích trong state ngoài
+                            Log.d("EditPostScreen", "Updated Amenities: $updatedAmenities") // Kiểm tra kết quả
                         }
                     )
                 }
@@ -554,14 +572,11 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 Spacer(modifier = Modifier.height(10.dp))
                 Column {
                     ServiceLabel()
-                    ServiceOptions(
-                        selectedService = selectedService,
-                        onServiceSelected = { service ->
-                            selectedService = if (selectedService.contains(service)) {
-                                selectedService - service
-                            } else {
-                                selectedService + service
-                            }
+                    ServicesDisplay(
+                        services = selectedService, // Danh sách tiện ích đã chọn
+                        onServicesChange = { updatedService ->
+                            selectedService_up = updatedService // Cập nhật danh sách tiện ích trong state ngoài
+                            Log.d("EditPostScreen", "updatedService: $updatedService") // Kiểm tra kết quả
                         }
                     )
                 }
@@ -575,6 +590,17 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 .height(screenHeight.dp/7f)
                 .background(color = Color.White)
         ) {
+            fun logRequestBody(requestBody: RequestBody) {
+                val buffer = Buffer()
+                try {
+                    requestBody.writeTo(buffer)
+                    val content = buffer.readUtf8()
+                    Log.d("click", "RequestBody content: $content")
+                } catch (e: Exception) {
+                    Log.e("click", "Error reading RequestBody: ${e.message}")
+                }
+            }
+
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(
                     onClick = {
@@ -588,8 +614,14 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         val address = address.toRequestBody("multipart/form-data".toMediaTypeOrNull())
                         val phoneNumber = phoneNumber.toRequestBody("multipart/form-data".toMediaTypeOrNull())
                         val roomType = selectedRoomTypes.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-                        val amenities = selectedComfortable.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-                        val services = selectedService.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        val amenities = selectedComfortable_up.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        val services = selectedService_up.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        Log.d("click", "Amenities before sending request: ${selectedComfortable_up.joinToString(",")}")
+                        Log.d("click", "Services before sending request: ${selectedService_up.joinToString(",")}")
+
+                        // Log nội dung thực tế của RequestBody
+                        logRequestBody(amenities)  // Log nội dung amenities
+                        logRequestBody(services)   // Log nội dung services
 
 
                         val videoParts = selectedVideos.mapNotNull { uri ->
@@ -643,41 +675,46 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
 
 
 @Composable
-fun ComfortableOptions(
-    selectedComfortable: List<String>,
-    onComfortableSelected: (String) -> Unit
+fun StaticComfortableOptions(
+    amenities: List<String>, // Danh sách tiện ích từ dữ liệu
+    allOptions: List<String> = listOf(
+        "Vệ sinh khép kín",
+        "Gác xép",
+        "Ra vào vân tay",
+        "Ban công",
+        "Nuôi pet",
+        "Không chung chủ"
+    ),
+    onSelectAmenity: (String) -> Unit // Thêm tham số cho sự kiện chọn
 ) {
+
     FlowRow(
-        modifier = Modifier.padding(5.dp),
+        modifier = Modifier.padding(8.dp),
         mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
         crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
     ) {
-        listOf(
-            "Vệ sinh khép kín",
-            "Gác xép",
-            "Ra vào vân tay",
-            "Ban công",
-            "Nuôi pet",
-            "Không chung chủ"
-        ).forEach { option ->
-            ComfortableOption(
+        allOptions.forEach { option ->
+            StaticComfortableOption(
                 text = option,
-                isSelected = selectedComfortable.contains(option),
-                onClick = {
-                    onComfortableSelected(option)
-                }
+                isSelected = amenities.contains(option), // Hiển thị dấu tích nếu có trong danh sách tiện ích
+                onClick = { onSelectAmenity(option) } // Khi nhấp vào, gọi onSelectAmenity
+
             )
         }
+
     }
 }
 
 @Composable
-fun ComfortableOption(
-    text: String, isSelected: Boolean, onClick: () -> Unit
+fun StaticComfortableOption(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit // Thêm sự kiện nhấp vào
 ) {
+
     Box(
         modifier = Modifier
-            .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
+            .clickable(onClick = onClick) // Tạo sự kiện nhấp
             .shadow(3.dp, shape = RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
@@ -697,20 +734,20 @@ fun ComfortableOption(
                 .align(Alignment.Center)
         )
 
-        // Dấu tích ở góc khi được chọn
+        // Hiển thị dấu tích nếu được chọn
         if (isSelected) {
             Box(
                 modifier = Modifier
                     .size(23.dp)
                     .align(Alignment.TopStart)
                     .background(
-                        color = Color(0xFF44acfe),  // Màu của dấu tích
+                        color = Color(0xFF44acfe),
                         shape = TriangleShape()
                     ),
                 contentAlignment = Alignment.TopStart
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.tick), // ID của icon dấu tích
+                    painter = painterResource(id = R.drawable.tick),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
@@ -721,6 +758,168 @@ fun ComfortableOption(
         }
     }
 }
+@Composable
+fun AmenitiesDisplay(
+    amenities: List<String>,
+    onAmenitiesChange: (List<String>) -> Unit
+) {
+
+    val selectedAmenities = remember(amenities) { mutableStateOf(amenities) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Tiện ích:",
+            modifier = Modifier.padding(bottom = 8.dp),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+
+        StaticComfortableOptions(
+            amenities = selectedAmenities.value,
+            onSelectAmenity = { amenity ->
+                val updatedAmenities = if (selectedAmenities.value.contains(amenity)) {
+                    selectedAmenities.value - amenity
+                } else {
+                    selectedAmenities.value + amenity
+                }
+                selectedAmenities.value = updatedAmenities
+                onAmenitiesChange(updatedAmenities) // Gửi danh sách mới qua callback
+                Log.d("hamm", "Updated Amenities: $updatedAmenities")
+            }
+        )
+    // Trạng thái danh sách tiện ích
+
+    }
+    }
+////
+///
+
+@Composable
+fun StaticServiceOptions(
+    services: List<String>, // Danh sách tiện ích từ dữ liệu
+    allserviceOptions: List<String> = listOf(
+        "Điều hoà",
+        "Kệ bếp",
+        "Tủ lạnh",
+        "Bình nóng lạnh",
+        "Máy giặt",
+        "Bàn ghế"
+    ),
+    onSelectService: (String) -> Unit // Thêm tham số cho sự kiện chọn
+) {
+
+    FlowRow(
+        modifier = Modifier.padding(8.dp),
+        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
+        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+    ) {
+        allserviceOptions.forEach { option ->
+            StaticServiceOption(
+                text = option,
+                isSelected = services.contains(option), // Hiển thị dấu tích nếu có trong danh sách tiện ích
+                onClick = { onSelectService(option) } // Khi nhấp vào, gọi onSelectAmenity
+
+            )
+        }
+
+    }
+}
+
+@Composable
+fun StaticServiceOption(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit // Thêm sự kiện nhấp vào
+) {
+
+    Box(
+        modifier = Modifier
+            .clickable(onClick = onClick) // Tạo sự kiện nhấp
+            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
+            .border(
+                width = 1.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
+                shape = RoundedCornerShape(9.dp)
+            )
+            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
+            .padding(0.dp)
+    ) {
+        Text(
+            text = text,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
+            fontSize = 13.sp,
+            modifier = Modifier
+                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
+                .padding(14.dp)
+                .align(Alignment.Center)
+        )
+
+        // Hiển thị dấu tích nếu được chọn
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .size(23.dp)
+                    .align(Alignment.TopStart)
+                    .background(
+                        color = Color(0xFF44acfe),
+                        shape = TriangleShape()
+                    ),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.tick),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(10.dp)
+                        .offset(x = 3.dp, y = 2.dp)
+                )
+            }
+        }
+    }
+}
+@Composable
+fun ServicesDisplay(
+    services: List<String>,
+    onServicesChange: (List<String>) -> Unit
+) {
+
+    val selectedService = remember(services) { mutableStateOf(services) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Tiện ích:",
+            modifier = Modifier.padding(bottom = 8.dp),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+
+        StaticServiceOptions(
+            services = selectedService.value,
+            onSelectService = { services ->
+                val updatedService = if (selectedService.value.contains(services)) {
+                    selectedService.value - services
+                } else {
+                    selectedService.value + services
+                }
+                selectedService.value = updatedService
+                onServicesChange(updatedService) // Gửi danh sách mới qua callback
+
+            }
+        )
+        // Trạng thái danh sách tiện ích
+
+    }
+}
+
 
 @Composable
 fun RoomTypeOptions(
@@ -995,6 +1194,5 @@ fun VideoThumbnail(uri: Uri) {
         )
     }
 }
-
 
 

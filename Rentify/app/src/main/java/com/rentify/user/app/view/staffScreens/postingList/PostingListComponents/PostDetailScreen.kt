@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.staffScreens.postingList.PostingListComponents
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -58,10 +59,11 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitClient
-import com.rentify.user.app.view.staffScreens.UpdatePostScreen.ComfortableOptions
+
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.TriangleShape
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.ServiceLabel
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -80,43 +82,30 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
     postDetail?.let { detail ->
         Column(modifier = Modifier.padding(16.dp)      .verticalScroll(scrollState)) {
-            // Hiển thị ảnh/video đầu tiên
+  // Hiển thị ảnh/video đầu tiên
             PostImageSlider(
                 images = detail.photos ?: emptyList(),
                 videos = detail.videos ?: emptyList()
             )
-
             Spacer(modifier = Modifier.height(16.dp))
+ //loai phong
             detail.room_type?.let { room_type ->
-                val room_typeString = room_type.toString() // Chuyển sang chuỗi nếu cần
                 val selectedServices = room_type
                     .removeSurrounding("[", "]") // Loại bỏ dấu []
                     .split(",") // Tách thành danh sách
                     .map { it.trim() } // Loại bỏ khoảng trắng thừa
                 RoomTypeDisplay(it = selectedServices)
             }
-            Row(   verticalAlignment = Alignment.CenterVertically, ) {
-                // Loại phòng
-                Text(color = Color(0xfffeb051), fontSize = 16.sp, text = " ${detail.room_type ?: "Chưa có loại phòng"}")
-                Spacer(modifier = Modifier.width(10.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.namnu),
-                    contentDescription = null,
-                    modifier = Modifier.size(15.dp, 15.dp)
-                )
-            }
-
             Spacer(modifier = Modifier.height(8.dp))
-            // Tiêu đề bài đăng
-            Text(text = detail.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+// Tiêu đề bài đăng
+
+            Text(text = detail.title, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 10.dp))
             Spacer(modifier = Modifier.height(8.dp))
-            Text(color = Color(0xFFF55151), fontWeight = FontWeight.W700, text = " ${detail.price?.let { "$it VND" } ?: "Chưa có giá"}", fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(4.dp))
+            Text(color = Color(0xFFF55151),modifier = Modifier.padding(horizontal = 10.dp), fontWeight = FontWeight.W700, text = " ${detail.price?.let { "$it VND" } ?: "Chưa có giá"}", fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+//địa chỉ
+            Row(modifier = Modifier.padding(horizontal = 10.dp),   verticalAlignment = Alignment.CenterVertically, ) {
 
-
-            // Thông tin bài đăng
-            Row(   verticalAlignment = Alignment.CenterVertically, ) {
-                // Loại phòng
                 Image(
                     painter = painterResource(id = R.drawable.location),
                     contentDescription = null,
@@ -124,12 +113,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(color = Color(0xfffeb051), fontSize = 16.sp, text = " ${detail.address ?: "Chưa có địa chỉ"}")
-
-
             }
-            Row(   verticalAlignment = Alignment.CenterVertically, ) {
-                // Loại phòng
-
+// số điện thoại
+            Row( modifier = Modifier.padding(horizontal = 10.dp),  verticalAlignment = Alignment.CenterVertically, ) {
                 Image(
                     painter = painterResource(id = R.drawable.phone),
                     contentDescription = null,
@@ -142,11 +128,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             Spacer(modifier = Modifier.height(4.dp))
 
             // Nội dung bài đăng
-            Text(text = detail.content, fontSize = 16.sp)
+            Text(text = detail.content, fontSize = 16.sp,modifier = Modifier.padding(horizontal = 10.dp))
             Spacer(modifier = Modifier.height(8.dp))
-
             // Tiện ích
-
             detail.amenities?.let { amenities ->
                 val amenitiesString = amenities.toString() // Chuyển sang chuỗi nếu cần
                 val selectedAmenities = amenitiesString
@@ -178,7 +162,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             Spacer(modifier = Modifier.height(8.dp))
 
             // Trạng thái bài đăng
-            Text(text = "Trạng thái: ${if (detail.status == 1) "Đang hoạt động" else "Không hoạt động"}")
+            Text(text = "Trạng thái: ${if (detail.status == 1) "Phòng đã cho thuê" else "Phòng trống"}")
             Spacer(modifier = Modifier.height(8.dp))
 
             // Thời gian tạo và cập nhật bài đăng
@@ -426,10 +410,10 @@ fun AmenitiesDisplay(it: List<String>?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         ComfortableLabel()
-
+        Spacer(modifier = Modifier.height(8.dp))
         if (it != null && it.isNotEmpty()) {
             StaticamenitiesOptions(amenities = it)
         } else {
@@ -524,10 +508,10 @@ fun ServicesDisplay(it: List<String>?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         ServiceLabel()
-
+        Spacer(modifier = Modifier.height(8.dp))
         if (it != null && it.isNotEmpty()) {
             StaticServicesOptions(services = it)
         } else {
@@ -620,10 +604,10 @@ fun RoomTypeDisplay(it: List<String>?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
-        ServiceLabel()
-
+        RoomTypeLabel()
+        Spacer(modifier = Modifier.height(8.dp))
         if (it != null && it.isNotEmpty()) {
             StaticRoomTypeOptions(services = it)
         } else {
