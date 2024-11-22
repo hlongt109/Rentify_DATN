@@ -1,6 +1,5 @@
 package com.rentify.user.app.network
 
-import androidx.room.Query
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Model.District
@@ -8,7 +7,7 @@ import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
-import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.UpdatePostResponse
 import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
@@ -118,4 +117,22 @@ interface APIService {
     suspend fun deletePost(@Path("id") postId: String): Response<Unit> // Giả sử API trả về `Unit` khi xóa thành công
     @GET("detail/{id}")
     suspend fun getPostDetail(@Path("id") postId: String): PostingDetail
+    @Multipart
+    @PUT("update/{id}")
+    suspend fun updatePost(
+        @Path("id") id: String, // ID của bài viết cần sửa
+        @Part("user_id") userId: RequestBody?,
+        @Part("title") title: RequestBody?,
+        @Part("content") content: RequestBody?,
+        @Part("status") status: RequestBody?,
+        @Part("post_type") postType: RequestBody?,
+        @Part("price") price: RequestBody?,
+        @Part("address") address: RequestBody?,
+        @Part("phoneNumber") phoneNumber: RequestBody?,
+        @Part("room_type") roomType: RequestBody?,
+        @Part("amenities") amenities: RequestBody?,
+        @Part("service") services: RequestBody?,
+        @Part videos: List<MultipartBody.Part>?,
+        @Part photos: List<MultipartBody.Part>?
+    ): Response<UpdatePostResponse>
 }

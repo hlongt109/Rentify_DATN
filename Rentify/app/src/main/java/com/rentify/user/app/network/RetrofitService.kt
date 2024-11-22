@@ -46,7 +46,7 @@ object LocationService{
 }
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.2.105:3000/api/"
+    private const val BASE_URL = "http://http://192.168.2.106:3000/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)

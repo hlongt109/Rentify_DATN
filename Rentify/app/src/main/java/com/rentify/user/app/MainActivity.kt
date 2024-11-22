@@ -27,6 +27,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.UpdatePostScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
@@ -205,6 +206,13 @@ class MainActivity : ComponentActivity() {
                 if (postId != null) {
                     PostDetailScreen( navController = navController,postId = postId)
                 }
+            }
+            composable("update_post_screen/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    UpdatePostScreen(navController = navController, postId = postId)
+                }
+
             }
         }
     }

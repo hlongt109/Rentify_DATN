@@ -2,17 +2,12 @@
 
 package com.rentify.user.app.view.staffScreens.postingList.PostingListComponents
 
-import android.content.Context
-import android.system.Os.remove
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,11 +18,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -36,18 +28,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.rentify.user.app.network.RetrofitClient
 import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
-import com.rentify.user.app.viewModel.PostViewModel
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 @OptIn(ExperimentalMaterialApi::class)
 //@Composable
 //fun PostListScreen(userId: String) {
@@ -215,10 +202,11 @@ data class PostingList(
     val price: String,  // Tương ứng với trường price trong API
     val address: String // Tương ứng với trường address trong API
 )
+
 @Composable
 fun PostListScreen(navController: NavController, userId: String) {
     val viewModel: PostViewModel = viewModel()
-    val rooms by viewModel.rooms
+    val post by viewModel.posts
     val context = LocalContext.current
     var isShowDialog by remember { mutableStateOf(false) }
     var postIdToDelete by remember { mutableStateOf<String?>(null) }
@@ -252,11 +240,11 @@ fun PostListScreen(navController: NavController, userId: String) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(rooms, key = { it._id }) { room ->
+        items(post, key = { it._id }) { post ->
             val dismissState = rememberSwipeToDismissBoxState(
                 confirmValueChange = { direction ->
                     if (direction == SwipeToDismissBoxValue.EndToStart) {
-                        postIdToDelete = room._id
+                        postIdToDelete = post._id
                         isShowDialog = true
                         false // Không tự động xóa ngay, đợi người dùng xác nhận
                     } else {
@@ -288,9 +276,9 @@ fun PostListScreen(navController: NavController, userId: String) {
                 },
                 content = {
                     PostingListCard(
-                        room = room,
+                        postlist = post,
                         onClick = {
-                            navController.navigate("post_detail/${room._id}")
+                            navController.navigate("post_detail/${post._id}")
                         }
                     )
                 }
@@ -300,7 +288,7 @@ fun PostListScreen(navController: NavController, userId: String) {
 }
 
 @Composable
-fun PostingListCard(room: PostingList, onClick: () -> Unit) {
+fun PostingListCard(postlist: PostingList, onClick: () -> Unit) {
     Card(
         elevation = 4.dp,
         modifier = Modifier
@@ -321,7 +309,7 @@ fun PostingListCard(room: PostingList, onClick: () -> Unit) {
                     .padding(horizontal = 18.dp)
             ) {
                 Text(
-                    text = room.title,
+                    text = postlist.title,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     maxLines = 1,
@@ -329,7 +317,7 @@ fun PostingListCard(room: PostingList, onClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
-                    text = "Từ ${room.price}",
+                    text = "Từ ${postlist.price}",
                     color = Color.Red,
                     fontSize = 14.sp
                 )
@@ -342,7 +330,7 @@ fun PostingListCard(room: PostingList, onClick: () -> Unit) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = " ${room.address}",
+                        text = " ${postlist.address}",
                         color = Color.Gray,
                         fontSize = 12.sp,
                         maxLines = 1,

@@ -5,81 +5,72 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import androidx.compose.material.Card
 
-import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.PlayerView
-import com.rentify.user.app.MainActivity
-import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
-import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingListTopBar
-import com.rentify.user.app.viewModel.PostViewModel
-import android.net.Uri
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import android.view.Gravity
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.window.Dialog
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.rentify.user.app.R
+import com.rentify.user.app.network.RetrofitClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PostDetailScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
     val postDetail by viewModel.postDetail.observeAsState()
-
+    val scrollState = rememberScrollState()
     // Gọi API lấy chi tiết bài đăng
     LaunchedEffect(postId) {
         viewModel.getPostDetail(postId)
     }
 
     postDetail?.let { detail ->
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp)      .verticalScroll(scrollState)) {
             // Hiển thị ảnh/video đầu tiên
             PostImageSlider(
                 images = detail.photos ?: emptyList(),
@@ -102,7 +93,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             // Tiêu đề bài đăng
             Text(text = detail.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(color = Color(0xffde5135), fontWeight = FontWeight.W700, text = "Giá: ${detail.price?.let { "$it VND" } ?: "Chưa có giá"}", fontSize = 16.sp)
+            Text(color = Color(0xFFF55151), fontWeight = FontWeight.W700, text = " ${detail.price?.let { "$it VND" } ?: "Chưa có giá"}", fontSize = 16.sp)
             Spacer(modifier = Modifier.height(4.dp))
 
 
@@ -119,9 +110,20 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
 
             }
+            Row(   verticalAlignment = Alignment.CenterVertically, ) {
+                // Loại phòng
 
+                Image(
+                    painter = painterResource(id = R.drawable.phone),
+                    contentDescription = null,
+                    modifier = Modifier.size(15.dp, 15.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(text = " ${detail.phoneNumber ?: "Chưa có số điện thoại"}", fontSize = 16.sp)
+
+            }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Số điện thoại: ${detail.phoneNumber ?: "Chưa có số điện thoại"}", fontSize = 16.sp)
+
             // Nội dung bài đăng
             Text(text = detail.content, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(8.dp))
@@ -153,7 +155,21 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             // Thời gian tạo và cập nhật bài đăng
             Text(text = "Thời gian tạo: ${detail.created_at ?: "Chưa có thời gian tạo"}")
             Text(text = "Thời gian cập nhật: ${detail.updated_at ?: "Chưa có thời gian cập nhật"}")
-
+            Button(
+                onClick = {
+                    navController.navigate("update_post_screen/${postId}")
+                }, modifier = Modifier.height(50.dp).fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xff5dadff)
+                )
+            ) {
+                Text(
+                    text = "Sửa bài đăng",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                    color = Color(0xffffffff)
+                )
+            }
         }
     } ?: run {
         Text("Đang tải chi tiết bài đăng...")
