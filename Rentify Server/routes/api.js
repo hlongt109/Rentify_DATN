@@ -83,7 +83,7 @@ router.use("/staff/rooms", room_staffApi); // Đổi đường dẫn cho contrac
 router.use("/staff/invoices", invoice_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/requests", request_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/logins", login_staffApi); // Đổi đường dẫn cho contract_staffApi
-router.use("/staff/logins", User_staffApi); // Đổi đường dẫn cho contract_staffApi
+router.use("/staff/users", User_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/", UserManage);
 router.use("/", PostManage);
 router.use("/", PaymentManage);

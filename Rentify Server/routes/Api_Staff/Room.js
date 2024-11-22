@@ -79,49 +79,82 @@ router.get('/RoomDetail/:id', async (req, res) => {
     }
 });
 // _vanphuc :thêm phòng  theo tòa nhà  😶‍🌫️
-router.post('/addRoom', upload.fields([
-    { name: 'photos_room', maxCount: 10 }, // Tối đa 10 ảnh
-    { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
-]), async (req, res) => {
-    try {
-        const { building_id, room_name, room_type, description, price, size, service, amenities, limit_person, status, } = req.body;
-
+router.post(
+    "/addRoom",
+    upload.fields([
+      { name: "photos_room", maxCount: 10 }, // Tối đa 10 ảnh
+      { name: "video_room", maxCount: 2 }, // Tối đa 2 video
+    ]),
+    async (req, res) => {
+      try {
+        const {
+          building_id,
+          room_name,
+          room_type,
+          description,
+          price,
+          size,
+          service,
+          amenities,
+          limit_person,
+          status,
+        } = req.body;
+  
         // Kiểm tra dữ liệu bắt buộc
-        if (!building_id || !room_name || !room_type || !description || !price || !size || status === undefined) {
-            return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
+        if (
+          !building_id ||
+          !room_name ||
+          !room_type ||
+          !description ||
+          !price ||
+          !size ||
+          status === undefined
+        ) {
+          return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
         }
-
+  
         // Lưu đường dẫn ảnh và video
-        const photos_room = req.files.photos_room ? req.files.photos_room.map(file => file.path) : [];
-        const video_room = req.files.video_room ? req.files.video_room.map(file => file.path) : [];
-        console.log(photos_room);
-        
+        const photos_room = req.files.photos_room
+          ? req.files.photos_room.map((file) => file.path) // Lưu chuỗi URL thay vì đối tượng
+          : [];
+        const video_room = req.files.video_room
+          ? req.files.video_room.map((file) => file.path)
+          : [];
+  
+        const services = req.body.service.split(",").filter((id) => id);
+        const amenitie = req.body.amenities.split(",").filter((id) => id);
+  
         // Tạo mới một phòng
         const newRoom = new Room({
-            building_id,
-            room_name,
-            room_type,
-            description,
-            price,
-            size,
-            video_room,
-            photos_room,
-            service,
-            amenities,
-            limit_person,
-            status,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+          building_id,
+          room_name,
+          room_type,
+          description,
+          price,
+          size,
+          video_room,
+          photos_room,
+          services,
+          amenitie,
+          limit_person,
+          status,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         });
-        console.log(newRoom);
+  
         // Lưu phòng vào cơ sở dữ liệu
         const savedRoom = await newRoom.save();
-        res.status(201).json({ message: "Thêm phòng thành công", room: savedRoom });
-    } catch (error) {
+        res
+          .status(201)
+          .json({ message: "Thêm phòng thành công", room: savedRoom });
+      } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Lỗi khi thêm phòng", error: error.message });
+        res
+          .status(500)
+          .json({ message: "Lỗi khi thêm phòng", error: error.message });
+      }
     }
-});
+  );
 // api xóa phòng 👽
 router.delete('/DeleteRooms/:id', async (req, res) => {
     const { id } = req.params;
