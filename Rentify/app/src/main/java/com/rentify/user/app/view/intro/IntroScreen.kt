@@ -153,6 +153,5 @@ fun IntroScreen(navController: NavHostController) {
 
         }
     }
-
-
 }
+//

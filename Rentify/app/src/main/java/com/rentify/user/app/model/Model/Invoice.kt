@@ -1,4 +1,4 @@
-package com.rentify.user.app.model
+package com.rentify.user.app.model.Model
 
 data class Invoice(
     val userId: String,             // ID của người dùng, tham chiếu đến bảng User

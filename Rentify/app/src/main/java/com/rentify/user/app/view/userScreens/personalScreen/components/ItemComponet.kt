@@ -46,7 +46,7 @@ fun LayoutItems(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(70.dp)
-                        .background(color = Color.White)
+                        .background(color = Color(0xFFfafafa))
                         .border(
                             width = 1.dp,
                             color = Color(0xFFfafafa),

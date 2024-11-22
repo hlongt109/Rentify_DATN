@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
@@ -37,7 +39,8 @@ fun CategoryPostScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color(0xfff7f7f7))
-
+                .statusBarsPadding()
+                .navigationBarsPadding()
         ) {
             Column(
                 modifier = Modifier
@@ -52,7 +55,7 @@ fun CategoryPostScreen(navController: NavController) {
                         .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
                     verticalAlignment = Alignment.CenterVertically,
                 ){
-                    IconButton(   modifier = Modifier.width(100.dp), onClick = { /*TODO*/ }) {
+                    IconButton(   modifier = Modifier.width(100.dp), onClick = {     navController.navigate("PERSONAL") }) {
                         Image(
                             painter = painterResource(id = R.drawable.back),
                             contentDescription = null,
@@ -93,7 +96,7 @@ fun CategoryPostScreen(navController: NavController) {
                     Image(
                         painter = painterResource(id = R.drawable.room),
                         contentDescription = null,
-                        modifier = Modifier.size(60.dp, 50.dp)
+                        modifier = Modifier.size(45.dp, 35.dp)
                     )
                     Text(
                         text = "Tìm phòng",
@@ -113,7 +116,7 @@ fun CategoryPostScreen(navController: NavController) {
                         .selectable(
                             selected = true,
                             onClick = {
-                                navController.navigate("SEARCHPOSTROOM")
+                                navController.navigate("SEARCHPOSTROOMATE")
 
                             }
                         ),
@@ -122,7 +125,7 @@ fun CategoryPostScreen(navController: NavController) {
                     Image(
                         painter = painterResource(id = R.drawable.home),
                         contentDescription = null,
-                        modifier = Modifier.size(60.dp, 50.dp)
+                        modifier = Modifier.size(45.dp, 35.dp)
                     )
                     Text(
                         text = "Tìm người ở ghép",

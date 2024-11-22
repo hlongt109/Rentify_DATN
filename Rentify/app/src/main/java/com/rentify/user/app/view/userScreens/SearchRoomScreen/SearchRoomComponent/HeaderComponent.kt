@@ -76,7 +76,9 @@ fun HeaderSearchComponent(navController: NavController) {
 //            )
 
             IconButton(
-                onClick = {},
+                onClick = {
+                    navController.navigateUp()
+                },
                 modifier = Modifier
                     .width(30.dp)
                     .height(30.dp)

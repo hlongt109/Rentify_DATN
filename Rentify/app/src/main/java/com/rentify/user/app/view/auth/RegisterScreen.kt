@@ -45,11 +45,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rentify.user.app.MainActivity.ROUTER
 import com.rentify.user.app.R
-import com.rentify.user.app.network.ApiClient
-import com.rentify.user.app.network.RegisterRequest
-import com.rentify.user.app.network.RegisterResponse
+
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.ApiResponse
+import com.rentify.user.app.repository.LoginRepository.RegisterRequest
+import com.rentify.user.app.repository.RegisterRepository.RegisterRepository
+import com.rentify.user.app.viewModel.RegisterViewModel
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -57,6 +62,11 @@ import retrofit2.Response
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
+    val apiService = RetrofitService()
+    val userRepository = RegisterRepository(apiService)
+    val registerViewModel: RegisterViewModel = viewModel(
+        factory = RegisterViewModel.RegisterViewModelFactory(userRepository)
+    )
     val context = LocalContext.current
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -314,43 +324,12 @@ fun RegisterScreen(navController: NavHostController) {
 
         Button(
             onClick = {
-                // Kiểm tra các trường không được để trống
                 if (username.isBlank() || email.isBlank() || password.isBlank() || repassword.isBlank()) {
                     Toast.makeText(context, "Vui lòng điền đầy đủ thông tin đăng ký.", Toast.LENGTH_SHORT).show()
                 } else if (password != repassword) {
                     Toast.makeText(context, "Mật khẩu và mật khẩu nhập lại không khớp.", Toast.LENGTH_SHORT).show()
                 } else {
-                    // Thực hiện đăng ký khi các trường hợp lệ và mật khẩu khớp
-                    val registerRequest = RegisterRequest(
-                        username = username,
-                        email = email,
-                        password = password
-                    )
-
-                    ApiClient.apiService.registerUser(registerRequest).enqueue(object : Callback<RegisterResponse> {
-                        override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-//                            val responseBody = response.body()
-//                            println("Phản hồi đăng ký: $responseBody")
-                            if (response.isSuccessful) {
-                                // Xử lý khi đăng ký thành công
-                                val user = response.body()?.user
-                                // Chuyển hướng hoặc thông báo cho người dùng
-                              //  Toast.makeText(context, "Đăng ký thành công: ${user?.username}", Toast.LENGTH_SHORT).show()
-                                Toast.makeText(context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
-                            } else {
-                                // Xử lý khi có lỗi
-                                println("Lỗi đăng ký: ${response.message()}")
-                                Toast.makeText(context, "Lỗi đăng ký: ${response.message()}", Toast.LENGTH_SHORT).show()
-
-                            }
-                        }
-
-                        override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                            // Xử lý lỗi kết nối
-                            Toast.makeText(context, "Lỗi kết nối: ${t.message}", Toast.LENGTH_SHORT).show()
-
-                        }
-                    })
+                    registerViewModel.register(username, email, password,repassword)
                 }
             },
             modifier = Modifier
@@ -422,3 +401,6 @@ fun GreetingGetLayoutRegisterScreen() {
 //                    innerTextField() // Hiển thị nội dung nhập của người dùng
 //                }
 //            )
+
+
+
