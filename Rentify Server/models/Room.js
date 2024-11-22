@@ -12,7 +12,9 @@ const Room = new Schema({
     description: { type: String, required: true },
     price: { type: Number, required: true }, // tien phong
     size: { type: String, required: true },// vd: 40m2 nên sẽ để là String
-    video_room: { type: Array },
+    video_room:[{
+        url: {type: String}
+    }],
     photos_room: { type: Array },
     service: [{ // lấy danh sách dịch vụ của toà nhà click chọn các dịch phòng có
         type: mongoose.Schema.Types.ObjectId,
