@@ -10,6 +10,8 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.network.RetrofitService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -24,46 +26,17 @@ class RoomViewModel : ViewModel() {
     private val apiService = RetrofitService().ApiService
     private val _addRoomResponse = MutableLiveData<Response<AddRoomResponse>>()
     val addRoomResponse: LiveData<Response<AddRoomResponse>> get() = _addRoomResponse
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> get() = _error
+//    private val _error = MutableLiveData<String>()
+//    val error: LiveData<String> get() = _error
     private val _rooms = MutableLiveData<List<Room>>()
     val rooms: LiveData<List<Room>> get() = _rooms
     private val _buildingWithRooms = MutableLiveData<List<BuildingWithRooms>>()
     val buildingWithRooms: LiveData<List<BuildingWithRooms>> get() = _buildingWithRooms
-
-    // Fetch buildings with rooms
-    fun fetchBuildingsWithRooms(managerId: String) {
-        viewModelScope.launch {
-            try {
-                val response: Response<List<BuildingWithRooms>> =
-                    apiService.getBuildingsWithRooms(managerId)
-
-                if (response.isSuccessful) {
-                    _buildingWithRooms.value = response.body()
-                } else {
-                    Log.e("API_ERROR", "Error fetching data: ${response.message()}")
-                    _error.value = "Failed to fetch buildings: ${response.message()}"
-                }
-            } catch (e: Exception) {
-                Log.e("API_EXCEPTION", "Exception: ${e.message}", e)
-                _error.value = "An error occurred: ${e.message}"
-            }
-        }
-    }
-    fun fetchRoomsForBuilding(buildingId: String) {
-        viewModelScope.launch {
-            try {
-                // Giả sử bạn có hàm API này để lấy phòng cho tòa nhà
-                val rooms = apiService.getRoomsForBuilding(buildingId) // Thực hiện gọi API
-                _rooms.postValue(rooms)
-            } catch (e: Exception) {
-                _rooms.postValue(emptyList()) // Xử lý lỗi nếu cần
-                e.printStackTrace()
-            }
-        }
-    }
-
-    //    api add
+    private val _roomDetail = MutableLiveData<Room?>()
+    val roomDetail: LiveData<Room?> get() = _roomDetail
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> get() = _error
+    //    API ADD PHÒNG
     fun addRoom(
         buildingId: String,
         roomName: String,
@@ -98,9 +71,9 @@ class RoomViewModel : ViewModel() {
 
                 // Prepare the rest of the request data as RequestBody
                 val response = apiService.addRoom(
-                    buildingId = createPartFromString(buildingId),
-                    roomName = createPartFromString(roomName),
-                    roomType = createPartFromString(roomType),
+                    building_id = createPartFromString(buildingId),
+                    room_name = createPartFromString(roomName),
+                    room_type = createPartFromString(roomType),
                     description = createPartFromString(description),
                     price = createPartFromString(price.toString()),
                     size = createPartFromString(size),
@@ -109,7 +82,7 @@ class RoomViewModel : ViewModel() {
                     photos_room = photosPart, // Include the photos part here
                     service = service?.let { createPartFromString(it.joinToString(",")) },
                     amenities = amenities?.let { createPartFromString(it.joinToString(",")) },
-                    limitPerson = createPartFromString(limitPerson.toString())
+                    limit_person = createPartFromString(limitPerson.toString())
                 )
 
                 if (response.isSuccessful) {
@@ -125,5 +98,57 @@ class RoomViewModel : ViewModel() {
 
     private fun createPartFromString(value: String): RequestBody {
         return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
+    }
+    // API LẤY DANH SÁCH TÒA THEO MANAGERID
+    fun fetchBuildingsWithRooms(manager_id: String) {
+        viewModelScope.launch {
+            try {
+                val response: Response<List<BuildingWithRooms>> =
+                    apiService.getBuildingsWithRooms(manager_id)
+
+                if (response.isSuccessful) {
+                    _buildingWithRooms.value = response.body()
+                } else {
+                    Log.e("API_ERROR", "Error fetching data: ${response.message()}")
+                    _error.value = "Failed to fetch buildings: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                Log.e("API_EXCEPTION", "Exception: ${e.message}", e)
+                _error.value = "An error occurred: ${e.message}"
+            }
+        }
+    }
+    // API LẤY DANH SÁCH PHÒNG THEO TÒA 🤦‍♂️
+    fun fetchRoomsForBuilding(building_id: String) {
+        viewModelScope.launch {
+            try {
+                // Giả sử bạn có hàm API này để lấy phòng cho tòa nhà
+                val rooms = apiService.getRoomsForBuilding(building_id) // Thực hiện gọi API
+                _rooms.postValue(rooms)
+            } catch (e: Exception) {
+                _rooms.postValue(emptyList()) // Xử lý lỗi nếu cần
+                e.printStackTrace()
+            }
+        }
+    }
+    // hiển thị chi tiết phòng theo id phòng của mongodb tự động sinh ra 🏠
+    fun fetchRoomDetailById(id: String) {
+        // Kiểm tra xem dữ liệu phòng đã có chưa
+        if (_roomDetail.value != null) return // Nếu đã có dữ liệu thì không gọi API nữa
+
+        viewModelScope.launch {
+            try {
+                val response = apiService.getRoomDetailById(id)
+                if (response.isSuccessful) {
+                    _roomDetail.value = response.body()  // Lưu dữ liệu vào LiveData
+                } else {
+                    Log.e("API_ERROR", "Failed to fetch room details: ${response.message()}")
+                    _error.value = "Failed to fetch room details: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                Log.e("API_EXCEPTION", "Exception: ${e.message}", e)
+                _error.value = "Exception: ${e.message}"
+            }
+        }
     }
 }

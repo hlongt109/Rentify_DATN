@@ -62,7 +62,7 @@ fun ListRoomScreen(
     ){
         HeaderSection(backgroundColor = Color.White, title = "Danh sách phòng", navController = navController)
         rooms.forEach { room ->
-            RoomItem(room = room)
+            RoomItem(room = room,navController)
         }
 
         Row(
@@ -95,13 +95,18 @@ fun ListRoomScreen(
 }
 
 @Composable
-fun RoomItem(room: Room) {
+fun RoomItem(room: Room, navController: NavHostController) {
     Log.d("UpdatePostScreen", "Post Detail: ${room.room_name}")
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(9.dp)
             .border(width = 1.dp, color = Color(0xffdddddd), shape = RoundedCornerShape(20.dp))
+            .clickable {
+                val id=room.id
+                navController.navigate("RoomDetailScreen/${id}")
+
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -115,8 +120,6 @@ fun RoomItem(room: Room) {
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(start = 20.dp)
-                .clickable {
-                }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.roomm),
@@ -130,7 +133,7 @@ fun RoomItem(room: Room) {
             Column(
                 modifier = Modifier
                     .padding(top = 10.dp)
-                    .weight(1f) // Cho phép cột chiếm không gian còn lại
+                    .weight(1f)
             ) {
                 Text(
                     text =  "${room.room_name}",
@@ -154,3 +157,4 @@ fun RoomItem(room: Room) {
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
+

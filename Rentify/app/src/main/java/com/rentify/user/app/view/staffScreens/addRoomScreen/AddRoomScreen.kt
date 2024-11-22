@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.staffScreens.addRoomScreen
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,21 +69,41 @@ fun AddRoomScreen(
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(emptyList<Uri>()) }
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
-    Box(modifier = Modifier.fillMaxSize().background(color = Color(0xfff7f7f7))) {
-        Column(modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().background(color = Color(0xfff7f7f7)).padding(bottom = screenHeight.dp / 7f)) {
+    Log.d("ImageRoom", "AddRoomScreen: $selectedImages")
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color(0xfff7f7f7))) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .background(color = Color(0xfff7f7f7))
+            .padding(bottom = screenHeight.dp / 7f)) {
             HeaderComponent(backgroundColor = Color(0xffffffff), title = "Thêm phòng", navController = navController)
             Spacer(modifier = Modifier.height(10.dp))
-            Column(modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).background(color = Color(0xfff7f7f7)).padding(15.dp)) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(scrollState)
+                .background(color = Color(0xfff7f7f7))
+                .padding(15.dp)) {
                 // Tên phòng
-                Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)) {
                     Text(text = "Tên phòng*", color = Color(0xFF7c7b7b), fontSize = 13.sp)
-                    TextField(value = postTitle, onValueChange = { postTitle = it }, modifier = Modifier.fillMaxWidth().height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập tên phòng", fontSize = 14.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
+                    TextField(value = postTitle, onValueChange = { postTitle = it }, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập tên phòng", fontSize = 14.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
                 }
 
                 // Mô tả phòng
-                Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)) {
                     Text(text = "Mô tả phòng*", color = Color(0xFF7c7b7b), fontSize = 13.sp)
-                    TextField(value = numberOfRoommates, onValueChange = { numberOfRoommates = it }, modifier = Modifier.fillMaxWidth().height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập mô tả", fontSize = 13.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
+                    TextField(value = numberOfRoommates, onValueChange = { numberOfRoommates = it }, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập mô tả", fontSize = 13.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
                 }
 
                 // Loại phòng
@@ -101,21 +122,33 @@ fun AddRoomScreen(
                 }
 
                 // Giới hạn người
-                Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)) {
                     Text(text = "Giới hạn người *", color = Color(0xFF7c7b7b), fontSize = 13.sp)
-                    TextField(value = currentPeopleCount, onValueChange = { currentPeopleCount = it }, modifier = Modifier.fillMaxWidth().height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập số người", fontSize = 13.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
+                    TextField(value = currentPeopleCount, onValueChange = { currentPeopleCount = it }, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập số người", fontSize = 13.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
                 }
 
                 // Diện tích
-                Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)) {
                     Text(text = "Diện tích(m2) *", color = Color(0xFF7c7b7b), fontSize = 13.sp)
-                    TextField(value = area, onValueChange = { area = it }, modifier = Modifier.fillMaxWidth().height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập diện tích", fontSize = 13.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
+                    TextField(value = area, onValueChange = { area = it }, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập diện tích", fontSize = 13.sp, color = Color(0xFF898888), fontFamily = FontFamily(Font(R.font.cairo_regular))) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
                 }
 
                 // Giá phòng
-                Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)) {
                     Text(text = "Giá phòng *", color = Color(0xFF7c7b7b), fontSize = 13.sp)
-                    TextField(value = roomPrice, onValueChange = { roomPrice = it }, modifier = Modifier.fillMaxWidth().height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập giá phòng", fontSize = 13.sp, color = Color(0xFF898888)) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
+                    TextField(value = roomPrice, onValueChange = { roomPrice = it }, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(53.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color(0xFFcecece), unfocusedIndicatorColor = Color(0xFFcecece), focusedPlaceholderColor = Color.Black, unfocusedPlaceholderColor = Color.Gray, unfocusedContainerColor = Color(0xFFf7f7f7), focusedContainerColor = Color.White), placeholder = { Text(text = "Nhập giá phòng", fontSize = 13.sp, color = Color(0xFF898888)) }, shape = RoundedCornerShape(size = 8.dp), textStyle = TextStyle(color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))))
                 }
 
                 // Tiện nghi
@@ -152,7 +185,11 @@ fun AddRoomScreen(
         }
 
         // Nút thêm phòng
-        Box(modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(screenHeight.dp / 7f).background(color = Color.White)) {
+        Box(modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth()
+            .height(screenHeight.dp / 7f)
+            .background(color = Color.White)) {
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(onClick = {
                     // Kiểm tra các trường bắt buộc
@@ -178,7 +215,9 @@ fun AddRoomScreen(
                             )
                         }
                     }
-                }, modifier = Modifier.height(50.dp).fillMaxWidth(), shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xff5dadff))) {
+                }, modifier = Modifier
+                    .height(50.dp)
+                    .fillMaxWidth(), shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xff5dadff))) {
                     Text(text = "Thêm Phòng", fontSize = 16.sp, fontFamily = FontFamily(Font(R.font.cairo_regular)), color = Color(0xffffffff))
                 }
             }
