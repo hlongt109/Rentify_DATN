@@ -101,17 +101,15 @@
 <body>
     <div class="content-wrapper">
         <h2>Quản lý người dùng</h2>
-        <div class="container my-4">
+        <!-- add new -->
+        <div class="container my-3">
+            <button id="btnAdd" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle"></i> Add New User
+            </button>
+        </div>
+        <div class="container-fluid my-4">
             <div class="search-container">
-                <!-- add new -->
-                <div class="container my-3">
-                    <button id="btnAdd" class="btn btn-success btn-lg">
-                        <i class="bi bi-plus-circle"></i> Add New User
-                    </button>
-                </div>
 
-
-                <!-- --------- -->
                 <!-- Modal: Đặt ngay trước thẻ đóng </body> -->
                 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel"
                     aria-hidden="true">
@@ -292,7 +290,7 @@
                         })
                         .then(data => {
                             alert(data.message || 'Xóa thành công');
-                            window.location.href(`/api/staffs_mgr/list/${userId}`)
+                            window.location.reload();
                         })
                         .catch(error => {
                             console.error(error);
