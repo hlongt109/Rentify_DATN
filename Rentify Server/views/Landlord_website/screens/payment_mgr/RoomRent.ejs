@@ -243,7 +243,12 @@
             selectedItem.classList.add('selected'); // Thêm class 'selected' vào item được chọn
         }
 
-        getInvoices(buildingId, selectedMonth, selectedYear, selectPaymentStatus);
+        if(isMonthLoad){
+            getInvoices(buildingId, selectedMonth, selectedYear, selectPaymentStatus);
+        }else{
+            getInvoicesYear(selectedYear,selectPaymentStatus)
+        }
+        
     }
     // ============ Tabs ===============
     function selectTab(tab) {

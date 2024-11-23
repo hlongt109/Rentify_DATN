@@ -142,8 +142,6 @@ router.get("/buildings_mgr/:buildingId/invoices_type", async (req, res) => {
             return res.status(400).json({ message: `Loại hóa đơn không hợp lệ. Chỉ chấp nhận: ${validTypes.join(', ')}` });
         }
 
-
-
         // Lọc hóa đơn theo tháng/năm và trạng thái thanh toán
         const invoices = typeInvoice === 'salary'
             ? await Invoice.find({
@@ -176,6 +174,13 @@ router.get("/buildings_mgr/:buildingId/invoices_type", async (req, res) => {
         }
         if (typeInvoice === 'maintain') {
             invoices.filter(invoice => invoice.type_invoice === 'maintain');
+            invoices.forEach(invoice => {
+                if (Array.isArray(invoice.description)) {
+                    invoice.description = invoice.description
+                        .map(desc => Object.values(desc).join(""))
+                        .join("");
+                }
+            });
         }
 
         // Tách hóa đơn đã thanh toán và chưa thanh toán
@@ -246,6 +251,13 @@ router.get("/buildings_mgr/:buildingId/invoices_type/year", async (req, res) => 
         }
         if (typeInvoice === 'maintain') {
             invoices.filter(invoice => invoice.type_invoice === 'maintain');
+            invoices.forEach(invoice => {
+                if (Array.isArray(invoice.description)) {
+                    invoice.description = invoice.description
+                        .map(desc => Object.values(desc).join(""))
+                        .join("");
+                }
+            });
         }
 
         // Tách hóa đơn đã thanh toán và chưa thanh toán
@@ -276,7 +288,7 @@ router.put("/invoice_mgr_status/:id", async(req, res) => {
         invoice.building_id =  invoice.building_id 
         invoice.room_id =  invoice.room_id 
         invoice.description = invoice.description 
-        invoice.type_invoice = 'rent'
+        invoice.type_invoice = invoice.type_invoice ?? 'rent'
         invoice.amount = invoice.amount
         invoice.transaction_type = invoice.transaction_type
         invoice.due_date = invoice.due_date

@@ -19,6 +19,7 @@ const Invoice = new Schema({
         price_per_unit: { type: Number }, // giá mỗi đơn vị
         total: { type: Number } // tổng chi phí cho dịch vụ đó
     }],
+    describe: {type: String},
     type_invoice: {type: String, enum: ["rent","electric", "water", "salary", "maintain"]},
     amount: { type: Number, require: true }, // số tien
     transaction_type: { type: String, enum: ['income', 'expense'], require: true },
