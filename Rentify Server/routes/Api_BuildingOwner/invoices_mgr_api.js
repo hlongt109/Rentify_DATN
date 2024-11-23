@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const mongoose = require('mongoose');
 const Building = require('../../models/Building');
 const Room = require("../../models/Room");
 const Invoice = require("../../models/Invoice");
@@ -33,7 +34,9 @@ router.get("/buildings_mgr/:buildingId/invoices", async (req, res) => {
         const { month, year, paymentStatus } = req.query;
 
         const currentDate = new Date();
-        const selectedMonth = month || currentDate.getMonth() + 1;
+        const selectedMonth = month
+            ? String(month).padStart(2, '0')
+            : String(currentDate.getMonth() + 1).padStart(2, '0');
         const selectedYear = year || currentDate.getFullYear();
 
         if (!buildingId) {
@@ -120,12 +123,16 @@ router.get("/buildings_mgr/:buildingId/invoices_type", async (req, res) => {
         const { month, year, paymentStatus, typeInvoice } = req.query;
 
         const currentDate = new Date();
-        const selectedMonth = month || currentDate.getMonth() + 1;
+        const selectedMonth = month
+            ? String(month).padStart(2, '0') // Đảm bảo luôn là 2 chữ số
+            : String(currentDate.getMonth() + 1).padStart(2, '0');
         const selectedYear = year || currentDate.getFullYear();
 
         if (!buildingId) {
             return res.status(400).json({ message: 'Building ID trống' });
         }
+        const buildingObjectId = new mongoose.Types.ObjectId(buildingId);
+
         if (!typeInvoice) {
             return res.status(400).json({ message: 'Type invoice trống' });
         }
@@ -140,6 +147,7 @@ router.get("/buildings_mgr/:buildingId/invoices_type", async (req, res) => {
         // Lọc hóa đơn theo tháng/năm và trạng thái thanh toán
         const invoices = typeInvoice === 'salary'
             ? await Invoice.find({
+                building_id: buildingObjectId,
                 type_invoice: typeInvoice,
                 payment_status: paymentStatus || { $exists: true },
                 created_at: {
@@ -148,6 +156,7 @@ router.get("/buildings_mgr/:buildingId/invoices_type", async (req, res) => {
                 }
             }).populate('user_id').exec()
             : await Invoice.find({
+                building_id: buildingObjectId,
                 type_invoice: typeInvoice,
                 payment_status: paymentStatus || { $exists: true },
                 created_at: {

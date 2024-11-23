@@ -205,7 +205,7 @@
     // Hàm để chọn tòa nhà
     const selectBuilding = (buildingId) => {
         selectedBuildingId = buildingId;
-        console.log('Calling getInvoices with ID:', selectedBuildingId);
+        console.log("Calling getInvoices with ID:", selectedBuildingId);
         console.log("Selected Building ID: ", selectedBuildingId);
 
         getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus);

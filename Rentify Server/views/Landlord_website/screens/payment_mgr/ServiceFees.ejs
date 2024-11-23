@@ -267,7 +267,7 @@
             selectedItem.classList.add('selected'); // Thêm class 'selected' vào item được chọn
         }
 
-        getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus, selectedTypeInvoice);
+        getInvoices(buildingId, selectedMonth, selectedYear, selectPaymentStatus);
     }
     // ============ Tabs ===============
     function selectTab(tab) {
@@ -295,13 +295,14 @@
     // ============ Invoice ==============
     async function getInvoices(buildingId, selectedMonth, selectedYear, selectPaymentStatus) {
         try {
+            console.log(buildingId, selectedMonth, selectedYear, selectPaymentStatus)
             const queryParams = new URLSearchParams({
                 month: selectedMonth,
                 year: selectedYear,
                 paymentStatus: selectPaymentStatus,
                 typeInvoice: selectedTypeInvoice
             });
-            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${selectedBuildingId}/invoices_type?${queryParams.toString()}`);
+            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${buildingId}/invoices_type?${queryParams.toString()}`);
             const data = await res.json();
 
             if (res.ok) {
