@@ -273,10 +273,10 @@ router.put("/invoice_mgr_status/:id", async(req, res) => {
         }
 
         invoice.user_id = invoice.user_id
-        invoice.building_id =  invoice.building_id
-        invoice.room_id =  invoice.room_id
+        invoice.building_id =  invoice.building_id 
+        invoice.room_id =  invoice.room_id 
         invoice.description = invoice.description 
-        invoice.type_invoice = invoice.type_invoice
+        invoice.type_invoice = 'rent'
         invoice.amount = invoice.amount
         invoice.transaction_type = invoice.transaction_type
         invoice.due_date = invoice.due_date
