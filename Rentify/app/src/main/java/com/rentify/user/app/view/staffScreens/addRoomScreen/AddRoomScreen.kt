@@ -84,7 +84,8 @@ fun AddRoomScreen(
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>())}
     var selectedVideos by remember {mutableStateOf(listOf<Uri>())}
-    Log.d("ImageUploadAddScreen", "Selected images: $selectedImages")
+    Log.d("TAG", "Selected selectedComfortable: $selectedComfortable")
+    Log.d("TAG", "Selected selectedService: $selectedService")
     // Observe states
     val isLoading by viewModel.isLoading.observeAsState(false)
     val addRoomResponse by viewModel.addRoomResponse.observeAsState()
