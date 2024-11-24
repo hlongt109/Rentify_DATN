@@ -1,6 +1,8 @@
 package com.rentify.user.app.view.staffScreens.RoomDetailScreen
 
 
+import android.content.Context
+import android.net.Uri
 import android.os.Looper.prepare
 import android.util.Log
 import android.view.Gravity
@@ -27,6 +29,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -66,8 +70,12 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLa
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import androidx.compose.material3.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
 
 
@@ -167,27 +175,45 @@ fun RoomDetailScreen(
                         RoomTypeLabel()
 
                         Text(
-                            text = "${roomDetail?.roomType}",
+                            text = "${roomDetail?.room_type}",
                             color = Color(0xFF7c7b7b),
                             fontSize = 13.sp
                         )
                     }
-                    room.photos_room?.forEach { photoUrl ->
-                        AsyncImage(
-                            model = photoUrl,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .padding(5.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                        )
-                    }
-                    Log.d("imgea", "RoomDetailScreen:${room.photos_room} ")
-                    // Hiển thị video
 
-                    room.video_room?.forEach { videoUrl ->
-                        VideoPlayer(videoUrl)
+                    Text(text = "Hình ảnh:", fontSize = 16.sp, color = Color.Black)
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        items(room.photos_room ?: emptyList()) { photoUrl ->
+                            val urianh : String="http://10.0.2.2:3000/${photoUrl}"
+                            AsyncImage(
+                                model = urianh,
+                                contentDescription = "Room Photo",
+                                modifier = Modifier
+                                    .size(150.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.LightGray),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+
+                    // Display videos
+                    Text(text = "Videos:", fontSize = 16.sp, color = Color.Black)
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        items(room.video_room ?: emptyList()) { videoUrl ->
+                            val urivideo : String="http://10.0.2.2:3000/${videoUrl}"
+                            ExoPlayerView(context = context, videoUri = Uri.parse(urivideo))
+                        }
                     }
 
                     Log.d("TAG", "RoomDetailScreen:${room.video_room} ")
@@ -350,16 +376,21 @@ fun RoomDetailScreen(
 
 
 @Composable
-fun VideoPlayer(videoUrl: String) {
+fun ExoPlayerView(context: Context, videoUri: Uri) {
     AndroidView(
-        factory = { context ->
-            VideoView(context).apply {
-                setVideoPath(videoUrl)
-                setOnPreparedListener { start() }
+        factory = {
+            val exoPlayer = ExoPlayer.Builder(context).build().apply {
+                setMediaItem(MediaItem.fromUri(videoUri))
+                prepare()
+                playWhenReady = false // Start playing when the user interacts
+            }
+            PlayerView(context).apply {
+                player = exoPlayer
             }
         },
-        update = { videoView ->
-            videoView.setVideoPath(videoUrl)
-        },
+        modifier = Modifier
+            .size(200.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.Black)
     )
 }

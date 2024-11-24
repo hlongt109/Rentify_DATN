@@ -34,7 +34,7 @@ interface APIService {
     suspend fun addRoom(
         @Part("building_id") buildingId: RequestBody,
         @Part("room_name") roomName: RequestBody,
-        @Part("room_type") roomType: RequestBody,
+        @Part("room_type") room_type: RequestBody,
         @Part("description") description: RequestBody,
         @Part("price") price: RequestBody,
         @Part("size") size: RequestBody,

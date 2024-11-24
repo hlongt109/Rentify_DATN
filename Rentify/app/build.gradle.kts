@@ -51,6 +51,8 @@ dependencies {
     // thư viện tải ảnh _vanphuc :
     implementation ("com.github.bumptech.glide:glide:4.14.2")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+    implementation ("androidx.media3:media3-exoplayer:1.0.0")
+    implementation ("androidx.media3:media3-ui:1.0.0")
 
     implementation ("io.coil-kt:coil-compose:2.4.0")
 

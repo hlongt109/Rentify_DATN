@@ -181,7 +181,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                 val response = apiService.addRoom(
                     buildingId = buildingIdBody,
                     roomName = roomNameBody,
-                    roomType = roomTypeBody,
+                    room_type = roomTypeBody,
                     description = descriptionBody,
                     price = priceBody,
                     size = sizeBody,

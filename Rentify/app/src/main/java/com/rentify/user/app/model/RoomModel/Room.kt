@@ -10,7 +10,7 @@ data class Room(
     @SerializedName("_id") val id: String = "",
     val buildingId: String,         // ID của tòa nhà
     val room_name: String?,          // Tên phòng
-    val roomType: String,           // Loại phòng
+    val room_type: String,           // Loại phòng
     val description: String,        // Mô tả phòng
     val price: Double,              // Giá phòng
     val size: String,               // Kích thước phòng (ví dụ: "40m2")
