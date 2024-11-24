@@ -153,13 +153,8 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                 val sizeBody = createPartFromString(size)
                 val limitPersonBody = createPartFromString(limitPerson.toString())
                 val statusBody = createPartFromString(status.toString())
-
-
-                // Tạo list request body cho các dịch vụ và tiện nghi
-                val serviceJson = Gson().toJson(service)
-                val amenitiesJson = Gson().toJson(amenities)
-                val serviceBody = createPartFromString(service.joinToString(","))
-                val amenitiesBody = createPartFromString(amenities.joinToString(","))
+                val serviceBody = createPartFromString(service.toString())
+                val amenitiesBody = createPartFromString(amenities.toString())
                 Log.d("Service", "addRoom: $serviceBody")
                 Log.d("AmenitiesBody", "addRoom: $amenitiesBody")
                 Log.d("ImageUpload", "addRoom: $photoUris")

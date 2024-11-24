@@ -99,8 +99,8 @@ fun ComfortableOptions(
 ) {
     FlowRow(
         modifier = Modifier.padding(5.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+        mainAxisSpacing = 10.dp,
+        crossAxisSpacing = 10.dp
     ) {
         listOf(
             "Vệ sinh khép kín",

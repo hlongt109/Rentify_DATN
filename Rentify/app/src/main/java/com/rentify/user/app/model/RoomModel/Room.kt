@@ -16,8 +16,8 @@ data class Room(
     val size: String,               // Kích thước phòng (ví dụ: "40m2")
     val video_room: List<String>? = null,  // URL video của phòng (nếu có)
     val photos_room: List<String>? = null, // Danh sách URL ảnh của phòng
-    val service: List<String>? = null, // Danh sách ID dịch vụ liên quan đến phòng
-    val amenities: List<String>? = null,  // Tiện nghi của phòng
+    val service: List<String>, // Danh sách ID dịch vụ liên quan đến phòng
+    val amenities: List<String>,  // Tiện nghi của phòng
     val limitPerson: Int,           // Giới hạn số người
     val status: Int,                // 0: Chưa cho thuê, 1: Đã cho thuê
     val createdAt: String? = null,  // Ngày tạo
