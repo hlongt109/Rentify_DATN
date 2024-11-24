@@ -73,8 +73,8 @@ interface APIService {
         @Path("id") id: String
     ): Response<ApiResponse>
     // LẤY THÔNG TIN NGƯỜI DÙNG
-    @GET("staff/users/userr/{id}")
+    @GET("staff/users/usermail/{email}")
     suspend fun getUserDetail(
-        @Path("id") id: String
+        @Path("email") email: String
     ): Response<User>
 }

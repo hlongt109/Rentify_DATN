@@ -1,9 +1,7 @@
 package com.rentify.user.app.model
 
-import com.google.gson.annotations.SerializedName
 
 data class User(
-    @SerializedName("id") val id: String = "",
     val username: String,
     val password: String,
     val email: String,

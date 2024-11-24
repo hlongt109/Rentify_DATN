@@ -26,10 +26,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 
 @Composable
-fun HeaderSection() {
+fun HeaderSection(navController: NavHostController) {
     Row(
         modifier = Modifier
             .height(80.dp)
@@ -51,6 +52,9 @@ fun HeaderSection() {
                 contentDescription = null,
                 modifier = Modifier  .clip(CircleShape) // Bo tròn hoàn toàn
                     .background(Color.White) .size(30.dp, 30.dp)
+                    .clickable {
+                        navController.navigate("PersonalStaff")
+                    }
             )
         }
         Image(
