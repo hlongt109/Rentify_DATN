@@ -131,7 +131,7 @@ interface APIService {
         @Part("phoneNumber") phoneNumber: RequestBody?,
         @Part("room_type") roomType: RequestBody?,
         @Part("amenities") amenities: RequestBody?,
-        @Part("service") services: RequestBody?,
+        @Part("services") services: RequestBody?,
         @Part videos: List<MultipartBody.Part>?,
         @Part photos: List<MultipartBody.Part>?
     ): Response<UpdatePostResponse>

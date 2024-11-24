@@ -66,84 +66,84 @@ fun ServiceLabel() {
         )
     }
 }
-
-@Composable
-fun ServiceOptions(
-    selectedService: List<String>,
-    onServiceSelected: (String) -> Unit
-) {
-    FlowRow(
-        modifier = Modifier.padding(5.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
-    ) {
-        listOf(
-            "Điều hoà",
-            "Kệ bếp",
-            "Tủ lạnh",
-            "Bình nóng lạnh",
-            "Máy giặt",
-            "Bàn ghế"
-        ).forEach { service ->
-            ServiceOption(
-                text = service,
-                isSelected = selectedService.contains(service),
-                onClick = {
-                    onServiceSelected(service)
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun ServiceOption(
-    text: String, isSelected: Boolean, onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
-            .border(
-                width = 1.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
-            .padding(0.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp,
-            modifier = Modifier
-                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
-                .padding(14.dp)
-                .align(Alignment.Center)
-        )
-
-        // Dấu tích ở góc khi được chọn
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(23.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = Color(0xFF44acfe),  // Màu của dấu tích
-                        shape = TriangleShape()
-                    ),
-                contentAlignment = Alignment.TopStart
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.tick), // ID của icon dấu tích
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(10.dp)
-                        .offset(x = 3.dp, y = 2.dp)
-                )
-            }
-        }
-    }
-}
-
+//
+//@Composable
+//fun ServiceOptions(
+//    selectedService: List<String>,
+//    onServiceSelected: (String) -> Unit
+//) {
+//    FlowRow(
+//        modifier = Modifier.padding(5.dp),
+//        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
+//        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+//    ) {
+//        listOf(
+//            "Điều hoà",
+//            "Kệ bếp",
+//            "Tủ lạnh",
+//            "Bình nóng lạnh",
+//            "Máy giặt",
+//            "Bàn ghế"
+//        ).forEach { service ->
+//            ServiceOption(
+//                text = service,
+//                isSelected = selectedService.contains(service),
+//                onClick = {
+//                    onServiceSelected(service)
+//                }
+//            )
+//        }
+//    }
+//}
+//
+//@Composable
+//fun ServiceOption(
+//    text: String, isSelected: Boolean, onClick: () -> Unit
+//) {
+//    Box(
+//        modifier = Modifier
+//            .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
+//            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
+//            .border(
+//                width = 1.dp,
+//                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
+//                shape = RoundedCornerShape(9.dp)
+//            )
+//            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
+//            .padding(0.dp)
+//    ) {
+//        Text(
+//            text = text,
+//            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
+//            fontSize = 13.sp,
+//            modifier = Modifier
+//                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
+//                .padding(14.dp)
+//                .align(Alignment.Center)
+//        )
+//
+//        // Dấu tích ở góc khi được chọn
+//        if (isSelected) {
+//            Box(
+//                modifier = Modifier
+//                    .size(23.dp)
+//                    .align(Alignment.TopStart)
+//                    .background(
+//                        color = Color(0xFF44acfe),  // Màu của dấu tích
+//                        shape = TriangleShape()
+//                    ),
+//                contentAlignment = Alignment.TopStart
+//            ) {
+//                Icon(
+//                    painter = painterResource(id = R.drawable.tick), // ID của icon dấu tích
+//                    contentDescription = null,
+//                    tint = Color.White,
+//                    modifier = Modifier
+//                        .size(10.dp)
+//                        .offset(x = 3.dp, y = 2.dp)
+//                )
+//            }
+//        }
+//    }
+//}
+//

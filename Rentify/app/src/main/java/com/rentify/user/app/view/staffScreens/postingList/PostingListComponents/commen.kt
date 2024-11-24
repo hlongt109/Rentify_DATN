@@ -623,4 +623,147 @@ import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 
 ///detail
 
-
+//@Composable
+//fun SelectMedia(
+//    onMediaSelected: (List<Uri>, List<Uri>) -> Unit
+//) {
+//    val selectedImages = remember { mutableStateListOf<Uri>() }
+//    val selectedVideos = remember { mutableStateListOf<Uri>() }
+//
+//    // Launcher chọn ảnh
+//    val launcherImage = rememberLauncherForActivityResult(
+//        ActivityResultContracts.OpenMultipleDocuments()
+//    ) { uris ->
+//        uris?.let {
+//            selectedImages.addAll(it)
+//            onMediaSelected(selectedImages, selectedVideos)
+//        }
+//    }
+//
+//    // Launcher chọn video
+//    val launcherVideo = rememberLauncherForActivityResult(
+//        ActivityResultContracts.OpenMultipleDocuments()
+//    ) { uris ->
+//        uris?.let {
+//            selectedVideos.addAll(it)
+//            onMediaSelected(selectedImages, selectedVideos)
+//        }
+//    }
+//
+//    Column(modifier = Modifier.fillMaxSize()) {
+//        // Button chọn ảnh
+//        Row(
+//            modifier = Modifier.padding(5.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .clickable { launcherImage.launch(arrayOf("image/*")) }
+//                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+//                    .background(Color.White)
+//                    .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+//                    .padding(25.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.image),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(30.dp)
+//                )
+//            }
+//            Spacer(modifier = Modifier.width(15.dp))
+//            Column {
+//                Text(
+//                    text = "Ảnh Phòng trọ",
+//                    color = Color.Black,
+//                    fontSize = 14.sp
+//                )
+//                Text(
+//                    text = "Tối đa 10 ảnh",
+//                    color = Color(0xFFBFBFBF),
+//                    fontSize = 13.sp
+//                )
+//            }
+//        }
+//
+//        LazyRow {
+//            items(selectedImages) { uri ->
+//                Box(modifier = Modifier.padding(4.dp)) {
+//                    Image(
+//                        painter = rememberImagePainter(uri),
+//                        contentDescription = null,
+//                        modifier = Modifier.size(80.dp)
+//                    )
+//                    // Nút xóa
+//                    Box(
+//                        modifier = Modifier
+//                            .size(16.dp) // Kích thước nút nhỏ hơn
+//                            .background(Color.Red, shape = CircleShape)
+//                            .align(Alignment.TopEnd)
+//                            .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Close,
+//                            contentDescription = "Xóa",
+//                            tint = Color.White,
+//                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        // Button chọn video
+//        Column(
+//            modifier = Modifier
+//                .clickable { launcherVideo.launch(arrayOf("video/*")) }
+//                .fillMaxWidth()
+//                .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+//                .background(Color.White)
+//                .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+//                .padding(25.dp),
+//            verticalArrangement = Arrangement.Center,
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.video),
+//                contentDescription = null,
+//                modifier = Modifier.size(30.dp)
+//            )
+//            Spacer(modifier = Modifier.height(7.dp))
+//            Text(
+//                text = "Video",
+//                color = Color.Black,
+//                fontSize = 13.sp
+//            )
+//        }
+//
+//        LazyRow {
+//            items(selectedVideos) { uri ->
+//                Box(modifier = Modifier.padding(4.dp)) {
+//                    // Hiển thị thumbnail video
+//                    VideoThumbnail(uri)
+//                    // Nút xóa
+//                    Box(
+//                        modifier = Modifier
+//                            .size(16.dp) // Kích thước nút nhỏ hơn
+//                            .background(Color.Red, shape = CircleShape)
+//                            .align(Alignment.TopEnd)
+//                            .clickable { selectedVideos.remove(uri) }, // Xóa ảnh khi nhấn
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Close,
+//                            contentDescription = "Xóa",
+//                            tint = Color.White,
+//                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}

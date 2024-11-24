@@ -58,12 +58,12 @@ data class PostingDetail(
     val id: String,
     val title: String,
     val content: String,
-    val price: Double?,
+    val price: Int?,
     val address: String?,
     val phoneNumber: String?,
     val room_type: String?,
-    val amenities: List<String>?,
-    val services: List<String>?,
+    val amenities: List<String> = listOf(), // Danh sách tiện nghi
+    val services: List<String> = listOf(),  // Danh sách dịch vụ
     val post_type: String,
     val status: Int,
     val photos: List<String>?, // Tên trường đúng với JSON

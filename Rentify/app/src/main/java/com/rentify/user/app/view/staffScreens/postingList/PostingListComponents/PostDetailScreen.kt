@@ -38,17 +38,22 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.window.Dialog
@@ -73,15 +78,31 @@ import kotlinx.coroutines.withContext
 @Composable
 fun PostDetailScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
     val postDetail by viewModel.postDetail.observeAsState()
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
-    var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
-    // Gọi API lấy chi tiết bài đăng
-    LaunchedEffect(postId) {
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+    val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
+
+    // Chạy khi màn hình được hiển thị lại hoặc khi postId thay đổi
+    LaunchedEffect(postId, isPostUpdated.value) {
         viewModel.getPostDetail(postId)
+        isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
     }
 
+
     postDetail?.let { detail ->
-        Column(modifier = Modifier.padding(16.dp)      .verticalScroll(scrollState)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(0xfff7f7f7))
+        ) {
+        Column(modifier = Modifier.padding(16.dp)
+            .height(screenHeight.dp/1.2f)
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .verticalScroll(scrollState))
+        {
   // Hiển thị ảnh/video đầu tiên
             PostImageSlider(
                 images = detail.photos ?: emptyList(),
@@ -109,26 +130,27 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                 Image(
                     painter = painterResource(id = R.drawable.location),
                     contentDescription = null,
-                    modifier = Modifier.size(15.dp, 15.dp)
+                    modifier = Modifier.size(20.dp, 20.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(color = Color(0xfffeb051), fontSize = 16.sp, text = " ${detail.address ?: "Chưa có địa chỉ"}")
             }
+            Spacer(modifier = Modifier.height(8.dp))
 // số điện thoại
             Row( modifier = Modifier.padding(horizontal = 10.dp),  verticalAlignment = Alignment.CenterVertically, ) {
                 Image(
                     painter = painterResource(id = R.drawable.phone),
                     contentDescription = null,
-                    modifier = Modifier.size(15.dp, 15.dp)
+                    modifier = Modifier.size(25.dp, 25.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(text = " ${detail.phoneNumber ?: "Chưa có số điện thoại"}", fontSize = 16.sp)
 
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Nội dung bài đăng
-            Text(text = detail.content, fontSize = 16.sp,modifier = Modifier.padding(horizontal = 10.dp))
+            Text(text = "Nội dung: "+"${detail.content}", fontSize = 16.sp,modifier = Modifier.padding(horizontal = 10.dp))
             Spacer(modifier = Modifier.height(8.dp))
             // Tiện ích
             detail.amenities?.let { amenities ->
@@ -157,33 +179,45 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
 
 
-            // Loại bài đăng
-            Text(text = "Loại bài đăng: ${detail.post_type ?: "Chưa có loại bài đăng"}")
-            Spacer(modifier = Modifier.height(8.dp))
+//            // Loại bài đăng
+//            Text(text = "Loại bài đăng: ${detail.post_type ?: "Chưa có loại bài đăng"}")
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            // Trạng thái bài đăng
+//            Text(text = "Trạng thái: ${if (detail.status == 1) "Phòng đã cho thuê" else "Phòng trống"}")
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            // Thời gian tạo và cập nhật bài đăng
+//            Text(text = "Thời gian tạo: ${detail.created_at ?: "Chưa có thời gian tạo"}")
+//            Text(text = "Thời gian cập nhật: ${detail.updated_at ?: "Chưa có thời gian cập nhật"}")
 
-            // Trạng thái bài đăng
-            Text(text = "Trạng thái: ${if (detail.status == 1) "Phòng đã cho thuê" else "Phòng trống"}")
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Thời gian tạo và cập nhật bài đăng
-            Text(text = "Thời gian tạo: ${detail.created_at ?: "Chưa có thời gian tạo"}")
-            Text(text = "Thời gian cập nhật: ${detail.updated_at ?: "Chưa có thời gian cập nhật"}")
-            Button(
-                onClick = {
-                    navController.navigate("update_post_screen/${postId}")
-                }, modifier = Modifier.height(50.dp).fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xff5dadff)
-                )
-            ) {
-                Text(
-                    text = "Sửa bài đăng",
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color(0xffffffff)
-                )
-            }
         }
+            Box(
+                modifier = Modifier
+                      .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(screenHeight.dp/7f)
+                    .background(color = Color(0xfff7f7f7))
+            ) {
+                Button(
+                    onClick = {
+                        navController.navigate("update_post_screen/${postId}")
+                        {
+                            popUpTo("post_detail/$postId") { inclusive = true }
+                        }
+                    }, modifier = Modifier.height(50.dp).fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xff5dadff)
+                    )
+                ) {
+                    Text(
+                        text = "Sửa bài đăng",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color(0xffffffff)
+                    )
+                }}}
     } ?: run {
         Text("Đang tải chi tiết bài đăng...")
     }
@@ -216,7 +250,7 @@ fun PostImageSlider(images: List<String>, videos: List<String>) {
                         showDialog = true
                     }
                     .fillMaxWidth()
-                    .heightIn(min = 250.dp, max = 400.dp) // Giới hạn chiều cao của ảnh
+                    .heightIn(min = 200.dp, max = 300.dp) // Giới hạn chiều cao của ảnh
                     .align(Alignment.CenterHorizontally) // Căn giữa ảnh/video
             ) {
                 if (media.endsWith(".mp4")) {
@@ -301,21 +335,32 @@ fun PostMediaDialog(mediaList: List<String>, currentIndex: Int, onDismiss: () ->
 }
 @Composable
 fun VideoPlayer(videoUrl: String) {
+    // Quản lý ExoPlayer
+    val context = LocalContext.current
+    val exoPlayer = remember {
+        ExoPlayer.Builder(context).build().apply {
+            setMediaItem(MediaItem.fromUri(videoUrl))
+            prepare()
+            playWhenReady = false // Chỉ phát khi người dùng bấm
+        }
+    }
+
+    // Đảm bảo ExoPlayer được giải phóng khi Composable bị hủy
+    DisposableEffect(key1 = exoPlayer) {
+        onDispose {
+            exoPlayer.release() // Giải phóng tài nguyên ExoPlayer
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            // .aspectRatio(16f / 9f) // Đảm bảo tỷ lệ 16:9
             .background(Color.Black) // Màu nền để đảm bảo không bị trống
     ) {
         AndroidView(
             factory = { context ->
                 PlayerView(context).apply {
-                    player = ExoPlayer.Builder(context).build().apply {
-                        setMediaItem(MediaItem.fromUri(videoUrl))
-                        prepare()
-                        playWhenReady = false // Chỉ phát khi người dùng bấm
-                    }
-
+                    player = exoPlayer
                     useController = true // Hiển thị thanh điều khiển
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,

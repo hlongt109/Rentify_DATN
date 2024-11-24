@@ -673,7 +673,7 @@ fun AddPostScreen(navController: NavHostController) {
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(screenHeight.dp/7f)
-                .background(color = Color.White)
+                .background(color = Color(0xfff7f7f7))
         ) {
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(

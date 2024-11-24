@@ -55,6 +55,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isValidPhoneNumber
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isValidPrice
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.SelectMedia
 
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableLabel
@@ -98,7 +101,18 @@ fun prepareMultipartBody(
         null
     }
 }
+fun isFieldEmpty(field: String): Boolean {
+    return field.isBlank() // Kiểm tra trường có trống không
+}
 
+fun isValidPrice(price: String): Boolean {
+    return price.toDoubleOrNull() != null // Kiểm tra giá có phải là số hợp lệ
+}
+
+fun isValidPhoneNumber(phone: String): Boolean {
+    // Kiểm tra số điện thoại có đúng 10 chữ số và bắt đầu bằng "0"
+    return phone.startsWith("0") && phone.length == 10 && phone.all { it.isDigit() }
+}
 
 
 
@@ -128,6 +142,7 @@ fun AddPostScreens(navController: NavHostController) {
         selectedImages: List<Uri>,
         selectedVideos: List<Uri>
     ): Boolean {
+
         val userId = "672490e5ce87343d0e701012".toRequestBody("text/plain".toMediaTypeOrNull())
         val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
@@ -535,6 +550,68 @@ fun AddPostScreens(navController: NavHostController) {
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(
                     onClick = {
+                        if (isFieldEmpty(title)) {
+                            // Hiển thị thông báo lỗi nếu title trống
+                            Toast.makeText(context, "Tiêu đề không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button        }
+                        if (selectedRoomTypes.isEmpty()) {
+                            // Hiển thị thông báo nếu không có dịch vụ nào được chọn
+                            Toast.makeText(context,  "Loại phòng không được để trống!", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (selectedImages.isEmpty()) {
+                            // Hiển thị thông báo nếu không có ảnh nào được chọn
+                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
+                       return@Button
+                        }
+                        if (selectedVideos.isEmpty()) {
+                            // Hiển thị thông báo nếu không có ảnh nào được chọn
+                            Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
+                     return@Button
+                        }
+                        if (isFieldEmpty(roomPrice)) {
+                            // Hiển thị thông báo lỗi nếu roomPrice trống
+                            Toast.makeText(context, "Giá phòng không thể trống", Toast.LENGTH_SHORT).show()
+                              return@Button
+                        }
+// Kiểm tra giá phòng có phải là số hợp lệ không
+                        if (!isValidPrice(roomPrice)) {
+                            Toast.makeText(context, "Giá phòng phải là số hợp lệ", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (isFieldEmpty(content)) {
+                            // Hiển thị thông báo lỗi nếu content trống
+                            Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (isFieldEmpty(address)) {
+                            // Hiển thị thông báo lỗi nếu address trống
+                            Toast.makeText(context, "Địa chỉ không thể trống", Toast.LENGTH_SHORT).show()
+                              return@Button
+                        }
+
+                        if (isFieldEmpty(phoneNumber)) {
+                            // Hiển thị thông báo lỗi nếu phoneNumber trống
+                            Toast.makeText(context, "Số điện thoại không thể trống", Toast.LENGTH_SHORT).show()
+                              return@Button
+                        }
+                        // Kiểm tra số điện thoại có đúng định dạng không (10 chữ số và bắt đầu bằng 0)
+                        if (!isValidPhoneNumber(phoneNumber)) {
+                            Toast.makeText(context, "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (selectedComfortable.isEmpty()) {
+                            // Hiển thị thông báo nếu không có dịch vụ nào được chọn
+                            Toast.makeText(context,  "Bạn phải chọn ít nhất một tiện nghi!", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (selectedService.isEmpty()) {
+                            // Hiển thị thông báo nếu không có dịch vụ nào được chọn
+                            Toast.makeText(context,  "Bạn phải chọn ít nhất một dịch vụ!", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+
                         CoroutineScope(Dispatchers.Main).launch {
                             val apiService = RetrofitClient.apiService
                             val isSuccessful = withContext(Dispatchers.IO) {

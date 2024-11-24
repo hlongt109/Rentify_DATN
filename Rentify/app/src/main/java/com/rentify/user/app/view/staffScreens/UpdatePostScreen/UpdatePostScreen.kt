@@ -89,6 +89,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.PlayerView
+import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
 
@@ -98,7 +99,7 @@ import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.Comfor
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.RoomTypeLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.RoomTypeOptions
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
-import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceOptions
+
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.StaticServicesOptions
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -108,6 +109,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -155,7 +158,29 @@ private fun toggleMultipleSelection(currentSelection: List<String>, newItem: Str
     }
 }
 
+fun isFieldEmpty(field: String): Boolean {
+    return field.isBlank() // Kiểm tra trường có trống không
+}
 
+fun isValidPrice(price: String): Boolean {
+    return price.toDoubleOrNull() != null // Kiểm tra giá có phải là số hợp lệ
+}
+
+fun isValidPhoneNumber(phone: String): Boolean {
+    // Kiểm tra số điện thoại có đúng 10 chữ số và bắt đầu bằng "0"
+    return phone.startsWith("0") && phone.length == 10 && phone.all { it.isDigit() }
+}
+private fun downloadFileAndGetRequestBody(url: String, mimeType: String): RequestBody {
+    // Tải tệp tin từ URL bằng OkHttp
+    val client = OkHttpClient()
+    val request = Request.Builder().url(url).build()
+
+    val response = client.newCall(request).execute()
+    val file = response.body?.bytes() ?: byteArrayOf()
+
+    // Tạo RequestBody từ dữ liệu tải về
+    return file.toRequestBody(mimeType.toMediaTypeOrNull())
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdatePostScreen(navController: NavHostController,postId: String) {
@@ -164,6 +189,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
+    var selectedRoomTypes1 by remember { mutableStateOf(listOf<String>()) }
 
     var selectedComfortable_up by remember { mutableStateOf(listOf<String>()) }
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
@@ -174,6 +200,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     val scrollState = rememberScrollState()
     var address by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
+    var isEdited by remember { mutableStateOf(false) }
     var content by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
@@ -188,14 +215,24 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     }
 
     postDetail?.let { detail ->
-        title = detail.title ?: ""
-        content = detail.content ?: ""
-        roomPrice = detail.price?.toString() ?: ""
-        address = detail.address ?: ""
-        phoneNumber = detail.phoneNumber ?: ""
-        selectedRoomTypes = detail.room_type?.split(",")?.toList() ?: listOf()
+        if (!isEdited) {
+            title = detail.title ?: "" // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
+            content = detail.content ?: ""
+            roomPrice = detail.price?.toString() ?: ""
+            address = detail.address ?: ""
+            phoneNumber = detail.phoneNumber ?: ""
+        }
+
+
         selectedComfortable = detail.amenities?.let { amenities ->
             amenities.toString() // Chuyển thành chuỗi
+                .removeSurrounding("[", "]") // Loại bỏ ký tự không mong muốn
+                .split(",") // Tách thành danh sách
+                .map { it.trim() } // Xóa khoảng trắng dư thừa
+                .filter { it.isNotEmpty() } // Lọc bỏ chuỗi rỗng
+        } ?: listOf()
+        selectedRoomTypes = detail.room_type?.let { room_type ->
+            room_type.toString() // Chuyển thành chuỗi
                 .removeSurrounding("[", "]") // Loại bỏ ký tự không mong muốn
                 .split(",") // Tách thành danh sách
                 .map { it.trim() } // Xóa khoảng trắng dư thừa
@@ -205,14 +242,14 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
             services.toString() // Chuyển thành chuỗi
                 .removeSurrounding("[", "]") // Loại bỏ ký tự không mong muốn
                 .split(",") // Tách thành danh sách
-                .map { it.trim() } // Xóa khoảng trắng dư thừa
+                 .map { it.trim() } // Xóa khoảng trắng dư thừa
                 .filter { it.isNotEmpty() } // Lọc bỏ chuỗi rỗng
         } ?: listOf()
-        Log.d("postlist", "Updated serrvide: $selectedService")
 
         val images = detail.photos ?: listOf()
         val videos = detail.videos ?: listOf()
-
+        Log.d("image", "đtail: $images")
+        Log.d("video", "detail: $videos")
         // Ghi log toàn bộ dữ liệu
         Log.d("UpdatePostScreen", "Post Detail: ${detail}")
         Log.d("UpdatePostScreen", "Title: $title")
@@ -307,10 +344,13 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     }
                     TextField(
                         value = title,
-                        onValueChange = { title = it },
+                        onValueChange = { newValue ->
+                            title = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(53.dp),
+                            .fillMaxWidth(),
+
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color(0xFFcecece),
                             unfocusedIndicatorColor = Color(0xFFcecece),
@@ -337,23 +377,26 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 Column {
                     RoomTypeLabel()
 
-                    RoomTypeOptions(
-                        selectedRoomTypes = selectedRoomTypes,
-                        onRoomTypeSelected = { roomType ->
-                            selectedRoomTypes = if (selectedRoomTypes.contains(roomType)) {
-                                selectedRoomTypes - roomType
-                            } else {
-                                selectedRoomTypes + roomType
-                            }
+                    RoomTypesDisplay (
+                        roomTypes = selectedRoomTypes, // Danh sách tiện ích đã chọn
+                        onRoomTypeChange = { updatedRoomType ->
+                            selectedRoomTypes1 = updatedRoomType // Cập nhật danh sách tiện ích trong state ngoài
+                            Log.d("logUi", "updated rroom: $updatedRoomType") // Kiểm tra kết quả
                         }
                     )
                 }
 //video
-                SelectMedia { images, videos ->
-                    selectedImages = images
-                    selectedVideos = videos
-                    Log.d("AddPost", "Received Images: $selectedImages")
-                    Log.d("AddPost", "Received Videos: $selectedVideos")
+                postDetail?.let {
+                    SelectMedia(
+                        onMediaSelected = { images, videos ->
+                            selectedImages = images
+                            selectedVideos = videos
+
+                            Log.d("SelectedImages", "Selected images: $selectedImages")
+                            Log.d("SelectedVideos", "Selected videos: $selectedVideos")
+                        },
+                        detail = it
+                    )
                 }
                 // gía phòng
                 Column(
@@ -381,10 +424,14 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     }
                     TextField(
                         value = roomPrice,
-                        onValueChange = { roomPrice = it },
+
+                        onValueChange = { newValue ->
+                            roomPrice = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(53.dp),
+                            .fillMaxWidth(),
+
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color(0xFFcecece),
                             unfocusedIndicatorColor = Color(0xFFcecece),
@@ -432,10 +479,12 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     }
                     TextField(
                         value = content,
-                        onValueChange = { content = it },
+                        onValueChange = { newValue ->
+                            content = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(53.dp),
+                            .fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color(0xFFcecece),
                             unfocusedIndicatorColor = Color(0xFFcecece),
@@ -479,7 +528,11 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     }
                     TextField(
                         value = address,
-                        onValueChange = { address = it },
+
+                        onValueChange = { newValue ->
+                            address = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(53.dp),
@@ -531,7 +584,11 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     }
                     TextField(
                         value = phoneNumber,
-                        onValueChange = { phoneNumber = it },
+
+                        onValueChange = { newValue ->
+                            phoneNumber = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(53.dp),
@@ -574,9 +631,9 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     ServiceLabel()
                     ServicesDisplay(
                         services = selectedService, // Danh sách tiện ích đã chọn
-                        onServicesChange = { updatedService ->
-                            selectedService_up = updatedService // Cập nhật danh sách tiện ích trong state ngoài
-                            Log.d("EditPostScreen", "updatedService: $updatedService") // Kiểm tra kết quả
+                        onServicesChange = { updatedServices ->
+                            selectedService_up = updatedServices // Cập nhật danh sách tiện ích trong state ngoài
+                            Log.d("logUi", "updatedService: $updatedServices") // Kiểm tra kết quả
                         }
                     )
                 }
@@ -588,7 +645,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(screenHeight.dp/7f)
-                .background(color = Color.White)
+                .background(color = Color(0xfff7f7f7))
         ) {
             fun logRequestBody(requestBody: RequestBody) {
                 val buffer = Buffer()
@@ -604,6 +661,43 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(
                     onClick = {
+                        if (isFieldEmpty(title)) {
+                            // Hiển thị thông báo lỗi nếu title trống
+                            Toast.makeText(context, "Tiêu đề không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button        }
+                        if (isFieldEmpty(roomPrice)) {
+                            // Hiển thị thông báo lỗi nếu roomPrice trống
+                            Toast.makeText(context, "Giá phòng không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+// Kiểm tra giá phòng có phải là số hợp lệ không
+                        if (!isValidPrice(roomPrice)) {
+                            Toast.makeText(context, "Giá phòng phải là số hợp lệ", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (isFieldEmpty(content)) {
+                            // Hiển thị thông báo lỗi nếu content trống
+                            Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (isFieldEmpty(address)) {
+                            // Hiển thị thông báo lỗi nếu address trống
+                            Toast.makeText(context, "Địa chỉ không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+                        if (isFieldEmpty(phoneNumber)) {
+                            // Hiển thị thông báo lỗi nếu phoneNumber trống
+                            Toast.makeText(context, "Số điện thoại không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        // Kiểm tra số điện thoại có đúng định dạng không (10 chữ số và bắt đầu bằng 0)
+                        if (!isValidPhoneNumber(phoneNumber)) {
+                            Toast.makeText(context, "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+
 
                         val userId = "672490e5ce87343d0e701012".toRequestBody("text/plain".toMediaTypeOrNull())
                         val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
@@ -613,24 +707,26 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         val price = roomPrice.toRequestBody("multipart/form-data".toMediaTypeOrNull())
                         val address = address.toRequestBody("multipart/form-data".toMediaTypeOrNull())
                         val phoneNumber = phoneNumber.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-                        val roomType = selectedRoomTypes.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        val roomType = selectedRoomTypes1.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
                         val amenities = selectedComfortable_up.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
                         val services = selectedService_up.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-                        Log.d("click", "Amenities before sending request: ${selectedComfortable_up.joinToString(",")}")
-                        Log.d("click", "Services before sending request: ${selectedService_up.joinToString(",")}")
+                        // Kiểm tra trống các trường quan trọng
 
-                        // Log nội dung thực tế của RequestBody
-                        logRequestBody(amenities)  // Log nội dung amenities
+                        Log.d("click", "${selectedService_up.joinToString(",")}")
+
                         logRequestBody(services)   // Log nội dung services
 
-
+                        fun isRemoteUri(uri: Uri): Boolean {
+                            val scheme = uri.scheme ?: return false
+                            return scheme.startsWith("http")
+                        }
                         val videoParts = selectedVideos.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
-                            prepareMultipartBody(context, uri, "video", ".mp4", mimeType)
+                            com.rentify.user.app.view.staffScreens.addPostScreen.prepareMultipartBody(context,uri,"video",".mp4",mimeType)
                         }
                         val photoParts = selectedImages.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-                            prepareMultipartBody(context, uri, "photo", ".jpg", mimeType)
+                            com.rentify.user.app.view.staffScreens.addPostScreen.prepareMultipartBody(context, uri, "photo", ".jpg", mimeType)
                         }
                         // Gửi yêu cầu cập nhật
                         postId?.let {
@@ -651,6 +747,11 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                 photos = photoParts
                             )
                         }
+                        navController.navigate("post_detail/$postId")
+                        {
+                            popUpTo("update_post_screen/$postId") { inclusive = true }
+                        }
+
                     }, modifier = Modifier.height(50.dp).fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xff5dadff)
@@ -763,20 +864,13 @@ fun AmenitiesDisplay(
     amenities: List<String>,
     onAmenitiesChange: (List<String>) -> Unit
 ) {
-
+    val context = LocalContext.current
     val selectedAmenities = remember(amenities) { mutableStateOf(amenities) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Tiện ích:",
-            modifier = Modifier.padding(bottom = 8.dp),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-
 
         StaticComfortableOptions(
             amenities = selectedAmenities.value,
@@ -785,6 +879,10 @@ fun AmenitiesDisplay(
                     selectedAmenities.value - amenity
                 } else {
                     selectedAmenities.value + amenity
+                }
+                if (updatedAmenities.isEmpty()) {
+                    Toast.makeText(context, "Không được để trống tiện nghi", Toast.LENGTH_SHORT).show()
+                    return@StaticComfortableOptions
                 }
                 selectedAmenities.value = updatedAmenities
                 onAmenitiesChange(updatedAmenities) // Gửi danh sách mới qua callback
@@ -795,20 +893,13 @@ fun AmenitiesDisplay(
 
     }
     }
+
 ////
 ///
-
 @Composable
 fun StaticServiceOptions(
     services: List<String>, // Danh sách tiện ích từ dữ liệu
-    allserviceOptions: List<String> = listOf(
-        "Điều hoà",
-        "Kệ bếp",
-        "Tủ lạnh",
-        "Bình nóng lạnh",
-        "Máy giặt",
-        "Bàn ghế"
-    ),
+    allOptions: List<String> = listOf( "Điều hoà","Kệ bếp","Tủ lạnh","Bình nóng lạnh","Máy giặt","Bàn ghế"),
     onSelectService: (String) -> Unit // Thêm tham số cho sự kiện chọn
 ) {
 
@@ -817,8 +908,8 @@ fun StaticServiceOptions(
         mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
         crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
     ) {
-        allserviceOptions.forEach { option ->
-            StaticServiceOption(
+        allOptions.forEach { option ->
+            StaticComfortableOption(
                 text = option,
                 isSelected = services.contains(option), // Hiển thị dấu tích nếu có trong danh sách tiện ích
                 onClick = { onSelectService(option) } // Khi nhấp vào, gọi onSelectAmenity
@@ -828,9 +919,71 @@ fun StaticServiceOptions(
 
     }
 }
-
 @Composable
-fun StaticServiceOption(
+fun ServicesDisplay(
+    services: List<String>,
+    onServicesChange: (List<String>) -> Unit
+) {
+    val context = LocalContext.current
+    val selectedServices = remember(services) { mutableStateOf(services) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+
+        StaticServiceOptions(
+            services = selectedServices.value,
+            onSelectService = { amenity ->
+                val updatedService = if (selectedServices.value.contains(amenity)) {
+                    selectedServices.value - amenity
+                } else {
+                    selectedServices.value + amenity
+                }
+                if (updatedService.isEmpty()) {
+                    Toast.makeText(context, "Không được để trống dịch vụ", Toast.LENGTH_SHORT)
+                        .show()
+                    return@StaticServiceOptions
+                }
+                selectedServices.value = updatedService
+                onServicesChange(updatedService) // Gửi danh sách mới qua callback
+                Log.d("hamm", "Updated Amenities: $updatedService")
+            }
+        )
+        // Trạng thái danh sách tiện ích
+
+    }
+
+}
+@Composable
+fun StaticRoomTypeOptions(
+    roomTypes: List<String>, // Danh sách tiện ích từ dữ liệu
+    allOptions: List<String> = listOf(
+        "Phòng trọ",
+        "Nguyên căn",
+        "Chung cư"
+    ),
+    onSelectRoomType: (String) -> Unit // Thêm tham số cho sự kiện chọn
+) {
+
+    FlowRow(
+        modifier = Modifier.padding(8.dp),
+        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
+        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+    ) {
+        allOptions.forEach { option ->
+            StaticRoomTypeOption(
+                text = option,
+                isSelected = roomTypes.contains(option), // Hiển thị dấu tích nếu có trong danh sách tiện ích
+                onClick = { onSelectRoomType(option) } // Khi nhấp vào, gọi onSelectAmenity
+
+            )
+        }
+
+    }
+}
+@Composable
+fun StaticRoomTypeOption(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit // Thêm sự kiện nhấp vào
@@ -883,124 +1036,23 @@ fun StaticServiceOption(
     }
 }
 @Composable
-fun ServicesDisplay(
-    services: List<String>,
-    onServicesChange: (List<String>) -> Unit
+fun RoomTypesDisplay(
+    roomTypes: List<String>, // Danh sách các loại phòng (sẽ chỉ chứa tối đa 1 giá trị)
+    onRoomTypeChange: (List<String>) -> Unit // Callback để cập nhật danh sách
 ) {
-
-    val selectedService = remember(services) { mutableStateOf(services) }
+    val selectedRoomType = remember(roomTypes) { mutableStateOf(roomTypes.firstOrNull() ?: "") }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Tiện ích:",
-            modifier = Modifier.padding(bottom = 8.dp),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-
-        StaticServiceOptions(
-            services = selectedService.value,
-            onSelectService = { services ->
-                val updatedService = if (selectedService.value.contains(services)) {
-                    selectedService.value - services
-                } else {
-                    selectedService.value + services
-                }
-                selectedService.value = updatedService
-                onServicesChange(updatedService) // Gửi danh sách mới qua callback
-
+        StaticRoomTypeOptions(
+            roomTypes = listOf(selectedRoomType.value), // Chỉ truyền loại phòng đang được chọn
+            onSelectRoomType = { roomType ->
+                selectedRoomType.value = roomType // Cập nhật giá trị đã chọn
+                onRoomTypeChange(listOf(roomType)) // Gửi danh sách mới chỉ chứa một giá trị
             }
         )
-        // Trạng thái danh sách tiện ích
-
-    }
-}
-
-
-@Composable
-fun RoomTypeOptions(
-    selectedRoomTypes: List<String>,
-    onRoomTypeSelected: (String) -> Unit
-) {
-    Row(
-        modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically
-    ) {
-        RoomTypeOption(text = "Phòng trọ",
-            isSelected = selectedRoomTypes.contains("Phòng trọ"),
-            onClick = { onRoomTypeSelected("Phòng trọ") }
-        )
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        RoomTypeOption(text = "Nguyên căn",
-            isSelected = selectedRoomTypes.contains("Nguyên căn"),
-            onClick = { onRoomTypeSelected("Nguyên căn") }
-        )
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        RoomTypeOption(text = "Chung cư",
-            isSelected = selectedRoomTypes.contains("Chung cư"),
-            onClick = { onRoomTypeSelected("Chung cư") }
-        )
-    }
-}
-
-@Composable
-fun RoomTypeOption(
-    text: String, isSelected: Boolean, onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .clickable(
-                onClick = onClick,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() })
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
-            .border(
-                width = 1.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
-            .padding(0.dp)
-    ) {
-        androidx.compose.material.Text(
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp,
-            modifier = Modifier
-                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
-                .padding(14.dp)
-                .align(Alignment.Center)
-        )
-
-        // Dấu tích ở góc khi được chọn
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(23.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = Color(0xFF44acfe),  // Màu của dấu tích
-                        shape = TriangleShape()
-                    ),
-                contentAlignment = Alignment.TopStart
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.tick), // ID của icon dấu tích
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(10.dp)
-                        .offset(x = 3.dp, y = 2.dp)
-                )
-            }
-        }
     }
 }
 
@@ -1021,13 +1073,28 @@ class TriangleShape : Shape {
     }
 }
 
+
 @Composable
 fun SelectMedia(
-    onMediaSelected: (List<Uri>, List<Uri>) -> Unit
+    onMediaSelected: (List<Uri>, List<Uri>) -> Unit,
+    detail: PostingDetail // Truyền đối tượng detail chứa ảnh và video
 ) {
     val selectedImages = remember { mutableStateListOf<Uri>() }
     val selectedVideos = remember { mutableStateListOf<Uri>() }
-
+//    val baseUrl = "http://192.168.2.106:3000/"
+//
+//// Chuyển đổi các đường dẫn ảnh và video từ detail thành Uri, thêm base URL vào trước mỗi đường dẫn
+//    val imagesFromDetail = detail.photos?.map { Uri.parse( baseUrl+it) } ?: listOf()
+//    val videosFromDetail = detail.videos?.map { Uri.parse(baseUrl+it) } ?: listOf()
+//
+//    // Gán giá trị ảnh và video từ detail vào selectedImages và selectedVideos
+//    if (selectedImages.isEmpty()) {
+//        selectedImages.addAll(imagesFromDetail)
+//    }
+//
+//    if (selectedVideos.isEmpty()) {
+//        selectedVideos.addAll(videosFromDetail)
+//    }
     // Launcher chọn ảnh
     val launcherImage = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
@@ -1084,6 +1151,7 @@ fun SelectMedia(
             }
         }
 
+        // Hiển thị ảnh đã chọn từ detail
         LazyRow {
             items(selectedImages) { uri ->
                 Box(modifier = Modifier.padding(4.dp)) {
@@ -1139,6 +1207,7 @@ fun SelectMedia(
             )
         }
 
+        // Hiển thị video đã chọn từ detail
         LazyRow {
             items(selectedVideos) { uri ->
                 Box(modifier = Modifier.padding(4.dp)) {
@@ -1150,7 +1219,7 @@ fun SelectMedia(
                             .size(16.dp) // Kích thước nút nhỏ hơn
                             .background(Color.Red, shape = CircleShape)
                             .align(Alignment.TopEnd)
-                            .clickable { selectedVideos.remove(uri) }, // Xóa ảnh khi nhấn
+                            .clickable { selectedVideos.remove(uri) }, // Xóa video khi nhấn
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
