@@ -450,6 +450,7 @@
                 }
                 html += `<div class="col-md-4 mb-4">
                             <div class="border p-3 rounded shadow-sm d-flex justify-content-between align-items-center">
+
                                 <div class="left-side">
                                     <strong>Phòng: ${invoice.room_id.room_name}</strong><br>
                                     <div class="mb-0 mt-1" style="font-size: 14px;">
@@ -466,27 +467,9 @@
                                     </div>
                                 </div>
 
-                                <button class="right-side btn btn-primary" style="font-size: 12px" onclick="openUpdateInvoiceForm('${invoice._id}')">Cập nhật</button>
-                            </div>
-
-                            <!-- Modal hiển thị chọn trạng thái -->
-                            <div id="statusModal-${invoice._id}" class="status-modal" style="display: none;">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Chọn trạng thái thanh toán</h5>
-                                        <button type="button" class="close" onclick="closeStatusModal('${invoice._id}')">&times;</button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <label for="status-select">Trạng thái:</label>
-                                        <select id="status-select-${invoice._id}" class="form-select">
-                                            <option value="paid">Đã thanh toán</option>
-                                            <option value="unpaid">Chưa thanh toán</option>
-                                        </select>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" onclick="closeStatusModal('${invoice._id}')">Hủy</button>
-                                        <button type="button" class="btn btn-primary" onclick="updateInvoiceStatus('${invoice._id}')">Xác nhận</button>
-                                    </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <button class="btn btn-primary btn-sm" onclick="openUpdateInvoiceForm('${invoice._id}')">Cập nhật</button>
+                                    <button class="btn btn-danger btn-sm mt-2" onclick="deleteInvoice('${invoice._id}')">Xóa</button>
                                 </div>
                             </div>
                         </div>`;
@@ -653,7 +636,7 @@
     // Mở dialog thêm hóa đơn
     function openInvoiceDialog() {
         console.log("open dialog add");
-        populateBuildings();  
+        populateBuildings();
         populateMonthDropdown();
         document.getElementById('invoiceDialog').style.display = 'flex';
     }
@@ -672,11 +655,13 @@
         document.getElementById('waterPrice').value = "";
         document.getElementById('roomPrice').value = "";
 
-        // Đặt lại trạng thái thanh toán
-        const paymentStatusInputs = document.querySelectorAll('input[name="paymentStatus"]');
-        paymentStatusInputs.forEach(input => {
-            input.checked = false;
-        });
+        document.getElementById('invoiceFormTitle').innerText = 'Tạo hóa đơn';
+        document.getElementById('invoiceFormButton').innerText = 'Tạo';
+
+        const paymentStatusPending = document.querySelector('input[name="paymentStatus"][value="unpaid"]');
+        if (paymentStatusPending) {
+            paymentStatusPending.checked = true;
+        }
         document.getElementById('invoiceDialog').style.display = 'none';
     }
 
@@ -822,6 +807,9 @@
                 } else {
                     getInvoicesYear(selectedYear, selectPaymentStatus)
                 }
+                if (invoiceId) {
+                    closeInvoiceDialog();
+                }
                 Toastify({
                     text: "Thành công",
                     style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
@@ -895,15 +883,50 @@
             // Lưu ID hóa đơn để cập nhật
             document.getElementById('invoiceId').value = invoiceId;
 
-            console.log("month in update :", month)            
+            console.log("month in update :", month)
         } catch (error) {
             console.error("Lỗi khi mở form cập nhật:", error);
+        }
+    }
+    async function deleteInvoice(invoiceId) {
+        if (confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/invoice_mgr/${invoiceId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (isMonthLoad) {
+                        getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus);
+                    } else {
+                        getInvoicesYear(selectedYear, selectPaymentStatus)
+                    }
+                    Toastify({
+                        text: "Xóa thành công",
+                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
+                    }).showToast();
+                    // document.getElementById(`invoice-${invoiceId}`).remove();
+                } else {
+                    Toastify({
+                        text: "Xóa thất bại",
+                        style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error("Error deleting invoice:", error);
+            }
         }
     }
 
     function validateInputs() {
         const buildingId = document.getElementById('buildingSelect').value;
         const roomId = document.getElementById('roomSelect').value;
+        const month = document.getElementById('monthSelect').value;
         const electricUnits = Number(document.getElementById('electricUnits').value) || 0;
         const electricPrice = Number(document.getElementById('electricPrice').value) || 0;
         const waterUnits = Number(document.getElementById('waterUnits').value) || 0;
@@ -918,6 +941,11 @@
 
         if (!roomId) {
             alert("Vui lòng chọn phòng.");
+            return false;
+        }
+
+        if (!month) {
+            alert("Vui lòng chọn tháng.");
             return false;
         }
 
