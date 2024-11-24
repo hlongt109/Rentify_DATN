@@ -539,77 +539,6 @@
 
     // =================== CRUD =========================
 
-    function toggleStatusModal(invoiceId) {
-        const modal = document.getElementById(`statusModal-${invoiceId}`);
-        modal.style.display = 'flex';  // Hiển thị modal
-    }
-
-    // Hàm đóng modal
-    function closeStatusModal(invoiceId) {
-        const modal = document.getElementById(`statusModal-${invoiceId}`);
-        modal.style.display = 'none';  // Ẩn modal
-    }
-
-
-    // Hàm cập nhật trạng thái khi người dùng chọn
-    function updateInvoiceStatus(invoiceId) {
-        console.log('Invoice ID received in function:', invoiceId); // Log ID nhận được
-        if (!invoiceId) {
-            console.error('Invoice ID is undefined!');
-            return
-        }
-        const statusSelect = document.getElementById(`status-select-${invoiceId}`).value;
-        console.log('Selected Status:', statusSelect);
-
-
-        updateStatusOnServer(invoiceId, statusSelect)
-            .then(() => {
-                closeStatusModal(invoiceId);
-                const statusElement = document.querySelector(`#statusModal-${invoiceId} .status`);
-                if (statusElement) {
-                    statusElement.innerText = statusSelect === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán';
-                }
-            })
-            .catch(error => {
-                console.error('Lỗi khi cập nhật trạng thái:', error);
-            });
-    }
-
-    async function updateStatusOnServer(invoiceId, status) {
-        try {
-            const response = await fetch(`http://localhost:3000/api/invoice_mgr_status/${invoiceId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ payment_status: status })
-            });
-            if (response.ok) {
-                const result = await response.json();
-                if (isMonthLoad) {
-                    getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus);
-                } else {
-                    getInvoicesYear(selectedYear, selectPaymentStatus)
-                }
-                Toastify({
-                    text: "Update successfully",
-                    style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
-                }).showToast();
-
-            } else {
-                Toastify({
-                    text: "Failed to update",
-                    style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
-                }).showToast();
-            }
-        } catch (error) {
-            console.error("Error updating status:", error);
-            alert("An error occurred while updating the status");
-        }
-    }
-
-    // =============== Create Invoice =======================
-
     let rooms = [];
     let staffId;
     // Lấy danh sách phòng của tòa nhà
@@ -767,7 +696,7 @@
             building_id: buildingId,
             room_id: roomId,
             description,
-            describe: "Hóa đơn thanh toán phòng, điện, nước",
+            describe: "Hóa đơn thanh toán phòng",
             type_invoice: "rent",
             amount: totalAmount,
             transaction_type: "income",

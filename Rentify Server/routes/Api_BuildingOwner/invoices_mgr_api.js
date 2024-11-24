@@ -14,7 +14,7 @@ router.get('/buildings_mgr/:landlord_id', async (req, res) => {
             return res.status(400).json({ error: 'landlord_id is required.' });
         }
 
-        const buildings = await Building.find({ landlord_id: landlord_id })
+        const buildings = await Building.find({ landlord_id: landlord_id }).populate('manager_id');
         if (buildings) {
             res.status(200).json({ data: buildings })
         } else {
