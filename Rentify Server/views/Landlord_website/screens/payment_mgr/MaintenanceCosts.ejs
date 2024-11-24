@@ -9,6 +9,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <title>Maintenance Costs</title>
     <style>
         .selected {
@@ -66,6 +68,7 @@
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
             /* Ánh sáng xung quanh khi focus */
         }
+
         .status-modal {
             position: fixed;
             top: 0;
@@ -121,7 +124,7 @@
             </div>
 
             <!-- Add button -->
-            <button class="btn btn-primary border" style="font-weight: 600;" onclick="createInvoice()">
+            <button class="btn btn-primary border" style="font-weight: 600;" onclick="openInvoiceDialog()">
                 Tạo hóa đơn
             </button>
         </div>
@@ -168,6 +171,59 @@
         </div>
 
     </div>
+
+    <!-- Dialog Add Invoice -->
+    <div id="invoiceDialog"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+        <div
+            style="background: white; padding: 20px; border-radius: 8px; width: 75%; max-height: 80%; overflow-y: auto;">
+            <h3 id="invoiceFormTitle" style="margin-bottom: 20px;">Tạo hóa đơn phí bảo trì</h3>
+
+            <!-- Select Building -->
+            <div>
+                <label style="width: 150px;" for="buildingSelect">Tòa nhà:</label>
+                <select id="buildingSelect" onchange="onBuildingChange()">
+                    <!-- Options will be dynamically populated -->
+                </select>
+            </div>
+
+            <!--  -->
+            <div class="row align-items-center" style="margin-top: 10px;">
+                <label style="width: 153px; margin-left: 15px;" for="datetime">Thời gian:</label>
+                <div class="">
+                    <input type="text" class="form-control" id="datetime" readonly>
+                </div>
+            </div>
+
+            <!-- Input Rows -->
+            <div style="margin-top: 10px;">
+                <label style="width: 150px;">Vấn đề:</label>
+                <input style="margin-right: 50px;" type="text" id="describe" placeholder="Nhập mô tả">
+                <label style="width: 150px;">Số tiền:</label>
+                <input type="number" id="fee" placeholder="Nhập số tiền">
+            </div>
+
+            <div style="margin-top: 10px;">
+                <label style="width: 150px;">Trạng thái thanh toán:</label>
+                <div style="display: inline-block;">
+                    <label>
+                        <input type="radio" name="paymentStatus" value="unpaid" checked> Chưa thanh toán
+                    </label>
+                    <label style="margin-left: 20px;">
+                        <input type="radio" name="paymentStatus" value="paid"> Đã thanh toán
+                    </label>
+                </div>
+            </div>
+
+            <input type="hidden" id="invoiceId">
+
+            <!-- Actions -->
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <button class="btn btn-secondary" onclick="closeInvoiceDialog()">Đóng</button>
+                <button id="invoiceFormButton" class="btn btn-primary" onclick="createInvoice()">Tạo</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script>
@@ -178,7 +234,7 @@
     console.log("userId :", userId)
     let buildings = [];
     let isMonthLoad = true;
-    let selectedBuildingId = null;
+    let selectedBuildingId;
     let currentDate = new Date();
     let selectedYear = currentDate.getFullYear();
     let selectedMonth = currentDate.getMonth() + 1;
@@ -255,7 +311,6 @@
         if (selectedItem) {
             selectedItem.classList.add('selected'); // Thêm class 'selected' vào item được chọn
         }
-
         if (isMonthLoad) {
             getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus, selectedTypeInvoice);
         } else {
@@ -287,7 +342,7 @@
     // ============ Invoice ==============
     async function getInvoices(buildingId, selectedMonth, selectedYear, selectPaymentStatus) {
         try {
-            console.log("run getInvoices",buildingId, selectedMonth, selectedYear, selectPaymentStatus)
+            console.log(buildingId, selectedMonth, selectedYear, selectPaymentStatus)
             const queryParams = new URLSearchParams({
                 month: selectedMonth,
                 year: selectedYear,
@@ -307,6 +362,7 @@
             console.error('Lỗi khi lấy hóa đơn:', error);
         }
     }
+
 
     async function getInvoicesYear(selectedYear, selectPaymentStatus, selectedTypeInvoice) {
         try {
@@ -372,29 +428,12 @@
                                         </div>
                                     </div>
 
-                                    <button class="right-side btn btn-primary" style="font-size: 12px" onclick="toggleStatusModal('${invoice._id}')">Cập nhật</button>
-                                </div>
-
-                                <!-- Modal hiển thị chọn trạng thái -->
-                                <div id="statusModal-${invoice._id}" class="status-modal" style="display: none;">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Chọn trạng thái thanh toán</h5>
-                                            <button type="button" class="close" onclick="closeStatusModal('${invoice._id}')">&times;</button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <label for="status-select">Trạng thái:</label>
-                                            <select id="status-select-${invoice._id}" class="form-select">
-                                                <option value="paid">Đã thanh toán</option>
-                                                <option value="unpaid">Chưa thanh toán</option>
-                                            </select>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" onclick="closeStatusModal('${invoice._id}')">Hủy</button>
-                                            <button type="button" class="btn btn-primary" onclick="updateInvoiceStatus('${invoice._id}')">Xác nhận</button>
-                                        </div>
+                                    <div class="d-flex flex-column gap-2">
+                                        <button class="btn btn-primary btn-sm" onclick="openUpdateInvoiceForm('${invoice._id}')">Cập nhật</button>
+                                        <button class="btn btn-danger btn-sm mt-2" onclick="deleteInvoice('${invoice._id}')">Xóa</button>
                                     </div>
                                 </div>
+
                         </div>`;
             });
             html += `</div>`;
@@ -461,75 +500,207 @@
     });
 
     // =================== CRUD =========================
-    function toggleStatusModal(invoiceId) {
-        const modal = document.getElementById(`statusModal-${invoiceId}`);
-        modal.style.display = 'flex';  // Hiển thị modal
+
+    function openInvoiceDialog() {
+        console.log("open dialog add");
+        populateBuildings();
+        document.getElementById('invoiceDialog').style.display = 'flex';
     }
 
-    // Hàm đóng modal
-    function closeStatusModal(invoiceId) {
-        const modal = document.getElementById(`statusModal-${invoiceId}`);
-        modal.style.display = 'none';  // Ẩn modal
-    }
+    function closeInvoiceDialog() {
+        document.getElementById('invoiceId').value = "";
+        document.getElementById('buildingSelect').value = "";
+        document.getElementById('datetime').value = "";
+        document.getElementById('describe').value = "";
+        document.getElementById('fee').value = "";
+        staffId = null;
 
-    // Hàm cập nhật trạng thái khi người dùng chọn
-    function updateInvoiceStatus(invoiceId) {
-        console.log('Invoice ID received in function:', invoiceId); // Log ID nhận được
-        if (!invoiceId) {
-            console.error('Invoice ID is undefined!');
-            return
+        document.getElementById('invoiceFormTitle').innerText = 'Tạo hóa đơn phí bảo trì';
+        document.getElementById('invoiceFormButton').innerText = 'Tạo';
+
+        const paymentStatusPending = document.querySelector('input[name="paymentStatus"][value="unpaid"]');
+        if (paymentStatusPending) {
+            paymentStatusPending.checked = true;
         }
-        const statusSelect = document.getElementById(`status-select-${invoiceId}`).value;
-        console.log('Selected Status:', statusSelect);
-
-
-        updateStatusOnServer(invoiceId, statusSelect)
-            .then(() => {
-                closeStatusModal(invoiceId);
-                const statusElement = document.querySelector(`#statusModal-${invoiceId} .status`);
-                if (statusElement) {
-                    statusElement.innerText = statusSelect === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán';
-                }
-            })
-            .catch(error => {
-                console.error('Lỗi khi cập nhật trạng thái:', error);
-            });
+        document.getElementById('invoiceDialog').style.display = 'none';
     }
 
-    async function updateStatusOnServer(invoiceId, status) {
+    // DropDown tòa nhà
+    function populateBuildings() {
+        const buildingSelect = document.getElementById('buildingSelect');
+        buildingSelect.innerHTML = buildings.map(building => `<option value="${building._id}">${building.nameBuilding}</option>`).join('');
+        onBuildingChange();  // Gọi onBuildingChange để load phòng cho tòa nhà đầu tiên
+    }
+
+    // Xử lý sự kiện thay đổi tòa nhà
+    async function onBuildingChange() {
+        const buildingId = document.getElementById('buildingSelect').value;
+        const selectedBuilding = buildings.find(building => building._id === buildingId);
+    }
+
+    async function createInvoice() {
+        if (!validateInputs()) return;
+
+        const invoiceId = document.getElementById("invoiceId").value;
+        const buildingId = document.getElementById("buildingSelect").value;
+        const describe = document.getElementById("describe").value || "";
+        const fee = Number(document.getElementById("fee").value) || 0;
+        const paymentStatus = document.querySelector('input[name="paymentStatus"]:checked').value;
+
+        const datetimeValue = document.getElementById("datetime").value;
+        const datetime = new Date(datetimeValue);
+        const now = new Date();
+        datetime.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+
+        // return console.log("date time :", datetime)
+
+        const invoice = {
+            user_id: userId,
+            building_id: buildingId,
+            describe: describe,
+            type_invoice: "maintain",
+            amount: fee,
+            transaction_type: "expense",
+            payment_status: paymentStatus,
+            created_at: datetime.toISOString()
+        };
+
         try {
-            const response = await fetch(`http://localhost:3000/api/invoice_mgr_status/${invoiceId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ payment_status: status })
+            const url = invoiceId
+                ? `http://localhost:3000/api/invoice_mgr/${invoiceId}`
+                : "http://localhost:3000/api/invoice_mgr";
+            const method = invoiceId ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(invoice)
             });
-            if (response.ok) {
-                const result = await response.json();
+
+            if (res.ok) {
                 if (isMonthLoad) {
                     getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus, selectedTypeInvoice);
                 } else {
                     getInvoicesYear(selectedYear, selectPaymentStatus, selectedTypeInvoice)
                 }
+                closeInvoiceDialog();
                 Toastify({
-                    text: "Update successfully",
+                    text: "Thành công",
                     style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
                 }).showToast();
-
             } else {
-                Toastify({
-                    text: "Failed to update",
-                    style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
-                }).showToast();
+                throw new Error("Không thể tạo hóa đơn.");
             }
         } catch (error) {
-            console.error("Error updating status:", error);
-            alert("An error occurred while updating the status");
+            Toastify({
+                text: "Lỗi, không thành công",
+                style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
+            }).showToast();
+            console.error(error);
         }
     }
 
+    async function openUpdateInvoiceForm(invoiceId) {
+        try {
+            populateBuildings();
+            const response = await fetch(`http://localhost:3000/api/invoice_mgr/${invoiceId}`);
+            if (!response.ok) {
+                alert("Không tìm thấy hóa đơn!");
+                return;
+            }
 
+            const data = await response.json();
+            const invoice = data.data
+            console.log(invoice)
+
+            document.getElementById("invoiceFormTitle").innerText = "Cập nhật hóa đơn lương nhân viên";
+            document.getElementById("invoiceFormButton").innerText = "Cập nhật";
+
+            document.getElementById("buildingSelect").value = invoice.building_id || "";
+            await onBuildingChange(); // Load room list based on building
+            document.getElementById("describe").value = invoice.describe || "";
+            document.getElementById("fee").value = invoice.amount || 0;
+
+            document.querySelector(`input[name="paymentStatus"][value="${invoice.payment_status}"]`).checked = true;
+
+            document.getElementById("datetime").value = invoice.created_at;
+
+            document.getElementById("invoiceId").value = invoiceId;
+            document.getElementById("invoiceDialog").style.display = "flex";
+        } catch (error) {
+            console.error("Lỗi khi mở form cập nhật:", error);
+        }
+    }
+
+    function validateInputs() {
+        const buildingId = document.getElementById("buildingSelect").value;
+        // const staff = document.getElementById("typeSelected").value;
+        const datetime = document.getElementById("datetime").value;
+        const description = document.getElementById("describe").value;
+        const fee = Number(document.getElementById("fee").value);
+
+        if (!buildingId) {
+            alert("Vui lòng chọn tòa nhà.");
+            return false;
+        }
+
+        if (!datetime) {
+            alert("Vui lòng chọn thời gian.");
+            return false;
+        }
+
+        if (!description.trim()) {
+            alert("Vui lòng nhập mô tả.");
+            return false;
+        }
+
+        if (isNaN(fee) || fee <= 0) {
+            alert("Số tiền phải lớn hơn 0.");
+            return false;
+        }
+
+        return true;
+    }
+
+    async function deleteInvoice(invoiceId) {
+        if (confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/invoice_mgr/${invoiceId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (isMonthLoad) {
+                        getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus, selectedTypeInvoice);
+                    } else {
+                        getInvoicesYear(selectedYear, selectPaymentStatus, selectedTypeInvoice)
+                    }
+                    Toastify({
+                        text: "Xóa thành công",
+                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
+                    }).showToast();
+                    // document.getElementById(`invoice-${invoiceId}`).remove();
+                } else {
+                    Toastify({
+                        text: "Xóa thất bại",
+                        style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error("Error deleting invoice:", error);
+            }
+        }
+    }
+    flatpickr("#datetime", {
+        dateFormat: "Y-m-d",
+        defaultDate: "today", // Chọn ngày mặc định
+        enableTime: false,    // Chỉ chọn ngày
+    });
 </script>
 
 </html>

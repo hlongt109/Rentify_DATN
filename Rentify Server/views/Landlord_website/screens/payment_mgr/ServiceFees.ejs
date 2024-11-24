@@ -598,7 +598,7 @@
             ${type.label}
         </option>`).join('');
     }
-    
+
     async function createInvoice() {
         if (!validateInputs()) return;
 
@@ -642,9 +642,9 @@
 
             if (res.ok) {
                 if (isMonthLoad) {
-                    getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus);
+                    getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus, selectedTypeInvoice);
                 } else {
-                    getInvoicesYear(selectedYear, selectPaymentStatus)
+                    getInvoicesYear(selectedYear, selectPaymentStatus, selectedTypeInvoice)
                 }
                 closeInvoiceDialog();
                 Toastify({
@@ -748,9 +748,9 @@
 
                 if (response.ok) {
                     if (isMonthLoad) {
-                        getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus);
+                        getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus, selectedTypeInvoice);
                     } else {
-                        getInvoicesYear(selectedYear, selectPaymentStatus)
+                        getInvoicesYear(selectedYear, selectPaymentStatus, selectedTypeInvoice)
                     }
                     Toastify({
                         text: "Xóa thành công",
