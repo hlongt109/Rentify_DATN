@@ -26,6 +26,27 @@ router.get('/buildings_mgr/:landlord_id', async (req, res) => {
     }
 });
 
+router.get('/buildings_mgr_rooms/:building_id', async (req, res) => {
+    try {
+        const { building_id } = req.params;
+        if (!building_id) {
+            return res.status(400).json({ error: 'building_id is invalid.' });
+        }
+
+        const rooms = await Room.find({ building_id: building_id })
+
+        if (rooms.length === 0) {
+            return res.status(404).json({ message: "Buildings not found" });
+        }
+
+        res.status(200).json({ data: rooms });
+        
+    } catch (error) {
+        console.log("Error: ", error);
+        handleServerError(res, error);
+    }
+});
+
 // Lấy danh sách hóa đơn cho phòng của một tòa nhà, lọc theo trạng thái thanh toán và tháng/năm
 router.get("/buildings_mgr/:buildingId/invoices", async (req, res) => {
     try {
@@ -304,6 +325,83 @@ router.put("/invoice_mgr_status/:id", async(req, res) => {
         }
     } catch (error) {
         console.error(error);
+        handleServerError(res, error);
+    }
+})
+
+router.put('/invoice_mgr/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = req.body;
+
+        const invoice = await Invoice.findById(id)
+        if(!invoice){
+            return res.status(404).json({ message: "Invoice not found" })
+        }
+
+        invoice.user_id = data.user_id ?? invoice.user_id
+        invoice.building_id = data.buildingId ?? invoice.building_id 
+        invoice.room_id = data.room_id ?? invoice.room_id 
+        invoice.description = data.description ?? invoice.description 
+        invoice.type_invoice = data.type_invoice ?? invoice.type_invoice ?? 'rent'
+        invoice.amount = data.amount ?? invoice.amount
+        invoice.transaction_type = data.transaction_type ?? invoice.transaction_type
+        invoice.due_date = data.due_date ?? invoice.due_date
+        invoice.payment_status = data.payment_status ?? invoice.payment_status
+        invoice.created_at = invoice.created_at
+
+        const result = await invoice.save();
+        if (result) {
+            res.status(200).json({ message: "Update Invoice success", data: result })
+        } else {
+            res.status(401).json({ message: "Update Invoice failed" })
+        }
+
+    } catch (error) {
+        console.log("Cập nhật hóa đơn lỗi",error)
+        handleServerError(res, error);
+    }
+});
+
+router.post("/invoice_mgr", async(req, res) => {
+    try {
+        const data = req.body;
+        
+        const newInvoice = new Invoice({
+            user_id: data.user_id,
+            building_id: data.building_id,
+            room_id: data.room_id,
+            description: data.description,
+            describe: data.describe,
+            type_invoice: data.type_invoice,
+            amount: data.amount,
+            transaction_type: data.transaction_type,
+            due_date: data.due_date,
+            payment_status: data.payment_status,
+            created_at: data.created_at
+        })
+
+        const result = await newInvoice.save();
+        if (result) {
+            res.status(200).json({ message: "Add Invoice success", data: result })
+        } else {
+            res.status(401).json({ message: "Add Invoice failed" })
+        }
+    } catch (error) {
+        console.error(error);
+        handleServerError(res, error);
+    }
+})
+
+router.get("/invoice_mgr/:id", async(req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await Invoice.findById(id);
+        if (!result) {
+            return res.status(404).json({ message: "Invoice not found" })
+        }
+        res.status(200).json({ data: result })
+    } catch (error) {
         handleServerError(res, error);
     }
 })
