@@ -158,8 +158,8 @@ fun SelectMedia(
                                     .align(Alignment.TopEnd)
                                     .background(Color.Red, shape = RoundedCornerShape(10.dp))
                                     .clickable {
-                                        selectedImages.filterNot { it == imageUri}
-                                        onMediaSelected(selectedImages, selectedVideos) // Gọi callback
+                                        selectedImages = selectedImages.filterNot { it == imageUri }
+                                        onMediaSelected(selectedImages, selectedVideos)
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -233,8 +233,8 @@ fun SelectMedia(
                                 .align(Alignment.TopEnd)
                                 .background(Color.Red, shape = RoundedCornerShape(10.dp))
                                 .clickable {
-                                    selectedVideos.filterNot {it == videoUri}
-                                    onMediaSelected(selectedImages, selectedVideos) // Gọi callback
+                                    selectedVideos = selectedVideos.filterNot { it == videoUri }
+                                    onMediaSelected(selectedImages, selectedVideos)
                                 },
                             contentAlignment = Alignment.Center
                         ) {
