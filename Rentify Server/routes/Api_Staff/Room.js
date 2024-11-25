@@ -182,86 +182,89 @@ router.delete('/DeleteRooms/:id', async (req, res) => {
     }
 });
 // API cập nhật phòng
-router.put('/updateRoom/:id', upload.fields([
-    { name: 'photos_room', maxCount: 10 }, // Tối đa 10 ảnh
-    { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
-]), async (req, res) => {
-    const { id } = req.params;
-    const { room_name, room_type, description, price, size, service, amenities, limit_person, status } = req.body;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'Invalid room ID.' });
-    }
-
-    if (!room_name || !room_type || !description || !price || !size || !limit_person || status === undefined) {
-        return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
-    }
-
-    try {
-        // Lấy thông tin phòng cũ từ database
+router.put(
+    "/updateRoom/:id",
+    upload.fields([
+      { name: "photos_room", maxCount: 10 }, // Tối đa 10 ảnh
+      { name: "video_room", maxCount: 2 }, // Tối đa 2 video
+    ]),
+    async (req, res) => {
+      try {
+        const { id } = req.params;
+        const {
+          building_id,
+          room_name,
+          room_type,
+          description,
+          price,
+          size,
+          service,
+          amenities,
+          limit_person,
+          status,
+        } = req.body;
+  
+        // Kiểm tra nếu `id` không hợp lệ
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+          return res.status(400).json({ message: "ID không hợp lệ" });
+        }
+  
+        // Tìm phòng theo ID
         const room = await Room.findById(id);
         if (!room) {
-            return res.status(404).json({ error: 'Room not found.' });
+          return res.status(404).json({ message: "Không tìm thấy phòng" });
         }
-
-        // Lưu đường dẫn ảnh và video mới
-        const photos_room = req.files.photos_room ? req.files.photos_room.map(file => file.path) : null;
-        const video_room = req.files.video_room ? req.files.video_room.map(file => file.path) : null;
-        // Xóa file ảnh cũ nếu có ảnh mới
-        if (photos_room) {
-            room.photos_room.forEach(photo => {
-                const photoPath = path.join(photo); // Đường dẫn ảnh cũ
-                if (fs.existsSync(photoPath)) {
-                    try {
-                        fs.unlinkSync(photoPath); // Xóa file
-                        console.log(`Đã xóa ảnh: ${photoPath}`);
-                    } catch (err) {
-                        console.error(`Không thể xóa ảnh: ${photoPath}, lỗi: ${err.message}`);
-                    }
-                } else {
-                    console.log(`Ảnh không tồn tại để xóa: ${photoPath}`);
-                }
-            });
-        }
-        if (video_room) {
-            room.video_room.forEach(video => {
-                const videoPath = path.join(video); // Đường dẫn video cũ
-                if (fs.existsSync(videoPath)) {
-                    try {
-                        fs.unlinkSync(videoPath); // Xóa file
-                        console.log(`Đã xóa video: ${videoPath}`);
-                    } catch (err) {
-                        console.error(`Không thể xóa video: ${videoPath}, lỗi: ${err.message}`);
-                    }
-                } else {
-                    console.log(`Video không tồn tại để xóa: ${videoPath}`);
-                }
-            });
-        }
-        const updateData = {
-            room_name,
-            room_type,
-            description,
-            price,
-            size,
-            service,
-            amenities,
-            limit_person,
-            status,
-            updated_at: new Date().toISOString(),
-        };
-        if (photos_room) {
-            updateData.photos_room = photos_room;
-        }
-        if (video_room) {
-            updateData.video_room = video_room;
-        }
-        const updatedRoom = await Room.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
-        res.status(200).json({ message: 'Room updated successfully!', room: updatedRoom });
-    } catch (error) {
-        console.error('Error updating room:', error.message);
-        res.status(500).json({ error: 'Failed to update room. Please try again later.' });
+  
+        // Lưu đường dẫn ảnh và video
+        const photos_room = req.files.photos_room
+          ? req.files.photos_room.map((file) => file.path)
+          : room.photos_room; // Giữ nguyên nếu không có ảnh mới
+        const video_room = req.files.video_room
+          ? req.files.video_room.map((file) => file.path)
+          : room.video_room; // Giữ nguyên nếu không có video mới
+  
+        // Xử lý mảng amenities và service
+        const parsedAmenities = Array.isArray(amenities)
+          ? amenities
+          : typeof amenities === "string"
+          ? JSON.parse(amenities)
+          : room.amenities;
+        const parsedService = Array.isArray(service)
+          ? service
+          : typeof service === "string"
+          ? JSON.parse(service)
+          : room.service;
+  
+        // Cập nhật thông tin phòng
+        room.building_id = building_id || room.building_id;
+        room.room_name = room_name || room.room_name;
+        room.room_type = room_type || room.room_type;
+        room.description = description || room.description;
+        room.price = price || room.price;
+        room.size = size || room.size;
+        room.video_room = video_room;
+        room.photos_room = photos_room;
+        room.service = parsedService;
+        room.amenities = parsedAmenities;
+        room.limit_person = limit_person || room.limit_person;
+        room.status = status !== undefined ? status : room.status;
+        room.updated_at = new Date().toISOString();
+  
+        // Lưu thông tin đã cập nhật
+        const updatedRoom = await room.save();
+  
+        res.status(200).json({
+          message: "Cập nhật phòng thành công",
+          room: updatedRoom,
+        });
+      } catch (error) {
+        console.error(error);
+        res
+          .status(500)
+          .json({ message: "Lỗi khi cập nhật phòng", error: error.message });
+      }
     }
-});
+  );
+  
 
 module.exports = router;
