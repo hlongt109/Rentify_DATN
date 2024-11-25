@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -221,16 +222,19 @@ fun ItemUnPaid(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             Button(
-                                onClick = { navController.navigate("PaymentConfirmation") },
-                                modifier = Modifier.fillMaxWidth().height(50.dp),
+                                onClick = {},
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                                    .border(width = 1.dp, color = Color.Red, shape = RoundedCornerShape(8.dp)),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = colorHeaderSearch
+                                    containerColor = Color.White
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Text(
-                                    text = "Tiến hành thanh toán",
-                                    color = Color.White,
+                                    text = "Chưa thanh toán",
+                                    color = Color.Red,
                                     modifier = Modifier.padding(vertical = 4.dp),
                                     fontWeight = FontWeight.Medium
                                 )

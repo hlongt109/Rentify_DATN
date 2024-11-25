@@ -80,7 +80,6 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
     implementation ("androidx.activity:activity-compose:1.9.2")
 
-    implementation("androidx.compose.foundation:foundation:1.7.0")
     implementation ("androidx.appcompat:appcompat:1.7.0")
     implementation ("androidx.compose.material:material:1.7.0")
     implementation ("com.google.android.material:material:1.12.0")
@@ -113,6 +112,10 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
 
+
+    //wipe to delete
+    implementation ("androidx.compose.foundation:foundation:1.7.5")
+    implementation ("androidx.compose.material:material-icons-extended:1.7.5")
 
 }
 // Allow references to generated code

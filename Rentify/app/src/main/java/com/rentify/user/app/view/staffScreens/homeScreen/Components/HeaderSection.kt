@@ -26,7 +26,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 
 @Composable
@@ -52,9 +54,7 @@ fun HeaderSection(navController: NavHostController) {
                 contentDescription = null,
                 modifier = Modifier  .clip(CircleShape) // Bo tròn hoàn toàn
                     .background(Color.White) .size(30.dp, 30.dp)
-                    .clickable {
-                        navController.navigate("PersonalStaff")
-                    }
+                    .clickable { navController.navigate(MainActivity.ROUTER.PersonalStaff.name) }
             )
         }
         Image(
@@ -73,6 +73,7 @@ fun HeaderSection(navController: NavHostController) {
                 painter = painterResource(id = R.drawable.noti),
                 contentDescription = null,
                 modifier = Modifier.size(30.dp, 30.dp)
+                    .clickable {  }
             )
         }
 

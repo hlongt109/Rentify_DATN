@@ -1,5 +1,8 @@
 package com.rentify.user.app.network
 
+import com.rentify.user.app.model.Model.District
+import com.rentify.user.app.model.Model.Province
+import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
@@ -14,21 +17,55 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Multipart
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.PartMap
-import retrofit2.http.Path
 
+data class RegisterRequest(
+    val username: String,
+    val email: String,
+    val password: String,
+)
+
+data class RegisterResponse(
+    val message: String,
+    val user: User
+)
+
+////
 interface APIService {
     // dang nhap
     @POST("login-user")
     suspend fun LoginUser(@Body loginRequest: LoginRequest): Response<ApiResponse>
 
     //phong bao to 123456789
-    // Đăng ký
-    @POST("register-user")
+    @POST("register")
     suspend fun registerUser(@Body request: RegisterRequest): Response<ApiResponse>
+
+    //getLocation
+    @GET("p")
+    suspend fun getProvinces(): List<Province>
+
+    @GET("p/{code}")
+    suspend fun getProvinceDetail(@Path("code") code: String): Province
+
+    @GET("p/{code}?depth=2")
+    suspend fun getProvinceWithDistricts(@Path("code") code: String): Province
+
+    @GET("d")
+    suspend fun getDistricts(): List<District>
+
+    @GET("d/{code}")
+    suspend fun getDistrictDetail(@Path("code") code: String): District
+
+    @GET("w")
+    suspend fun getWards(): List<Ward>
+
+    @GET("d/{code}?depth=2")
+    suspend fun getDistrictWithWards(@Path("code") code: String): District
+
 
     // Thêm phòng mới _vanphuc:
     @Multipart

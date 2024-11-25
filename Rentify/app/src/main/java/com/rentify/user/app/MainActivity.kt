@@ -17,6 +17,7 @@ import com.rentify.user.app.view.auth.RegisterScreen
 import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.navigator.ROUTER
 import com.rentify.user.app.view.staffScreens.ListRommScreen.ListRoomScreen
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
 import com.rentify.user.app.view.staffScreens.ReportScreen.ReportScreen
@@ -28,8 +29,13 @@ import com.rentify.user.app.view.staffScreens.building.BuildingScreen
 import com.rentify.user.app.view.staffScreens.homeScreen.HomeScreen
 import com.rentify.user.app.view.staffScreens.personalScreen.PersonalScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
+import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
+import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
@@ -45,12 +51,12 @@ import com.rentify.user.app.view.userScreens.paymentscreen.PaymentScreen
 import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.profileScreen.ProfileScreen
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
+import com.rentify.user.app.view.userScreens.rentalPost.RentalPostScreen
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
-import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -111,7 +117,7 @@ class MainActivity : ComponentActivity() {
                 LaundryDetailScreenScreen(navController = navController)
             }
             composable(ROUTER.CATEGORYPOST.name) {
-                CategoryPostScreen( navController)
+                CategoryPostScreen(navController)
             }
             composable(ROUTER.SEARCHPOSTROOMATE.name) {
                 SearchPostRoomateScreen(navController = navController)
@@ -161,6 +167,10 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.PersonalStaff.name) {
                 PersonalScreen(navController = navController)
             }
+            composable(ROUTER.ADDROOM.name) {
+                AddRoomScreen(navController = navController, buildingId = "")
+            }
+
             composable(ROUTER.PersonalProfileScreen.name) {
                 PersonalProfileScreen(navController = navController)
             }
@@ -175,7 +185,7 @@ class MainActivity : ComponentActivity() {
                 HomeScreen(navController = navController)
             }
             composable(ROUTER.BUILDING.name) {
-                BuildingScreen(navController = navController,)
+                BuildingScreen(navController = navController)
             }
             composable("RoomDetailScreen/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
@@ -187,13 +197,32 @@ class MainActivity : ComponentActivity() {
                 ListRoomScreen(navController = navController, buildingId = buildingId)
             }
             composable(ROUTER.UpdateRoomScreen.name) {
-                UpdateRoomScreen(navController = navController,)
+                UpdateRoomScreen(navController = navController)
+            }
+            composable(ROUTER.RENTAL_POST.name) {
+                RentalPostScreen(navController = navController)
+            }
+            composable(ROUTER.CONTRACT_STAFF.name) {
+                com.rentify.manager.app.view.contract.ContractScreen(navController = navController)
+            }
+            composable(ROUTER.POSTING_STAFF.name) {
+                PostingListScreen(navController = navController)
+            }
+            composable(ROUTER.BILL_STAFF.name) {
+                BillScreenStaff(navController = navController)
+            }
+            composable(ROUTER.REPORT_STAFF.name) {
+                ReportScreen(navController = navController)
+            }
+            composable(ROUTER.PersonalProfileScreen.name) {
+                PersonalProfileScreen(navController = navController)
             }
         }
     }
 
-    enum class ROUTER {
+enum class ROUTER {
         HOME,
+        HOME_STAFF,
         SERVICE,
         RENT,
         MESSENGER,
@@ -217,6 +246,7 @@ class MainActivity : ComponentActivity() {
         Payments,
         ConTract,
         ADDINCIDENTREPORT,
+        FILTER,
         ADDEDITSERVICE,
         INCIDENTREPORT,
         CONTRACT,
@@ -228,9 +258,16 @@ class MainActivity : ComponentActivity() {
         PersonalProfileScreen,
         ReportScreen,
         ADDROOM,
-        HOME_STAFF,
         BUILDING,
-        RoomDetailScreen,
         UpdateRoomScreen,
+        RoomDetailScreen,
+        BILL_STAFF,
+        ADDBILL_STAFF,
+        RENTAL_POST,
+        CONTRACT_STAFF,
+        POSTING_STAFF,
+        REPORT_STAFF,
+
     }
 }
+

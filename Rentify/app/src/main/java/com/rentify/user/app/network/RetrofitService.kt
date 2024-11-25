@@ -22,3 +22,22 @@ class RetrofitService {
         .build()
     val ApiService: APIService = retrofit.create(APIService::class.java)
 }
+
+object LocationService{
+    val location: Retrofit = Retrofit.Builder()
+        .baseUrl("https://provinces.open-api.vn/api/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    val ApiService: APIService = location.create(APIService::class.java)
+}
+
+object ApiClient {
+    private const val BASE_URL = "http://192.168.2.105:3000/api/"
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val apiService: APIService = retrofit.create(APIService::class.java)
+}

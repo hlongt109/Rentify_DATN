@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -30,20 +29,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.Model.Location
+import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.ColorBlack
-import com.rentify.user.app.ui.theme.location
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.colorText
 import com.rentify.user.app.ui.theme.search
@@ -53,15 +49,19 @@ import com.rentify.user.app.ui.theme.textFieldBackgroundColor
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ChangeLocation(
-    listLocation: List<Location>,
-    onKeyboardVisibilityChanged: (Boolean) -> Unit
+    locations: List<String>,
+    title: String,
+    onItemSelected: (String) -> Unit,
+    onKeyboardVisibilityChanged: (Boolean) -> Unit,
+    onLocationSelected: (Province) -> Unit,
+    onFocusChanged: (Boolean) -> Unit
 ) {
     // Kích thước màn hình
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
     val screenHeight = configuration.screenHeightDp
     var value by remember { mutableStateOf("") }
-
+    var searchQuery by remember { mutableStateOf("") }
     // Theo dõi trạng thái bàn phím
     val imeVisible = WindowInsets.isImeVisible
 
@@ -69,7 +69,7 @@ fun ChangeLocation(
     LaunchedEffect(imeVisible) {
         onKeyboardVisibilityChanged(imeVisible)
     }
-    var selectedItem by remember { mutableStateOf<Location?>(null) }
+    var selectedProvince by remember { mutableStateOf<Province?>(null) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -103,15 +103,19 @@ fun ChangeLocation(
                     modifier = Modifier.padding(start = 10.dp)
                 )
                 TextField(
-                    value = value,
-                    onValueChange = { value = it },
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
                     placeholder = {
                         Text(
-                            text = "Nhập vị trí",
+                            text = "Nhập tỉnh/thành phố",
                             color = colorText
                         )
                     },
-                    modifier = Modifier.width(screenWidth.dp / 1.5f),
+                    modifier = Modifier
+                        .width(screenWidth.dp / 1.5f)
+                        .onFocusChanged { focusState ->
+                            onFocusChanged(focusState.isFocused)
+                        },
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = textFieldBackgroundColor,
                         focusedIndicatorColor = Color.Transparent,
@@ -122,10 +126,12 @@ fun ChangeLocation(
 
             Spacer(modifier = Modifier.padding(top = 15.dp))
             LazyColumn {
-                items(listLocation) { items ->
-                    ItemLocation(items, isSelected = items == selectedItem, onClick = {
-                        selectedItem = items
-                    })
+                items(locations) { location ->
+                    ItemLocation(
+                        name = location,
+                        isSelected = false,
+                        onClick = { onItemSelected(location) }
+                    )
                 }
             }
         }

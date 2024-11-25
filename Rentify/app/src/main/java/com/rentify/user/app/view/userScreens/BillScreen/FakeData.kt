@@ -75,12 +75,18 @@ class FakeData {
     val roomPaymentInfo4 = RoomPaymentInfo(
         roomInfo = roomInfo3,
         paymentDetails = paymentDetails3,
-        status = 1, // chưa thanh toán
+        status = 1, // đã thanh toán
         invoiceDate = dateFormat.parse("09/11/2024")
+    )
+    val roomPaymentInfo5 = RoomPaymentInfo(
+        roomInfo = roomInfo2,
+        paymentDetails = paymentDetails2,
+        status = 1, // đã thanh toán
+        invoiceDate = dateFormat.parse("09/11/2023")
     )
 
     // Danh sách các dữ liệu giả để sử dụng
-    val fakeRoomPayments = listOf(roomPaymentInfo1, roomPaymentInfo2, roomPaymentInfo3,roomPaymentInfo4)
+    val fakeRoomPayments = listOf(roomPaymentInfo1, roomPaymentInfo2, roomPaymentInfo3,roomPaymentInfo4, roomPaymentInfo5)
 
 
 
