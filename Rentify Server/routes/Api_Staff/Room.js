@@ -173,6 +173,87 @@ router.delete('/DeleteRooms/:id', async (req, res) => {
         res.status(500).json({ message: "Failed to delete room", error: error.message });
     }
 });
+// API cập nhật phòng
+router.put('/updateRoom/:id', upload.fields([
+    { name: 'photos_room', maxCount: 10 }, // Tối đa 10 ảnh
+    { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
+]), async (req, res) => {
+    const { id } = req.params;
+    const { room_name, room_type, description, price, size, service, amenities, limit_person, status } = req.body;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid room ID.' });
+    }
+
+    if (!room_name || !room_type || !description || !price || !size || !limit_person || status === undefined) {
+        return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
+    }
+
+    try {
+        // Lấy thông tin phòng cũ từ database
+        const room = await Room.findById(id);
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found.' });
+        }
+
+        // Lưu đường dẫn ảnh và video mới
+        const photos_room = req.files.photos_room ? req.files.photos_room.map(file => file.path) : null;
+        const video_room = req.files.video_room ? req.files.video_room.map(file => file.path) : null;
+        // Xóa file ảnh cũ nếu có ảnh mới
+        if (photos_room) {
+            room.photos_room.forEach(photo => {
+                const photoPath = path.join(photo); // Đường dẫn ảnh cũ
+                if (fs.existsSync(photoPath)) {
+                    try {
+                        fs.unlinkSync(photoPath); // Xóa file
+                        console.log(`Đã xóa ảnh: ${photoPath}`);
+                    } catch (err) {
+                        console.error(`Không thể xóa ảnh: ${photoPath}, lỗi: ${err.message}`);
+                    }
+                } else {
+                    console.log(`Ảnh không tồn tại để xóa: ${photoPath}`);
+                }
+            });
+        }
+        if (video_room) {
+            room.video_room.forEach(video => {
+                const videoPath = path.join(video); // Đường dẫn video cũ
+                if (fs.existsSync(videoPath)) {
+                    try {
+                        fs.unlinkSync(videoPath); // Xóa file
+                        console.log(`Đã xóa video: ${videoPath}`);
+                    } catch (err) {
+                        console.error(`Không thể xóa video: ${videoPath}, lỗi: ${err.message}`);
+                    }
+                } else {
+                    console.log(`Video không tồn tại để xóa: ${videoPath}`);
+                }
+            });
+        }
+        const updateData = {
+            room_name,
+            room_type,
+            description,
+            price,
+            size,
+            service,
+            amenities,
+            limit_person,
+            status,
+            updated_at: new Date().toISOString(),
+        };
+        if (photos_room) {
+            updateData.photos_room = photos_room;
+        }
+        if (video_room) {
+            updateData.video_room = video_room;
+        }
+        const updatedRoom = await Room.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+        res.status(200).json({ message: 'Room updated successfully!', room: updatedRoom });
+    } catch (error) {
+        console.error('Error updating room:', error.message);
+        res.status(500).json({ error: 'Failed to update room. Please try again later.' });
+    }
+});
 
 module.exports = router;
