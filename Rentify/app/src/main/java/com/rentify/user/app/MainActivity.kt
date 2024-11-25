@@ -21,6 +21,7 @@ import com.rentify.user.app.view.staffScreens.ListRommScreen.ListRoomScreen
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
 import com.rentify.user.app.view.staffScreens.ReportScreen.ReportScreen
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.RoomDetailScreen
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.UpdateRoomScreen
 //import com.rentify.user.app.view.staffScreens.RoomDetailScreen.RoomDetailScreen
 import com.rentify.user.app.view.staffScreens.addRoomScreen.AddRoomScreen
 import com.rentify.user.app.view.staffScreens.building.BuildingScreen
@@ -185,6 +186,9 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("buildingId")
                 ListRoomScreen(navController = navController, buildingId = buildingId)
             }
+            composable(ROUTER.UpdateRoomScreen.name) {
+                UpdateRoomScreen(navController = navController,)
+            }
         }
     }
 
@@ -227,5 +231,6 @@ class MainActivity : ComponentActivity() {
         HOME_STAFF,
         BUILDING,
         RoomDetailScreen,
+        UpdateRoomScreen,
     }
 }

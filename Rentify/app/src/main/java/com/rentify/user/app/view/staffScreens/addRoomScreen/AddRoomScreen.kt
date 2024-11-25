@@ -84,8 +84,8 @@ fun AddRoomScreen(
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>())}
     var selectedVideos by remember {mutableStateOf(listOf<Uri>())}
-    Log.d("TAG", "Selected selectedComfortable: $selectedComfortable")
-    Log.d("TAG", "Selected selectedService: $selectedService")
+    Log.d("TAG", " tiện nghi select : $selectedComfortable")
+    Log.d("TAG", "dịch vụ select: $selectedService")
     // Observe states
     val isLoading by viewModel.isLoading.observeAsState(false)
     val addRoomResponse by viewModel.addRoomResponse.observeAsState()
@@ -417,10 +417,12 @@ fun AddRoomScreen(
                                     status = 1,
                                     videoUris = selectedVideos,
                                     photoUris = selectedImages,
-                                    service = listOf("671b0981991ace13719990eb"),
+                                    service =selectedService,
                                     amenities = selectedComfortable,
                                     limitPerson = currentPeopleCount.toIntOrNull() ?: 0
                                 )
+                                Log.d("TAG","dịch vụ : ${selectedService}")
+                                Log.d("TAG","tiện nghi  : ${selectedComfortable}")
                             }
                         }
                     },

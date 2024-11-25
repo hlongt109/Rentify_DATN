@@ -1,6 +1,8 @@
 package com.rentify.user.app.repository.LoginRepository
 
 import com.google.gson.annotations.SerializedName
+import java.lang.Error
+
 data class RegisterRequest(
     val username: String,
     var email: String,

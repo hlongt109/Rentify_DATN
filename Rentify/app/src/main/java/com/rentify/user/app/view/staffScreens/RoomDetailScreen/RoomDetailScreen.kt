@@ -306,7 +306,7 @@ fun RoomDetailScreen(
                             )
                             .clickable(
                                 onClick = {
-                                    // Xử lý sự kiện nhấn nút
+                                    navController.navigate("UpdateRoomScreen")
                                 },
                                 indication = null, // Tắt hiệu ứng gợn sóng
                                 interactionSource = remember { MutableInteractionSource() }

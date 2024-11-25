@@ -15,7 +15,9 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Multipart
+import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.PartMap
 import retrofit2.http.Path
 
 interface APIService {
@@ -72,6 +74,17 @@ interface APIService {
     suspend fun deleteRoom(
         @Path("id") id: String
     ): Response<ApiResponse>
+
+    // UPDATE PHÒNG
+    @Multipart
+    @PUT("api/staff/rooms/updateRoom/{id}")
+    suspend fun updateRoom(
+        @Path("id") roomId: String,
+        @PartMap data: Map<String, @JvmSuppressWildcards RequestBody>,
+        @Part photos: List<MultipartBody.Part>?,
+        @Part videos: List<MultipartBody.Part>?
+    ): Response<ApiResponse>
+
     // LẤY THÔNG TIN NGƯỜI DÙNG
     @GET("staff/users/usermail/{email}")
     suspend fun getUserDetail(

@@ -14,6 +14,7 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,8 +41,10 @@ class RoomViewModel(private val context: Context) : ViewModel() {
     val error: LiveData<String?> get() = _error
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
-
-
+    private val _updateRoomResponse = MutableLiveData<ApiResponse>()
+    val updateRoomResponse: LiveData<ApiResponse> get() = _updateRoomResponse
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> get() = _loading
     // API LẤY DANH SÁCH TÒA THEO MANAGERID
     fun fetchBuildingsWithRooms(manager_id: String) {
         viewModelScope.launch {
@@ -124,8 +127,8 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         description: String,
         price: Double,
         size: String,
-        service: List<String>,
-        amenities: List<String>,
+        service: List<String>?,
+        amenities: List<String>?,
         limitPerson: Int,
         status: Int,
         photoUris: List<Uri>,
@@ -155,8 +158,8 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                 val statusBody = createPartFromString(status.toString())
                 val serviceBody = createPartFromString(service.toString())
                 val amenitiesBody = createPartFromString(amenities.toString())
-                Log.d("Service", "addRoom: $serviceBody")
-                Log.d("AmenitiesBody", "addRoom: $amenitiesBody")
+                Log.d("dịch vụ ", "serviceBody: $serviceBody")
+                Log.d("tiện ích ", "amenitiesBody: $amenitiesBody")
                 Log.d("ImageUpload", "addRoom: $photoUris")
                 // Xử lý các URI hình ảnh và video thành MultipartBody.Part
                 val photoParts = photoUris.mapIndexed { index, uri ->
@@ -260,5 +263,83 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         }
     }
 
+    // UPDATE PHÒNG :
+    fun updateRoom(
+        roomId: String,
+        roomName: String,
+        roomType: String,
+        description: String,
+        price: Double,
+        size: String,
+        service: List<String>,
+        amenities: List<String>,
+        limitPerson: Int,
+        status: Int,
+        photoUris: List<Uri>,
+        videoUris: List<Uri>
+    ) {
+        _loading.value = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Kiểm tra số lượng ảnh và video trước khi gửi
+                if (photoUris.size > 10 || videoUris.size > 2) {
+                    _loading.postValue(false)
+                    return@launch
+                }
+
+                // Tạo request body cho các trường văn bản
+                val roomNameBody = createPartFromString(roomName)
+                val roomTypeBody = createPartFromString(roomType)
+                val descriptionBody = createPartFromString(description)
+                val priceBody = createPartFromString(price.toString())
+                val sizeBody = createPartFromString(size)
+                val limitPersonBody = createPartFromString(limitPerson.toString())
+                val statusBody = createPartFromString(status.toString())
+                val serviceBody = createPartFromString(service.toString())
+                val amenitiesBody = createPartFromString(amenities.toString())
+
+                // Chuyển các URI hình ảnh và video thành MultipartBody.Part
+                val photoParts = photoUris.mapIndexed { index, uri ->
+                    processUri(context, uri, "photos_room", "photo_$index.jpg")
+                }
+
+                val videoParts = videoUris.mapIndexed { index, uri ->
+                    processUri(context, uri, "video_room", "video_$index.mp4")
+                }
+
+                // Gửi yêu cầu API để cập nhật phòng
+                val response = apiService.updateRoom(
+                    roomId = roomId,
+                    data = mapOf(
+                        "room_name" to roomNameBody,
+                        "room_type" to roomTypeBody,
+                        "description" to descriptionBody,
+                        "price" to priceBody,
+                        "size" to sizeBody,
+                        "limit_person" to limitPersonBody,
+                        "status" to statusBody,
+                        "service" to serviceBody,
+                        "amenities" to amenitiesBody
+                    ),
+                    photos = photoParts,
+                    videos = videoParts
+                )
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        _updateRoomResponse.value = response.body()  // Cập nhật dữ liệu nếu thành công
+                    } else {
+
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                }
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
 
 }
