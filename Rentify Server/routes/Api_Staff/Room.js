@@ -121,8 +121,16 @@ router.post(
           ? req.files.video_room.map((file) => file.path)
           : [];
   
-        const services = req.body.service.split(",").filter((id) => id);
-        const amenitie = req.body.amenities.split(",").filter((id) => id);
+          const parsedAmenities = Array.isArray(amenities)
+          ? amenities
+          : typeof amenities === "string"
+          ? JSON.parse(amenities)
+          : [];
+          const parsedService = Array.isArray(service)
+          ? service
+          : typeof service === "string"
+          ? JSON.parse(service)
+          : [];
   
         // Tạo mới một phòng
         const newRoom = new Room({
@@ -134,8 +142,8 @@ router.post(
           size,
           video_room,
           photos_room,
-          services,
-          amenitie,
+          service:parsedService,
+          amenities:parsedAmenities,
           limit_person,
           status,
           created_at: new Date().toISOString(),
