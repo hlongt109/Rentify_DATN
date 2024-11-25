@@ -2,41 +2,217 @@
 var express = require('express');
 var router = express.Router();
 const Post = require('../../models/Post');
+const uploadFile = require("../../config/common/upload");
+const handleServerError = require("../../utils/errorHandle");
+const mongoose = require('mongoose');
 
-// #1. Tạo bài đăng POST: http://localhost:3000/api/posts
-router.post('/posts', async (req, res) => {
-    const { user_id, title, content, status, video, photo } = req.body;
 
+// #1. Tạo bài đăng POST: http://localhost:3000/api/posts_mgr
+router.post('/posts_mgr', uploadFile.fields([
+    { name: 'video', maxCount: 1 },
+    { name: 'images', maxCount: 5 }
+]), async (req, res) => {
     try {
+        const data = req.body;
+        const files = req.files;
+
+        const video = `${req.protocol}://${req.get("host")}/uploads/${files.video[0].filename}`;
+        const images = files.images.map(file => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`);
+
         const newPost = new Post({
-            user_id,
-            title,
-            content,
-            status,
-            video,
-            photo,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            user_id: data.user_id,
+            building_id: data.building_id,
+            room_id: data.room_id,
+            title: data.title,
+            content: data.content,
+            status: data.status,
+            video: video,
+            photo: images,
+            post_type: data.post_type,
+            created_at: data.created_at
         });
 
-        await newPost.save();
-        res.status(201).json({ message: 'Post created successfully!', post: newPost });
+        const result = await newPost.save();
+        if (result) {
+            res.status(200).json({ message: "Add post success", data: result })
+        } else {
+            res.status(401).json({ message: "Add post failed" })
+        }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to create post.' });
+        handleServerError(res, error);
     }
 });
 
-// #2. Lấy danh sách tất cả bài đăng GET: http://localhost:3000/api/posts
-router.get('/posts', async (req, res) => {
+router.put("/posts_mgr/:id", uploadFile.fields([
+    { name: 'video', maxCount: 1 },
+    { name: 'images', maxCount: 5 }
+]), async (req, res) => {
     try {
-        const posts = await Post.find({});
-        res.status(200).json(posts);
+        const { id } = req.params;
+        const data = req.body;
+        const files = req.files;
+
+        const post = await Post.findById(id);
+        if (!post) {
+            return res.status(404).json({ messenger: 'No movie found to update' });
+        }
+
+        let images;
+        let video;
+
+        if (files && files.images) {
+            images = files.map(file => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`);
+        } else {
+            images = post.photo
+        }
+
+        if (files && files.video && files.video[0]) {
+            video = `${req.protocol}://${req.get("host")}/uploads/${files.video[0].filename}`;
+        } else {
+            video = post.video
+        }
+
+        post.user_id = data.user_id,
+            post.building_id = data.building_id ?? post.building_id,
+            post.room_id = data.room_id ?? post.room_id,
+            post.title = data.title ?? post.title,
+            post.content = data.content ?? post.content,
+            post.status = data.status ?? post.status,
+            post.video = video,
+            post.photo = images,
+            post.post_type = post.post_type,
+            post.created_at = post.created_at
+        post.updated_at = new Date().toISOString()
+
+        const result = await post.save();
+        if (result) {
+            res.status(200).json({ message: "Update post success", data: result })
+        } else {
+            res.status(401).json({ message: "Update post failed" })
+        }
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to retrieve posts.' });
+        handleServerError(res, error);
+    }
+})
+//
+router.get('/posts_mgr/:buildingId/posts', async (req, res) => {
+    try {
+        const { buildingId } = req.params;
+        const { month, year, status } = req.query;
+
+        const currentDate = new Date();
+        const selectedMonth = month
+            ? String(month).padStart(2, '0')
+            : String(currentDate.getMonth() + 1).padStart(2, '0');
+        const selectedYear = year || currentDate.getFullYear();
+
+        if (!buildingId) {
+            return res.status(400).json({ message: 'Building ID trống' });
+        }
+
+        const buildingObjectId = new mongoose.Types.ObjectId(buildingId);
+
+        const posts = await Post.find({
+            building_id: buildingObjectId,
+            status: status,
+            post_type: 'rent',
+            created_at: {
+                $gte: `${selectedYear}-${selectedMonth}-01T00:00:00`,
+                $lt: `${selectedYear}-${selectedMonth + 1}-01T00:00:00`
+            }
+        }).populate("room_id")
+            .populate({
+                path: "building_id",
+                select: "address" // Chỉ lấy trường 'address'
+            })
+            .exec();
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy bài đăng trong tòa nhà này.' });
+        }
+
+        if (!posts) {
+            res.status(404).json({ message: "Posts not found" })
+        }
+
+        const isPostActive = posts.filter(post => post.status === 0)
+        const isPostBan = posts.filter(post => post.status === 2)
+
+        return res.status(200).json({
+            isPostActive,
+            isPostBan
+        });
+
+    } catch (error) {
+        console.error(error);
+        handleServerError(res, error);
     }
 });
+
+router.get('/posts_mgr/:buildingId/posts/year', async (req, res) => {
+    try {
+        const { buildingId } = req.params;
+        const { year, status } = req.query;
+
+        const currentDate = new Date();
+        const selectedMonth = month
+            ? String(month).padStart(2, '0')
+            : String(currentDate.getMonth() + 1).padStart(2, '0');
+        const selectedYear = year || currentDate.getFullYear();
+
+        if (!buildingId) {
+            return res.status(400).json({ message: 'Building ID trống' });
+        }
+        const buildingObjectId = new mongoose.Types.ObjectId(buildingId);
+
+        const posts = await Post.find({
+            building_id: buildingObjectId,
+            status: status,
+            created_at: {
+                $gte: `${selectedYear}-01-01T00:00:00`,
+                $lt: `${selectedYear + 1}-01-01T00:00:00`
+            }
+        }).populate("room_id").exec();
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy phòng trong tòa nhà này.' });
+        }
+
+        if (!posts) {
+            res.status(404).json({ message: "Posts not found" })
+        }
+
+        const isPostActive = posts.filter(post => post.status === 0)
+        const isPostBan = posts.filter(post => post.status === 2)
+
+        return res.status(200).json({
+            isPostActive,
+            isPostBan
+        });
+
+    } catch (error) {
+        console.error(error);
+        handleServerError(res, error);
+    }
+});
+
+router.delete("/posts_mgr/:id", async (req, res) => {
+    try {
+        const { id } = req.params
+        const result = await Post.findByIdAndDelete(id);
+        if (result) {
+            return res.status(200).json({ message: "Delete post success" })
+        } else {
+            return res.status(404).json({ message: "Invoice not found" })
+        }
+    } catch (error) {
+        console.error(error);
+        handleServerError(res, error);
+    }
+})
 
 // #3. Cập nhật bài đăng PUT : http://localhost:3000/api/posts/{id}
 router.put('/posts/:id', async (req, res) => {
@@ -67,7 +243,7 @@ router.delete('/posts/:id', async (req, res) => {
 
     try {
         const deletedPost = await Post.findByIdAndDelete(id);
-        
+
         if (!deletedPost) {
             return res.status(404).json({ error: 'Post not found.' });
         }
@@ -102,7 +278,7 @@ router.get('/posts/:id', async (req, res) => {
 
     try {
         const post = await Post.findById(id);
-        
+
         if (!post) {
             return res.status(404).json({ error: 'Post not found.' });
         }
@@ -118,7 +294,7 @@ router.get('/posts/:id', async (req, res) => {
 module.exports = router;
 
 
-// kiểm thử postman 
+// kiểm thử postman
 
 // {
 //     "user_id": "671a29b84e350b2df4aee4ed",
