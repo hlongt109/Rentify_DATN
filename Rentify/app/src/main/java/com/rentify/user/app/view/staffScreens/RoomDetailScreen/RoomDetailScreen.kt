@@ -56,7 +56,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
+import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet
+import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ServiceOptionschitiet
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -259,26 +261,38 @@ fun RoomDetailScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(3.dp))
-
                     Column {
                         ComfortableLabel()
-
-                        Text(
-                            text = "${roomDetail?.amenities}",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
+                        roomDetail?.amenities?.let { amenities ->
+                            ComfortableOptionsFromApi(
+                                apiSelectedComfortable = amenities
+                            )
+                        } ?: run {
+                            Text(
+                                text = "Không có tiện nghi nào được cung cấp.",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp
+                            )
+                        }
                     }
+
+                    Log.d("amenities", "tiện nghi :${roomDetail?.amenities} ")
                     Spacer(modifier = Modifier.height(10.dp))
                     Column {
                         ServiceLabel()
 
-                        Text(
-                            text = " ${roomDetail?.service}",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
+                        roomDetail?.service?.let { serviceList ->
+                            ServiceOptionschitiet(
+                                selectedServices = serviceList )
+                        } ?: run {
+                            Text(
+                                text = "Không có dịch vụ nào được cung cấp.",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp
+                            )
+                        }
                     }
+                    Log.d("service", "dịch vụ :${roomDetail?.service}")
                     Row(
                         modifier = Modifier
                             .height(50.dp)
