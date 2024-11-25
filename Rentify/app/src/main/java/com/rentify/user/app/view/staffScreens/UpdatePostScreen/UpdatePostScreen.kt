@@ -102,6 +102,7 @@ import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.Servic
 
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.StaticServicesOptions
+import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.HeaderComponent
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -142,22 +143,6 @@ fun prepareMultipartBody(
         null
     }
 }
-private fun toggleSingleSelection(currentSelection: List<String>, newItem: String): List<String> {
-    return if (currentSelection.contains(newItem)) {
-        listOf() // Xóa tất cả lựa chọn nếu chọn lại
-    } else {
-        listOf(newItem) // Chỉ chọn cái mới
-    }
-}
-
-private fun toggleMultipleSelection(currentSelection: List<String>, newItem: String): List<String> {
-    return if (currentSelection.contains(newItem)) {
-        currentSelection - newItem // Loại bỏ nếu đã có
-    } else {
-        currentSelection + newItem // Thêm mới vào danh sách
-    }
-}
-
 fun isFieldEmpty(field: String): Boolean {
     return field.isBlank() // Kiểm tra trường có trống không
 }
@@ -170,17 +155,7 @@ fun isValidPhoneNumber(phone: String): Boolean {
     // Kiểm tra số điện thoại có đúng 10 chữ số và bắt đầu bằng "0"
     return phone.startsWith("0") && phone.length == 10 && phone.all { it.isDigit() }
 }
-private fun downloadFileAndGetRequestBody(url: String, mimeType: String): RequestBody {
-    // Tải tệp tin từ URL bằng OkHttp
-    val client = OkHttpClient()
-    val request = Request.Builder().url(url).build()
 
-    val response = client.newCall(request).execute()
-    val file = response.body?.bytes() ?: byteArrayOf()
-
-    // Tạo RequestBody từ dữ liệu tải về
-    return file.toRequestBody(mimeType.toMediaTypeOrNull())
-}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdatePostScreen(navController: NavHostController,postId: String) {
@@ -269,6 +244,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
             .fillMaxSize()
             .background(color = Color(0xfff7f7f7))
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -278,6 +254,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 .padding(bottom = screenHeight.dp/7f)
 
         ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -301,7 +278,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         )
                     }
                     Text(
-                        text = "Thêm bài đăng",
+                        text = "Sửa bài đăng",
                         //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         color = Color.Black,
                         fontWeight = FontWeight(700),
@@ -722,11 +699,23 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         }
                         val videoParts = selectedVideos.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
-                            com.rentify.user.app.view.staffScreens.addPostScreen.prepareMultipartBody(context,uri,"video",".mp4",mimeType)
+                           prepareMultipartBody(
+                                context,
+                                uri,
+                                "video",
+                                ".mp4",
+                                mimeType
+                            )
                         }
                         val photoParts = selectedImages.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-                            com.rentify.user.app.view.staffScreens.addPostScreen.prepareMultipartBody(context, uri, "photo", ".jpg", mimeType)
+                         prepareMultipartBody(
+                                context,
+                                uri,
+                                "photo",
+                                ".jpg",
+                                mimeType
+                            )
                         }
                         // Gửi yêu cầu cập nhật
                         postId?.let {

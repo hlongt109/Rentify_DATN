@@ -36,6 +36,7 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -86,7 +87,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
     // Chạy khi màn hình được hiển thị lại hoặc khi postId thay đổi
     LaunchedEffect(postId, isPostUpdated.value) {
+        Log.d("detail", "RequestBody check: ")
         viewModel.getPostDetail(postId)
+
         isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
     }
 
@@ -97,86 +100,143 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                 .fillMaxSize()
                 .background(color = Color(0xfff7f7f7))
         ) {
-        Column(modifier = Modifier.padding(16.dp)
-            .height(screenHeight.dp/1.2f)
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .verticalScroll(scrollState))
-        {
-  // Hiển thị ảnh/video đầu tiên
-            PostImageSlider(
-                images = detail.photos ?: emptyList(),
-                videos = detail.videos ?: emptyList()
+            Column(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+            ){
+                Row(
+                    modifier = Modifier
+
+                        .fillMaxWidth()
+                        .background(color = Color(0xfff7f7f7)), // Để IconButton nằm bên trái
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    IconButton(onClick = {   navController.navigate("POSTING_STAFF")}) {
+                        Image(
+                            painter = painterResource(id = R.drawable.back),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp, 30.dp)
+                        )
+                    }
+                    Text(
+                        text = "Chi tiết bài đăng",
+                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color.Black,
+                        fontWeight = FontWeight(700),
+                        fontSize = 17.sp,
+                    )
+                    IconButton(onClick = { /*TODO*/ }) {
+                    }
+                }
+            Column(
+                modifier = Modifier.padding(16.dp)
+                    .height(screenHeight.dp / 1.3f)
+                    .verticalScroll(scrollState)
             )
-            Spacer(modifier = Modifier.height(16.dp))
- //loai phong
-            detail.room_type?.let { room_type ->
-                val selectedServices = room_type
-                    .removeSurrounding("[", "]") // Loại bỏ dấu []
-                    .split(",") // Tách thành danh sách
-                    .map { it.trim() } // Loại bỏ khoảng trắng thừa
-                RoomTypeDisplay(it = selectedServices)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
+            {
+
+                // Hiển thị ảnh/video đầu tiên
+                PostImageSlider(
+                    images = detail.photos ?: emptyList(),
+                    videos = detail.videos ?: emptyList()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                //loai phong
+                detail.room_type?.let { room_type ->
+                    val selectedServices = room_type
+                        .removeSurrounding("[", "]") // Loại bỏ dấu []
+                        .split(",") // Tách thành danh sách
+                        .map { it.trim() } // Loại bỏ khoảng trắng thừa
+                    RoomTypeDisplay(it = selectedServices)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
 // Tiêu đề bài đăng
 
-            Text(text = detail.title, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 10.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(color = Color(0xFFF55151),modifier = Modifier.padding(horizontal = 10.dp), fontWeight = FontWeight.W700, text = " ${detail.price?.let { "$it VND" } ?: "Chưa có giá"}", fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = detail.title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    color = Color(0xFFF55151),
+                    modifier = Modifier.padding(horizontal = 10.dp),
+                    fontWeight = FontWeight.W700,
+                    text = " ${detail.price?.let { "$it VND" } ?: "Chưa có giá"}",
+                    fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(8.dp))
 //địa chỉ
-            Row(modifier = Modifier.padding(horizontal = 10.dp),   verticalAlignment = Alignment.CenterVertically, ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
 
-                Image(
-                    painter = painterResource(id = R.drawable.location),
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp, 20.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(color = Color(0xfffeb051), fontSize = 16.sp, text = " ${detail.address ?: "Chưa có địa chỉ"}")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.location),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp, 20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        color = Color(0xfffeb051),
+                        fontSize = 16.sp,
+                        text = " ${detail.address ?: "Chưa có địa chỉ"}"
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
 // số điện thoại
-            Row( modifier = Modifier.padding(horizontal = 10.dp),  verticalAlignment = Alignment.CenterVertically, ) {
-                Image(
-                    painter = painterResource(id = R.drawable.phone),
-                    contentDescription = null,
-                    modifier = Modifier.size(25.dp, 25.dp)
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.phone),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp, 25.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = " ${detail.phoneNumber ?: "Chưa có số điện thoại"}",
+                        fontSize = 16.sp
+                    )
+
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Nội dung bài đăng
+                Text(
+                    text = "Nội dung: " + "${detail.content}",
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(horizontal = 10.dp)
                 )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(text = " ${detail.phoneNumber ?: "Chưa có số điện thoại"}", fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                // Tiện ích
+                detail.amenities?.let { amenities ->
+                    val amenitiesString = amenities.toString() // Chuyển sang chuỗi nếu cần
+                    val selectedAmenities = amenitiesString
+                        .removeSurrounding("[", "]") // Loại bỏ dấu []
+                        .split(",") // Tách thành danh sách
+                        .map { it.trim() } // Loại bỏ khoảng trắng thừa
+                    AmenitiesDisplay(it = selectedAmenities)
+                }
 
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Nội dung bài đăng
-            Text(text = "Nội dung: "+"${detail.content}", fontSize = 16.sp,modifier = Modifier.padding(horizontal = 10.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-            // Tiện ích
-            detail.amenities?.let { amenities ->
-                val amenitiesString = amenities.toString() // Chuyển sang chuỗi nếu cần
-                val selectedAmenities = amenitiesString
-                    .removeSurrounding("[", "]") // Loại bỏ dấu []
-                    .split(",") // Tách thành danh sách
-                    .map { it.trim() } // Loại bỏ khoảng trắng thừa
-                AmenitiesDisplay(it = selectedAmenities)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
 
-            // Dịch vụ
+                // Dịch vụ
 
-            detail.services?.let { services ->
-                val servicesString = services.toString() // Chuyển sang chuỗi nếu cần
-                val selectedServices = servicesString
-                    .removeSurrounding("[", "]") // Loại bỏ dấu []
-                    .split(",") // Tách thành danh sách
-                    .map { it.trim() } // Loại bỏ khoảng trắng thừa
-                ServicesDisplay(it = selectedServices)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
+                detail.services?.let { services ->
+                    val servicesString = services.toString() // Chuyển sang chuỗi nếu cần
+                    val selectedServices = servicesString
+                        .removeSurrounding("[", "]") // Loại bỏ dấu []
+                        .split(",") // Tách thành danh sách
+                        .map { it.trim() } // Loại bỏ khoảng trắng thừa
+                    ServicesDisplay(it = selectedServices)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
 
 
 //            // Loại bài đăng
@@ -191,13 +251,14 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 //            Text(text = "Thời gian tạo: ${detail.created_at ?: "Chưa có thời gian tạo"}")
 //            Text(text = "Thời gian cập nhật: ${detail.updated_at ?: "Chưa có thời gian cập nhật"}")
 
+            }
         }
             Box(
                 modifier = Modifier
                       .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .height(screenHeight.dp/7f)
+                    .height(screenHeight.dp/9f)
                     .background(color = Color(0xfff7f7f7))
             ) {
                 Button(

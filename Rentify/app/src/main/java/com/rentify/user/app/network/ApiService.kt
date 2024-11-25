@@ -95,7 +95,7 @@ interface APIService {
 
 
     @Multipart
-    @POST("add")
+    @POST("staff/posts/add")
     suspend fun addPost(
         @Part("user_id") userId: RequestBody,
         @Part("title") title: RequestBody,
@@ -111,14 +111,14 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
-    @GET("list/{user_id}")
+    @GET("staff/posts/list/{user_id}")
     suspend fun getPosts(@Path("user_id") userId: String): List<PostingList>
-    @DELETE("delete/{id}")
+    @DELETE("staff/posts/delete/{id}")
     suspend fun deletePost(@Path("id") postId: String): Response<Unit> // Giả sử API trả về `Unit` khi xóa thành công
-    @GET("detail/{id}")
+    @GET("staff/posts/detail/{id}")
     suspend fun getPostDetail(@Path("id") postId: String): PostingDetail
     @Multipart
-    @PUT("update/{id}")
+    @PUT("staff/posts/update/{id}")
     suspend fun updatePost(
         @Path("id") id: String, // ID của bài viết cần sửa
         @Part("user_id") userId: RequestBody?,
@@ -135,4 +135,23 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>?,
         @Part photos: List<MultipartBody.Part>?
     ): Response<UpdatePostResponse>
+
+    @Multipart
+    @POST("add")
+    suspend fun addPost_user(
+        @Part("user_id") userId: RequestBody,
+        @Part("title") title: RequestBody,
+        @Part("content") content: RequestBody,
+        @Part("status") status: RequestBody,
+        @Part("post_type") postType: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("address") address: RequestBody,
+        @Part("phoneNumber") phoneNumber: RequestBody,
+        @Part("room_type") roomType: RequestBody,
+        @Part("amenities") amenities: RequestBody,
+        @Part("services") services: RequestBody,
+        @Part videos: List<MultipartBody.Part>,
+        @Part photos: List<MultipartBody.Part>
+    ): Response<PostResponse>
 }
+/// user
