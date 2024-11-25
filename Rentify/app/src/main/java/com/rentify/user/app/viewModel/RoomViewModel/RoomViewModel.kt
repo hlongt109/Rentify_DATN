@@ -127,8 +127,8 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         description: String,
         price: Double,
         size: String,
-        service: List<String>?,
-        amenities: List<String>?,
+        service: Any,
+        amenities: Any,
         limitPerson: Int,
         status: Int,
         photoUris: List<Uri>,
@@ -146,6 +146,17 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     return@launch
                 }
 
+                val parsedService = when (service) {
+                    is List<*> -> Gson().toJson(service) // Nếu là danh sách, chuyển sang JSON
+                    is String -> service // Nếu là chuỗi JSON, giữ nguyên
+                    else -> "[]" // Mặc định rỗng
+                }
+
+                val parsedAmenities = when (amenities) {
+                    is List<*> -> Gson().toJson(amenities) // Nếu là danh sách, chuyển sang JSON
+                    is String -> amenities // Nếu là chuỗi JSON, giữ nguyên
+                    else -> "[]" // Mặc định rỗng
+                }
 
                 // Tạo request body cho các trường văn bản
                 val buildingIdBody = createPartFromString(buildingId)
@@ -156,8 +167,8 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                 val sizeBody = createPartFromString(size)
                 val limitPersonBody = createPartFromString(limitPerson.toString())
                 val statusBody = createPartFromString(status.toString())
-                val serviceBody = createPartFromString(service.toString())
-                val amenitiesBody = createPartFromString(amenities.toString())
+                val serviceBody = createPartFromString(parsedService)
+                val amenitiesBody = createPartFromString(parsedAmenities)
                 Log.d("dịch vụ ", "serviceBody: $serviceBody")
                 Log.d("tiện ích ", "amenitiesBody: $amenitiesBody")
                 Log.d("ImageUpload", "addRoom: $photoUris")

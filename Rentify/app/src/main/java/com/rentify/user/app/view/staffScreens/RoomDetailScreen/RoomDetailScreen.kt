@@ -139,6 +139,7 @@ fun RoomDetailScreen(
                             fontSize = 13.sp
                         )
                     }
+                    // tên phòng
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -275,7 +276,6 @@ fun RoomDetailScreen(
                             )
                         }
                     }
-
                     Log.d("amenities", "tiện nghi :${roomDetail?.amenities} ")
                     Spacer(modifier = Modifier.height(10.dp))
                     Column {
@@ -361,9 +361,9 @@ fun RoomDetailScreen(
 
                 // Hiển thị thông báo lỗi nếu có
                 if (error != null) {
-                    Toast.makeText(context,"thất bại: $error ",Toast.LENGTH_SHORT).show()
+                    Log.d("PHUC","thất bại: $error")
                 } else {
-                    Toast.makeText(context,"thành công  ",Toast.LENGTH_SHORT).show()
+                    Log.d("PHUC","thành công")
                 }
 
             }
