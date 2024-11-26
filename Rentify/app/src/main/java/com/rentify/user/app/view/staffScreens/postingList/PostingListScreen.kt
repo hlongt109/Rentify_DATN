@@ -56,7 +56,7 @@ fun PostingListScreen(navController: NavHostController) {
                 // Gọi nội dung chính của màn hình
                 Column {
                     PostingListTopBar(navController)
-                    PostListScreen(navController,userId = "672490e5ce87343d0e701012")
+                    PostListScreen(navController,userId = "67362213c6d421d3027fb5a7")
                 }
             }
         }

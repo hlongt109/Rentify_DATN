@@ -2,11 +2,13 @@ package com.rentify.user.app.network
 
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
+import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
+import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostResponse
 import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
@@ -24,6 +26,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 data class RegisterRequest(
@@ -94,25 +97,32 @@ interface APIService {
     suspend fun getDistrictWithWards(@Path("code") code: String): District
 
 
+    // API lấy danh sách các tòa nhà theo user_id
+    @GET("staff/posts/buildings")
+    suspend fun getBuildings(@Query("user_id") userId: String): Response<BuildingsResponse>
+
+    // API lấy danh sách phòng trong một tòa nhà theo building_id
+    @GET("staff/posts/rooms")
+    suspend fun getRooms(@Query("building_id") buildingId: String):  Response<RoomsResponse>
+
+    // API đăng bài mới
     @Multipart
     @POST("staff/posts/add")
     suspend fun addPost(
         @Part("user_id") userId: RequestBody,
+        @Part("building_id") buildingId: RequestBody,
+        @Part("room_id") roomId: RequestBody?,
         @Part("title") title: RequestBody,
         @Part("content") content: RequestBody,
-        @Part("status") status: RequestBody,
         @Part("post_type") postType: RequestBody,
-        @Part("price") price: RequestBody,
-        @Part("address") address: RequestBody,
-        @Part("phoneNumber") phoneNumber: RequestBody,
-        @Part("room_type") roomType: RequestBody,
-        @Part("amenities") amenities: RequestBody,
-        @Part("services") services: RequestBody,
+        @Part("status") status: RequestBody,
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
+
     @GET("staff/posts/list/{user_id}")
-    suspend fun getPosts(@Path("user_id") userId: String): List<PostingList>
+    suspend fun getPosts(@Path("user_id") userId: String): ApiResponsee<List<PostingList>>
+
     @DELETE("staff/posts/delete/{id}")
     suspend fun deletePost(@Path("id") postId: String): Response<Unit> // Giả sử API trả về `Unit` khi xóa thành công
     @GET("staff/posts/detail/{id}")
@@ -121,20 +131,20 @@ interface APIService {
     @PUT("staff/posts/update/{id}")
     suspend fun updatePost(
         @Path("id") id: String, // ID của bài viết cần sửa
+        @Part("building_id") building_id: RequestBody?,
+        @Part("room_id") room_id: RequestBody?,
         @Part("user_id") userId: RequestBody?,
         @Part("title") title: RequestBody?,
         @Part("content") content: RequestBody?,
         @Part("status") status: RequestBody?,
         @Part("post_type") postType: RequestBody?,
-        @Part("price") price: RequestBody?,
-        @Part("address") address: RequestBody?,
-        @Part("phoneNumber") phoneNumber: RequestBody?,
-        @Part("room_type") roomType: RequestBody?,
-        @Part("amenities") amenities: RequestBody?,
-        @Part("services") services: RequestBody?,
         @Part videos: List<MultipartBody.Part>?,
         @Part photos: List<MultipartBody.Part>?
     ): Response<UpdatePostResponse>
+    data class ApiResponsee<T>(
+        val status: Int,
+        val data: T
+    )
 
     @Multipart
     @POST("add")
@@ -153,5 +163,6 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
+
 }
 /// user

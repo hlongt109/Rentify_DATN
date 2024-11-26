@@ -52,12 +52,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -67,13 +72,12 @@ import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitClient
 
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.TriangleShape
-import com.rentify.user.app.view.staffScreens.addPostScreen.Components.ComfortableLabel
-import com.rentify.user.app.view.staffScreens.addPostScreen.Components.ServiceLabel
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
+
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
+import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
+
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -93,7 +97,6 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
         isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
     }
 
-
     postDetail?.let { detail ->
         Box(
             modifier = Modifier
@@ -107,13 +110,12 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             ){
                 Row(
                     modifier = Modifier
-
                         .fillMaxWidth()
-                        .background(color = Color(0xfff7f7f7)), // Để IconButton nằm bên trái
+                        .background(color = Color(0xfff7f7f7)),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    IconButton(onClick = {   navController.navigate("POSTING_STAFF")}) {
+                    IconButton(onClick = { navController.navigate("POSTING_STAFF")}) {
                         Image(
                             painter = painterResource(id = R.drawable.back),
                             contentDescription = null,
@@ -122,7 +124,6 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     }
                     Text(
                         text = "Chi tiết bài đăng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         color = Color.Black,
                         fontWeight = FontWeight(700),
                         fontSize = 17.sp,
@@ -130,147 +131,249 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     IconButton(onClick = { /*TODO*/ }) {
                     }
                 }
-            Column(
-                modifier = Modifier.padding(16.dp)
-                    .height(screenHeight.dp / 1.3f)
-                    .verticalScroll(scrollState)
-            )
-            {
-
-                // Hiển thị ảnh/video đầu tiên
-                PostImageSlider(
-                    images = detail.photos ?: emptyList(),
-                    videos = detail.videos ?: emptyList()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                //loai phong
-                detail.room_type?.let { room_type ->
-                    val selectedServices = room_type
-                        .removeSurrounding("[", "]") // Loại bỏ dấu []
-                        .split(",") // Tách thành danh sách
-                        .map { it.trim() } // Loại bỏ khoảng trắng thừa
-                    RoomTypeDisplay(it = selectedServices)
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-// Tiêu đề bài đăng
-
-                Text(
-                    text = detail.title,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 10.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    color = Color(0xFFF55151),
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    fontWeight = FontWeight.W700,
-                    text = " ${detail.price?.let { "$it VND" } ?: "Chưa có giá"}",
-                    fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(8.dp))
-//địa chỉ
-                Row(
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .height(screenHeight.dp / 1.3f)
+                        .verticalScroll(scrollState)
                 ) {
 
-                    Image(
-                        painter = painterResource(id = R.drawable.location),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp, 20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
+                    // Hiển thị ảnh/video đầu tiên
+                    PostImageSection(images = detail.photos ?: emptyList())
+                    Spacer(modifier = Modifier.height(16.dp))
+// loại phòng
                     Text(
-                        color = Color(0xfffeb051),
+                        text = "Loại phòng: ${detail.room?.room_type}",
+                        fontSize = 14.sp,
+                        color=Color(0xfffeb501),
+                        modifier = Modifier.padding(horizontal = 10.dp)
+                    )
+                    // tên phòng
+                    Text(
+                        text = "Phòng: ${detail.room?.room_name}",
                         fontSize = 16.sp,
-                        text = " ${detail.address ?: "Chưa có địa chỉ"}"
+                        color=Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 10.dp)
                     )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-// số điện thoại
-                Row(
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.phone),
-                        contentDescription = null,
-                        modifier = Modifier.size(25.dp, 25.dp)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
+                    // địa chỉ
                     Text(
-                        text = " ${detail.phoneNumber ?: "Chưa có số điện thoại"}",
-                        fontSize = 16.sp
+                        text = "Địa chỉ: ${detail.building?.address}",
+                        fontSize = 16.sp,
+                        color=Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 10.dp)
                     )
+                    // giá
+                    Text(
+                        text = "Giá: ${detail.room?.price?.let { "$it VND" }}",
+                        fontSize = 15.sp,
+                        color=Color(0xffde5135),
+                        modifier = Modifier.padding(horizontal = 10.dp)
+                    )
+                    // Tiêu đề bài đăng
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                    ) {
+                        Row {
+                            Text(
+                                text = "Tiêu đề",
+                                color = Color(0xff7f7f7f),
+                                fontSize = 14.sp,
+                            )
+                            Text(
+
+                                text = " *",
+                                color = Color(0xffff1a1a),
+                                fontSize = 16.sp,
+
+                                )
+                        }
+                        Text(
+                            text = detail.title,
+                            fontSize = 15.sp,
+                            color = Color(0xff898888),
+                            modifier = Modifier.padding(horizontal = 10.dp),
+
+                            )
+                        Spacer(
+                            modifier = Modifier
+                                .padding(vertical = 5.dp)
+                                .fillMaxWidth() // Gạch dưới rộng bằng chiều rộng nội dung
+                                .height(1.dp)  // Độ dày của gạch
+                                .background(Color(0xff898888)) // Màu của gạch dưới
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+/// nôi dung
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                    ) {
+                        Row {
+                            Text(
+                                text = "Nội dung",
+                                color = Color(0xff7f7f7f),
+                                fontSize = 14.sp,
+                            )
+                            Text(
+
+                                text = " *",
+                                color = Color(0xffff1a1a),
+                                fontSize = 16.sp,
+
+                                )
+                        }
+                        Text(
+                            text = "${detail.content}",
+                            fontSize = 15.sp,
+                            color = Color(0xff898888),
+                            modifier = Modifier.padding(horizontal = 10.dp),
+
+                            )
+
+
+
+                        Spacer(
+                            modifier = Modifier
+                                .padding(vertical = 5.dp)
+                                .fillMaxWidth() // Gạch dưới rộng bằng chiều rộng nội dung
+                                .height(1.dp)  // Độ dày của gạch
+                                .background(Color(0xff898888)) // Màu của gạch dưới
+                        )
+                    }
+                    PostVideoSection(videos = detail.videos ?: emptyList())
+// tên tòa và số bài dăng
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.user),
+                            contentDescription = "",
+                            modifier = Modifier.size(50.dp)
+                        )
+
+                        Column {
+                            Text(
+                                text = "Tòa nhà: ${detail.building?.nameBuilding}",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .padding(start = 5.dp)
+                                    .padding(top = 10.dp),
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                text = "${detail.building?.post_count} bài đăng",
+                                modifier = Modifier
+                                    .padding(start = 5.dp)
+                                    .padding(bottom = 10.dp),
+                                fontSize = 10.sp,
+                                color = Color(0xFF44ACFE)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.error),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp, 25.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Báo cáo",
+                                fontSize = 16.sp
+                            )
+
+                        }
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.mess),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp, 25.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Nhắn tin",
+                                fontSize = 16.sp
+                            )
+
+                        }
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.phone),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp, 25.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Điện thoai",
+                                fontSize = 16.sp
+                            )
+
+                        }
+                    }
+                    // Hiển thị thông tin người đăng
+//                    Text(
+//                        text = "Người đăng: ${detail.user?.name}",
+//                        fontSize = 16.sp,
+//                        modifier = Modifier.padding(horizontal = 10.dp)
+//                    )
+//                    Text(
+//                        text = "Email: ${detail.user?.email}",
+//                        fontSize = 14.sp,
+//                        modifier = Modifier.padding(horizontal = 10.dp)
+//                    )
+//                    Spacer(modifier = Modifier.height(16.dp))
+                    //                   Spacer(modifier = Modifier.height(16.dp))
+//                    // Hiển thị ngày tạo và cập nhật
+//                    Text(
+//                        text = "Ngày tạo: ${detail.created_at}",
+//                        fontSize = 14.sp,
+//                        modifier = Modifier.padding(horizontal = 10.dp)
+//                    )
+//                    Text(
+//                        text = "Ngày cập nhật: ${detail.updated_at}",
+//                        fontSize = 14.sp,
+//                        modifier = Modifier.padding(horizontal = 10.dp)
+//                    )
 
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Nội dung bài đăng
-                Text(
-                    text = "Nội dung: " + "${detail.content}",
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(horizontal = 10.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                // Tiện ích
-                detail.amenities?.let { amenities ->
-                    val amenitiesString = amenities.toString() // Chuyển sang chuỗi nếu cần
-                    val selectedAmenities = amenitiesString
-                        .removeSurrounding("[", "]") // Loại bỏ dấu []
-                        .split(",") // Tách thành danh sách
-                        .map { it.trim() } // Loại bỏ khoảng trắng thừa
-                    AmenitiesDisplay(it = selectedAmenities)
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-
-                // Dịch vụ
-
-                detail.services?.let { services ->
-                    val servicesString = services.toString() // Chuyển sang chuỗi nếu cần
-                    val selectedServices = servicesString
-                        .removeSurrounding("[", "]") // Loại bỏ dấu []
-                        .split(",") // Tách thành danh sách
-                        .map { it.trim() } // Loại bỏ khoảng trắng thừa
-                    ServicesDisplay(it = selectedServices)
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-
-
-//            // Loại bài đăng
-//            Text(text = "Loại bài đăng: ${detail.post_type ?: "Chưa có loại bài đăng"}")
-//            Spacer(modifier = Modifier.height(8.dp))
-//
-//            // Trạng thái bài đăng
-//            Text(text = "Trạng thái: ${if (detail.status == 1) "Phòng đã cho thuê" else "Phòng trống"}")
-//            Spacer(modifier = Modifier.height(8.dp))
-//
-//            // Thời gian tạo và cập nhật bài đăng
-//            Text(text = "Thời gian tạo: ${detail.created_at ?: "Chưa có thời gian tạo"}")
-//            Text(text = "Thời gian cập nhật: ${detail.updated_at ?: "Chưa có thời gian cập nhật"}")
-
             }
-        }
+
             Box(
                 modifier = Modifier
-                      .align(Alignment.BottomCenter)
+                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .height(screenHeight.dp/9f)
+                    .height(screenHeight.dp / 9f)
                     .background(color = Color(0xfff7f7f7))
             ) {
                 Button(
                     onClick = {
-                        navController.navigate("update_post_screen/${postId}")
-                        {
+                        navController.navigate("update_post_screen/${postId}") {
                             popUpTo("post_detail/$postId") { inclusive = true }
                         }
-                    }, modifier = Modifier.height(50.dp).fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xff5dadff)
-                    )
+                    },
+                    modifier = Modifier.height(50.dp).fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xff5dadff))
                 ) {
                     Text(
                         text = "Sửa bài đăng",
@@ -278,79 +381,104 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                         fontFamily = FontFamily(Font(R.font.cairo_regular)),
                         color = Color(0xffffffff)
                     )
-                }}}
+                }
+            }
+        }
     } ?: run {
         Text("Đang tải chi tiết bài đăng...")
     }
 }
-
+@Preview(showBackground = true)
+@Composable
+fun PostDetailScreenPreview() {
+    val mockNavController = rememberNavController() // Tạo NavController giả lập cho preview
+    PostDetailScreen(
+        navController = mockNavController,
+        postId = "mockPostId", // Truyền postId giả lập
+        viewModel = PostViewModel()
+    )
+}
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun PostImageSlider(images: List<String>, videos: List<String>) {
-    val pagerState = rememberPagerState()
-    var showDialog by remember { mutableStateOf(false) }
-    var currentMediaIndex by remember { mutableStateOf(0) }
-
-    // Lấy tất cả ảnh và video và ghép vào một list
-    val mediaList = mutableListOf<String>().apply {
-        addAll(images)
-        addAll(videos)
-    }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        HorizontalPager(
-            count = mediaList.size,
-            state = pagerState,
-            modifier = Modifier.fillMaxWidth()
-        ) { pageIndex ->
-            val media = mediaList[pageIndex]
-            Box(
+fun PostImageSection(images: List<String>) {
+    if (images.isNotEmpty()) {
+        val pagerState = rememberPagerState() // Quản lý trạng thái pager
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Hình ảnh",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+            )
+            HorizontalPager(
+                count = images.size,
+                state = pagerState,
                 modifier = Modifier
-                    .clickable {
-                        currentMediaIndex = pageIndex
-                        showDialog = true
-                    }
                     .fillMaxWidth()
-                    .heightIn(min = 200.dp, max = 300.dp) // Giới hạn chiều cao của ảnh
-                    .align(Alignment.CenterHorizontally) // Căn giữa ảnh/video
-            ) {
-                if (media.endsWith(".mp4")) {
-                    // Hiển thị video nếu file có định dạng .mp4
-                    VideoPlayer(videoUrl = "http://192.168.2.106:3000/$media")
-                } else {
-                    // Hiển thị ảnh nếu không phải video
-                    Image(
-                        painter = rememberImagePainter("http://192.168.2.106:3000/$media"),
-                        contentDescription = "Post Image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 250.dp, max = 400.dp)
-                            .align(Alignment.Center)
-                    )
-                }
+                    .height(300.dp)
+            ) { pageIndex ->
+                val image = images[pageIndex]
+                Image(
+                    painter = rememberImagePainter("http://192.168.2.106:3000/$image"),
+                    contentDescription = "Post Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.LightGray),
+                    contentScale = ContentScale.Crop
+                )
             }
+
+            // Dấu chấm chỉ số ảnh
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp),
+                activeColor = Color.Black,
+                inactiveColor = Color.Gray
+            )
         }
-
-        // Thêm dấu chấm chỉ số trang (Pager Indicator)
-        HorizontalPagerIndicator(
-            pagerState = pagerState,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp),
-            activeColor = Color.Black,
-            inactiveColor = Color.Gray
-        )
-    }
-
-    // Mở dialog phóng to ảnh/video
-    if (showDialog) {
-        PostMediaDialog(
-            mediaList = mediaList,
-            currentIndex = currentMediaIndex,
-            onDismiss = { showDialog = false }
-        )
     }
 }
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun PostVideoSection(videos: List<String>) {
+    if (videos.isNotEmpty()) {
+        val pagerState = rememberPagerState() // Quản lý trạng thái pager
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Video",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+            )
+            HorizontalPager(
+                count = videos.size,
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            ) { pageIndex ->
+                val videoUrl = videos[pageIndex]
+                VideoPlayer(videoUrl = "http://192.168.2.106:3000/$videoUrl")
+            }
+
+            // Dấu chấm chỉ số video
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp),
+                activeColor = Color.Black,
+                inactiveColor = Color.Gray
+            )
+        }
+    }
+}
+
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -432,296 +560,5 @@ fun VideoPlayer(videoUrl: String) {
             },
             modifier = Modifier.fillMaxSize()
         )
-    }
-}
-@Composable
-fun StaticamenitiesOptions(
-    amenities: List<String>, // Danh sách tiện ích từ dữ liệu
-    allOptions: List<String> = listOf(
-        "Vệ sinh khép kín",
-        "Gác xép",
-        "Ra vào vân tay",
-        "Ban công",
-        "Nuôi pet",
-        "Không chung chủ"
-    )
-) {
-    FlowRow(
-        modifier = Modifier.padding(0.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
-    ) {
-        allOptions.forEach { option ->
-            StaticamenitiesOption(
-                text = option,
-                isSelected = amenities.contains(option) // Hiển thị dấu tích nếu có trong danh sách tiện ích
-            )
-        }
-    }
-}
-
-@Composable
-fun StaticamenitiesOption(
-    text: String,
-    isSelected: Boolean
-) {
-    Box(
-        modifier = Modifier
-            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
-            .border(
-                width = 1.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
-            .padding(0.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp,
-            modifier = Modifier
-                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
-                .padding(14.dp)
-                .align(Alignment.Center)
-        )
-
-        // Hiển thị dấu tích nếu được chọn
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(23.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = Color(0xFF44acfe),
-                        shape = TriangleShape()
-                    ),
-                contentAlignment = Alignment.TopStart
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.tick),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(10.dp)
-                        .offset(x = 3.dp, y = 2.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AmenitiesDisplay(it: List<String>?) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-    ) {
-        ComfortableLabel()
-        Spacer(modifier = Modifier.height(8.dp))
-        if (it != null && it.isNotEmpty()) {
-            StaticamenitiesOptions(amenities = it)
-        } else {
-            Text(
-                text = "Không có tiện ích nào.",
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
-        }
-    }
-}
-////
-@Composable
-fun StaticServicesOptions(
-    services: List<String>, // Danh sách tiện ích từ dữ liệu
-    allservicesOptions: List<String> = listOf(
-        "Điều hoà",
-        "Kệ bếp",
-        "Tủ lạnh",
-        "Bình nóng lạnh",
-        "Máy giặt",
-        "Bàn ghế"
-    )
-) {
-    FlowRow(
-        modifier = Modifier.padding(0.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
-    ) {
-        allservicesOptions.forEach { option ->
-            StaticServicesOption(
-                text = option,
-                isSelected = services.contains(option) // Hiển thị dấu tích nếu có trong danh sách tiện ích
-            )
-        }
-    }
-}
-
-@Composable
-fun StaticServicesOption(
-    text: String,
-    isSelected: Boolean
-) {
-    Box(
-        modifier = Modifier
-            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
-            .border(
-                width = 1.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
-            .padding(0.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp,
-            modifier = Modifier
-                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
-                .padding(14.dp)
-                .align(Alignment.Center)
-        )
-
-        // Hiển thị dấu tích nếu được chọn
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(23.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = Color(0xFF44acfe),
-                        shape = TriangleShape()
-                    ),
-                contentAlignment = Alignment.TopStart
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.tick),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(10.dp)
-                        .offset(x = 3.dp, y = 2.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ServicesDisplay(it: List<String>?) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-    ) {
-        ServiceLabel()
-        Spacer(modifier = Modifier.height(8.dp))
-        if (it != null && it.isNotEmpty()) {
-            StaticServicesOptions(services = it)
-        } else {
-            Text(
-                text = "Không có tiện ích nào.",
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
-        }
-    }
-}
-////
-@Composable
-fun StaticRoomTypeOptions(
-    services: List<String>, // Danh sách tiện ích từ dữ liệu
-    allservicesOptions: List<String> = listOf(
-        "Phòng trọ",
-        "Nguyên căn",
-        "Chung cư"
-
-    )
-) {
-    FlowRow(
-        modifier = Modifier.padding(0.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
-    ) {
-        allservicesOptions.forEach { option ->
-            StaticRoomTypeOption(
-                text = option,
-                isSelected = services.contains(option) // Hiển thị dấu tích nếu có trong danh sách tiện ích
-            )
-        }
-    }
-}
-
-@Composable
-fun StaticRoomTypeOption(
-    text: String,
-    isSelected: Boolean
-) {
-    Box(
-        modifier = Modifier
-            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
-            .border(
-                width = 1.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
-            .padding(0.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp,
-            modifier = Modifier
-                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
-                .padding(14.dp)
-                .align(Alignment.Center)
-        )
-
-        // Hiển thị dấu tích nếu được chọn
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(23.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = Color(0xFF44acfe),
-                        shape = TriangleShape()
-                    ),
-                contentAlignment = Alignment.TopStart
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.tick),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(10.dp)
-                        .offset(x = 3.dp, y = 2.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun RoomTypeDisplay(it: List<String>?) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-    ) {
-        RoomTypeLabel()
-        Spacer(modifier = Modifier.height(8.dp))
-        if (it != null && it.isNotEmpty()) {
-            StaticRoomTypeOptions(services = it)
-        } else {
-            Text(
-                text = "Không có tiện ích nào.",
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
-        }
     }
 }

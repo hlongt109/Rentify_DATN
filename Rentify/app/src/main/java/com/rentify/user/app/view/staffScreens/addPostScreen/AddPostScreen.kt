@@ -52,28 +52,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
-import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isValidPhoneNumber
-import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isValidPrice
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingOptions
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomOptions
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.SelectMedia
 
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableLabel
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableOptions
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomTypeLabel
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomTypeOptions
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ServiceLabel
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ServiceOptions
+
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Buffer
 import java.io.File
 
 fun prepareMultipartBody(
@@ -101,21 +102,6 @@ fun prepareMultipartBody(
         null
     }
 }
-fun isFieldEmpty(field: String): Boolean {
-    return field.isBlank() // Kiểm tra trường có trống không
-}
-
-fun isValidPrice(price: String): Boolean {
-    return price.toDoubleOrNull() != null // Kiểm tra giá có phải là số hợp lệ
-}
-
-fun isValidPhoneNumber(phone: String): Boolean {
-    // Kiểm tra số điện thoại có đúng 10 chữ số và bắt đầu bằng "0"
-    return phone.startsWith("0") && phone.length == 10 && phone.all { it.isDigit() }
-}
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPostScreens(navController: NavHostController) {
@@ -123,66 +109,93 @@ fun AddPostScreens(navController: NavHostController) {
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
-    var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
-    var selectedService by remember { mutableStateOf(listOf<String>()) }
+
+
+    val viewModel: PostViewModel = viewModel()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-   var address by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
      var content by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var roomPrice by remember { mutableStateOf("") }
-    fun onRoomTypeSelected(roomType: String) {
-        selectedRoomTypes = listOf(roomType) // Cập nhật loại phòng đã chọn
+
+    var selectedRoom by remember { mutableStateOf<String?>(null) }
+
+    fun logRequestBody(requestBody: RequestBody) {
+        val buffer = Buffer()
+        try {
+            requestBody.writeTo(buffer)
+            val content = buffer.readUtf8()
+            Log.d("click", "RequestBody content: $content")
+        } catch (e: Exception) {
+            Log.e("click", "Error reading RequestBody: ${e.message}")
+        }
     }
+
     suspend fun addPost(
         context: Context,
         apiService: APIService,
         selectedImages: List<Uri>,
         selectedVideos: List<Uri>
     ): Boolean {
+        // Chuẩn bị dữ liệu `RequestBody`
+        val userId = "67362213c6d421d3027fb5a7".toRequestBody("text/plain".toMediaTypeOrNull())
+        val buildingId = viewModel.selectedBuilding.value?.toRequestBody("text/plain".toMediaTypeOrNull())
+            ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
 
-        val userId = "672490e5ce87343d0e701012".toRequestBody("text/plain".toMediaTypeOrNull())
+        val roomId  = selectedRoom?.toRequestBody("text/plain".toMediaTypeOrNull())
         val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val postType = "rent".toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val price = roomPrice.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val address = address.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val phoneNumber = phoneNumber.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val roomType = selectedRoomTypes.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val amenities = selectedComfortable.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val services = selectedService.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-
-        val videoParts = selectedVideos.mapNotNull { uri ->
+        val videoPart = selectedVideos.mapNotNull { uri ->
             val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
-            prepareMultipartBody(context, uri, "video", ".mp4", mimeType)
+            prepareMultipartBody(
+                context,
+                uri,
+                "video",
+                ".mp4",
+                mimeType
+            )
         }
-        val photoParts = selectedImages.mapNotNull { uri ->
+        val photoPart = selectedImages.mapNotNull { uri ->
             val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-            prepareMultipartBody(context, uri, "photo", ".jpg", mimeType)
+            prepareMultipartBody(
+                context,
+                uri,
+                "photo",
+                ".jpg",
+                mimeType
+            )
         }
-
+        Log.d("anh", "da chon anh: $selectedImages")
+        Log.d("video", "da chon video: $selectedVideos")
+        // Gửi dữ liệu đến API
         return try {
             val response = apiService.addPost(
-                userId, title, content, status, postType, price, address, phoneNumber,
-                roomType, amenities, services, videos = videoParts, photos = photoParts
+                userId = userId,
+                buildingId = buildingId,
+                roomId = roomId,
+                title = title,
+                content = content,
+                postType = postType,
+                status = status,
+                videos = photoPart,
+                photos = videoPart
             )
             if (response.isSuccessful) {
-                Log.d("addPost", "Post created successfully: ${response.body()}")
-                true // Thành công
+                Log.d("AddPost", "Dư liệu vừa thêm xong: ${response.body()}")
+                true
             } else {
-                Log.e("addPost", "Error: ${response.errorBody()?.string()}")
-                false // Thất bại
+                Log.e("AddPost", "Error: ${response.errorBody()?.string()}")
+                false
             }
         } catch (e: Exception) {
-            Log.e("addPost", "Exception: ${e.message}")
-            false // Thất bại
+            Log.e("AddPost", "Exception: ${e.message}")
+            false
         }
     }
 
-        Box(
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xfff7f7f7))
@@ -288,16 +301,6 @@ fun AddPostScreens(navController: NavHostController) {
                     )
                 )
             }
-            // loai phòng
-            Column {
-                RoomTypeLabel()
-
-                RoomTypeOptions(
-                    selectedRoomTypes = selectedRoomTypes,
-                    onRoomTypeSelected = { selectedRoomTypes = listOf(it) }
-                )
-
-            }
 //video
             SelectMedia { images, videos ->
                 selectedImages = images
@@ -305,58 +308,7 @@ fun AddPostScreens(navController: NavHostController) {
                 Log.d("AddPost", "Received Images: $selectedImages")
                 Log.d("AddPost", "Received Videos: $selectedVideos")
             }
-            // gía phòng
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Giá Phòng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xff7f7f7f),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-                    )
-                    Text(
 
-                        text = " *",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffff1a1a),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 16.sp,
-
-                        )
-                }
-                TextField(
-                    value = roomPrice,
-                    onValueChange = { roomPrice = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập giá phòng",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
             //  Nội dung
             Column(
                 modifier = Modifier
@@ -377,7 +329,6 @@ fun AddPostScreens(navController: NavHostController) {
                         color = Color(0xffff1a1a),
                         // fontWeight = FontWeight(700),
                         fontSize = 16.sp,
-
                         )
                 }
                 TextField(
@@ -408,134 +359,42 @@ fun AddPostScreens(navController: NavHostController) {
                     )
                 )
             }
-            // dịa chỉ
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Địa chỉ",
-                        color = Color(0xff7f7f7f),
-                        fontSize = 13.sp,
-                    )
-                    Text(
-                        text = " *",
-                        color = Color(0xffff1a1a),
-                        fontSize = 16.sp,
-
-                        )
-                }
-                TextField(
-                    value = address,
-                    onValueChange = { address = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập địa chỉ *",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
-            // sóo điện thoại
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Số điện thoại",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xff7f7f7f),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-                    )
-                    Text(
-
-                        text = " *",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffff1a1a),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 16.sp,
-
-                        )
-                }
-                TextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập địa chỉ *",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
             Spacer(modifier = Modifier.height(3.dp))
             Column {
-                ComfortableLabel()
+                BuildingLabel()
 
-                ComfortableOptions(
-                    selectedComfortable = selectedComfortable,
-                    onComfortableSelected = { comfortable ->
-                        selectedComfortable = if (selectedComfortable.contains(comfortable)) {
-                            selectedComfortable - comfortable
-                        } else {
-                            selectedComfortable + comfortable
-                        }
+                BuildingOptions(
+                    userId = "67362213c6d421d3027fb5a7",
+                    selectedBuilding = viewModel.selectedBuilding.value,
+                    onBuildingSelected = { buildingId ->
+                        viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
                     }
                 )
             }
             // dịch vụ
             Spacer(modifier = Modifier.height(10.dp))
             Column {
-            ServiceLabel()
-            ServiceOptions(
-                selectedService = selectedService,
-                onServiceSelected = { service ->
-                    selectedService = if (selectedService.contains(service)) {
-                        selectedService - service
-                    } else {
-                        selectedService + service
-                    }
+            RoomLabel()
+                viewModel.selectedBuilding.value?.let {
+                    RoomOptions (
+                        buildingId = it,
+                        selectedRoom = selectedRoom,
+                        onRoomSelected = { roomId ->
+                            selectedRoom = roomId
+                        }
+                    )
                 }
-            )
+                //673b57f7d24f9f5e94603b17
+//            ServiceOptions(
+//                selectedService = selectedService,
+//                onServiceSelected = { service ->
+//                    selectedService = if (selectedService.contains(service)) {
+//                        selectedService - service
+//                    } else {
+//                        selectedService + service
+//                    }
+//                }
+//            )
         }
 
         }
@@ -554,11 +413,7 @@ fun AddPostScreens(navController: NavHostController) {
                             // Hiển thị thông báo lỗi nếu title trống
                             Toast.makeText(context, "Tiêu đề không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button        }
-                        if (selectedRoomTypes.isEmpty()) {
-                            // Hiển thị thông báo nếu không có dịch vụ nào được chọn
-                            Toast.makeText(context,  "Loại phòng không được để trống!", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
+
                         if (selectedImages.isEmpty()) {
                             // Hiển thị thông báo nếu không có ảnh nào được chọn
                             Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
@@ -569,49 +424,12 @@ fun AddPostScreens(navController: NavHostController) {
                             Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
                      return@Button
                         }
-                        if (isFieldEmpty(roomPrice)) {
-                            // Hiển thị thông báo lỗi nếu roomPrice trống
-                            Toast.makeText(context, "Giá phòng không thể trống", Toast.LENGTH_SHORT).show()
-                              return@Button
-                        }
-// Kiểm tra giá phòng có phải là số hợp lệ không
-                        if (!isValidPrice(roomPrice)) {
-                            Toast.makeText(context, "Giá phòng phải là số hợp lệ", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
+
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
-                        if (isFieldEmpty(address)) {
-                            // Hiển thị thông báo lỗi nếu address trống
-                            Toast.makeText(context, "Địa chỉ không thể trống", Toast.LENGTH_SHORT).show()
-                              return@Button
-                        }
-
-                        if (isFieldEmpty(phoneNumber)) {
-                            // Hiển thị thông báo lỗi nếu phoneNumber trống
-                            Toast.makeText(context, "Số điện thoại không thể trống", Toast.LENGTH_SHORT).show()
-                              return@Button
-                        }
-                        // Kiểm tra số điện thoại có đúng định dạng không (10 chữ số và bắt đầu bằng 0)
-                        if (!isValidPhoneNumber(phoneNumber)) {
-                            Toast.makeText(context, "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        if (selectedComfortable.isEmpty()) {
-                            // Hiển thị thông báo nếu không có dịch vụ nào được chọn
-                            Toast.makeText(context,  "Bạn phải chọn ít nhất một tiện nghi!", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        if (selectedService.isEmpty()) {
-                            // Hiển thị thông báo nếu không có dịch vụ nào được chọn
-                            Toast.makeText(context,  "Bạn phải chọn ít nhất một dịch vụ!", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-
-
                         CoroutineScope(Dispatchers.Main).launch {
                             val apiService = RetrofitClient.apiService
                             val isSuccessful = withContext(Dispatchers.IO) {

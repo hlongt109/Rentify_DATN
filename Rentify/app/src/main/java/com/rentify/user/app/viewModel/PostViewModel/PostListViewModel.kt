@@ -10,8 +10,12 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
+import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.PostingDetail
+import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.ApiClient.apiService
+import kotlinx.coroutines.Dispatchers
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -22,13 +26,23 @@ class PostViewModel : ViewModel() {
     fun getPostingList(userId: String) {
         viewModelScope.launch {
             try {
-                val posts = RetrofitClient.apiService.getPosts(userId)
-                _posts.value = posts
+                val response = RetrofitClient.apiService.getPosts(userId)
+                Log.d("API Response", response.toString())
+
+                // Lấy danh sách bài viết từ response.data
+                if (response.data.isNotEmpty()) {
+                    _posts.value = response.data
+                    Log.d("Posts Updated", _posts.value.toString())
+                } else {
+                    Log.d("Posts Empty", "Không có bài đăng nào được trả về")
+                }
             } catch (e: Exception) {
-                // Xử lý lỗi, có thể hiển thị thông báo lỗi ở đây
+                Log.e("API Error", "Lỗi khi lấy danh sách bài viết: ${e.message}")
             }
         }
     }
+
+
     fun deletePost(postId: String) {
         viewModelScope.launch {
             try {
@@ -60,23 +74,23 @@ class PostViewModel : ViewModel() {
         }
     }
 
-private val _deleteStatus = MutableLiveData<Boolean?>()
-val deleteStatus: MutableLiveData<Boolean?> get() = _deleteStatus
+    private val _deleteStatus = MutableLiveData<Boolean?>()
+    val deleteStatus: MutableLiveData<Boolean?> get() = _deleteStatus
 
-fun deletePostWithFeedback(postId: String) {
-    viewModelScope.launch {
-        try {
-            val response = RetrofitClient.apiService.deletePost(postId)
-            if (response.isSuccessful) {
-                _posts.value = _posts.value.filter { it._id != postId }
-                _deleteStatus.value = true // Thông báo thành công
-            } else {
-                _deleteStatus.value = false // Thông báo thất bại
+    fun deletePostWithFeedback(postId: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.apiService.deletePost(postId)
+                if (response.isSuccessful) {
+                    _posts.value = _posts.value.filter { it._id != postId }
+                    _deleteStatus.value = true // Thông báo thành công
+                } else {
+                    _deleteStatus.value = false // Thông báo thất bại
+                }
+            } catch (e: Exception) {
+                _deleteStatus.value = false // Xử lý lỗi
             }
-        } catch (e: Exception) {
-            _deleteStatus.value = false // Xử lý lỗi
-        }
-    }}fun resetDeleteStatus() {
+        }}fun resetDeleteStatus() {
         _deleteStatus.value = null
     }
     private val _updateStatus = MutableLiveData<Boolean?>()
@@ -85,16 +99,12 @@ fun deletePostWithFeedback(postId: String) {
     fun updatePost(
         postId: String,
         userId: RequestBody,
+        building_id: RequestBody,
+        room_id: RequestBody,
         title: RequestBody,
         content: RequestBody,
         status: RequestBody,
         postType: RequestBody,
-        price: RequestBody?,
-        address: RequestBody?,
-        phoneNumber: RequestBody?,
-        roomType: RequestBody?,
-        amenities: RequestBody?,
-        services: RequestBody?,
         videos: List<MultipartBody.Part>?,
         photos: List<MultipartBody.Part>?
     ) {
@@ -102,8 +112,7 @@ fun deletePostWithFeedback(postId: String) {
             try {
                 val response = RetrofitClient.apiService.updatePost(
                     postId, userId, title, content, status, postType,
-                    price, address, phoneNumber, roomType,
-                    amenities, services, videos, photos
+                    building_id,room_id, videos, photos
                 )
                 if (response.isSuccessful) {
                     _updateStatus.value = true // Cập nhật thành công
@@ -123,6 +132,61 @@ fun deletePostWithFeedback(postId: String) {
      */
     fun resetUpdateStatus() {
         _updateStatus.value = null
+    }
+
+
+
+
+    private val _buildings = mutableStateOf<List<Building>>(emptyList())
+    val buildings: State<List<Building>> = _buildings
+    // Biến lưu tòa nhà đã chọn (selected building)
+    private val _selectedBuilding = mutableStateOf<String?>(null)
+    val selectedBuilding: State<String?> = _selectedBuilding
+
+    private val apiService: APIService = RetrofitClient.apiService // Kết nối Retrofit instance
+
+    fun getBuildings(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getBuildings(userId) // Giả sử apiService là service gọi API
+                if (response.isSuccessful) {
+                    val buildingsResponse = response.body() // BuildingsResponse
+                    _buildings.value = buildingsResponse?.data ?: emptyList()
+                    Log.d("PostViewModel", "Buildings fetched: ${_buildings.value}")
+                } else {
+                    Log.e("PostViewModel", "Error fetching buildings: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "Exception: ${e.message}")
+            }
+        }
+
+}
+
+    private val _rooms = mutableStateOf<List<Room_post>>(emptyList())
+    val rooms: State<List<Room_post>> = _rooms
+
+
+    fun getRooms(buildingId: String) {
+        _selectedBuilding.value?.let { buildingId ->
+            viewModelScope.launch {
+                try {
+                    val response = apiService.getRooms(buildingId) // Gọi API để lấy phòng
+                    if (response.isSuccessful) {
+                        val roomsResponse = response.body() // RoomsResponse
+                        _rooms.value = roomsResponse?.data ?: emptyList()
+                        Log.d("PostViewModel", "Rooms fetched: ${_rooms.value}")
+                    } else {
+                        Log.e("PostViewModel", "Error fetching rooms: ${response.message()}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("PostViewModel", "Exception: ${e.message}")
+                }
+            }
+        }}
+    fun setSelectedBuilding(buildingId: String) {
+        _selectedBuilding.value = buildingId
+        getRooms(buildingId) // Khi chọn tòa nhà, gọi API để lấy danh sách phòng
     }
 }
 

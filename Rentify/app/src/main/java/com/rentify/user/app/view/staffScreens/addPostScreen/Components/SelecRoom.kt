@@ -1,75 +1,44 @@
 package com.rentify.user.app.view.staffScreens.addPostScreen.Components
 
-import androidx.compose.foundation.background
-
-import androidx.compose.foundation.layout.Box
-
-import androidx.compose.foundation.layout.padding
-
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.IconButton
-
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 
 import androidx.compose.ui.Alignment
-
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 
 import androidx.compose.material3.Icon
-
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
-
-import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.google.accompanist.flowlayout.FlowRow
-
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 
 
 @Composable
-fun ComfortableLabel() {
+fun RoomLabel() {
     Row(
         modifier = Modifier
             .border(
@@ -79,13 +48,13 @@ fun ComfortableLabel() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            painter = painterResource(id = R.drawable.comfortable),
+            painter = painterResource(id = R.drawable.service),
             contentDescription = null,
             modifier = Modifier.size(30.dp, 30.dp)
         )
         Spacer(modifier = Modifier.width(3.dp))
         Text(
-            text = "Tiện nghi",
+            text = "Phòng",
             color = Color.Black,
             fontSize = 13.sp,
         )
@@ -93,28 +62,31 @@ fun ComfortableLabel() {
 }
 
 @Composable
-fun ComfortableOptions(
-    selectedComfortable: List<String>,
-    onComfortableSelected: (String) -> Unit
+fun RoomOptions(
+    buildingId: String,
+    selectedRoom: String?,
+    onRoomSelected: (String) -> Unit
 ) {
+    val roomViewModel: PostViewModel = viewModel()
+    val rooms by roomViewModel.rooms
+
+    // Gọi API lấy tòa nhà theo user_id
+    LaunchedEffect(buildingId) {
+        roomViewModel.getRooms(buildingId)
+    }
+
     FlowRow(
         modifier = Modifier.padding(5.dp),
         mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
         crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
     ) {
-        listOf(
-            "Vệ sinh khép kín",
-            "Gác xép",
-            "Ra vào vân tay",
-            "Ban công",
-            "Nuôi pet",
-            "Không chung chủ"
-        ).forEach { option ->
-            ComfortableOption(
-                text = option,
-                isSelected = selectedComfortable.contains(option),
+        // Sử dụng dữ liệu tòa nhà từ ViewModel
+        rooms.forEach { rooms ->
+            RoomOption(
+                text = rooms.room_name,
+                isSelected = selectedRoom == rooms._id,
                 onClick = {
-                    onComfortableSelected(option)
+                    onRoomSelected(rooms._id)
                 }
             )
         }
@@ -122,13 +94,13 @@ fun ComfortableOptions(
 }
 
 @Composable
-fun ComfortableOption(
+fun RoomOption(
     text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
-            .shadow(3.dp, shape = RoundedCornerShape(69.dp))
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
             .border(
                 width = 1.dp,
                 color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
@@ -171,5 +143,4 @@ fun ComfortableOption(
         }
     }
 }
-
 
