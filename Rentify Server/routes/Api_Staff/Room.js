@@ -181,7 +181,7 @@ router.delete('/DeleteRooms/:id', async (req, res) => {
         res.status(500).json({ message: "Failed to delete room", error: error.message });
     }
 });
-// API cập nhật phòng
+// API cập nhật phòng 😘
 router.put(
     "/updateRoom/:id",
     upload.fields([
