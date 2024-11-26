@@ -13,34 +13,41 @@ router.post('/posts_mgr', uploadFile.fields([
     { name: 'images', maxCount: 5 }
 ]), async (req, res) => {
     try {
-        const data = req.body;
-        const files = req.files;
+        const data = req.body; 
+        const files = req.files; 
 
-        const video = `${req.protocol}://${req.get("host")}/uploads/${files.video[0].filename}`;
-        const images = files.images.map(file => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`);
+        const video = files.video ? `${req.protocol}://${req.get("host")}/public/uploads/${files.video[0].filename}` : null;
+
+        const images = files.images ? files.images.map(file => `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`) : [];
+
+        const userObjectId = new mongoose.Types.ObjectId(data.user_id);
+        const buildingObjectId = new mongoose.Types.ObjectId(data.building_id);
+        const roomObjectId = new mongoose.Types.ObjectId(data.room_id);
 
         const newPost = new Post({
-            user_id: data.user_id,
-            building_id: data.building_id,
-            room_id: data.room_id,
+            user_id: userObjectId,
+            building_id: buildingObjectId,
+            room_id: roomObjectId,
             title: data.title,
             content: data.content,
-            status: data.status,
-            video: video,
-            photo: images,
+            status: data.status || 0, // Nếu không có status thì mặc định là 0
+            video: video,  // Video nếu có
+            photo: images, // Danh sách ảnh
             post_type: data.post_type,
-            created_at: data.created_at
+            created_at: data.created_at || new Date().toISOString()  // Nếu không có created_at thì dùng thời gian hiện tại
         });
 
+        // Lưu bài viết vào cơ sở dữ liệu
         const result = await newPost.save();
+
         if (result) {
-            res.status(200).json({ message: "Add post success", data: result })
+            res.status(200).json({ message: "Add post success", data: result });
         } else {
-            res.status(401).json({ message: "Add post failed" })
+            res.status(401).json({ message: "Add post failed" });
         }
     } catch (error) {
         console.error(error);
-        handleServerError(res, error);
+        handleServerError(res, error);  // Hàm này sẽ xử lý lỗi server
     }
 });
 
@@ -58,32 +65,32 @@ router.put("/posts_mgr/:id", uploadFile.fields([
             return res.status(404).json({ messenger: 'No movie found to update' });
         }
 
-        let images;
-        let video;
-
+        let images
+        let video
         if (files && files.images) {
-            images = files.map(file => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`);
-        } else {
+            images = files.images ? files.images.map(file => `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`) : [];
+        }else{
             images = post.photo
         }
 
-        if (files && files.video && files.video[0]) {
-            video = `${req.protocol}://${req.get("host")}/uploads/${files.video[0].filename}`;
-        } else {
-            video = post.video
+        if(files && files.video){
+            video = files.video ? `${req.protocol}://${req.get("host")}/public/uploads/${files.video[0].filename}` : null;
+        }else{
+            video = post.video;
         }
 
-        post.user_id = data.user_id,
-            post.building_id = data.building_id ?? post.building_id,
-            post.room_id = data.room_id ?? post.room_id,
-            post.title = data.title ?? post.title,
-            post.content = data.content ?? post.content,
-            post.status = data.status ?? post.status,
-            post.video = video,
-            post.photo = images,
-            post.post_type = post.post_type,
-            post.created_at = post.created_at
-        post.updated_at = new Date().toISOString()
+        post.user_id = data.user_id ?? post.user_id;
+        post.building_id = data.building_id ?? post.building_id;
+        post.room_id = data.room_id ?? post.room_id;
+        post.title = data.title ?? post.title;
+        post.content = data.content ?? post.content;
+        post.status = data.status ?? post.status;
+        post.post_type = data.post_type ?? post.post_type;
+        post.photo = images;
+        post.video = video;
+        post.created_at = post.created_at;
+        post.updated_at = new Date().toISOString();
+        
 
         const result = await post.save();
         if (result) {
@@ -98,6 +105,46 @@ router.put("/posts_mgr/:id", uploadFile.fields([
     }
 })
 //
+router.get('/posts_mgr/:buildingId/posts/day', async (req, res) => {
+    try {
+        const { buildingId } = req.params;
+        const { status, selectTime } = req.query;
+
+        if (!buildingId) {
+            return res.status(400).json({ message: 'Building ID trống' });
+        }
+
+        const buildingObjectId = new mongoose.Types.ObjectId(buildingId);
+
+        const posts = await Post.find({
+            building_id: buildingObjectId,
+            status: status,
+            post_type: 'rent',
+            created_at: {
+                $gte: `${selectTime}T00:00:00`,
+                $lt: `${selectTime}T23:59:00`
+            }
+        }).populate("room_id")
+            .populate({
+                path: "building_id",
+                select: "address" // Chỉ lấy trường 'address'
+            })
+            .exec();
+
+        const isPostActive = posts.filter(post => post.status === 0)
+        const isPostBan = posts.filter(post => post.status === 2)
+
+        return res.status(200).json({
+            isPostActive,
+            isPostBan
+        });
+
+    } catch (error) {
+        console.error(error);
+        handleServerError(res, error);
+    }
+});
+
 router.get('/posts_mgr/:buildingId/posts', async (req, res) => {
     try {
         const { buildingId } = req.params;
@@ -130,14 +177,6 @@ router.get('/posts_mgr/:buildingId/posts', async (req, res) => {
             })
             .exec();
 
-        if (!posts || posts.length === 0) {
-            return res.status(404).json({ message: 'Không tìm thấy bài đăng trong tòa nhà này.' });
-        }
-
-        if (!posts) {
-            res.status(404).json({ message: "Posts not found" })
-        }
-
         const isPostActive = posts.filter(post => post.status === 0)
         const isPostBan = posts.filter(post => post.status === 2)
 
@@ -158,9 +197,7 @@ router.get('/posts_mgr/:buildingId/posts/year', async (req, res) => {
         const { year, status } = req.query;
 
         const currentDate = new Date();
-        const selectedMonth = month
-            ? String(month).padStart(2, '0')
-            : String(currentDate.getMonth() + 1).padStart(2, '0');
+
         const selectedYear = year || currentDate.getFullYear();
 
         if (!buildingId) {
@@ -175,15 +212,12 @@ router.get('/posts_mgr/:buildingId/posts/year', async (req, res) => {
                 $gte: `${selectedYear}-01-01T00:00:00`,
                 $lt: `${selectedYear + 1}-01-01T00:00:00`
             }
-        }).populate("room_id").exec();
-
-        if (!posts || posts.length === 0) {
-            return res.status(404).json({ message: 'Không tìm thấy phòng trong tòa nhà này.' });
-        }
-
-        if (!posts) {
-            res.status(404).json({ message: "Posts not found" })
-        }
+        }).populate("room_id")
+            .populate({
+                path: "building_id",
+                select: "address"
+            })
+            .exec();
 
         const isPostActive = posts.filter(post => post.status === 0)
         const isPostBan = posts.filter(post => post.status === 2)
@@ -208,6 +242,21 @@ router.delete("/posts_mgr/:id", async (req, res) => {
         } else {
             return res.status(404).json({ message: "Invoice not found" })
         }
+    } catch (error) {
+        console.error(error);
+        handleServerError(res, error);
+    }
+})
+
+
+router.get("/posts_mgr/:id", async (req, res) => {
+    try {
+        const { id } = req.params
+        const result = await Post.findById(id);
+        if (!result) {
+            return res.status(404).json({ message: "Post not found" })
+        }
+        res.status(200).json({ data: result })
     } catch (error) {
         console.error(error);
         handleServerError(res, error);

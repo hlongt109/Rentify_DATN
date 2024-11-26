@@ -11,6 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
     <title>Post</title>
     <style>
         .selected {
@@ -19,43 +21,59 @@
         }
 
         .custom-carousel-btn {
-            width: 40px;
-            height: 40px;
-            background-color: white;
-            /* Nền trắng */
-            border-radius: 50%;
-            /* Bo tròn */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            /* Hiệu ứng bóng */
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            /* Hiệu ứng hover */
+            background: none;
+            border: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            color: #000;
+            font-size: 24px;
+            cursor: pointer;
+
         }
 
-        .custom-carousel-btn:hover {
-            transform: scale(1.1);
-            /* Phóng to khi hover */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            /* Bóng đậm hơn */
+        .carousel-control-prev {
+            left: -20px;
+        }
+
+        .carousel-control-next {
+            right: -20px;
         }
 
         .custom-arrow {
-            filter: invert(0);
-            /* Màu đen cho icon */
-            width: 16px;
-            height: 16px;
+            font-size: 32px;
+            font-weight: bold;
         }
 
-        .carousel-control-prev .custom-arrow {
-            transform: translateX(-2px);
-            /* Dịch trái nhẹ cho icon */
+        .carousel-indicators .active {
+            background-color: orange;
+            border-color: orange;
+            border-radius: 10px;
+            width: 10px;
+            height: 10px
         }
 
-        .carousel-control-next .custom-arrow {
-            transform: translateX(2px);
-            /* Dịch phải nhẹ cho icon */
+        .carousel-indicators button {
+            background-color: lightgray;
+            border: 1px solid gray;
+            border-radius: 10px;
+            width: 10px;
+            height: 10px;
+            margin-right: 5px;
+            margin-bottom: 10px;
+        }
+
+        .form-select.form-select-lg {
+            height: 33px;
+            border-color: lightgray;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .form-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -85,18 +103,23 @@
                 <!-- Danh sách tòa nhà sẽ được hiển thị ở đây -->
             </div>
 
-            <div class="border-top">
-                <div class="row mb-4 mt-4 d-flex align-items-center">
+            <div class="border-bottom">
+                <div class="row mb-3 mt-1 d-flex align-items-center">
                     <!-- Dropdown chọn trạng thái -->
-                    <div class="col-md-4">
-                        <label for="status" class="form-label">Trạng thái</label>
-                        <select class="form-select form-select-lg mb-3" id="status" aria-label="Chọn trạng thái">
-                            <option selected value="active">Đang hoạt động</option>
-                            <option value="violation">Vi phạm</option>
+                    <div class="col-md-3">
+                        <label for="status-form" class="form-label">Trạng thái</label>
+                        <select class="form-select form-select-lg mb-3" id="status-form" aria-label="Chọn trạng thái">
+                            <option selected value="0">Đang hoạt động</option>
+                            <option value="2">Vi phạm</option>
                         </select>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3 d-flex align-items-center">
+                        <label for="month-year" class="form-label mb-0 me-2 mr-1">Ngày</label>
+                        <input type="text" class="form-control" id="datetime" readonly style="background-color: white; height: 33px;">
+                    </div>
+
+                    <div class="col-md-3">
                         <label for="month-year" class="form-label">Lọc theo tháng</label>
                         <select class="form-select form-select-lg mb-3" id="month-year" aria-label="Chọn tháng và năm">
                             <option selected value="">-- Chọn tháng --</option>
@@ -104,7 +127,7 @@
                     </div>
 
                     <!-- Lọc theo năm -->
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="year" class="form-label">Lọc theo năm</label>
                         <select class="form-select form-select-lg mb-3" id="year" aria-label="Chọn năm">
                             <option selected value="">-- Chọn năm --</option>
@@ -124,9 +147,9 @@
 
     <!-- Dialog Add , update post -->
     <div id="postDialog"
-        style="display: none; position: fixed; top: 20px; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+        style="display: none; position: fixed; top: 20px; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;  z-index: 1000;">
         <div
-            style="background: white; padding: 20px; border-radius: 8px; width: 75%; max-height: 85%; overflow-y: auto;">
+            style="background: #ffffff; padding: 20px; border-radius: 8px; width: 75%; max-height: 85%; overflow-y: auto;">
             <h3 id="postFormTitle" style="margin-bottom: 20px;">Tạo bài đăng</h3>
 
             <!-- Select Building -->
@@ -134,15 +157,15 @@
                 <!-- Building Dropdown -->
                 <div style="margin-right: 60px;">
                     <label style="width: 150px;" for="buildingSelect">Tòa nhà:</label>
-                    <select id="buildingSelect" onchange="onBuildingChange()">
+                    <select class="form-select form-select-lg px-2" id="buildingSelect" onchange="onBuildingChange()">
                         <!-- Options will be dynamically populated -->
                     </select>
                 </div>
 
                 <!-- Room Dropdown -->
                 <div>
-                    <label style="width: 150px;" for="roomSelect">Phòng:</label>
-                    <select id="roomSelect">
+                    <label style="width: 100px;" for="roomSelect">Phòng:</label>
+                    <select class="form-select form-select-lg px-3" id="roomSelect">
                         <!-- Options will be dynamically populated -->
                     </select>
                 </div>
@@ -176,7 +199,7 @@
                     style=" margin-left: 10px; margin-right: 10px;">
             </div>
 
-            <input type="hidden" id="">
+            <input type="hidden" id="postId">
 
             <!-- Actions -->
             <div style="margin-top: 20px; display: flex; justify-content: space-between;">
@@ -190,12 +213,18 @@
     let userId = localStorage.getItem('user_id');
     console.log("userId :", userId)
     let buildings = [];
-    let isMonthLoad = true;
+    let isMonthLoad = 0;
     let selectedBuildingId = null;
     let currentDate = new Date();
+    let selectTime = currentDate.toISOString().split('T')[0];
+    console.log("date first: ", selectTime)
     let selectedYear = currentDate.getFullYear();
     let selectedMonth = currentDate.getMonth() + 1;
     let selectStatus = 0;
+
+    // window.onload = function () {
+    //     selectTime = convertToISO(currentDate)
+    // };
 
     const getListBuildings = async () => {
         try {
@@ -229,12 +258,13 @@
 
         buildings.forEach(building => {
             const buildingRow = document.createElement('div');
-            buildingRow.classList.add('col-md-2', 'mb-4', 'building-item'); // Cột kiểu bootstrap
+            buildingRow.classList.add('col-md-4', 'mb-4', 'building-item'); // Cột kiểu bootstrap
 
             buildingRow.innerHTML = `
                 <div class="card ${selectedBuildingId === building._id ? 'selected' : ''}" data-id="${building._id}" style="font-size: 14px; padding: 10px;">
                     <div class="card-body" style="padding: 1px;">
-                        <h6 class="card-title" style="font-size: 16px; margin-bottom: 8px;">${building.nameBuilding}</h6>
+                        <h6 class="card-title" style="font-size: 16px;">${building.nameBuilding}</h6>
+                         <span style="font-size: small; color: #777;">Địa chỉ: <span style="font-size: small; color: #363636;">${building.address ?? 'N/A'}</span> </span>
                     </div>
                 </div>
             `;
@@ -260,7 +290,10 @@
         if (selectedItem) {
             selectedItem.classList.add('selected'); // Thêm class 'selected' vào item được chọn
         }
-        if (isMonthLoad) {
+
+        if (isMonthLoad === 0) {
+            getPostListDay(selectedBuildingId, selectTime, selectStatus)
+        } else if (isMonthLoad === 1) {
             getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus)
         } else {
             getPostListYear(selectedBuildingId, selectedYear, selectStatus)
@@ -268,6 +301,25 @@
     }
 
     // get post list 
+
+    async function getPostListDay(buildingId, selectTime, selectStatus) {
+        try {
+            const queryParams = new URLSearchParams({
+                status: selectStatus,
+                selectTime: selectTime
+            })
+            const res = await fetch(`http://localhost:3000/api/posts_mgr/${buildingId}/posts/day?${queryParams.toString()}`)
+            const data = await res.json();
+            if (res.ok) {
+                displayPost(selectStatus === 0 ? data.isPostActive : data.isPostBan);
+            } else {
+                console.error('Không thể lấy dữ liệu post:', data.message);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy danh sach post:', error);
+        }
+    }
+
     async function getPostList(buildingId, selectedMonth, selectedYear, selectStatus) {
         try {
             const queryParams = new URLSearchParams({
@@ -330,9 +382,10 @@
                             <div class="border p-3 rounded shadow-sm justify-content-between align-items-center">
                                     <div class="left-side">
                                         <div class="mb-0 mt-1" style="font-size: 12px;">
-                                            <span>${new Date(post.created_at).toLocaleString('vi-VN')}</span>
+                                            <span>${post.created_at.split('T')[0]}</span>
                                         </div>
                                         <strong>${post.title}</strong><br>
+                                        
 
                                         <!-- Ô video -->
                                         <div class="video-container mt-2 mb-2">
@@ -342,9 +395,14 @@
                                             </video>
                                         </div>
 
+                                        <div class="mb-0 mt-1" style="font-size: 14px;">
+                                            <span style="font-size: small; color: #777; padding-right:9px;">Hình ảnh:</span>
+                                            <span>${post.photo.length ?? 'Unknown'} ảnh</span>
+                                        </div>
+
                                         <!-- Slider ảnh -->
                                         <div class="photo-slider mt-2">
-                                            <div id="photoCarousel${post._id}" class="carousel slide" data-bs-ride="carousel">
+                                            <div id="photoCarousel${post._id}" class="carousel slide">
                                                 <!-- Indicators -->
                                                 <div class="carousel-indicators">
                                                     ${post.photo.map((_, index) => `
@@ -362,13 +420,11 @@
                                                 </div>
                                                 
                                                 <!-- Nút điều khiển -->
-                                                <button class="carousel-control-prev custom-carousel-btn" type="button" data-bs-target="#photoCarousel${post._id}" data-bs-slide="prev">
-                                                    <span class="carousel-control-prev-icon custom-arrow" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Trước</span>
+                                                <button class="carousel-control-prev custom-carousel-btn" type="button" data-bs-target="#photoCarousel${post._id}" data-bs-slide="prev" onclick="prevSlide('${post._id}')">
+                                                    <span class="custom-arrow" aria-hidden="true">&laquo;</span>
                                                 </button>
-                                                <button class="carousel-control-next custom-carousel-btn" type="button" data-bs-target="#photoCarousel${post._id}" data-bs-slide="next">
-                                                    <span class="carousel-control-next-icon custom-arrow" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Tiếp</span>
+                                                <button class="carousel-control-next custom-carousel-btn" type="button" data-bs-target="#photoCarousel${post._id}" data-bs-slide="next" onclick="nextSlide('${post._id}')">
+                                                    <span class="custom-arrow" aria-hidden="true">&raquo;</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -408,9 +464,27 @@
         }
         container.innerHTML = html;
     }
-    getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus)
+    getPostListDay(selectedBuildingId, selectTime, selectStatus)
 
     // ============= filter =============
+    function convertToISO(dateStr) {
+        const [day, month, year] = dateStr.split('/');
+        const utcDate = new Date(Date.UTC(year, month - 1, day));
+        return utcDate.toISOString().split('T')[0];
+    }
+
+    flatpickr("#datetime", {
+        dateFormat: "d/m/Y",
+        defaultDate: "today",
+        enableTime: false,
+        onChange: function (selectedDates, dateStr, instance) {
+            selectTime = convertToISO(dateStr);
+            monthYearDropdown.value = "";
+            isMonthLoad = 0
+            console.log("Ngày đã chọn (ISO 8601): ", selectTime);
+            getPostListDay(selectedBuildingId, selectTime, selectStatus)
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', function () {
         let label = document.getElementById('month-year-label');
@@ -423,11 +497,6 @@
         const formattedMonth = String(month).padStart(2, '0');  // Đảm bảo là 2 chữ số
         monthOption.value = `${formattedMonth}/${selectedYear}`;
         monthOption.textContent = `${formattedMonth}/${selectedYear}`;
-
-        // Chọn tháng hiện tại mặc định
-        if (month === selectedMonth) {
-            monthOption.selected = true;
-        }
 
         monthYearDropdown.appendChild(monthOption);
     }
@@ -444,7 +513,7 @@
     // Hàm xử lý sự kiện chọn tháng
     monthYearDropdown.addEventListener("change", function () {
         if (monthYearDropdown.value !== "") {
-            isMonthLoad = true
+            isMonthLoad = 1
             yearDropdown.value = "";
             selectedMonth = parseInt(monthYearDropdown.value);
             selectedYear = currentDate.getFullYear();
@@ -455,13 +524,23 @@
     // Hàm xử lý sự kiện chọn năm
     yearDropdown.addEventListener("change", function () {
         if (yearDropdown.value !== "") {
-            isMonthLoad = false
+            isMonthLoad = 2
             monthYearDropdown.value = "";
             selectedYear = parseInt(yearDropdown.value);
             selectedMonth = currentDate.getMonth() + 1;
         }
-        getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus)
+        getPostListYear(selectedBuildingId, selectedYear, selectStatus)
     });
+
+    // lọc theo loại
+    const statusDropdown = document.getElementById("status-form");
+    statusDropdown.addEventListener("change", function () {
+        selectStatus = parseInt(statusDropdown.value);
+        console.log("Selected status:", selectStatus);
+        getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus)
+
+    })
+
 
     // =================== CRUD =========================
 
@@ -502,6 +581,9 @@
         document.getElementById('buildingSelect').selectedIndex = 0;
         document.getElementById('roomSelect').selectedIndex = 0;
 
+        document.getElementById('postFormTitle').innerText = 'Tạo bài đăng';
+        document.getElementById('postFormButton').innerText = 'Tạo bài đăng';
+
         document.getElementById('postDialog').style.display = "none";
     }
 
@@ -531,7 +613,6 @@
     function onRoomChange() {
         const roomSelect = document.getElementById('roomSelect');
         const selectedRoomPrice = roomSelect.options[roomSelect.selectedIndex].dataset.price;
-        document.getElementById('roomPrice').value = selectedRoomPrice;
     }
 
     async function createPost(params) {
@@ -541,45 +622,59 @@
 
         const buildingId = document.getElementById('buildingSelect').value;
         const roomId = document.getElementById('roomSelect').value;
-        const title = document.getElementById('title').value
-        const content = document.getElementById('content').value
-        const video = document.getElementById('videoSelect').value
-        const photo = document.getElementById('imageSelect').value
-
-
-        const post = {
-            user_id: userId,
-            building_id: buildingId,
-            room_id: roomId,
-            title: title,
-            content: content,
-            status: 0,
-            video: video,
-            photo: photo,
-            post_type: "rent",
-            created_at: new Date().toISOString()
-        }
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        const videoFile = document.getElementById('videoSelect').files[0];  // Lấy tệp video từ input
+        const photoFiles = document.getElementById('imageSelect').files;
 
         const postId = document.getElementById("postId").value;
+
+        const formData = new FormData();
+
+        // Thêm các thông tin vào FormData
+        formData.append('user_id', userId);
+        formData.append('building_id', buildingId);
+        formData.append('room_id', roomId);
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('status', 0); // Giá trị mặc định
+        formData.append('post_type', "rent");
+        formData.append('created_at', new Date().toISOString());
+
+        // Thêm video vào FormData nếu có
+        if (videoFile) {
+            formData.append('video', videoFile);
+        }
+
+        // Thêm ảnh vào FormData nếu có
+        Array.from(photoFiles).forEach(photo => {
+            formData.append('images', photo);
+        });
+
         try {
             const url = postId
-                ? ``
-                : "";
+                ? `http://localhost:3000/api/posts_mgr/${postId}`
+                : "http://localhost:3000/api/posts_mgr";
             const method = postId ? "PUT" : "POST";
 
             const res = await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(post)
+                method: method,
+                body: formData  // Gửi toàn bộ formData chứa cả body và tệp
             });
 
             if (res.ok) {
-                // if (isMonthLoad) {
-                //     getInvoices(selectedBuildingId, selectedMonth, selectedYear, selectPaymentStatus, selectedTypeInvoice);
-                // } else {
-                //     getInvoicesYear(selectedYear, selectPaymentStatus, selectedTypeInvoice)
-                // }
-                closePostDialog();
+                if (isMonthLoad === 0) {
+                    getPostListDay(selectedBuildingId, selectTime, selectStatus);
+                } else if (isMonthLoad === 1) {
+                    getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus);
+                } else {
+                    getPostListYear(selectedBuildingId, selectedYear, selectStatus);
+                }
+
+                if (postId) {
+                    closePostDialog();
+                }
+
                 Toastify({
                     text: "Thành công",
                     style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
@@ -595,7 +690,44 @@
             }).showToast();
             console.error(error);
         }
+    }
 
+    async function openUpdatePostForm(postId) {
+        try {
+            populateBuildings();
+            const response = await fetch(`http://localhost:3000/api/posts_mgr/${postId}`);
+            if (!response.ok) {
+                alert("Không tìm thấy bài viết!");
+                return;
+            }
+
+            const data = await response.json();
+            const post = data.data
+            console.log(post)
+
+            document.getElementById('postFormTitle').innerText = 'Sửa bài đăng';
+            document.getElementById('postFormButton').innerText = 'Lưu';
+
+            document.getElementById("buildingSelect").value = post.building_id || "";
+            await onBuildingChange();
+
+            document.getElementById('roomSelect').value = post.room_id || "";
+            document.getElementById('title').value = post.title || "";
+            document.getElementById('content').value = post.content || "";
+            if (post.video) {
+                document.getElementById('videoSelect').value = ""; // Để trống, nếu cần người dùng chọn lại video
+            }
+
+            if (post.photo) {
+                document.getElementById('imageSelect').value = ""; // Để trống, nếu cần người dùng chọn lại ảnh
+            }
+
+            document.getElementById("postId").value = postId;
+            document.getElementById("postDialog").style.display = "flex";
+
+        } catch (error) {
+            console.error("Lỗi khi mở form cập nhật:", error);
+        }
     }
 
     function validateInputs() {
@@ -634,17 +766,76 @@
         return true;
     }
 
-    async function openUpdatePostForm(postId) {
-
-    }
-
     async function deletePost(postId) {
+        if (confirm("Bạn có chắc chắn muốn xóa bài việt này?")) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/posts_mgr/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
 
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (isMonthLoad === 0) {
+                        getPostListDay(selectedBuildingId, selectTime, selectStatus)
+                    } else if (isMonthLoad === 1) {
+                        getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus)
+                    } else {
+                        getPostListYear(selectedBuildingId, selectedYear, selectStatus)
+                    }
+                    Toastify({
+                        text: "Xóa thành công",
+                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
+                    }).showToast();
+                } else {
+                    Toastify({
+                        text: "Xóa thất bại",
+                        style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
+                    }).showToast();
+                }
+
+            } catch (error) {
+                console.error("Error deleting post:", error);
+            }
+        }
     }
 
     async function banPost(postId) {
 
     }
+
+    function prevSlide(carouselId) {
+        const carousel = document.querySelector(`#photoCarousel${carouselId}`);
+        const activeItem = carousel.querySelector('.carousel-item.active');
+        const items = carousel.querySelectorAll('.carousel-item');
+        let activeIndex = Array.from(items).indexOf(activeItem);
+
+        activeItem.classList.remove('active');
+        if (activeIndex === 0) {
+            items[items.length - 1].classList.add('active');
+        } else {
+            items[activeIndex - 1].classList.add('active');
+        }
+    }
+
+    function nextSlide(carouselId) {
+        const carousel = document.querySelector(`#photoCarousel${carouselId}`);
+        const activeItem = carousel.querySelector('.carousel-item.active');
+        const items = carousel.querySelectorAll('.carousel-item');
+        let activeIndex = Array.from(items).indexOf(activeItem);
+
+        activeItem.classList.remove('active');
+        if (activeIndex === items.length - 1) {
+            items[0].classList.add('active');
+        } else {
+            items[activeIndex + 1].classList.add('active');
+        }
+    }
+
+
 </script>
 
 </html>

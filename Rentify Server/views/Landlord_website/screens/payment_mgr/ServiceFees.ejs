@@ -58,10 +58,10 @@
             /* Border mặc định là transparent */
         }
 
-        .form-select:valid {
+        /* .form-select:valid {
             border-color: #007bff;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
+        } */
 
         .form-select:hover,
         .form-select:focus {
@@ -104,6 +104,15 @@
             display: flex;
             justify-content: space-between;
         }
+        .form-select.form-select-lg {
+            height: 33px;
+            border-color: lightgray;
+            border-radius: 5px;
+        }
+        .input_style {
+            height: 35px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
@@ -135,12 +144,12 @@
             </div>
 
             <!-- Chọn tháng năm -->
-            <div class="border-top">
+            <div class="">
                 <div class="row mb-4 mt-4 d-flex align-items-center">
 
                     <div class="col-md-4">
                         <label for="type-fee" class="form-label">Lọc theo loại</label>
-                        <select class="form-select form-select-lg mb-3" id="type-fee" aria-label="Chọn tháng và năm">
+                        <select class="form-select form-select-lg mb-3 px-2" id="type-fee" aria-label="Chọn tháng và năm">
                             <option selected value="electric"> Tiền điện</option>
                             <option value="water"> Tiền nước</option>
                         </select>
@@ -148,15 +157,15 @@
                     <!-- Dropdown chọn tháng năm -->
                     <div class="col-md-4">
                         <label for="month-year" class="form-label">Lọc theo tháng</label>
-                        <select class="form-select form-select-lg mb-3" id="month-year" aria-label="Chọn tháng và năm">
+                        <select class="form-select form-select-lg mb-3 px-2" id="month-year" aria-label="Chọn tháng và năm">
                             <option selected value="">-- Chọn tháng --</option>
                         </select>
                     </div>
 
                     <!-- Lọc theo năm -->
                     <div class="col-md-4">
-                        <label for="year" class="form-label">Lọc theo năm khác</label>
-                        <select class="form-select form-select-lg mb-3" id="year" aria-label="Chọn năm">
+                        <label for="year" class="form-label">Lọc theo năm</label>
+                        <select class="form-select form-select-lg mb-3 px-2" id="year" aria-label="Chọn năm">
                             <option selected value="">-- Chọn năm --</option>
                         </select>
                     </div>
@@ -187,7 +196,7 @@
             <!-- Select Building -->
             <div>
                 <label style="width: 150px;" for="buildingSelect">Tòa nhà:</label>
-                <select id="buildingSelect" onchange="onBuildingChange()">
+                <select class="form-select form-select-lg mb-3 px-3" id="buildingSelect" onchange="onBuildingChange()">
                     <!-- Options will be dynamically populated -->
                 </select>
             </div>
@@ -195,7 +204,7 @@
             <!-- Select type -->
             <div style="margin-top: 10px;">
                 <label style="width: 150px;" for="typeSelected">Loại:</label>
-                <select id="typeSelected">
+                <select class="form-select form-select-lg mb-3 px-2" id="typeSelected">
                     <option value="electric" selected>Tiền điện</option>
                     <option value="water">Tiền nước</option>
                 </select>
@@ -204,7 +213,7 @@
             <!-- Select Month -->
             <div style="margin-top: 10px;">
                 <label style="width: 150px;" for="monthSelect">Tháng:</label>
-                <select id="monthSelect">
+                <select class="form-select form-select-lg mb-3 px-2" id="monthSelect">
                     <!-- Các tháng từ 1-12 sẽ được tạo động -->
                 </select>
             </div>
@@ -212,9 +221,9 @@
             <!-- Input Rows -->
             <div style="margin-top: 10px;">
                 <label style="width: 150px;">Mô tả:</label>
-                <input style="margin-right: 50px;" type="text" id="describe" placeholder="Nhập mô tả">
+                <input class="input_style border px-2" style="margin-right: 50px;" type="text" id="describe" placeholder="Nhập mô tả">
                 <label style="width: 150px;">Số tiền:</label>
-                <input type="number" id="fee" placeholder="Nhập số tiền">
+                <input class="input_style border px-2" type="number" id="fee" placeholder="Nhập số tiền">
             </div>
 
             <div style="margin-top: 10px;">
@@ -296,11 +305,8 @@
             buildingRow.innerHTML = `
                 <div class="card ${selectedBuildingId === building._id ? 'selected' : ''}" data-id="${building._id}" style="font-size: 14px; padding: 10px;">
                     <div class="card-body" style="padding: 1px;">
-                        <h6 class="card-title" style="font-size: 16px; margin-bottom: 8px;">${building.nameBuilding}</h6>
-                        <div class="mb-0" style="font-size: 12px;">
-                            <span style="font-size: small; color: #777;">Địa chỉ:</span>
-                            <h6 class="card-title" style="color: #363636; font-size: 13px; margin-bottom: 0;">${building.address ?? 'N/A'}</h6>
-                        </div>
+                        <h6 class="card-title" style="font-size: 16px;">${building.nameBuilding}</h6>
+                         <span style="font-size: small; color: #777;">Địa chỉ: <span style="font-size: small; color: #363636;">${building.address ?? 'N/A'}</span> </span>
                     </div>
                 </div>
             `;
