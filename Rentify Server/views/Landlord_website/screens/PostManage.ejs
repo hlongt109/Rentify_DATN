@@ -70,6 +70,7 @@
             border-radius: 5px;
             margin-top: 15px;
         }
+
         .form-label {
             font-weight: bold;
             margin-bottom: 5px;
@@ -116,7 +117,8 @@
 
                     <div class="col-md-3 d-flex align-items-center">
                         <label for="month-year" class="form-label mb-0 me-2 mr-1">Ngày</label>
-                        <input type="text" class="form-control" id="datetime" readonly style="background-color: white; height: 33px;">
+                        <input type="text" class="form-control" id="datetime" readonly
+                            style="background-color: white; height: 33px;">
                     </div>
 
                     <div class="col-md-3">
@@ -455,7 +457,7 @@
                                     <div class="d-flex flex-row gap-2 mt-2">
                                         <button class="btn btn-primary btn-sm mt-2 flex-fill" onclick="openUpdatePostForm('${post._id}')">Cập nhật</button>
                                         <button class="btn btn-danger mx-2 btn-sm mt-2 flex-fill" onclick="deletePost('${post._id}')">Xóa</button>
-                                        <button class="btn btn-warning btn-sm mt-2 flex-fill" style="color: #fff;" onclick="banPost('${post._id}')">Cấm đăng</button>
+                                        <button class="btn btn-warning btn-sm mt-2 flex-fill" style="color: #fff;" onclick="banPost('${post._id}', ${post.status === 2 ? 0 : 2})">${post.status === 0 ? 'Cấm đăng' : 'Bỏ cấm'}</button>
                                     </div>
                                 </div>
                         </div>`;
@@ -537,7 +539,14 @@
     statusDropdown.addEventListener("change", function () {
         selectStatus = parseInt(statusDropdown.value);
         console.log("Selected status:", selectStatus);
-        getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus)
+        
+        if (isMonthLoad === 0) {
+            getPostListDay(selectedBuildingId, selectTime, selectStatus)
+        } else if (isMonthLoad === 1) {
+            getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus)
+        } else {
+            getPostListYear(selectedBuildingId, selectedYear, selectStatus)
+        }
 
     })
 
@@ -803,8 +812,45 @@
         }
     }
 
-    async function banPost(postId) {
+    async function banPost(postId, status) {
+        console.log("infor to update status :", postId, status)
+        if (confirm(`${status === 2 ? 'Bạn có chắc muốn cấm bài viết này không ?' : 'Bạn có chắc muốn bỏ cấm bài viết này không ?'}`)) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/posts_mgr_status/${postId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ status: parseInt(status) })
+                });
 
+                const result = await response.json();
+
+                if (response.ok) {
+
+                    if (isMonthLoad === 0) {
+                        getPostListDay(selectedBuildingId, selectTime, selectStatus);
+                    } else if (isMonthLoad === 1) {
+                        getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus);
+                    } else {
+                        getPostListYear(selectedBuildingId, selectedYear, selectStatus);
+                    }
+
+                    Toastify({
+                        text: `${status === 2 ? 'Đã cấm đăng' : 'Đã bỏ cấm đăng'}`,
+                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
+                    }).showToast();
+                } else {
+                    Toastify({
+                        text: "Lỗi khi cập nhật trạng thái",
+                        style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error("Error updating status:", error);
+                alert("An error occurred while updating the status");
+            }
+        }
     }
 
     function prevSlide(carouselId) {

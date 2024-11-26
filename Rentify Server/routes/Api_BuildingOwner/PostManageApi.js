@@ -7,7 +7,7 @@ const handleServerError = require("../../utils/errorHandle");
 const mongoose = require('mongoose');
 
 
-// #1. Tạo bài đăng POST: http://localhost:3000/api/posts_mgr
+//
 router.post('/posts_mgr', uploadFile.fields([
     { name: 'video', maxCount: 1 },
     { name: 'images', maxCount: 5 }
@@ -104,6 +104,41 @@ router.put("/posts_mgr/:id", uploadFile.fields([
         handleServerError(res, error);
     }
 })
+
+router.put("/posts_mgr_status/:id", async(req, res) => {
+    try {
+        const { id } = req.params;
+        const data = req.body;
+
+        const post = await Post.findById(id);
+        if (!post) {
+            return res.status(404).json({ messenger: 'No post found to update' });
+        }
+
+        post.user_id = post.user_id;
+        post.building_id = post.building_id;
+        post.room_id = post.room_id;
+        post.title = post.title;
+        post.content = post.content;
+        post.status = data.status ?? post.status;
+        post.post_type = post.post_type;
+        post.photo = post.photo;
+        post.video = post.video;
+        post.created_at = post.created_at;
+        post.updated_at = new Date().toISOString();
+
+        const result = await post.save();
+        if (result) {
+            res.status(200).json({ message: "Update post success", data: result })
+        } else {
+            res.status(401).json({ message: "Update post failed" })
+        }
+    } catch (error) {
+        console.log("Error: ", error);
+        handleServerError(res, error);
+    }
+})
+
 //
 router.get('/posts_mgr/:buildingId/posts/day', async (req, res) => {
     try {
@@ -341,15 +376,3 @@ router.get('/posts/:id', async (req, res) => {
 
 
 module.exports = router;
-
-
-// kiểm thử postman
-
-// {
-//     "user_id": "671a29b84e350b2df4aee4ed",
-//     "title": "Bài đăng mới của chủ toa phúc ",
-//     "content": "Nội dung bài đăng. phúc đẹp trai bình thường ",
-//     "status": "active",
-//     "video": [],
-//     "photo": []
-// }
