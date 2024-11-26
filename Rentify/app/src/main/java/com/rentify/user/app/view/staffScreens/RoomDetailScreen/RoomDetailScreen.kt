@@ -133,11 +133,20 @@ fun RoomDetailScreen(
                         Text(
                             text = "Tên tòa nhà*", color = Color(0xFF7c7b7b), fontSize = 13.sp
                         )
-                        Text(
-                            text = "${roomDetail?.room_name}",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
+                        Column {
+                            Text(
+                                text = "${roomDetail?.room_name}",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(20.dp)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(color = Color(0xFFcccccc))
+                            )
+                        }
                     }
                     // tên phòng
                     Column(
@@ -148,11 +157,20 @@ fun RoomDetailScreen(
                         Text(
                             text = "Mô tả phòng*", color = Color(0xFF7c7b7b), fontSize = 13.sp
                         )
-                        Text(
-                            text = "${roomDetail?.description}",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
+                        Column {
+                            Text(
+                                text = "${roomDetail?.description}",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(20.dp)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(color = Color(0xFFcccccc))
+                            )
+                        }
                     }
                     Column {
                         RoomTypeLabel()
@@ -175,7 +193,7 @@ fun RoomDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         items(room.photos_room ?: emptyList()) { photoUrl ->
-                            val urianh : String="http://10.0.2.2:3000/${photoUrl}"
+                            val urianh: String = "http://10.0.2.2:3000/${photoUrl}"
                             AsyncImage(
                                 model = urianh,
                                 contentDescription = "Room Photo",
@@ -197,7 +215,7 @@ fun RoomDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         items(room.video_room ?: emptyList()) { videoUrl ->
-                            val urivideo : String="http://10.0.2.2:3000/${videoUrl}"
+                            val urivideo: String = "http://10.0.2.2:3000/${videoUrl}"
                             ExoPlayerView(context = context, videoUri = Uri.parse(urivideo))
                         }
                     }
@@ -217,11 +235,21 @@ fun RoomDetailScreen(
                             fontSize = 13.sp,
 
                             )
-                        Text(
-                            text = " ${roomDetail?.limitPerson}",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
+                        Column {
+                            Text(
+                                text = "${roomDetail?.limit_person}",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(20.dp)
+                            )
+                            Log.d("TAG", "RoomDetailScreen:${roomDetail?.limit_person} ")
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(color = Color(0xFFcccccc))
+                            )
+                        }
                     }
                     Column(
                         modifier = Modifier
@@ -236,11 +264,20 @@ fun RoomDetailScreen(
                             fontSize = 13.sp,
 
                             )
-                        Text(
-                            text = " ${roomDetail?.size}",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
+                        Column {
+                            Text(
+                                text = "${roomDetail?.size}",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(20.dp)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(color = Color(0xFFcccccc))
+                            )
+                        }
                     }
                     Column(
                         modifier = Modifier
@@ -255,11 +292,20 @@ fun RoomDetailScreen(
                             fontSize = 13.sp,
 
                             )
-                        Text(
-                            text = " ${roomDetail?.price}",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
+                        Column {
+                            Text(
+                                text = "${roomDetail?.price}",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(20.dp)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(color = Color(0xFFcccccc))
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(3.dp))
                     Column {
@@ -283,7 +329,8 @@ fun RoomDetailScreen(
 
                         roomDetail?.service?.let { serviceList ->
                             ServiceOptionschitiet(
-                                selectedServices = serviceList )
+                                selectedServices = serviceList
+                            )
                         } ?: run {
                             Text(
                                 text = "Không có dịch vụ nào được cung cấp.",
@@ -306,7 +353,8 @@ fun RoomDetailScreen(
                             )
                             .clickable(
                                 onClick = {
-                                    navController.navigate("UpdateRoomScreen")
+                                    val id=room.id
+                                    navController.navigate("UpdateRoomScreen/${id}")
                                 },
                                 indication = null, // Tắt hiệu ứng gợn sóng
                                 interactionSource = remember { MutableInteractionSource() }
@@ -361,9 +409,9 @@ fun RoomDetailScreen(
 
                 // Hiển thị thông báo lỗi nếu có
                 if (error != null) {
-                    Log.d("PHUC","thất bại: $error")
+                    Log.d("PHUC", "thất bại: $error")
                 } else {
-                    Log.d("PHUC","thành công")
+                    Log.d("PHUC", "thành công")
                 }
 
             }

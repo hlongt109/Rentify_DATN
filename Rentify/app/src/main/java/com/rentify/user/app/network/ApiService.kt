@@ -79,7 +79,7 @@ interface APIService {
         @Part("size") size: RequestBody,
         @Part("service") service: RequestBody,  // Gửi dưới dạng JSON string
         @Part("amenities") amenities: RequestBody, // Gửi dưới dạng JSON string
-        @Part("limit_person") limitPerson: RequestBody,
+        @Part("limit_person") limit_person: RequestBody,
         @Part("status") status: RequestBody,
         @Part photos_room: List<MultipartBody.Part>,
         @Part video_room: List<MultipartBody.Part>
@@ -114,14 +114,13 @@ interface APIService {
 
     // UPDATE PHÒNG
     @Multipart
-    @PUT("api/staff/rooms/updateRoom/{id}")
+    @PUT("staff/rooms/updateRoom/{id}")
     suspend fun updateRoom(
-        @Path("id") roomId: String,
+        @Path("id") id: String,
         @PartMap data: Map<String, @JvmSuppressWildcards RequestBody>,
         @Part photos: List<MultipartBody.Part>?,
         @Part videos: List<MultipartBody.Part>?
     ): Response<ApiResponse>
-
     // LẤY THÔNG TIN NGƯỜI DÙNG
     @GET("staff/users/usermail/{email}")
     suspend fun getUserDetail(

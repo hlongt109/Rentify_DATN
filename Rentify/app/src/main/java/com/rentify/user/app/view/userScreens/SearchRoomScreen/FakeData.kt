@@ -26,7 +26,7 @@ class FakeData {
                 photos_room = listOf("photo_url_1", "photo_url_2"),
                 service = listOf("washing_machine", "fridge"),
                 amenities = listOf("wifi", "air_conditioner"),
-                limitPerson = 2,
+                limit_person = 2,
                 status = 0,
                 createdAt = "2024-01-01",
                 updatedAt = "2024-01-10"
@@ -44,7 +44,7 @@ class FakeData {
                 service = listOf("washing_machine", "fridge", "tv"),
                 amenities = listOf("wifi", "air_conditioner", "garage"),
 
-                limitPerson = 6,
+                limit_person = 6,
                 status = 1,
                 createdAt = "2024-02-01",
                 updatedAt = "2024-02-15"
@@ -61,7 +61,7 @@ class FakeData {
                 photos_room = listOf("photo_url_5", "photo_url_6"),
                 service = listOf("fridge", "tv", "microwave"),
                 amenities = listOf("wifi", "air_conditioner", "gym", "swimming_pool"),
-                limitPerson = 4,
+                limit_person = 4,
                 status = 0,
                 createdAt = "2024-03-01",
                 updatedAt = "2024-03-10"
@@ -77,7 +77,7 @@ class FakeData {
                 photos_room = listOf("photo_url_7", "photo_url_8"),
                 service = listOf("washing_machine", "fridge", "tv", "kitchen"),
                 amenities = listOf("wifi", "air_conditioner", "kitchen", "balcony"),
-                limitPerson = 3,
+                limit_person = 3,
                 status = 1,
                 createdAt = "2024-04-01",
                 updatedAt = "2024-04-15"
@@ -93,7 +93,7 @@ class FakeData {
                 photos_room = listOf("photo_url_9", "photo_url_10"),
                 service = listOf("fridge", "microwave"),
                 amenities = listOf("wifi", "air_conditioner", "parking"),
-                limitPerson = 2,
+                limit_person = 2,
                 status = 0,
                 createdAt = "2024-05-01",
                 updatedAt = "2024-05-10"

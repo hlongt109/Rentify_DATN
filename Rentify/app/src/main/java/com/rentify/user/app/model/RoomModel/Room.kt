@@ -18,7 +18,7 @@ data class Room(
     val photos_room: List<String>, // Danh sách URL ảnh của phòng
     val service: List<String> = listOf(), // Danh sách ID dịch vụ liên quan đến phòng
     val amenities: List<String> = listOf(),  // Tiện nghi của phòng
-    val limitPerson: Int,           // Giới hạn số người
+    val limit_person: Int,           // Giới hạn số người
     val status: Int,                // 0: Chưa cho thuê, 1: Đã cho thuê
     val createdAt: String? = null,  // Ngày tạo
     val updatedAt: String? = null   // Ngày cập nhật
