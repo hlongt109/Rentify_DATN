@@ -3,7 +3,12 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const Building = require('../../models/Building');
+<<<<<<< HEAD
 const Room = require('../../models/Room')
+=======
+const handleServerError = require("../../utils/errorHandle");
+
+>>>>>>> dev_long
 
 //const upload = require('../../config/common/uploadImageRoom')
 const fs = require('fs');

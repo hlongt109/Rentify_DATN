@@ -7,7 +7,6 @@ const Room = new Schema({
         ref: "Building",
         required: true
     },
-    room_name: { type: String, required: true },
     room_type: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true }, // tien phong

@@ -24,6 +24,8 @@ app.use(cookieParser());
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/api/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
 
 app.use(cors({
   origin: 'http://localhost:3000', // Đảm bảo cho phép frontend gửi yêu cầu

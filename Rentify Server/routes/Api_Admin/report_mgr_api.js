@@ -64,14 +64,17 @@ router.get("/get_report_details/:id", async (req, res) => {
             res.status(200).json({ data: result, dataDetails: post, dataRoom4Service: infoContract })
         }
         if (result.type === "room") {
-            const room = await Room.findById(result.id_problem).populate({ path: "landlord_id", populate: { path: "user_id" }}).populate("building_id");
+            const room = await Room.findById(result.id_problem).populate({
+                path: 'building_id',
+                populate: { path: 'landlord_id', model: 'User'}
+            });
             if (!room) {
                 return res.status(404).json({ message: "Room not found" })
             }
             res.status(200).json({ data: result, dataDetails: room, dataRoom4Service: infoContract })
         }
         if (result.type === "service") {
-            const service = await Service.findById(result.id_problem).populate({ path: "landlord_id", populate: { path: "user_id" }});
+            const service = await Service.findById(result.id_problem).populate("landlord_id");
             if (!service) {
                 return res.status(404).json({ message: "Service not found" })
             }
@@ -85,7 +88,7 @@ router.get("/get_report_details/:id", async (req, res) => {
 });
 
 // update status
-router.put("/api/report/:id", async (req, res) => {
+router.put("/report/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;

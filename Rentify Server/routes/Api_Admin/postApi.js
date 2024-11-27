@@ -51,7 +51,7 @@ function checkUserRole(req, res, next) {
     }
 }
 
-router.put("/api/post_update_status/:id", async(req, res) => {
+router.put("/post_update_status/:id", async(req, res) => {
     try {
         const {id} = req.params;
         const data = req.body;

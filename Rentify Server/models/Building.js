@@ -25,6 +25,7 @@ const Building = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Service",
     },
+<<<<<<< HEAD
   ],
   serviceFees: [serviceFeeSchema],
   nameBuilding: { type: String },
@@ -33,6 +34,23 @@ const Building = new Schema({
   number_of_floors: { type: Number },
   created_at: { type: String },
   updated_at: { type: String },
+=======
+    manager_id: { // id nhân viên quản lý tòa nhà 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    service: [{ // toà nhà có nhưng vụ gì add vào đây
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service",
+    }],
+    nameBuilding: {type: String},
+    address: { type: String },
+    description: { type: String },
+    number_of_floors: { type: Number },
+    created_at: { type: String },
+    updated_at: { type: String }
+>>>>>>> dev_long
 });
 
 module.exports = mongoose.model("Building", Building);

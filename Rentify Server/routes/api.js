@@ -8,6 +8,7 @@ var router = express.Router();
 //============================================
 //admin
 const adminApi = require("./Api_Admin/loginApi");
+const notificationAdmin = require("./Api_Admin/notificationApi");
 const postAdmin = require("./Api_Admin/postApi");
 const userAdmin = require("./Api_Admin/userApi");
 const nofAdmin = require("./Api_Admin/nofApi");
@@ -16,6 +17,7 @@ const statAdmin = require("./Api_Admin/statsApi");
 const reportApiAdmin = require("./Api_Admin/report_mgr_api");
 const authApi = require("./Api_Auth/auth_Api");
 // building_owner
+const invoiceMgr = require("./Api_BuildingOwner/invoices_mgr_api");
 const supportManageApi = require("./Api_BuildingOwner/support_manage_api");
 const staffManageApi = require("./Api_BuildingOwner/staff_manage_api");
 const serviceManageApi = require("./Api_BuildingOwner/services_manage_api");
@@ -52,8 +54,13 @@ const User_staffApi = require("./Api_Staff/User");
 const building_staff = require("./Api_Staff/Building");
 
 // nối
+<<<<<<< HEAD
 router.use("", post_UserApi);
+=======
+router.use("/",invoiceMgr)
+>>>>>>> dev_long
 router.use("/", authApi);
+router.use("/", notificationAdmin);
 router.use("/", reportApiAdmin);
 router.use("", QuanLy);
 router.use("/", serviceApi);
