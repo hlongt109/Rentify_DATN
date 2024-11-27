@@ -75,10 +75,13 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.PlayerView
+//import com.google.android.exoplayer2.MediaItem
+//import com.google.android.exoplayer2.ui.PlayerView
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
@@ -1178,7 +1181,7 @@ fun SelectMedia(
 fun VideoThumbnail(uri: Uri) {
     val context = LocalContext.current
     val exoPlayer = remember {
-        com.google.android.exoplayer2.ExoPlayer.Builder(context).build().apply {
+        ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(uri))
             prepare()
             playWhenReady = false // Chỉ hiển thị thumbnail, không tự động phát

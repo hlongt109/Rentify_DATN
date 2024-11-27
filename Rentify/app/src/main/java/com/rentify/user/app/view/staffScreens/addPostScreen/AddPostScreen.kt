@@ -225,7 +225,7 @@ fun AddPostScreens(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = {   navController.navigate("POSTING_STAFF")}) {
+                IconButton(onClick = {   navController.popBackStack()}) {
                     Image(
                         painter = painterResource(id = R.drawable.back),
                         contentDescription = null,

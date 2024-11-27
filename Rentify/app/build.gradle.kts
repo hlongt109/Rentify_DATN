@@ -133,11 +133,12 @@ dependencies {
     // thư viện tải ảnh _vanphuc :
     implementation ("com.github.bumptech.glide:glide:4.14.2")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
-    implementation("io.coil-kt:coil-compose:2.2.2")
-    implementation("com.google.android.exoplayer:exoplayer:2.18.1")
+    implementation ("androidx.media3:media3-exoplayer:1.0.0")
+    implementation ("androidx.media3:media3-ui:1.0.0")
 
-        implementation ("com.google.accompanist:accompanist-pager:0.28.0") // Thêm dòng này
-        implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0") // Thêm dòng này nếu cần indicators (dấu chấm chỉ số trang)
+    implementation ("com.google.accompanist:accompanist-pager:0.28.0") // Thêm dòng này
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0") // Thêm dòng này nếu cần indicators (dấu chấm chỉ số trang)
+    implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
 
 }

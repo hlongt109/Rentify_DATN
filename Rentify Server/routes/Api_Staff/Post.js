@@ -18,7 +18,7 @@ router.get("/list", async (req, res) => {
 // Lấy danh sách bài viết theo user_id
 router.get("/list/:user_id", async (req, res) => {
 
-
+    const { user_id } = req.params;
 
     // Kiểm tra user_id có hợp lệ hay không
     if (!mongoose.Types.ObjectId.isValid(user_id)) {

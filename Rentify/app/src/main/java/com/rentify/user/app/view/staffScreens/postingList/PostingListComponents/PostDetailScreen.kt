@@ -27,9 +27,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 
 import coil.compose.rememberImagePainter
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.PlayerView
+//import com.google.android.exoplayer2.ExoPlayer
+//import com.google.android.exoplayer2.MediaItem
+//import com.google.android.exoplayer2.ui.PlayerView
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import android.view.Gravity
 import android.widget.FrameLayout
@@ -62,6 +62,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi

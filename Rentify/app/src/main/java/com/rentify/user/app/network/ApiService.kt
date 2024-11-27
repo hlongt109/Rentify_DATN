@@ -6,16 +6,12 @@ import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
-import com.rentify.user.app.model.Model.District
-import com.rentify.user.app.model.Model.Province
-import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.Room
-import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
@@ -32,6 +28,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.PartMap
+import retrofit2.http.Query
 
 
 ////
@@ -139,27 +136,6 @@ interface APIService {
         @Path("email") email: String
     ): Response<User>
 
-    //getLocation
-    @GET("p")
-    suspend fun getProvinces(): List<Province>
-
-    @GET("p/{code}")
-    suspend fun getProvinceDetail(@Path("code") code: String): Province
-
-    @GET("p/{code}?depth=2")
-    suspend fun getProvinceWithDistricts(@Path("code") code: String): Province
-
-    @GET("d")
-    suspend fun getDistricts(): List<District>
-
-    @GET("d/{code}")
-    suspend fun getDistrictDetail(@Path("code") code: String): District
-
-    @GET("w")
-    suspend fun getWards(): List<Ward>
-
-    @GET("d/{code}?depth=2")
-    suspend fun getDistrictWithWards(@Path("code") code: String): District
 
 
     // API lấy danh sách các tòa nhà theo user_id

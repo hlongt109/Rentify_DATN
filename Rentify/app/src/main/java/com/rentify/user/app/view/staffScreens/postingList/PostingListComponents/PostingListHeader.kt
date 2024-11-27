@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.view.contract.contractComponents.ContractSearchBar
 import org.checkerframework.checker.units.qual.m
 
@@ -50,7 +51,7 @@ fun PostingListTopBar(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(onClick = { navController.popBackStack()}) {
+            IconButton(onClick = { navController.navigate("HOME_STAFF")}) {
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
                     contentDescription = "Back"
