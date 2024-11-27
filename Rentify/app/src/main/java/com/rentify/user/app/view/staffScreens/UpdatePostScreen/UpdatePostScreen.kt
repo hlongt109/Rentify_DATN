@@ -203,7 +203,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 .statusBarsPadding()
                 .navigationBarsPadding()
                 .background(color = Color(0xfff7f7f7))
-                .padding(bottom = screenHeight.dp/7f)
+                .padding(bottom = screenHeight.dp / 7f)
 
         ) {
 
@@ -410,7 +410,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(screenHeight.dp/7f)
+                .height(screenHeight.dp / 7f)
                 .background(color = Color(0xfff7f7f7))
         ) {
             fun logRequestBody(requestBody: RequestBody) {
@@ -476,13 +476,20 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                             logRequestBody(roomId)
                         }
                         Log.e("click", "log room_id : ${selectedRoom1}")
-                       logRequestBody(content)
-                        logRequestBody(userId)
-
-                        logRequestBody(postType)
                         logRequestBody(buildingId)
                         Log.e("click", "log building : ${viewModel.selectedBuilding.value}")
-                        // Gửi yêu cầu cập nhật
+
+                        Log.e("click", "log post_id : ${postId}")
+                        logRequestBody(userId)
+                        Log.e("click", "log user_id : 67362213c6d421d3027fb5a7")
+                        logRequestBody(content)
+                        Log.e("click", "log content : ${content}")
+                        logRequestBody(postType)
+                        Log.e("click", "log postType : rent")
+                        Log.e("click", "log content : ${title}")
+                        logRequestBody(title)
+                        logRequestBody(status)
+                          // Gửi yêu cầu cập nhật
                         postId?.let {
                             viewModel.updatePost(
                                 postId = postId,
@@ -490,6 +497,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                 building_id = buildingId,
                                 room_id = roomId,
                                 title = title,
+
                                 content = content,
                                 status = status,
                                 postType = postType,
@@ -502,7 +510,9 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                             popUpTo("update_post_screen/$postId") { inclusive = true }
                         }
 
-                    }, modifier = Modifier.height(50.dp).fillMaxWidth(),
+                    }, modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xff5dadff)
                     )
@@ -544,7 +554,9 @@ fun BuildingOptions(
         buildingViewModel.getBuildings(userId)
     }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)) {
         // Hiển thị thông tin tòa nhà đã chọn
         selectedBuildingState.value?.let { buildingId ->
             val selectedBuildingName = buildings.find { it._id == buildingId }?.nameBuilding
@@ -672,7 +684,9 @@ fun RoomOptions(
         Log.d("RoomOptions", "Fetched rooms: ${rooms.size} rooms")
     }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)) {
         selectedRoomState.value?.let { roomId ->
             val selectedRoomName = rooms.find { it._id == roomId }?.room_name
             selectedRoomName?.let {

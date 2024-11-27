@@ -23,6 +23,9 @@ class PostViewModel : ViewModel() {
     private val _posts = mutableStateOf<List<PostingList>>(emptyList())
     val posts: State<List<PostingList>> = _posts
 
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
+
     fun getPostingList(userId: String) {
         viewModelScope.launch {
             try {
@@ -78,6 +81,7 @@ class PostViewModel : ViewModel() {
         }}fun resetDeleteStatus() {
         _deleteStatus.value = null
     }
+
     private val _updateStatus = MutableLiveData<Boolean?>()
     val updateStatus: LiveData<Boolean?> get() = _updateStatus
 
@@ -95,19 +99,23 @@ class PostViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
+                // Gọi API cập nhật bài đăng
                 val response = RetrofitClient.apiService.updatePost(
                     postId, userId, title, content, status, postType,
-                    building_id,room_id, videos, photos
+                    building_id, room_id, videos, photos
                 )
+
                 if (response.isSuccessful) {
                     _updateStatus.value = true // Cập nhật thành công
+                    _errorMessage.value = "" // Xóa thông báo lỗi nếu thành công
                 } else {
-                    Log.e("updatePost", "Error: ${response.code()} - ${response.errorBody()?.string()}")
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
                     _updateStatus.value = false // Cập nhật thất bại
+                    _errorMessage.value = "Update failed: ${response.code()} - $errorBody"
                 }
             } catch (e: Exception) {
-                Log.e("updatePost", "Exception: ${e.message}")
                 _updateStatus.value = false // Xử lý lỗi
+                _errorMessage.value = "Exception: ${e.localizedMessage ?: "Unknown exception"}"
             }
         }
     }
@@ -118,9 +126,6 @@ class PostViewModel : ViewModel() {
     fun resetUpdateStatus() {
         _updateStatus.value = null
     }
-
-
-
 
     private val _buildings = mutableStateOf<List<Building>>(emptyList())
     val buildings: State<List<Building>> = _buildings
@@ -174,5 +179,3 @@ class PostViewModel : ViewModel() {
         getRooms(buildingId) // Khi chọn tòa nhà, gọi API để lấy danh sách phòng
     }
 }
-
-
