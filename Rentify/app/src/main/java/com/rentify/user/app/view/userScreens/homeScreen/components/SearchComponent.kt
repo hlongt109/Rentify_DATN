@@ -2,12 +2,15 @@
 
 
 package com.rentify.user.app.view.userScreens.homeScreen.components
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -16,9 +19,13 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,21 +53,19 @@ fun LayoutSearch(navController: NavHostController) {
         TypeProduct("Săn phòng giảm giá", R.drawable.sanphong),
         TypeProduct("Tìm phòng xung quanh", R.drawable.map),
         TypeProduct("Tin đăng cho thuê", R.drawable.tindang),
-        TypeProduct("Tin đăng tìm phòng", R.drawable.map),
+        TypeProduct("Tin đăng tìm phòng", R.drawable.iconhomefindroom),
         TypeProduct("Tìm người ở ghép", R.drawable.timnguoi),
         TypeProduct("Vận chuyển", R.drawable.vanchuyen)
     )
 
-
-    var statusType by remember { mutableStateOf(listTypeProduct.first().type) }
-
+    var statusType by remember { mutableStateOf("") }
+    var isFocused by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .padding(9.dp)
             .shadow(
-                elevation = 9.dp,
-                shape = RoundedCornerShape(20.dp)
+                elevation = 5.dp, shape = RoundedCornerShape(20.dp)
             )
             .background(color = Color.White, shape = RoundedCornerShape(20.dp))
             .padding(16.dp)
@@ -70,43 +75,56 @@ fun LayoutSearch(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .height(50.dp)
                 .background(Color(0xFFF5F5F5), RoundedCornerShape(16.dp))
         ) {
             // Vùng chứa biểu tượng và chữ "Hà Nội"
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .background(Color(0xFFB3E5FC), RoundedCornerShape(16.dp))
-                    .padding(horizontal = 25.dp, vertical = 18.dp)
+                    .background(Color(0xFFD2F1FF), RoundedCornerShape(16.dp))
+                    .padding(horizontal = 25.dp)
+                    .height(50.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.dc), // Icon vị trí
-                    contentDescription = "Location Icon",
-                    modifier = Modifier.size(20.dp)
+                    painter = painterResource(id = R.drawable.iconhomeaddress), // Icon vị trí
+                    contentDescription = "Location Icon", modifier = Modifier.size(30.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Hà Nội",
-                    fontSize = 14.sp,
-                    color = Color(0xFF1E88E5)
+                    text = "Hà Nội", fontSize = 14.sp, color = Color(0xFF1E88E5)
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
 
 
             // TextField tìm kiếm
-            TextField(
-                value = searchText,
-                onValueChange = { searchText = it },
-                placeholder = { Text("Tìm kiếm tin đăng", color = Color.Gray) },
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
+            BasicTextField(value = searchText.text,
+                onValueChange = { searchText = TextFieldValue(it) }, // Cập nhật giá trị text
+                decorationBox = { innerTextField ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Transparent) // Màu nền
+                            .padding(horizontal = 8.dp, vertical = 8.dp) // Khoảng cách xung quanh
+                    ) {
+                        if (searchText.text.isEmpty() && !isFocused) { // Hiển thị placeholder nếu chưa focus
+                            Text(
+                                text = "Tìm kiếm phòng", color = Color.Gray, // Màu chữ placeholder
+                                style = TextStyle(fontSize = 14.sp) // Kiểu chữ placeholder
+                            )
+                        }
+                        innerTextField() // Vùng nhập văn bản
+                    }
+                },
+                textStyle = TextStyle(
+                    fontSize = 14.sp, color = Color.Black
+                ), // Kiểu chữ của văn bản
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState -> // Lắng nghe trạng thái focus
+                        isFocused = focusState.isFocused
+                    })
         }
 
 
@@ -115,17 +133,16 @@ fun LayoutSearch(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(vertical = 2.dp, horizontal = 0.dp)
+                .padding(vertical = 3.dp, horizontal = 0.dp)
         ) {
             listTypeProduct.forEach { type ->
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(horizontal = 0.dp)
                         .width(80.dp)
-                ) {
-                    IconButton(
-                        onClick = { statusType = type.type
+                        .padding(top = 5.dp)
+                        .clickable {
+                            statusType = type.type
                             if (type.type == "Tìm người ở ghép") {
                                 navController.navigate("TogeTher") // Điều hướng đến TogetherScreen
                             } else {
@@ -133,7 +150,7 @@ fun LayoutSearch(navController: NavHostController) {
                             }
 
                             if (type.type == "Tin đăng cho thuê") {
-                                navController.navigate("Search_room") // Điều hướng đến TogetherScreen
+                                navController.navigate("RENTAL_POST") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }
@@ -144,29 +161,30 @@ fun LayoutSearch(navController: NavHostController) {
                                 statusType = type.type
                             }
                         },
-                        modifier = Modifier
-                            .background(
-                                color = if (statusType == type.type) Color.White else Color.White,
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                            .padding(2.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = type.icon),
-                            contentDescription = "",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                ) {
+                    Image(
+                        painter = painterResource(id = type.icon),
+                        contentDescription = "",
+                        modifier = Modifier.size(40.dp),
+                        contentScale = ContentScale.Crop
+                    )
                     Text(
                         text = type.type,
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp,
                         color = if (statusType == type.type) Color(0xff84d8ff) else Color.Black,
                         maxLines = 2,
-                        softWrap = true
+                        softWrap = true,
+                        modifier = Modifier.padding(top = 10.dp)
                     )
                 }
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun PreviewSearchComponent() {
+    SearchComponent(navController = rememberNavController())
 }

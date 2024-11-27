@@ -1,23 +1,38 @@
 package com.rentify.user.app.view.userScreens.homeScreen.components
 
-import android.content.Intent
-import android.net.Uri
+
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rentify.user.app.R
+import com.rentify.user.app.viewModel.DistrictViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -25,67 +40,94 @@ fun VideoComponent() {
     LayoutVideo()
 }
 
+
 @Composable
-fun LayoutVideo() {
-    val videoUrls = listOf(
-        "https://youtube.com/shorts/qzLHzvGoijw?si=8WP37YkKSL7UT0Ei",
-        "https://youtube.com/shorts/bGpxL7XVDx0?si=8OuGWgRW2hcm9BIW",
-        "https://youtube.com/shorts/DakeacEADq4?si=xk4MUMHjfcFQBJf7"
-    )
-    val textUrls = listOf(
-        "Đống Đa",
-        "Thanh Xuân",
-        "Cầu Giấy"
-    )
+fun LayoutVideo(
+    districtViewModel: DistrictViewModel = viewModel()
+) {
+    val listNameDistrict = districtViewModel.districts.value
+    val isLoading = districtViewModel.isLoading.value
+    val hasMoreData by districtViewModel.hasMoreData.collectAsState()
+    val city = "Hà Nội"
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        districtViewModel.fetchDistricts(city)
+    }
 
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 8.dp),
+        state = lazyListState
     ) {
-        items(videoUrls.size) { index ->
-            VideoThumbnail(videoUrl = videoUrls[index], title = textUrls[index])
+        items(listNameDistrict.size) { index ->
+            ImageThumbnail(title = listNameDistrict[index])
+        }
+        if (isLoading && hasMoreData) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
+
+    // Cuộn gần cuối danh sách để tải thêm
+    LaunchedEffect(lazyListState, listNameDistrict) {
+        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItems ->
+                val lastVisibleItemIndex = visibleItems.lastOrNull()?.index ?: 0
+                if (lastVisibleItemIndex == listNameDistrict.size - 1 &&
+                    !isLoading && districtViewModel.hasMoreData.value &&
+                    listNameDistrict.isNotEmpty()
+                ) {
+                    districtViewModel.fetchDistricts(city, loadMore = true)
+                }
+            }
+    }
+
 }
 
 @Composable
-fun VideoThumbnail(videoUrl: String, title: String) {
-    val context = LocalContext.current
-
+fun ImageThumbnail(title: String) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(top = 8.dp, bottom = 8.dp, end = 8.dp)
             .width(150.dp)
-            .clickable {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
-                context.startActivity(intent)
-            }
     ) {
-        Column (
+        Box(
             modifier = Modifier.fillMaxWidth()
-        ){
-            // Use Coil to load a thumbnail for the video
+        ) {
+            // Hình ảnh
             Image(
-                painter = rememberImagePainter(data = "https://img.youtube.com/vi/${extractVideoId(videoUrl)}/0.jpg"),
+                painter = painterResource(id = R.drawable.imagelocation),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(200.dp),
+                contentScale = ContentScale.Crop
             )
+
+            // Text nằm ở dưới cùng và đè lên ảnh
             Text(
                 text = title,
-                modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .padding(bottom = 5.dp)
+                    .align(Alignment.BottomCenter),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif
+                fontFamily = FontFamily.Serif,
+                fontSize = 16.sp,
+                color = Color.White
             )
         }
     }
-}
-
-// Function to extract the video ID from the YouTube URL
-fun extractVideoId(url: String): String {
-    // Extract the video ID from the YouTube short link
-    return Uri.parse(url).lastPathSegment ?: ""
 }

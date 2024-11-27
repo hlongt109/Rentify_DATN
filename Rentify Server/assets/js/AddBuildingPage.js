@@ -1,6 +1,13 @@
 let services = []
 let staffs = []
 let landlord_id = localStorage.getItem('user_id');
+let serviceFees = [
+    { name: "Điện" },
+    { name: "Nước" },
+    { name: "Wifi" },
+    { name: "Dịch vụ chung" },
+];
+let allServiceFees = []
 const urlParams = new URLSearchParams(window.location.search);
 const buildingId = urlParams.get('id');
 const buildingData = urlParams.get('data') ? JSON.parse(decodeURIComponent(urlParams.get('data'))) : null;
@@ -178,6 +185,15 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
     const serviceElements = document.querySelectorAll(".service-item.active"); // Dịch vụ được chọn
     const service = Array.from(serviceElements).map((item) => item.dataset.id); // Lấy mảng ID dịch vụ
 
+    const serviceElementss = document.querySelectorAll(".service-item input[type='checkbox']:checked");
+    const serviceFees = Array.from(serviceElementss).map((checkbox) => {
+        const feeInput = checkbox.closest(".service-item").querySelector("input[type='number']");
+        return {
+            name: checkbox.nextElementSibling.textContent.trim(), // Lấy tên dịch vụ từ label
+            price: parseFloat(feeInput.value) || 0, // Lấy giá trị phí
+        };
+    });
+
     // Kiểm tra các trường bắt buộc
     if (!manager_id || !nameBuilding || !address || !number_of_floors || service.length === 0) {
         return Toastify({
@@ -192,6 +208,7 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
         landlord_id,
         manager_id,
         service,
+        serviceFees,
         nameBuilding,
         address,
         description,
@@ -204,21 +221,21 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
         if (buildingId) {
             // API PUT cập nhật tòa nhà
             response = await axios.put(`/api/buildings/${buildingId}`, data);
+            if (response.status === 200 || response.status === 201) {
+                // Hiển thị thông báo cập nhật thành công
+                localStorage.setItem('updateBuildingMessage', 'Cập nhật tòa nhà thành công!');
+                window.location.href = "/landlord/BuildingPage";
+            }
         } else {
             // API POST thêm mới tòa nhà (khi buildingId không tồn tại)
             response = await axios.post('/api/add-building', data);
+            if (response.status === 200 || response.status === 201) {
+                // Hiển thị thông báo cập nhật thành công
+                localStorage.setItem('addBuildingMessage', 'Thêm tòa nhà thành công!');
+                window.location.href = "/landlord/BuildingPage";
+            }
         }
 
-        if (response.status === 200 || response.status === 201) {
-            Toastify({
-                text: "Cập nhật tòa nhà thành công!",
-                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-                duration: 3000,
-            }).showToast();
-            // Điều hướng hoặc reset form
-            window.location.href = "/landlord/BuildingPage";
-            document.getElementById("addBuildingForm").reset();
-        }
     } catch (error) {
         console.error("Lỗi khi cập nhật tòa nhà:", error);
         Toastify({
@@ -229,10 +246,62 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
     }
 });
 
+const fetchBuildingServiceFees = async () => {
+    try {
+        const response = await axios.get(`/api/building/${buildingId}/service-fees`);
+        if (Array.isArray(response.data)) {
+            allServiceFees = response.data;
+            console.log(allServiceFees); // Kiểm tra cấu trúc dữ liệu
+            renderServiceFees()
+        } else {
+            console.error('Dữ liệu không phải là mảng:', response.data);
+        }
+    } catch (error) {
+        console.error('Lỗi khi lấy phí dịch vụ của tòa nhà:', error);
+        return [];
+    }
+};
+
+const mergeServiceFees = () => {
+    const merged = [...serviceFees, ...allServiceFees];
+    const uniqueServiceFees = merged.filter((value, index, self) =>
+        index === self.findIndex((t) => t.name === value.name)
+    );
+    return uniqueServiceFees;
+};
+
+const servicesContainer = document.getElementById("servicesFee-container");
+
+const renderServiceFees = (selectedServices = []) => {
+    const uniqueServices = mergeServiceFees();
+    uniqueServices.forEach(service => {
+        const safeName = service.name.replace(/\s+/g, '_');
+        const checkbox = document.querySelector(`input[type="checkbox"][value="${service.name}"]`);
+        const feeInput = document.querySelector(`input[name="fee_${safeName}"]`);
+        const selectedService = selectedServices.find(selected => selected.name === service.name);
+        
+        if (checkbox && feeInput) {
+            checkbox.checked = selectedService ? true : false; 
+            feeInput.disabled = !checkbox.checked; 
+            feeInput.value = selectedService ? selectedService.price || "" : ""; 
+            console.log(`Service: ${service.name}, Checked: ${checkbox.checked}`);
+        } else {
+            createServiceItem(service, servicesContainer, selectedService);
+            console.log(`Service: ${service.name}, Created new checkbox, Checked: ${!!selectedService}`);
+        }
+    });
+};
+
 const init = async () => {
     await fetchService(); // Tải dữ liệu dịch vụ và nhân viên
+    if(buildingId){
+        await fetchBuildingServiceFees();
+    }
 
     if (buildingData) {
+        // Gọi renderServices sau khi `services` đã sẵn sàng
+        renderServices(buildingData.service);
+        renderServiceFees(buildingData.serviceFees);
         document.querySelector('h2').textContent = "Chỉnh Sửa Toà Nhà";
 
         document.getElementById('manager_id').value = buildingData.manager_id.username;
@@ -242,14 +311,83 @@ const init = async () => {
         document.getElementById('number_of_floors').value = buildingData.number_of_floors;
         document.getElementById('description').value = buildingData.description;
 
-        // Gọi renderServices sau khi `services` đã sẵn sàng
-        console.log("Danh sách dịch vụ đã chọn từ buildingData:", buildingData.service); // Ghi log kiểm tra
-        renderServices(buildingData.service);
-
         const submitButton = document.querySelector('button[type="submit"]');
         submitButton.textContent = "Cập Nhật Toà Nhà";
     }
 };
 
+const createServiceItem = (service, servicesContainer, selectedService = null) => {
+    const serviceItem = document.createElement("div");
+    serviceItem.classList.add("service-item");
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    const safeName = service.name.replace(/\s+/g, '_');
+    checkbox.id = safeName;
+    checkbox.name = "services";
+    checkbox.value = service.name;
+
+    const label = document.createElement("label");
+    label.htmlFor = safeName;
+    label.textContent = service.name;
+
+    const feeInput = document.createElement("input");
+    feeInput.type = "number";
+    feeInput.name = `fee_${safeName}`;
+    feeInput.placeholder = "Phí (VNĐ)";
+    feeInput.classList.add("form-control", "form-control-sm");
+    feeInput.step = "0.01"; 
+    feeInput.min = "0"; 
+
+    // Đặt trạng thái mặc định cho "add"
+    if (selectedService) {
+        checkbox.checked = false;
+        feeInput.disabled = true;
+        feeInput.value = selectedService.price || "";
+    } else {
+        checkbox.checked = false; // Không tích khi thêm mới
+        feeInput.disabled = true; // Vô hiệu hóa input phí
+        feeInput.value = ""; // Đảm bảo input trống
+    }
+
+    checkbox.addEventListener("change", () => {
+        feeInput.disabled = !checkbox.checked;
+        if (!checkbox.checked) {
+            feeInput.value = ""; // Xóa giá trị nếu bỏ chọn
+        }
+    });
+
+    // Append các phần tử vào container
+    serviceItem.appendChild(checkbox);
+    serviceItem.appendChild(label);
+    serviceItem.appendChild(feeInput);
+    servicesContainer.appendChild(serviceItem);
+};
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const newServiceInput = document.getElementById("new-service");
+    const addServiceButton = document.getElementById("add-service");
+
+    serviceFees.forEach(service => {
+        createServiceItem(service, servicesContainer, servicesContainer); 
+    });
+
+    addServiceButton.addEventListener("click", () => {
+        const newServiceName = newServiceInput.value.trim();
+        if (newServiceName) {
+            if (serviceFees.some(service => service.name === newServiceName)) {
+                alert("Dịch vụ này đã tồn tại!");
+                return;
+            }
+            const newService = { name: newServiceName };
+            serviceFees.push(newService);
+            createServiceItem(newService, servicesContainer, servicesContainer);
+            newServiceInput.value = "";
+        } else {
+            alert("Vui lòng nhập tên dịch vụ!");
+        }
+    });
+});
 
 window.onload = init;

@@ -1,7 +1,14 @@
 package com.rentify.user.app.network
 
+import com.rentify.user.app.model.Model.BookingRequest
+import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.District
+import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.Province
+import com.rentify.user.app.model.Model.RoomDetailResponse
+import com.rentify.user.app.model.Model.RoomResponse
+import com.rentify.user.app.model.Model.StatusBookingRequest
+import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
@@ -15,6 +22,8 @@ import com.rentify.user.app.model.Room
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
+import com.rentify.user.app.model.User
+import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
@@ -23,7 +32,10 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.GET
+import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 import retrofit2.http.Multipart
 import retrofit2.http.PUT
 import retrofit2.http.Part
@@ -74,6 +86,44 @@ interface APIService {
 
     @GET("d/{code}?depth=2")
     suspend fun getDistrictWithWards(@Path("code") code: String): District
+
+    // Xử lý lấy dữ liệu với app user
+    @GET("room/get-districts/{city}")
+    suspend fun getDistricts(@Path("city") city: String): List<String>
+
+    @GET("room/get-detail-room/{id}")
+    suspend fun getRoomDetail(@Path("id") id: String): Response<RoomDetailResponse>
+
+    @GET("room/get-random-rooms")
+    suspend fun getListOfRandomRooms(): Response<List<RoomResponse>>
+
+    @GET("room/get-landlord-buildings/{landlord_id}")
+    suspend fun getDetailLandlord(@Path("landlord_id") landlordId: String): Response<UserOfRoomDetail>
+
+    @GET("room/get-empty-rooms/{building_id}")
+    suspend fun getEmptyRooms(@Path("building_id") buildingId: String): Response<List<EmptyRoomResponse>>
+
+    @GET("room/search-rooms")
+    suspend fun searchRooms(
+        @Query("address") address: String? = null,
+        @Query("minPrice") minPrice: Int? = null,
+        @Query("maxPrice") maxPrice: Int? = null,
+        @Query("roomType") roomType: String? = null,
+        @Query("sortBy") sortBy: String? = null
+    ): Response<List<RoomResponse>>
+
+    // Xử lý các api liên quan tới xem phòng
+    @POST("add-booking")
+    suspend fun addBooking(@Body bookingRequest: BookingRequest): Response<BookingRequest>
+
+    @GET("get-user-details/{user_id}")
+    suspend fun getUserDetails(@Path("user_id") userId: String): Response<UserOfBooking>
+
+    @GET("get-bookings/{user_id}/{status}")
+    suspend fun getBookings(@Path("user_id") userId: String, @Path("status") status: Int): Response<List<BookingResponse>>
+
+    @PUT("update-booking-status/{booking_id}")
+    suspend fun updateBookingStatus(@Path("booking_id") bookingId: String, @Body status: StatusBookingRequest): Response<StatusBookingRequest>
 
 
     // Thêm phòng mới _vanphuc:

@@ -38,9 +38,12 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.FakeData
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemTypeRoom
 
 @Composable
-fun RentalPostRoomType() {
-    var selectedRoom by remember { mutableStateOf<RoomType?>(null) }
+fun RentalPostRoomType(
+    selectedRoomType: RoomType?,  // Đảm bảo sử dụng RoomType? thay vì String?
+    onRoomTypeSelected: (RoomType?) -> Unit  // Chấp nhận đối tượng RoomType
+) {
     val roomTypesList = getRoomTypes()
+
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,8 +53,11 @@ fun RentalPostRoomType() {
         items(roomTypesList) { item ->
             RentalPostRoomTypeSelected(
                 itemType = item,
-                isSelected = item == selectedRoom,
-                onClick = { selectedRoom = item })
+                isSelected = item == selectedRoomType,
+                onClick = {
+                    onRoomTypeSelected(if (item == selectedRoomType) null else item)
+                }  // Truyền RoomType vào
+            )
         }
     }
 }
@@ -59,9 +65,9 @@ fun RentalPostRoomType() {
 data class RoomType(val id: Int, val name: String)
 
 fun getRoomTypes(): List<RoomType> = listOf(
-    RoomType(1, "Phòng trọ"),
+    RoomType(1, "Phòng Đơn"),
     RoomType(2, "Nguyên căn"),
-    RoomType(3, "Chung cư"),
+    RoomType(3, "Studio"),
     RoomType(4, "Homestay")
 )
 

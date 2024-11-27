@@ -23,7 +23,7 @@
                     <input type="text" id="manager_id" name="manager_id" class="form-control"
                         placeholder="Chọn người quản lý" required readonly> <!-- Không cho phép nhập văn bản -->
                     <ul id="staff-list" class="dropdown-menu"></ul> <!-- Danh sách nhân viên -->
-                </div>                              
+                </div>
 
                 <!-- Name of the Building -->
                 <div class="col-md-6">
@@ -37,9 +37,10 @@
                 <!-- Address -->
                 <div class="col-md-6">
                     <label for="address" class="form-label">Địa Chỉ</label>
-                    <input type="text" id="address" name="address" class="form-control" placeholder="Nhập địa chỉ" required>
+                    <input type="text" id="address" name="address" class="form-control" placeholder="Nhập địa chỉ"
+                        required>
                     <ul id="address-list" class="dropdown-menu"></ul>
-                </div>                
+                </div>
 
                 <!-- Number of Floors -->
                 <div class="col-md-6">
@@ -65,6 +66,24 @@
                 <small class="form-text text-muted">Nhấp vào để chọn nhiều dịch vụ.</small>
             </div>
 
+            <!-- Dịch vụ mới -->
+            <div class="mb-3">
+                <label for="new-service" class="form-label">Dịch vụ mới</label>
+                <div class="d-flex">
+                    <input type="text" id="new-service" class="form-control" placeholder="Nhập tên dịch vụ mới" />
+                    <button type="button" id="add-service" class="btn btn-secondary ms-3">Thêm Dịch Vụ</button>
+                </div>
+            </div>            
+
+
+            <!-- Phí Dịch Vụ -->
+            <div class="mb-3">
+                <label for="servicesFee" class="form-label">Phí dịch vụ</label>
+                <div id="servicesFee-container" class="d-flex flex-column">
+                    <!-- Các dịch vụ sẽ được chèn động tại đây -->
+                </div>
+                <small class="form-text text-muted">Chọn dịch vụ và nhập phí tương ứng.</small>
+            </div>
 
             <!-- Buttons -->
             <div class="d-flex justify-content-end">

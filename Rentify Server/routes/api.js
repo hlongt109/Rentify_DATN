@@ -62,7 +62,7 @@ router.use("/", notificationAdmin);
 router.use("/", reportApiAdmin);
 router.use("", QuanLy);
 router.use("/", serviceApi);
-router.use("/", roomApi);
+router.use("/room", roomApi);
 router.use("/", invoiceApi);
 router.use("/", reportApi);
 router.use("/", paymentApi);

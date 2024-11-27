@@ -153,3 +153,7 @@ h2 {
 #new-amenity {
     margin-right: 8px; /* Thêm khoảng cách giữa input và button */
 }
+
+.delete-room {
+    margin-left: 8px;
+}

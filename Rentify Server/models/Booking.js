@@ -11,9 +11,13 @@ const Booking = new Schema({
     ref: "Room",
     required: true,
   },
-  check_in_date: { type: String, require: true },
-  check_out_date: { type: String, require: false },
-  status: { type: Number, require: true, default: 0 }, //0 chua xem phong, 1 da xem phong
-  created_at: { type: String, default: Date.now() },
+  manager_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  check_in_date: { type: String, require: true }, // ngày giờ xem phòng
+  status: { type: Number, require: true, default: 0 }, // 0 đang xử lý, 1 đã duyệt, 2 đã xem, 3 đã huỷ
+  created_at: { type: Date, default: Date.now },
 });
 module.exports = mongoose.model("Booking", Booking);
