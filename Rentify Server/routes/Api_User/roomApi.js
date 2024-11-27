@@ -57,35 +57,78 @@ router.get('/get-detail-room/:id', async (req, res) => {
     }
 });
 
-// chức năng tìm kiếm phòng theo địa chỉ, khoảng giá
-router.get('/search-room', async (req, res) => {
+// Tìm kiếm phòng theo địa chỉ, khoảng giá, loại phòng và sắp xếp theo giá
+const removeVietnameseTones = (str) => {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+};
+
+router.get('/search-rooms', async (req, res) => {
     try {
-        const { address, minPrice, maxPrice, name } = req.query;
+        const { address, minPrice, maxPrice, roomType, sortBy } = req.query;
+        let searchConditions = {};
 
-        let filter = {};
-
-        // Thêm điều kiện tìm kiếm theo giá
-        if (minPrice && maxPrice) {
-            filter.price = {};
-            if (minPrice) filter.price.$gte = Number(minPrice);
-            if (maxPrice) filter.price.$lte = Number(maxPrice);
+        // Thêm điều kiện giá
+        if (minPrice) {
+            if (!searchConditions.price) searchConditions.price = {};
+            searchConditions.price.$gte = Number(minPrice);
         }
 
-        // Tìm các phòng và liên kết với toà nhà thông qua building_id
-        const rooms = await room.find(filter)
+        if (maxPrice) {
+            if (!searchConditions.price) searchConditions.price = {};
+            searchConditions.price.$lte = Number(maxPrice);
+        }
+
+        // Thêm điều kiện loại phòng
+        if (roomType) {
+            const normalizedRoomType = removeVietnameseTones(roomType.toLowerCase());
+            searchConditions.room_type = { $regex: normalizedRoomType, $options: 'i' };
+        }
+
+        // Điều kiện sắp xếp
+        let sortCondition = {};
+        if (sortBy === 'price_asc') {
+            sortCondition.price = 1;
+        } else if (sortBy === 'price_desc') {
+            sortCondition.price = -1;
+        }
+
+        // Truy vấn dữ liệu từ MongoDB
+        const rooms = await room.find(searchConditions)
+            .sort(sortCondition)
             .populate({
                 path: 'building_id',
-                select: 'address',
+                select: 'nameBuilding address images description status',
             });
 
-        // Lọc bỏ các phòng không có địa chỉ phù hợp
-        const filteredRooms = rooms.filter(room =>
-            room.building_id && room.building_id.address.match(new RegExp(address.trim(), 'i'))
-        );
-        console.log("Filtered rooms:", filteredRooms)
+        if (rooms.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy phòng nào phù hợp với tiêu chí tìm kiếm",
+            });
+        }
+
+        // Nếu có `address`, lọc lại dữ liệu sau khi lấy từ DB
+        let filteredRooms = rooms;
+        if (address) {
+            const normalizedAddress = removeVietnameseTones(address.toLowerCase());
+            filteredRooms = rooms.filter((room) => {
+                const buildingAddress = removeVietnameseTones(room.building_id.address.toLowerCase());
+                return buildingAddress.includes(normalizedAddress);
+            });
+        }
+
+        if (filteredRooms.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy phòng nào phù hợp với tiêu chí tìm kiếm",
+            });
+        }
+
+        // Trả về danh sách phòng đã lọc
         res.status(200).json(filteredRooms);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(500).json({
+            message: "Đã có lỗi xảy ra khi tìm kiếm phòng",
+            error: error.message,
+        });
     }
 });
 
