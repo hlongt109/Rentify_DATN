@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        h2 {
+            text-align: center;
+            color: #333;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            max-width: 100%;
+        }
+
+
+        .table thead {
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+
+        .table td:first-child,
+        .table th:first-child {
+            width: 50px;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            border: none;
+            width: 100%;
+            vertical-align: middle;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: none;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .table th {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: normal;
+            color: rgb(3, 2, 41);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .table td {
+            font-size: 0.75rem;
+            font-family: Nunito, sans-serif;
+            line-height: 1.66;
+            font-weight: 600;
+        }
+
+
+        .btn-role {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.875rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-role.landlord {
+            background-color: #28a745;
+        }
+
+        .btn-role.ban {
+            background-color: #dc3545;
+        }
+
+        .btn-role.staffs {
+            background-color: #007bff;
+        }
+
+        .btn-role.user {
+            background-color: #6f42c1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content-wrapper">
+        <h2>Quản lý người dùng</h2>
+        <!-- add new -->
+        <div class="container my-3">
+            <button id="btnAdd" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle"></i> Add New User
+            </button>
+        </div>
+        <div class="container-fluid my-4">
+            <div class="search-container">
+
+                <!-- Modal: Đặt ngay trước thẻ đóng </body> -->
+                <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="addUserForm">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="role" class="form-label">Role</label>
+                                        <select class="form-select" id="role" required>
+                                            <option value="staffs">Staffs</option>
+                                            <option value="ban">Ban</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal: Sửa Role -->
+                <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editUserModalLabel">Edit User Role</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editUserForm">
+                                    <input type="hidden" id="editUserId" />
+                                    <div class="mb-3">
+                                        <label for="editRole" class="form-label">Role</label>
+                                        <select class="form-select" id="editRole" required>
+                                            <option value="staffs">Staffs</option>
+                                            <option value="ban">Ban</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th>Role</th>
+                        <th>Act</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% data.forEach((data, index)=> { %>
+                        <tr>
+                            <td>
+                                <%= index + 1 %>
+                            </td>
+                            <td>
+                                <%= data.username %>
+                            </td>
+                            <td>
+                                <%= data.email %>
+                            </td>
+                            <td>
+                                <%= data.phoneNumber %>
+                            </td>
+                            <td>
+                                <%= data.address %>
+                            </td>
+                            <td>
+                                <span class="btn-role <%= data.role.toLowerCase() %>">
+                                    <%= data.role %>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <!-- Nút sửa -->
+                                    <button class="btn btn-warning"
+                                        onclick="editUser('<%= data._id %>', '<%= data.role %>')">Sửa</button>
+
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-danger"
+                                        onclick="confirmDelete('<%= data._id %>')">Xóa</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+                <tbody id="user-table">
+                    <!-- Dữ liệu sẽ được render động -->
+                </tbody>
+            </table>
+
+
+        </div>
+
+        <script>
+
+            //them
+            document.getElementById("btnAdd").addEventListener("click", () => {
+                const addUserModal = new bootstrap.Modal(document.getElementById("addUserModal"));
+                addUserModal.show();
+            });
+
+            document.getElementById("addUserForm").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const username = document.getElementById("username").value;
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+                const role = document.getElementById("role").value;
+
+                // Gửi thông tin tới server
+                const response = await fetch(`/api/staffs_mgr/add/${userId}`, {//api add
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, password, role })
+                });
+
+                // Reset form và đóng modal
+                const data = await response.json();
+                if (response.ok) {
+                    // Hiển thị thông báo thành công và đóng modal
+                    alert("User added successfully!");
+                    e.target.reset();
+                    const addUserModal = bootstrap.Modal.getInstance(document.getElementById("addUserModal"));
+                    addUserModal.hide();
+
+                    // Tải lại trang
+                    window.location.reload();
+                } else {
+                    alert(`Error: ${data.message}`);
+                }
+            });
+
+
+            //xoa
+            function confirmDelete(id) {
+                if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                    fetch(`/api/delete_mgr/delete/${id}`, {
+                        method: 'DELETE'
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Xóa không thành công');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            alert(data.message || 'Xóa thành công');
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            alert('Đã xảy ra lỗi khi xóa');
+                        });
+                }
+            }
+            //sua
+            // Khi nhấn nút Edit, hiển thị modal sửa
+            function editUser(userId, currentRole) {
+                // Set giá trị hiện tại của role vào modal
+                document.getElementById("editUserId").value = userId;
+                document.getElementById("editRole").value = currentRole;
+
+                // Hiển thị modal sửa
+                const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
+                editUserModal.show();
+            }
+
+            // Xử lý khi người dùng sửa thông tin role
+            document.getElementById("editUserForm").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const userId = document.getElementById("editUserId").value;
+                const role = document.getElementById("editRole").value;
+
+                // Gửi thông tin sửa đổi tới server
+                const response = await fetch(`/api/staffs_mgr/edit/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ role })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert("Role updated successfully!");
+                    const editUserModal = bootstrap.Modal.getInstance(document.getElementById("editUserModal"));
+                    editUserModal.hide();
+                    window.location.reload();  // Tải lại trang sau khi sửa thành công
+                } else {
+                    alert(`Error: ${data.message}`);
+                }
+            });
+
+
+
+            //trang tuwj ddoong
+            const ROWS_PER_PAGE = 10;
+
+            function renderTable(users, currentPage) {
+                const tableBody = document.getElementById('user-table');
+                tableBody.innerHTML = '';
+
+                const start = (currentPage - 1) * ROWS_PER_PAGE;
+                const end = start + ROWS_PER_PAGE;
+                const paginatedUsers = users.slice(start, end);
+
+                paginatedUsers.forEach((user, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+    <td>${start + index + 1}</td>
+    <td>${user.username}</td>
+    <td>${user.email}</td>
+    <td>${user.phoneNumber}</td>
+    <td>${user.address}</td>
+    <td><span class="btn-role ${user.role.toLowerCase()}">${user.role}</span></td>
+    <td>
+        <div class="btn-group">
+            <a href="/apiadmin/product/delete/${user._id}"
+                onclick="return confirm('Bạn có chắc muốn xóa tài khoản này?')">
+                <button type="submit" class="btn btn-danger">Xóa</button>
+            </a>
+        </div>
+    </td>
+    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function setupPagination(users) {
+                const pageCount = Math.ceil(users.length / ROWS_PER_PAGE);
+                const pagination = document.getElementById('pagination');
+                pagination.innerHTML = '';
+
+                for (let i = 1; i <= pageCount; i++) {
+                    const pageItem = document.createElement('li'); pageItem.className = 'page-item';
+                    if (i === 1) pageItem.classList.add('active'); pageItem.innerHTML = ` <a class="page-link" href="#">${i}</a>
+        `;
+                    pageItem.addEventListener('click', () => {
+                        document.querySelector('.page-item.active').classList.remove('active');
+                        pageItem.classList.add('active');
+                        renderTable(users, i);
+                    });
+                    pagination.appendChild(pageItem);
+                }
+            }
+        </script>
+        <!-- Thêm Bootstrap JS vào cuối trang -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    </div>
+</body>
+
+</html>

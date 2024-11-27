@@ -1,53 +1,50 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const User = require('../../models/User');
-///sconst authenticate = require('../../middleware/authenticate');
 const { decode } = require('jsonwebtoken');
 
 
-function authenticate(req, res, next) {
+router.get('/staffs_mgr/list/:id', async (req, res) => {
     try {
-        const authHeader = req.headers['authorization'];
-        if (!authHeader) {
-            return res.status(403).json({ message: "Không có phản hồi từ Token" });
+        const userId = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid landlord_id format" });
         }
 
-        // Lấy token từ chuỗi "Bearer <token>"
-        const token = authHeader.split(' ')[1];
-        if (!token) {
-            return res.status(403).json({ message: "Không có phản hồi từ Token" });
+        const landlordObjectId = new mongoose.Types.ObjectId(userId);
+        const data = await User.find({ landlord_id: landlordObjectId });
+
+        if (data.length === 0) {
+            console.log("Không có dữ liệu");
+            return res.render("Landlord_website/screens/QuanLyNhanVien.ejs", { data: [] });
         }
 
-        // Xác thực token
-        jwt.verify(token, 'hoan', (err, decoded) => {
-            if (err) {
-                return res.status(403).json({ message: "Lỗi xác thực Token" });
-            }
-            req.user_id = decoded.id; // Gán thông tin người dùng từ token vào request
-            next(); // Cho phép đi tiếp
-        });
+        res.render("Landlord_website/screens/QuanLyNhanVien.ejs", { data }); // Truyền data tới EJS
     } catch (error) {
-        return res.status(401).json({ message: "Lỗi xác thực", error: error.message });
+        console.error("Error fetching services:", error.message);
+        res.status(500).render("Landlord_website/screens/QuanLyNhanVien", { data: [] });
     }
-}
-
-router.get('/staffs_mgr', async (req, res) => {
-    res.render('chutoa_web/ejs/QuanLyNhanVien', (err, html) => {
-        if (err) {
-            return res.status(500).send(err);
-        }
-        res.render('chutoa_web/ejs/index', {
-            title: 'Quản lý người dùng',
-            body: html
-        });
-    });
 })
 // Tạo tài khoản mới
-router.post("/create", async (req, res) => {
+router.post("/staffs_mgr/add/:id", async (req, res) => {
     try {
+        const userId = req.params.id;
+        // Kiểm tra dữ liệu đầu vào (req.body)
+        const { username, email, password, role } = req.body;
+        if (!username || !email || !password || !role) {
+            return res.status(400).json({ message: "Thiếu dữ liệu cần thiết!" });
+        }
+
+        // Tạo mới tài khoản
         const newUser = new User({
-            ...req.body,
+            username,
+            email,
+            password,
+            role,
+            landlord_id: userId,  // Gán id người dùng chủ sở hữu
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         });
@@ -59,7 +56,7 @@ router.post("/create", async (req, res) => {
     }
 });
 // Lấy danh sách tất cả tài khoản
-router.get("/staffs/list", authenticate, async (req, res) => {
+router.get("/staffs/list", async (req, res) => {
     try {
         const { userId, role } = req.decoded;  // Lấy thông tin người dùng từ token (JWT)
         console.log(decode);
@@ -89,25 +86,36 @@ router.get("/:id", async (req, res) => {
     }
 });
 // Cập nhật tài khoản theo ID
-router.put("/:id", async (req, res) => {
+// Cập nhật role của tài khoản theo ID
+router.put("/staffs_mgr/edit/:id", async (req, res) => {
     try {
+        const { role } = req.body;
+        if (!role) {
+            return res.status(400).json({ message: "Cần cung cấp role để cập nhật" });
+        }
+
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
-            { ...req.body, updated_at: new Date().toISOString() },
+            {
+                role,
+                updated_at: new Date().toISOString()
+            },
             { new: true }
         );
 
         if (!updatedUser) {
             return res.status(404).json({ message: "Tài khoản không tồn tại" });
         }
-        res.status(200).json({ message: "Cập nhật thành công", user: updatedUser });
+
+        res.status(200).json({ message: "Cập nhật role thành công", user: updatedUser });
     } catch (error) {
         res.status(500).json({ message: "Đã có lỗi xảy ra", error });
     }
 });
 
+
 // Xóa tài khoản theo ID
-router.delete("/:id", async (req, res) => {
+router.delete("/delete_mgr/delete/:id", async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
         if (!deletedUser) {
