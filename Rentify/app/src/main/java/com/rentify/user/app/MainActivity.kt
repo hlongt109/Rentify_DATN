@@ -27,11 +27,13 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.UpdatePostScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
 
 import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
@@ -54,6 +56,7 @@ import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoon
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
+import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -198,6 +201,19 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ADDPOST_staff.name) {
                 AddPostScreens(navController = navController)
             }
+            composable("post_detail/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    PostDetailScreen( navController = navController,postId = postId)
+                }
+            }
+            composable("update_post_screen/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    UpdatePostScreen(navController = navController, postId = postId)
+                }
+
+            }
         }
     }
 
@@ -250,3 +266,153 @@ class MainActivity : ComponentActivity() {
         ADDPOST_staff
     }
 }
+//@Composable
+//fun SelectMedia(
+//    onMediaSelected: (List<Uri>, List<Uri>) -> Unit
+//) {
+//    val selectedImages = remember { mutableStateListOf<Uri>() }
+//    val selectedVideos = remember { mutableStateListOf<Uri>() }
+//
+//    // Launcher cho việc chọn nhiều ảnh từ album
+//    val launcherImage = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.OpenMultipleDocuments(),
+//        onResult = { uris ->
+//            Log.d("LauncherImage", "Uris: $uris")
+//            uris?.let {
+//                selectedImages.addAll(it)
+//                Log.d("SelectedImagesUpdated", selectedImages.toString())
+//            }
+//        }
+//    )
+//
+//    val launcherVideo = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.OpenMultipleDocuments(),
+//        onResult = { uris ->
+//            Log.d("LauncherVideo", "Uris: $uris")
+//            uris?.let {
+//                selectedVideos.addAll(it)
+//                Log.d("SelectedVideosUpdated", selectedVideos.toString())
+//            }
+//        }
+//    )
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//
+//    ) {
+//        // Nút chọn nhiều ảnh từ album
+//        Row(
+//            modifier = Modifier.padding(5.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .clickable { launcherImage.launch(arrayOf("image/*")) } // "image/*" để chọn ảnh từ album
+//                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+//                    .background(Color.White)
+//                    .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+//                    .padding(25.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.image),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(30.dp)
+//                )
+//            }
+//            Spacer(modifier = Modifier.width(15.dp))
+//            Column {
+//                Text(
+//                    text = "Ảnh Phòng trọ",
+//                    color = Color.Black,
+//                    fontSize = 14.sp
+//                )
+//                Text(
+//                    text = "Tối đa 10 ảnh",
+//                    color = Color(0xFFBFBFBF),
+//                    fontSize = 13.sp
+//                )
+//            }
+//        }
+//        // Hiển thị ảnh đã chọn
+//        Spacer(modifier = Modifier.height(20.dp))
+//        Text(
+//            text = "Ảnh đã chọn:",
+//            color = Color.Black,
+//            fontSize = 16.sp
+//        )
+//        LazyRow(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentPadding = PaddingValues(8.dp)
+//        ) {
+//            items(selectedImages) { imageUri ->
+//                Image(
+//                    painter = rememberImagePainter(imageUri),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .size(100.dp)
+//                        .padding(4.dp)
+//                )
+//            }
+//        }
+//        Spacer(modifier = Modifier.height(17.dp))
+//
+//        // Nút chọn nhiều video từ album
+//        Column(
+//            modifier = Modifier
+//                .clickable { launcherVideo.launch(arrayOf("video/*")) } // "video/*" để chọn video từ album
+//                .fillMaxWidth()
+//                .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+//                .background(Color.White)
+//                .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+//                .padding(25.dp),
+//            verticalArrangement = Arrangement.Center,
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.video),
+//                contentDescription = null,
+//                modifier = Modifier.size(30.dp)
+//            )
+//            Spacer(modifier = Modifier.height(7.dp))
+//            Text(
+//                text = "Video",
+//                color = Color.Black,
+//                fontSize = 13.sp
+//            )
+//        }
+//
+//
+//
+//        // Hiển thị video đã chọn
+//        Spacer(modifier = Modifier.height(20.dp))
+//        Text(
+//            text = "Video đã chọn:",
+//            color = Color.Black,
+//            fontSize = 16.sp
+//        )
+//        LazyRow(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentPadding = PaddingValues(8.dp)
+//        ) {
+//            items(selectedVideos) { videoUri ->
+//                // Sử dụng ExoPlayer hoặc một thư viện khác để hiển thị video
+//                // Ví dụ dưới đây chỉ là placeholder
+//                Box(
+//                    modifier = Modifier
+//                        .size(100.dp)
+//                        .padding(4.dp)
+//                        .background(Color.Gray, shape = RoundedCornerShape(8.dp)),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Text(
+//                        text = "Video",
+//                        color = Color.White,
+//                        modifier = Modifier.align(Alignment.Center)
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}

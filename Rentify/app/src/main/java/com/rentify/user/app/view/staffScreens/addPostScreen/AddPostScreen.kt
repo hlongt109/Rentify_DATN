@@ -3,19 +3,16 @@ package com.rentify.user.app.view.staffScreens.addPostScreen
 
 import android.content.Context
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +21,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -39,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -50,68 +45,63 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.rentify.user.app.R
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.network.APIService
-import com.rentify.user.app.network.LocationService.ApiService
 import com.rentify.user.app.network.RetrofitClient
-import com.rentify.user.app.network.RetrofitService
-import com.rentify.user.app.ui.theme.colorHeaderSearch
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingOptions
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomOptions
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.SelectMedia
 
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableLabel
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableOptions
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomTypeLabel
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomTypeOptions
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ServiceLabel
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ServiceOptions
+
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Buffer
 import java.io.File
-import java.io.FileOutputStream
 
-fun getFileFromUri(context: Context, uri: Uri): File? {
+fun prepareMultipartBody(
+    context: Context,
+    uri: Uri,
+    partName: String,
+    defaultExtension: String,
+    mimeType: String
+): MultipartBody.Part? {
     return try {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val tempFile = File.createTempFile("upload", ".tmp", context.cacheDir)
+        // Lấy input stream từ Uri
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+
+        // Tạo file tạm
+        val tempFile = File.createTempFile("upload", defaultExtension, context.cacheDir)
         tempFile.outputStream().use { outputStream ->
-            inputStream?.copyTo(outputStream)
+            inputStream.copyTo(outputStream)
         }
-        tempFile
+
+        // Tạo MultipartBody.Part
+        val requestFile = tempFile.asRequestBody(mimeType.toMediaTypeOrNull())
+        MultipartBody.Part.createFormData(partName, tempFile.name, requestFile)
     } catch (e: Exception) {
-        Log.e("getFileFromUri", "Error: ${e.message}, URI: $uri")
+        Log.e("prepareMultipartBody", "Error: ${e.message}")
         null
     }
 }
-
-
-
-fun prepareMultipartBody(partName: String, file: File): MultipartBody.Part {
-    val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-    return MultipartBody.Part.createFormData(partName, file.name, requestFile)
-}
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPostScreens(navController: NavHostController) {
@@ -119,116 +109,94 @@ fun AddPostScreens(navController: NavHostController) {
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
-    var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
-    var selectedService by remember { mutableStateOf(listOf<String>()) }
+
+
+    val viewModel: PostViewModel = viewModel()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-   var address by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
      var content by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var roomPrice by remember { mutableStateOf("") }
 
-    suspend fun addPost(context: Context, apiService:APIService ) {
-        val userId = "672490e5ce87343d0e701012".toRequestBody("text/plain".toMediaTypeOrNull())
+    var selectedRoom by remember { mutableStateOf<String?>(null) }
 
+    fun logRequestBody(requestBody: RequestBody) {
+        val buffer = Buffer()
+        try {
+            requestBody.writeTo(buffer)
+            val content = buffer.readUtf8()
+            Log.d("click", "RequestBody content: $content")
+        } catch (e: Exception) {
+            Log.e("click", "Error reading RequestBody: ${e.message}")
+        }
+    }
+
+    suspend fun addPost(
+        context: Context,
+        apiService: APIService,
+        selectedImages: List<Uri>,
+        selectedVideos: List<Uri>
+    ): Boolean {
+        // Chuẩn bị dữ liệu `RequestBody`
+        val userId = "67362213c6d421d3027fb5a7".toRequestBody("text/plain".toMediaTypeOrNull())
+        val buildingId = viewModel.selectedBuilding.value?.toRequestBody("text/plain".toMediaTypeOrNull())
+            ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val roomId  = selectedRoom?.toRequestBody("text/plain".toMediaTypeOrNull())
         val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val postType = "rent".toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val price = roomPrice.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val address = address.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val phoneNumber = phoneNumber.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val roomType = selectedRoomTypes.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val amenities = selectedComfortable.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val services = selectedService.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
 
-        val photoParts = selectedImages.mapNotNull { uri ->
-            val file = getFileFromUri(context, uri)
-            if (file == null) {
-                Log.e("AddPost", "Failed to process photo URI: $uri")
-                null
-            } else {
-                Log.d("AddPost", "Photo file: ${file.absolutePath}")
-                prepareMultipartBody("photo", file)
-            }
-        }
-
-        val videoParts = selectedVideos.mapNotNull { uri ->
-            val file = getFileFromUri(context, uri)
-            if (file == null) {
-                Log.e("AddPost", "Failed to process video URI: $uri")
-                null
-            } else {
-                Log.d("AddPost", "Video file: ${file.absolutePath}")
-                prepareMultipartBody("video", file)
-            }
-        }
-
-
-
-        try {
-            val response = apiService.addPost(
-                userId, title, content, status, postType, price, address, phoneNumber,
-                roomType, amenities, services,  videos = videoParts, photos = photoParts
+        val videoPart = selectedVideos.mapNotNull { uri ->
+            val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
+            prepareMultipartBody(
+                context,
+                uri,
+                "video",
+                ".mp4",
+                mimeType
             )
+        }
+        val photoPart = selectedImages.mapNotNull { uri ->
+            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+            prepareMultipartBody(
+                context,
+                uri,
+                "photo",
+                ".jpg",
+                mimeType
+            )
+        }
 
+
+        // Gửi dữ liệu đến API
+        return try {
+            val response = apiService.addPost(
+                userId = userId,
+                buildingId = buildingId,
+                roomId = roomId,
+                title = title,
+                content = content,
+                postType = postType,
+                status = status,
+                videos = photoPart,
+                photos = videoPart
+            )
             if (response.isSuccessful) {
-                Log.d("addPost", "Post created successfully: ${response.body()}")
+                Log.d("AddPost", "Dư liệu vừa thêm xong: ${response.body()}")
+                true
             } else {
-                Log.e("addPost", "Error: ${response.code()} - ${response.errorBody()?.string()}")
+                Log.e("AddPost", "Error: ${response.errorBody()?.string()}")
+                false
             }
         } catch (e: Exception) {
-            Log.e("addPost", "Exception: ${e.message}")
+            Log.e("AddPost", "Exception: ${e.message}")
+            false
         }
     }
-//    suspend fun addPost() {
-//        // Convert data to RequestBody
-//        val userId = "672490e5ce87343d0e701012".toRequestBody(MultipartBody.FORM)
-//        val titleBody = title.toRequestBody(MultipartBody.FORM)
-//        val contentBody = content.toRequestBody(MultipartBody.FORM)
-//        val priceBody = roomPrice.toRequestBody(MultipartBody.FORM)
-//        val addressBody = address.toRequestBody(MultipartBody.FORM)
-//        val phoneNumberBody = phoneNumber.toRequestBody(MultipartBody.FORM)
-//        val roomTypeBody = selectedRoomTypes.joinToString(",").toRequestBody(MultipartBody.FORM)
-//        val amenitiesBody = selectedComfortable.joinToString(",").toRequestBody(MultipartBody.FORM)
-//        val servicesBody = selectedService.joinToString(",").toRequestBody(MultipartBody.FORM)
-//
-//        val videoParts = selectedVideos.map { fileUri ->
-//            val file = File(fileUri.path ?: "")
-//            val requestFile = file.asRequestBody("video/*".toMediaTypeOrNull())
-//            MultipartBody.Part.createFormData("video", file.name, requestFile)
-//        }
-//
-//        val photoParts = selectedImages.map { fileUri ->
-//            val file = File(fileUri.path ?: "")
-//            val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-//            MultipartBody.Part.createFormData("photo", file.name, requestFile)
-//        }
-//
-//        // Gửi yêu cầu POST
-//        try {
-//            val response = RetrofitClient.instance.addPost(
-//                userId, titleBody, contentBody, priceBody, addressBody, phoneNumberBody, roomTypeBody, amenitiesBody, servicesBody,
-//                videoParts, photoParts
-//            )
-//
-//            if (response.isSuccessful) {
-//                // Thành công
-//            } else {
-//                // In chi tiết lỗi
-//                val errorBody = response.errorBody()?.string()  // Lấy chi tiết lỗi từ body
-//                Log.e("PostRequest", "Error: ${response.code()} - $errorBody")
-//            }
-//        } catch (e: Exception) {
-//            // Xử lý ngoại lệ nếu có
-//            Log.e("PostRequest", "Exception: ${e.message}")
-//        }
-//
-//    }
 
-        Box(
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xfff7f7f7))
@@ -257,7 +225,7 @@ fun AddPostScreens(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = {  navController.navigate("CATEGORYPOST" )}) {
+                IconButton(onClick = {   navController.navigate("POSTING_STAFF")}) {
                     Image(
                         painter = painterResource(id = R.drawable.back),
                         contentDescription = null,
@@ -334,21 +302,6 @@ fun AddPostScreens(navController: NavHostController) {
                     )
                 )
             }
-            // loai phòng
-            Column {
-                RoomTypeLabel()
-
-                RoomTypeOptions(
-                    selectedRoomTypes = selectedRoomTypes,
-                    onRoomTypeSelected = { roomType ->
-                        selectedRoomTypes = if (selectedRoomTypes.contains(roomType)) {
-                            selectedRoomTypes - roomType
-                        } else {
-                            selectedRoomTypes + roomType
-                        }
-                    }
-                )
-            }
 //video
             SelectMedia { images, videos ->
                 selectedImages = images
@@ -356,58 +309,7 @@ fun AddPostScreens(navController: NavHostController) {
                 Log.d("AddPost", "Received Images: $selectedImages")
                 Log.d("AddPost", "Received Videos: $selectedVideos")
             }
-            // gía phòng
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Giá Phòng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xff7f7f7f),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-                    )
-                    Text(
 
-                        text = " *",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffff1a1a),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 16.sp,
-
-                        )
-                }
-                TextField(
-                    value = roomPrice,
-                    onValueChange = { roomPrice = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập giá phòng",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
             //  Nội dung
             Column(
                 modifier = Modifier
@@ -428,7 +330,6 @@ fun AddPostScreens(navController: NavHostController) {
                         color = Color(0xffff1a1a),
                         // fontWeight = FontWeight(700),
                         fontSize = 16.sp,
-
                         )
                 }
                 TextField(
@@ -459,134 +360,42 @@ fun AddPostScreens(navController: NavHostController) {
                     )
                 )
             }
-            // dịa chỉ
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Địa chỉ",
-                        color = Color(0xff7f7f7f),
-                        fontSize = 13.sp,
-                    )
-                    Text(
-                        text = " *",
-                        color = Color(0xffff1a1a),
-                        fontSize = 16.sp,
-
-                        )
-                }
-                TextField(
-                    value = address,
-                    onValueChange = { address = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập địa chỉ *",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
-            // sóo điện thoại
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Số điện thoại",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xff7f7f7f),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-                    )
-                    Text(
-
-                        text = " *",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffff1a1a),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 16.sp,
-
-                        )
-                }
-                TextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập địa chỉ *",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
             Spacer(modifier = Modifier.height(3.dp))
             Column {
-                ComfortableLabel()
+                BuildingLabel()
 
-                ComfortableOptions(
-                    selectedComfortable = selectedComfortable,
-                    onComfortableSelected = { comfortable ->
-                        selectedComfortable = if (selectedComfortable.contains(comfortable)) {
-                            selectedComfortable - comfortable
-                        } else {
-                            selectedComfortable + comfortable
-                        }
+                BuildingOptions(
+                    userId = "67362213c6d421d3027fb5a7",
+                    selectedBuilding = viewModel.selectedBuilding.value,
+                    onBuildingSelected = { buildingId ->
+                        viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
                     }
                 )
             }
             // dịch vụ
             Spacer(modifier = Modifier.height(10.dp))
             Column {
-            ServiceLabel()
-            ServiceOptions(
-                selectedService = selectedService,
-                onServiceSelected = { service ->
-                    selectedService = if (selectedService.contains(service)) {
-                        selectedService - service
-                    } else {
-                        selectedService + service
-                    }
+            RoomLabel()
+                viewModel.selectedBuilding.value?.let {
+                    RoomOptions (
+                        buildingId = it,
+                        selectedRoom = selectedRoom,
+                        onRoomSelected = { roomId ->
+                            selectedRoom = roomId
+                        }
+                    )
                 }
-            )
+                //673b57f7d24f9f5e94603b17
+//            ServiceOptions(
+//                selectedService = selectedService,
+//                onServiceSelected = { service ->
+//                    selectedService = if (selectedService.contains(service)) {
+//                        selectedService - service
+//                    } else {
+//                        selectedService + service
+//                    }
+//                }
+//            )
         }
 
         }
@@ -601,10 +410,42 @@ fun AddPostScreens(navController: NavHostController) {
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(
                     onClick = {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val apiService = RetrofitClient.apiService  // Sử dụng apiService đã có sẵn
-                            addPost(context, apiService)
+                        if (isFieldEmpty(title)) {
+                            // Hiển thị thông báo lỗi nếu title trống
+                            Toast.makeText(context, "Tiêu đề không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button        }
+
+                        if (selectedImages.isEmpty()) {
+                            // Hiển thị thông báo nếu không có ảnh nào được chọn
+                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
+                       return@Button
                         }
+                        if (selectedVideos.isEmpty()) {
+                            // Hiển thị thông báo nếu không có ảnh nào được chọn
+                            Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
+                     return@Button
+                        }
+
+                        if (isFieldEmpty(content)) {
+                            // Hiển thị thông báo lỗi nếu content trống
+                            Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val apiService = RetrofitClient.apiService
+                            val isSuccessful = withContext(Dispatchers.IO) {
+                                addPost(context, apiService, selectedImages, selectedVideos)
+                            }
+
+                            if (isSuccessful) {
+                                // Chuyển màn khi bài đăng được tạo thành công
+                                navController.navigate("POSTING_STAFF")
+                            } else {
+                                // Hiển thị thông báo lỗi nếu tạo bài thất bại
+                                Toast.makeText(context, "Failed to create post", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
                     }, modifier = Modifier.height(50.dp).fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xff5dadff)
@@ -631,85 +472,3 @@ fun GreetingLayoutAddPostScreen() {
 
 
 
-
-//ảnh
-//            Row(
-//                modifier = Modifier.padding(5.dp),
-//                verticalAlignment = Alignment.CenterVertically,
-//            ) {
-//                Row(
-//                    modifier = Modifier
-//                        .clickable {  }
-//                        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-//                        .background(color = Color(0xFFffffff))
-//                        .border(
-//                            width = 0.dp,
-//                            color = Color(0xFFEEEEEE),
-//                            shape = RoundedCornerShape(10.dp)
-//                        )
-//                        .padding(25.dp),
-//
-//                    verticalAlignment = Alignment.CenterVertically,
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.image),
-//                        contentDescription = null,
-//                        modifier = Modifier.size(30.dp, 30.dp)
-//                    )
-//                }
-//                Spacer(modifier = Modifier.width(15.dp))
-//                Column {
-//                    Text(
-//                        text = "Ảnh Phòng trọ",
-//                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                        color = Color.Black,
-//                        // fontWeight = FontWeight(700),
-//                        fontSize = 14.sp,
-//
-//                        )
-//
-//                    Text(
-//                        text = "Tối đa 10 ảnh",
-//
-//                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                        color = Color(0xFFBFBFBF),
-//                        // fontWeight = FontWeight(700),
-//                        fontSize = 13.sp,
-//
-//                        )
-//                }
-//
-//
-//            }
-//            Spacer(modifier = Modifier.height(17.dp))
-//            Column(
-//                modifier = Modifier
-//                    .clickable {  }
-//                    .fillMaxHeight(0.6f)
-//                    .fillMaxWidth()
-//                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-//                    .background(color = Color(0xFFffffff))
-//                    .border(
-//                        width = 0.dp, color = Color(0xFFEEEEEE), shape = RoundedCornerShape(10.dp)
-//                    )
-//                    .padding(25.dp),
-//
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.video),
-//                    contentDescription = null,
-//                    modifier = Modifier.size(30.dp, 30.dp)
-//                )
-//                Spacer(modifier = Modifier.height(7.dp))
-//                Text(
-//
-//                    text = "Video",
-//                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                    color = Color.Black,
-//                    // fontWeight = FontWeight(700),
-//                    fontSize = 13.sp,
-//
-//                    )
-//            }

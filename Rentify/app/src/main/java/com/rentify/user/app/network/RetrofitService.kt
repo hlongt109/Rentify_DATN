@@ -46,7 +46,7 @@ object LocationService{
 }
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.2.105:3000/api/"
+    private const val BASE_URL = "http://192.168.2.106:3000/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -55,22 +55,8 @@ object ApiClient {
 
     val apiService: APIService = retrofit.create(APIService::class.java)
 }
-// addpost
-//object RetrofitClient {
-//    private const val BASE_URL = "http://192.168.2.106:3000/api/staff/posts/"
-//
-//    val instance: APIService by lazy {
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl(BASE_URL)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//
-//        retrofit.create(APIService::class.java)
-//    }
-//
-//}
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.2.106:3000/api/staff/posts/"
+    private const val BASE_URL = "http://192.168.2.106:3000/api/"
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()

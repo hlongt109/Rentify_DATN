@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const Staff = require("../../models/User")
+const User = require("../../models/User")
 const uploadFile = require("../../config/common/upload");
 const handleServerError = require("../../utils/errorHandle")
 const { getFormattedDate } = require('../../utils/dateUtils');
@@ -190,5 +191,45 @@ router.get("/api/staffs", async (req, res) => {
         handleServerError(res, error);
     }
 })
+
+router.get("/get-staffs/:landlord_id", async (req, res) => {
+    try {
+        // Lấy landlord_id từ URL params
+        const landlordId = req.params.landlord_id;
+        
+        if (!landlordId) {
+            return res.status(400).json({
+                status: 400,
+                message: "Landlord ID is required",
+            });
+        }
+
+        // Tìm tất cả staff có landlord_id trùng với landlordId
+        const staffs = await User.find(
+            { landlord_id: landlordId, role: "staffs" }, // Điều kiện tìm kiếm
+            { username: 1, _id: 1 } // Chỉ lấy trường `username`, bỏ `_id`
+        );
+
+        if (staffs.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "No staffs found",
+            });
+        }
+
+        res.status(200).json({
+            status: 200,
+            data: staffs,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+});
+
 
 module.exports = router;
