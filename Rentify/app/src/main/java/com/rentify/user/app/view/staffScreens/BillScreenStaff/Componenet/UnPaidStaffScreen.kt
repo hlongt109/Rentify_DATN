@@ -47,7 +47,6 @@ fun UnPaidStaffScreen(
         viewModel.getInvoiceList(staffId)
     }
 
-
     val expandedItems = remember { mutableStateListOf<String>() }
     Log.d("UnPaidList", "UnPaidStaffScreen: $unpaidInvoices")
     Box(
@@ -105,7 +104,7 @@ fun UnPaidStaffScreen(
 
                 is InvoiceUiState.Error -> {
                     Text(
-                        text = "Lỗi lấy dữ liệu",
+                        text = "Lỗi lấy dữ liệu: ${(uiState as InvoiceUiState.Error).message}",
                         modifier = Modifier.align(Alignment.Center),
                         color = Color.Red
                     )

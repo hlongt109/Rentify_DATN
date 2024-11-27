@@ -113,6 +113,7 @@ class InvoiceStaffViewModel(
                 },
                 onFailure = { exception ->
                     _uiState.value = InvoiceUiState.Error(exception.message ?: "Lỗi không xác định")
+//                    _uiState.value = InvoiceUiState.Error(exception.localizedMessage)
                 }
             )
         }
