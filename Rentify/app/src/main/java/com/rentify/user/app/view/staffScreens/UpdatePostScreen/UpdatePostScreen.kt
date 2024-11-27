@@ -1,6 +1,5 @@
 package com.rentify.user.app.view.staffScreens.UpdatePostScreen
 
-
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -14,7 +13,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
-
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -47,7 +44,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -67,8 +63,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Size
@@ -77,47 +71,27 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-
-
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.PlayerView
-import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.PostingDetail
-import com.rentify.user.app.network.APIService
-import com.rentify.user.app.network.RetrofitClient
-
-
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableLabel
-
-import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.RoomTypeLabel
-import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.RoomTypeOptions
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
-
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
-
-import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.HeaderComponent
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.io.File
+import java.io.IOException
 
 fun prepareMultipartBody(
     context: Context,
@@ -168,7 +142,11 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     var isEdited by remember { mutableStateOf(false) }
     var content by remember { mutableStateOf("") }
     val postId = navController.currentBackStackEntry?.arguments?.getString("postId")
+
     val viewModel: PostViewModel = viewModel()
+
+    val buildingId = viewModel.selectedBuilding.value
+
     val postDetail by viewModel.postDetail.observeAsState()
 
     LaunchedEffect(postId) {
@@ -370,10 +348,6 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         )
                     )
                 }
-
-
-
-
                 Spacer(modifier = Modifier.height(3.dp))
                 Column {
                     ComfortableLabel()
@@ -413,17 +387,6 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 .height(screenHeight.dp / 7f)
                 .background(color = Color(0xfff7f7f7))
         ) {
-            fun logRequestBody(requestBody: RequestBody) {
-                val buffer = Buffer()
-                try {
-                    requestBody.writeTo(buffer)
-                    val content = buffer.readUtf8()
-                    Log.d("click", "RequestBody content: $content")
-                } catch (e: Exception) {
-                    Log.e("click", "Error reading RequestBody: ${e.message}")
-                }
-            }
-
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(
                     onClick = {
@@ -436,20 +399,6 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
-
-
-
-                        val userId = "67362213c6d421d3027fb5a7".toRequestBody("text/plain".toMediaTypeOrNull())
-                        val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-                        val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-                        val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
-                        val postType = "rent".toRequestBody("multipart/form-data".toMediaTypeOrNull())
-
-                        val buildingId = viewModel.selectedBuilding.value?.toRequestBody("text/plain".toMediaTypeOrNull())
-                            ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
-
-                        val roomId  = selectedRoom1?.toRequestBody("text/plain".toMediaTypeOrNull())
-                            ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
 
                         val videoParts = selectedVideos.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
@@ -472,37 +421,18 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                             )
                         }
 
-                        if (roomId != null) {
-                            logRequestBody(roomId)
-                        }
-                        Log.e("click", "log room_id : ${selectedRoom1}")
-                        logRequestBody(buildingId)
-                        Log.e("click", "log building : ${viewModel.selectedBuilding.value}")
-
-                        Log.e("click", "log post_id : ${postId}")
-                        logRequestBody(userId)
-                        Log.e("click", "log user_id : 67362213c6d421d3027fb5a7")
-                        logRequestBody(content)
-                        Log.e("click", "log content : ${content}")
-                        logRequestBody(postType)
-                        Log.e("click", "log postType : rent")
-                        Log.e("click", "log content : ${title}")
-                        logRequestBody(title)
-                        logRequestBody(status)
-                          // Gửi yêu cầu cập nhật
                         postId?.let {
                             viewModel.updatePost(
                                 postId = postId,
-                                userId = userId,
-                                building_id = buildingId,
-                                room_id = roomId,
+                                userId = "67362213c6d421d3027fb5a7",
+                                buildingId = buildingId,
+                                roomId = selectedRoom1,
                                 title = title,
-
                                 content = content,
-                                status = status,
-                                postType = postType,
-                                videos = videoParts,  // List<MultipartBody.Part>
-                                photos = photoParts   // List<MultipartBody.Part>
+                                status = "0",
+                                postType = "rent",
+                                videoFile = videoParts,  // List<MultipartBody.Part>
+                                photoFile = photoParts   // List<MultipartBody.Part>
                             )
                         }
                         navController.navigate("post_detail/$postId")
@@ -529,9 +459,6 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
         }
     }
 }
-
-
-
 
 @Composable
 fun BuildingOptions(
@@ -1272,6 +1199,16 @@ fun VideoThumbnail(uri: Uri) {
             } },
             modifier = Modifier.fillMaxSize()
         )
+    }
+}
+
+fun getRequestBodyString(requestBody: RequestBody): String {
+    return try {
+        val buffer = Buffer()
+        requestBody.writeTo(buffer)
+        buffer.readUtf8()  // Trả về chuỗi UTF-8 từ RequestBody
+    } catch (e: IOException) {
+        "Error reading RequestBody: ${e.localizedMessage}"
     }
 }
 

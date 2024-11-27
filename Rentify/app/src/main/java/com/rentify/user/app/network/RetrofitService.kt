@@ -55,8 +55,9 @@ object ApiClient {
 
     val apiService: APIService = retrofit.create(APIService::class.java)
 }
+
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.2.106:3000/api/"
+    private const val BASE_URL = "http://10.0.2.2:3000/api/"
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
