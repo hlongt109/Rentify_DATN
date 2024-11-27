@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/User');
 const Service = require('../models/Service');
+const Support = require('../models/Support');
 const mongoose = require('mongoose');
 
 router.get('/', function (req, res, next) {
@@ -65,6 +66,32 @@ router.get('/api/staffs_mgr/list/:id', async (req, res) => {
   }
 
   res.render('Landlord_website/screens/QuanLyNhanVien', { data }, (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Quản lý nhân viên',
+      body: html
+    });
+  });
+});
+/////
+router.get('/api/support_mgr/list/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid landlord_id format" });
+  }
+
+  const landlordObjectId = new mongoose.Types.ObjectId(userId);
+  const data = await Support.find({ landlord_id: landlordObjectId });
+
+  if (data.length === 0) {
+    console.log("Không có dữ liệu");
+    return res.render("Landlord_website/screens/Support_Landlord", { data: [] });
+  }
+
+  res.render('Landlord_website/screens/Support_Landlord', { data }, (err, html) => {
     if (err) {
       return res.status(500).send(err);
     }

@@ -9,9 +9,11 @@ const Support = new Schema({  // bảng hỏng hóc
     room_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room',
-        required: true
     },
-    title_support: { type: String, require: true },
+    landlord_id: {
+        type: mongoose.Schema.Types.ObjectId
+    },
+    title_support: { type: String, require: true },//kien nghi / khieu nai
     content_support: { type: String, require: true },
     image: { type: Array },
     status: { type: Number, enum: [0, 1], default: 1 },
