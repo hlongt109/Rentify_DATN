@@ -1,6 +1,6 @@
 let building = []
 let contract = []
-let userId = localStorage.getItem('user_id');
+// let userId = localStorage.getItem('user_id');
 let search = '';
 
 // Lấy thông tin các tòa nhà

@@ -7,24 +7,32 @@ const uploadFile = require("../../config/common/upload");
 const handleServerError = require("../../utils/errorHandle");
 const { getFormattedDate } = require('../../utils/dateUtils');
 
-// service list
-router.get("/api/services", async (req, res) => {
+const jwt = require('jsonwebtoken');
+
+router.get("/services_mgr/list/:id", async (req, res) => {
     try {
-        const data = await Service.find();
-        if (data) {
-            //res.status(200).send(data);
-            res.render("Service/listService", { data });
-        } else {
-            res.json({
-                "status": 400,
-                "messenger": "Get service list failed",
-                "data": []
-            })
+        const userId = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid landlord_id format" });
         }
+
+        const landlordObjectId = new mongoose.Types.ObjectId(userId);
+        const data = await Service.find({ landlord_id: landlordObjectId });
+
+        if (data.length === 0) {
+            console.log("Không có dữ liệu");
+            return res.render("Landlord_website/screens/QuanLydichVu", { data: [] });
+        }
+
+        res.render("Landlord_website/screens/QuanLydichVu", { data }); // Truyền data tới EJS
     } catch (error) {
-        handleServerError(res, error);
+        console.error("Error fetching services:", error.message);
+        res.status(500).render("Landlord_website/screens/QuanLydichVu", { data: [] });
     }
-})
+});
+
+
 // details
 router.get("/api/services/:id", async (req, res) => {
     try {
@@ -71,34 +79,36 @@ router.get("/api/services1", async (req, res) => {
     res.render("Service/addService");
 })
 
-router.post("/api/services/add", uploadFile.array('photos'), async (req, res) => {
+// Endpoint thêm dịch vụ
+router.post("/services/add/:id", uploadFile.array('photos'), async (req, res) => {
     try {
-        if (req.method == 'POST') {
-            const { name, description, price } = req.body;
-            let photos = req.files.map(file => file.filename);
+        const userId = req.params.id;
+        const { name, description, price } = req.body;
 
-            if (photos.length === 0) {
-                return res.status(400).json({ message: 'Image hoặc video không được trống' });
-            }
+        const photos = req.files ? req.files.map(file => file.filename) : [];
 
-            let objService = new Service({
-                photos,
-                name,
-                description,
-                price,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            });
-            await objService.save();
-            let msg = 'Thêm thành công id mới: ' + objService._id;
-            console.log(msg);
-            res.redirect('/api/api/services');
-        }
+        console.log('Uploaded files:', req.files);
+
+        const objService = new Service({
+            photos,
+            name,
+            description,
+            price,
+            landlord_id: userId,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        });
+
+        await objService.save();
+        return res.status(201).json({ message: 'Thêm thành công!' });
+
     } catch (error) {
-        console.error(error);
-        return res.status(500).send('Lỗi server rồi');
+        console.error('Lỗi server:', error.message);
+        return res.status(500).json({ message: 'Đã xảy ra lỗi server!' });
     }
-})
+});
+
+
 
 // update 
 router.get("/api/services1/:id", async (req, res) => {
@@ -118,49 +128,59 @@ router.get("/api/services1/:id", async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 })
-router.post("/api/services/update/:id", async (req, res) => {
+router.put("/services_mgr/update/:id", uploadFile.array('photos', 10), async (req, res) => {
     try {
-        const { id } = req.params;
-        const data = req.body;
+        const { name, description, price } = req.body;
+        const newPhotos = req.files ? req.files.map(file => file.filename) : [];
 
-        const servicePut = await Service.findByIdAndUpdate(id);
-
-        if (!servicePut) {
+        if (!name || !description || !price) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Tên, mô tả và giá không được để trống',
+                data: []
+            });
+        }
+        // Kiểm tra sự tồn tại của dịch vụ
+        const service = await Service.findById(req.params.id);
+        if (!service) {
             return res.status(404).json({
                 status: 404,
-                messenger: 'Service not found',
+                message: 'Dịch vụ không tìm thấy',
                 data: []
             });
         }
-
-        servicePut.name = data.name ?? servicePut.name;
-        servicePut.description = data.description ?? servicePut.description;
-        servicePut.price = data.price ?? servicePut.price;
-        servicePut.updated_at = new Date().toISOString()
-
-        const result = await servicePut.save()
-
-        if (result) {
-            // res.json({
-            //     status: 200,
-            //     messenger: 'service update successfully',
-            //     data: result
-            // });
-            res.redirect("/api/api/services");
-        } else {
-            res.json({
-                status: 400,
-                messenger: 'service update failed',
-                data: []
-            });
+        // Nếu có ảnh mới, thay thế ảnh cũ; nếu không, giữ nguyên ảnh cũ
+        if (newPhotos.length > 0) {
+            service.photos = newPhotos;  // Ghi đè ảnh mới
         }
+        // Cập nhật dịch vụ
+        service.name = name;
+        service.description = description;
+        service.price = price;
+        service.updated_at = new Date().toISOString();
+
+        await service.save(); // Lưu thay đổi vào MongoDB
+        // Trả lại kết quả cập nhật thành công
+        res.json({
+            status: 200,
+            message: 'Cập nhật dịch vụ thành công',
+            data: service
+        });
 
     } catch (error) {
-        handleServerError(res, error);
+        // Xử lý lỗi server
+        console.error(error);
+        res.status(500).json({
+            status: 500,
+            message: 'Lỗi server nội bộ',
+            data: []
+        });
     }
-})
+});
+
+
 // delete 
-router.delete("/api/services1/:id", async (req, res) => {
+router.delete("/services1/:id", async (req, res) => {
     try {
         const { id } = req.params
         const result = await Service.findByIdAndDelete(id);

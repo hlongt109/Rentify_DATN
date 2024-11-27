@@ -137,20 +137,13 @@ router.post("/rentify/login", async (req, res) => {
             return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
         }
 
-        // Tạo Access Token
-        const accessToken = jwt.sign({ username, role: user.role }, 'hoan', { expiresIn: '1h' });
+        const token = jwt.sign({ landlord_id: user.landlord_id }, 'hoan', { expiresIn: '1h' });
+        console.log("login: ", req.body);
 
-        // Tạo Refresh Token
-        const refreshToken = jwt.sign({ username, role: user.role }, 'hoan', { expiresIn: '7d' });
 
         // Trả về accessToken, refreshToken và thông tin người dùng
         return res.json({
-            accessToken,
-            refreshToken,
-            data: {
-                username: user.username,
-                role: user.role
-            }
+            token
         });
     } catch (error) {
         console.error(error, " Password: " + req.body.password);

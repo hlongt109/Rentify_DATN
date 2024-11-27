@@ -1,6 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 const buildingId = params.get('buildingId');
-let userId = localStorage.getItem('user_id');
+// let userId = localStorage.getItem('user_id');
 const contractId = params.get('contractId');
 const contractStatus  = params.get('status');
 

@@ -6,6 +6,7 @@ var logger = require("morgan");
 const cors = require('cors');
 
 
+
 //
 var indexRouter = require("./routes/index");
 var indexLandlord = require("./routes/LandlordIndex")
@@ -22,8 +23,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // to parse URL-encoded bodies
 app.use(cookieParser());
 app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static('public/uploads'));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/api/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/landlord/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/landlord/api/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
 

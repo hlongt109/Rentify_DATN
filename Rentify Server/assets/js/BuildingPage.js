@@ -1,5 +1,7 @@
 let building = []
-let userId = localStorage.getItem('user_id');
+// let userId = localStorage.getItem('user_id');
+// console.log(userId);
+
 let search = '';
 
 // Lấy thông tin các tòa nhà
