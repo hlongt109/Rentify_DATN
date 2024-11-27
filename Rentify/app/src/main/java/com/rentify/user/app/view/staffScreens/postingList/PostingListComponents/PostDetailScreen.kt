@@ -135,7 +135,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .height(screenHeight.dp / 1.3f)
+                        .height(screenHeight.dp / 1.2f)
                         .verticalScroll(scrollState)
                 ) {
 
@@ -149,6 +149,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                         color=Color(0xfffeb501),
                         modifier = Modifier.padding(horizontal = 10.dp)
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
                     // tên phòng
                     Text(
                         text = "Phòng: ${detail.room?.room_name}",
@@ -157,6 +158,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 10.dp)
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
                     // địa chỉ
                     Text(
                         text = "Địa chỉ: ${detail.building?.address}",
@@ -165,6 +167,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 10.dp)
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
                     // giá
                     Text(
                         text = "Giá: ${detail.room?.price?.let { "$it VND" }}",
@@ -172,6 +175,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                         color=Color(0xffde5135),
                         modifier = Modifier.padding(horizontal = 10.dp)
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
                     // Tiêu đề bài đăng
                     Column(
                         modifier = Modifier
@@ -184,6 +188,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                                 color = Color(0xff7f7f7f),
                                 fontSize = 14.sp,
                             )
+
                             Text(
 
                                 text = " *",
@@ -192,6 +197,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
                                 )
                         }
+                        Spacer(modifier = Modifier.height(5.dp))
                         Text(
                             text = detail.title,
                             fontSize = 15.sp,
@@ -228,6 +234,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
                                 )
                         }
+                        Spacer(modifier = Modifier.height(5.dp))
                         Text(
                             text = "${detail.content}",
                             fontSize = 15.sp,
@@ -244,9 +251,11 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                         )
                     }
                     PostVideoSection(videos = detail.videos ?: emptyList())
+                    Spacer(modifier = Modifier.height(10.dp))
 // tên tòa và số bài dăng
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp),
+
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.user),
@@ -274,9 +283,11 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
+                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 10.dp),
@@ -458,6 +469,7 @@ fun PostVideoSection(videos: List<String>) {
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
                     .height(300.dp)
             ) { pageIndex ->
                 val videoUrl = videos[pageIndex]

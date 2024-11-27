@@ -435,9 +435,10 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                 photoFile = photoParts   // List<MultipartBody.Part>
                             )
                         }
-                        navController.navigate("post_detail/$postId")
+//                        navController.navigate("post_detail/$postId")
+                        navController.navigate("POSTING_STAFF")
                         {
-                            popUpTo("update_post_screen/$postId") { inclusive = true }
+                            popUpTo("update_post_screen/$postId")
                         }
 
                     }, modifier = Modifier

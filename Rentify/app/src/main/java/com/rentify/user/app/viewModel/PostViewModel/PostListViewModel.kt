@@ -66,22 +66,31 @@ class PostViewModel : ViewModel() {
                     photoFile
                 )
 
+                // Logging thông tin phản hồi để kiểm tra
+                Log.d("updatePost", "API response code: ${response.code()}")
+                Log.d("updatePost", "API response message: ${response.message()}")
+                Log.d("updatePost", "API response body: ${response.body()}")
+
                 // Kiểm tra kết quả trả về từ API
                 if (response.isSuccessful) {
                     val updatedPost = response.body()
                     if (updatedPost != null) {
                         // Trả về kết quả thành công
                         _updateBookingStatusResult.postValue(Result.success(updatedPost))
+                        Log.d("updatePost", "Update successful: $updatedPost")
                     } else {
                         _updateBookingStatusResult.postValue(Result.failure(Exception("Update failed")))
+                        Log.e("updatePost", "Update failed: Response body is null")
                     }
                 } else {
                     _updateBookingStatusResult.postValue(Result.failure(Exception("API Error: ${response.message()}")))
+                    Log.e("updatePost", "API Error: ${response.message()}")
                 }
 
             } catch (e: Exception) {
                 // Nếu có lỗi trong quá trình gọi API, trả về thông báo lỗi
                 _errorMessage.postValue(e.message)
+                Log.e("updatePost", "Exception: ${e.message}", e)
             }
         }
     }
