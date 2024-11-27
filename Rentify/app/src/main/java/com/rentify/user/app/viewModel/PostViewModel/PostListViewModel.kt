@@ -108,15 +108,20 @@ class PostViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     _updateStatus.value = true // Cập nhật thành công
                     _errorMessage.value = "" // Xóa thông báo lỗi nếu thành công
+                    Log.d("API Update", "Update successful for postId: $postId")
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "Unknown error"
                     _updateStatus.value = false // Cập nhật thất bại
                     _errorMessage.value = "Update failed: ${response.code()} - $errorBody"
+                    Log.e("API Update", "Error: ${response.code()} - $errorBody")
                 }
             } catch (e: Exception) {
                 _updateStatus.value = false // Xử lý lỗi
-                _errorMessage.value = "Exception: ${e.localizedMessage ?: "Unknown exception"}"
+                val errorMessage = e.localizedMessage ?: "Unknown exception"
+                _errorMessage.value = "Exception: $errorMessage"
+                Log.e("API Update", "Exception occurred: $errorMessage", e)
             }
+
         }
     }
 
@@ -167,7 +172,7 @@ class PostViewModel : ViewModel() {
                         _rooms.value = roomsResponse?.data ?: emptyList()
                         Log.d("PostViewModel", "Rooms fetched: ${_rooms.value}")
                     } else {
-                        Log.e("PostViewModel", "Error fetching rooms: ${response.message()}")
+                        Log.e("updatePost", "Error: ${response.code()} - ${response.errorBody()?.string()}")
                     }
                 } catch (e: Exception) {
                     Log.e("PostViewModel", "Exception: ${e.message}")
