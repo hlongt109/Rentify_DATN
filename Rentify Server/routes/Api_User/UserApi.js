@@ -7,7 +7,7 @@ const Post = require("../../models/Post");
 //room
 const Room = require("../../models/Room");
 // send email service
-// const transporter = require("../config/common/mailer");
+// const transporter = require("../cSDonfig/common/mailer");
 // upload file (image, video)
 const uploadFile = require("../../config/common/multer");
 //thu vien token

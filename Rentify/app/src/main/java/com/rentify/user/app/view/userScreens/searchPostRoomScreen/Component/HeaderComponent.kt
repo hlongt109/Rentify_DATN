@@ -74,7 +74,7 @@ fun HeaderComponent(navController: NavController) {
 
             IconButton(
                 modifier = Modifier.width(100.dp),
-                onClick = { navController.navigate("ADDPOST") }
+                onClick = { navController.navigate("ADDPOST?postType=seek")  }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.addr),

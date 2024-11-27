@@ -4,6 +4,36 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const Building = require('../../models/Building');
 const Room = require('../../models/Room')
+
+//const upload = require('../../config/common/uploadImageRoom')
+const fs = require('fs');
+const path = require('path');
+
+// #1. Thêm tòa nhà (POST): http://localhost:3000/api/buildings
+router.post('/buildings', async (req, res) => {
+    const { landlord_id, address, description, number_of_floors } = req.body;
+
+
+    try {
+        const newBuilding = new Building({
+            landlord_id,
+            address,
+            description,
+            number_of_floors,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        });
+
+
+        await newBuilding.save();
+        res.status(201).json({ message: 'Building added successfully!', building: newBuilding });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to add building.' });
+    }
+});
+
+
 const upload = require('../../config/common/uploadImageRoom')
 
 // #2. Lấy danh sách tất cả tòa nhà
@@ -35,6 +65,9 @@ router.delete('/buildings/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete building.' });
     }
 });
+// API lấy danh sách dịch vụ của một tòa nhà cụ thể
+router.get('/building/:id/services', async (req, res) => {
+    const { id } = req.params;
 
 // các api thiên viết
 router.post('/add-building', async (req, res) => {
@@ -76,9 +109,29 @@ router.put('/buildings/:id', async (req, res) => {
     const { address, description, number_of_floors, nameBuilding, service, manager_id } = req.body;
 
     // Validate ID là ObjectId hợp lệ
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid building ID.' });
     }
+
+
+    try {
+        // Tìm tòa nhà theo ID và populate dịch vụ
+        const building = await Building.findById(id)
+            .populate('service', 'name');
+
+        // Nếu không tìm thấy tòa nhà
+        if (!building) {
+            return res.status(404).json({ error: 'Building not found.' });
+        }
+
+        // Trả về danh sách dịch vụ của tòa nhà
+        res.status(200).json(building.service);
+    } catch (error) {
+        console.error('Error fetching building services:', error.message);
+        res.status(500).json({ error: 'Failed to fetch building services. Please try again later.' });
+    }
+});
 
     if (!mongoose.Types.ObjectId.isValid(manager_id)) {
         return res.status(400).json({ error: 'Invalid building ID.' });
@@ -202,6 +255,7 @@ const normalizePaths = (room) => {
     room.video_room = room.video_room.map(video => removeUnnecessaryPath(video.replace(/\\/g, '/')));
     return room;
 };
+
 
 
 router.get('/room/:id', async (req, res) => {

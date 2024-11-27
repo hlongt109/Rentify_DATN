@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    //implementation(libs.androidx.media3.exoplayer)
+  // implementation(libs.androidx.media3.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -116,6 +118,22 @@ dependencies {
     //wipe to delete
     implementation ("androidx.compose.foundation:foundation:1.7.5")
     implementation ("androidx.compose.material:material-icons-extended:1.7.5")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation ("io.ktor:ktor-client-android:2.3.3")
+    implementation ("io.ktor:ktor-client-json:2.3.3")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation ("io.ktor:ktor-client-core:2.2.3")
+    implementation ("io.ktor:ktor-client-cio:2.2.3")
+    implementation ("io.ktor:ktor-client-serialization:2.2.3")
+    // thư viện tải ảnh _vanphuc :
+    implementation ("com.github.bumptech.glide:glide:4.14.2")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("com.google.android.exoplayer:exoplayer:2.18.1")
+
+        implementation ("com.google.accompanist:accompanist-pager:0.28.0") // Thêm dòng này
+        implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0") // Thêm dòng này nếu cần indicators (dấu chấm chỉ số trang)
+
 
 }
 // Allow references to generated code

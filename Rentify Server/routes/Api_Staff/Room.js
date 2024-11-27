@@ -56,8 +56,7 @@ router.get('/RoomsForBuilding/:building_id', async (req, res) => {
 // Hiển thị chi tiết phòng 🤷‍♂️
 const normalizePaths = (room) => {
     const removeUnnecessaryPath = (path) => path.replace(/^\/landlord\//, '');
-
-    room.photos_room = room.photos_room.map(photo => removeUnnecessaryPath(photo.replace(/\\/g, '/')));
+room.photos_room = room.photos_room.map(photo => removeUnnecessaryPath(photo.replace(/\\/g, '/')));
     room.video_room = room.video_room.map(video => removeUnnecessaryPath(video.replace(/\\/g, '/')));
     return room;
 };

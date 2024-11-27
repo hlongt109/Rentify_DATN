@@ -66,7 +66,7 @@ fun HeaderComponent(navController: NavController) {
             }
 
             Text(
-                text = "Bài đăng tìm phòng",
+                text = "Bài đăng tìm bạn ở ghép",
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp
@@ -74,7 +74,7 @@ fun HeaderComponent(navController: NavController) {
 
             IconButton(
                 modifier = Modifier.width(100.dp),
-                onClick = { navController.navigate("ADDPOST") }
+                onClick = { navController.navigate("ADDPOST?postType=roomate")  }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.addr),
