@@ -38,7 +38,7 @@ fun HeaderComponent(
         modifier = Modifier
             .background(backgroundColor)
             .fillMaxWidth()
-            .height(80.dp)
+            .height(40.dp)
     )
     {
         Row(
@@ -48,7 +48,7 @@ fun HeaderComponent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = {
-                navController.navigateUp()
+                navController.popBackStack()
             }) {
                 Icon(
                     painter = painterResource(id = iconBack),

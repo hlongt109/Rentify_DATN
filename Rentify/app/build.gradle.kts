@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -69,7 +71,6 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
     implementation ("androidx.activity:activity-compose:1.9.2")
 
-    implementation("androidx.compose.foundation:foundation:1.7.0")
     implementation ("androidx.appcompat:appcompat:1.7.0")
     implementation ("androidx.compose.material:material:1.7.0")
     implementation ("com.google.android.material:material:1.12.0")
@@ -101,6 +102,20 @@ dependencies {
     //
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.google.accompanist:accompanist-flowlayout:0.36.0")
+
+    //wipe to delete
+    implementation ("androidx.compose.foundation:foundation:1.7.5")
+    implementation ("androidx.compose.material:material-icons-extended:1.7.5")
+
+
+    // thiên import
+    implementation ("io.coil-kt:coil-compose:2.5.0")
+    implementation ("com.google.accompanist:accompanist-pager:0.24.13-rc")
+    implementation ("com.google.accompanist:accompanist-flowlayout:0.32.0")
+    implementation ("com.airbnb.android:lottie-compose:6.0.1")
+    implementation("io.coil-kt:coil-gif:2.4.0")
+
+
 
 }
 // Allow references to generated code

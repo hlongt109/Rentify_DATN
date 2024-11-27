@@ -1,17 +1,34 @@
 package com.rentify.user.app.view.userScreens.homeScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.userScreens.homeScreen.components.BannerComponent
@@ -21,6 +38,7 @@ import com.rentify.user.app.view.userScreens.homeScreen.components.LayoutItemHom
 import com.rentify.user.app.view.userScreens.homeScreen.components.LayoutSearch
 import com.rentify.user.app.view.userScreens.homeScreen.components.SearchComponent
 import com.rentify.user.app.view.userScreens.homeScreen.components.VideoComponent
+import com.rentify.user.app.viewModel.HomeScreenViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -29,35 +47,48 @@ fun HomeScreen() {
 }
 
 @Composable
-fun LayoutHome(navController: NavHostController) {
-    val scrollState = rememberScrollState()
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp
-    val screenHeight = configuration.screenHeightDp
-    Column(
+fun LayoutHome(
+    navController: NavHostController,
+    homeScreenViewModel: HomeScreenViewModel = viewModel()
+) {
+    val listRoom by homeScreenViewModel.roomList.observeAsState(emptyList())
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(scrollState)
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
-        // #1. Gọi component banner
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(320.dp)
-        ){
-            BannerComponent()
-            // #2. Gọi component search
-            Box (
-                modifier = Modifier.offset(y = screenHeight.dp/7.5f)
-            ){
-                LayoutSearch(navController)
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(320.dp)
+            ) {
+                BannerComponent()
+                Box(
+                    modifier = Modifier.offset(y = 143.dp)
+                ) {
+                    LayoutSearch(navController)
+                }
             }
         }
-        KhamPhaComponent()
-        VideoComponent()
-        DoitacComponent()
-        LayoutItemHome(navController)
-        LayoutItemHome(navController)
-        LayoutItemHome(navController)
+
+        item {
+            KhamPhaComponent()
+        }
+        item {
+            Spacer(modifier = Modifier.padding(2.dp))
+            VideoComponent()
+        }
+        item {
+            DoitacComponent()
+        }
+        items(listRoom.take(3)) { room ->
+            LayoutItemHome(navController = navController, room = room)
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(5.dp))
+        }
     }
 }

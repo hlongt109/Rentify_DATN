@@ -1,6 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const serviceFeeSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+    },
+    { _id: false } // Tắt tự động tạo _id cho từng phần tử trong mảng
+);
+
 const Building = new Schema({
     landlord_id: { 
         type: mongoose.Schema.Types.ObjectId,
@@ -12,10 +20,11 @@ const Building = new Schema({
         ref: 'User',
         required: true
     },
-    service: [{ // toà nhà có nhưng vụ gì add vào đây
+    service: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Service",
     }],
+    serviceFees: [serviceFeeSchema],
     nameBuilding: {type: String},
     address: { type: String },
     description: { type: String },

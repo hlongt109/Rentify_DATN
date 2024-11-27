@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm toà nhà</title>
+    <link rel="stylesheet" href="../../../../assets/style/AddBuildingPage.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-1">
+        <h2 class="text-center text-primary fw-bold mb-4">Thêm Toà Nhà</h2>
+        <form id="addBuildingForm" method="post" enctype="multipart/form-data">
+
+            <div class="row mb-3">
+                <!-- Manager ID -->
+                <div class="col-md-6">
+                    <label for="manager_id" class="form-label">Người quản lý</label>
+                    <input type="text" id="manager_id" name="manager_id" class="form-control"
+                        placeholder="Chọn người quản lý" required readonly> <!-- Không cho phép nhập văn bản -->
+                    <ul id="staff-list" class="dropdown-menu"></ul> <!-- Danh sách nhân viên -->
+                </div>
+
+                <!-- Name of the Building -->
+                <div class="col-md-6">
+                    <label for="nameBuilding" class="form-label">Tên Toà Nhà</label>
+                    <input type="text" id="nameBuilding" name="nameBuilding" class="form-control"
+                        placeholder="Nhập tên toà nhà" required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <!-- Address -->
+                <div class="col-md-6">
+                    <label for="address" class="form-label">Địa Chỉ</label>
+                    <input type="text" id="address" name="address" class="form-control" placeholder="Nhập địa chỉ"
+                        required>
+                    <ul id="address-list" class="dropdown-menu"></ul>
+                </div>
+
+                <!-- Number of Floors -->
+                <div class="col-md-6">
+                    <label for="number_of_floors" class="form-label">Số Tầng</label>
+                    <input type="number" id="number_of_floors" name="number_of_floors" class="form-control" min="1"
+                        placeholder="Nhập số tầng" required>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Mô Tả</label>
+                <textarea id="description" name="description" class="form-control" rows="3"
+                    placeholder="Mô tả ngắn gọn về toà nhà" required></textarea>
+            </div>
+
+            <!-- Dịch Vụ -->
+            <div class="mb-3">
+                <label for="services" class="form-label">Dịch Vụ</label>
+                <div id="services-container" class="d-flex flex-wrap">
+                    <!-- Các dịch vụ sẽ được chèn động tại đây -->
+                </div>
+                <small class="form-text text-muted">Nhấp vào để chọn nhiều dịch vụ.</small>
+            </div>
+
+            <!-- Dịch vụ mới -->
+            <div class="mb-3">
+                <label for="new-service" class="form-label">Dịch vụ mới</label>
+                <div class="d-flex">
+                    <input type="text" id="new-service" class="form-control" placeholder="Nhập tên dịch vụ mới" />
+                    <button type="button" id="add-service" class="btn btn-secondary ms-3">Thêm Dịch Vụ</button>
+                </div>
+            </div>            
+
+
+            <!-- Phí Dịch Vụ -->
+            <div class="mb-3">
+                <label for="servicesFee" class="form-label">Phí dịch vụ</label>
+                <div id="servicesFee-container" class="d-flex flex-column">
+                    <!-- Các dịch vụ sẽ được chèn động tại đây -->
+                </div>
+                <small class="form-text text-muted">Chọn dịch vụ và nhập phí tương ứng.</small>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">Thêm Toà Nhà</button>
+                <a href="/landlord/BuildingPage" class="btn btn-secondary ml-2">Quay Lại</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../../../../assets/js/AddBuildingPage.js"></script>
+</body>
+
+</html>

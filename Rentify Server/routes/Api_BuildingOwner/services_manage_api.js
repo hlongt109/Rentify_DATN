@@ -1,4 +1,5 @@
 var express = require('express');
+const mongoose = require('mongoose');
 var router = express.Router();
 
 const Service = require("../../models/Service");
@@ -69,35 +70,6 @@ router.get("/api/services", async (req, res) => {
 router.get("/api/services1", async (req, res) => {
     res.render("Service/addService");
 })
-// router.post("/api/services/add", async (req, res) => {
-//     try {
-//         const data = req.body;
-
-//         const newService = new Service({
-//             name: data.name,
-//             description: data.description,
-//             price: data.price,
-//             created_at: getFormattedDate(),
-//             updated_at: ""
-//         })
-//         const result = await newService.save()
-//         if (result) {
-//             res.json({
-//                 "status": 200,
-//                 "message": "Add service successfully",
-//                 "data": result
-//             });
-//         } else {
-//             res.json({
-//                 "status": 400,
-//                 "message": "Error, Add service failed",
-//                 "data": []
-//             });
-//         }
-//     } catch (error) {
-//         handleServerError(res, error);
-//     }
-// })
 
 router.post("/api/services/add", uploadFile.array('photos'), async (req, res) => {
     try {
@@ -210,4 +182,40 @@ router.delete("/api/services1/:id", async (req, res) => {
         handleServerError(res, error);
     }
 })
+
+// service list
+router.get("/get-services/:landlord_id", async (req, res) => { 
+    try {
+        const landlordId = req.params.landlord_id;
+
+        // Kiểm tra nếu landlordId là một ObjectId hợp lệ
+        if (!mongoose.Types.ObjectId.isValid(landlordId)) {
+            return res.status(400).json({
+                status: 400,
+                message: "Invalid landlord ID",
+                data: []
+            });
+        }
+
+        // Chuyển landlordId thành ObjectId nếu cần thiết
+        const objectId = new mongoose.Types.ObjectId(landlordId);
+
+        // Tìm dịch vụ có liên quan đến landlord_id
+        const data = await Service.find({ landlord_id: objectId }); 
+
+        if (data && data.length > 0) {
+            // Nếu có dữ liệu dịch vụ, trả về danh sách dịch vụ
+            res.status(200).json(data);
+        } else {
+            // Nếu không có dịch vụ nào
+            res.status(404).json({
+                status: 404,
+                message: "No services found for this landlord",
+                data: []
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 module.exports = router;

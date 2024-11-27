@@ -1,0 +1,159 @@
+/* Tùy chỉnh cho form */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Phần chọn ảnh và video */
+#photos_room, #video_room {
+    display: none; /* Ẩn input mặc định */
+}
+
+.label-upload {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.label-upload:hover {
+    border-color: #0056b3;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.label-upload::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('https://example.com/crack-effect.png') repeat;
+    opacity: 0.2;
+    z-index: 1;
+}
+
+.label-upload i {
+    font-size: 50px;
+    color: #007bff;
+    display: block;
+    z-index: 2;
+}
+
+.label-upload span {
+    font-size: 16px;
+    color: #6c757d;
+    z-index: 2;
+}
+
+.label-upload img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    z-index: 3;
+}
+
+/* Khi ảnh/video được chọn */
+.preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.preview img {
+    max-width: 100px; /* Giới hạn kích thước ảnh */
+    max-height: 100px; /* Giới hạn kích thước ảnh */
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.preview video {
+    max-height: 250px;  /* Giới hạn chiều cao */
+    object-fit: contain;  /* Giữ tỷ lệ ảnh/video */
+    width: 100%;  /* Chiều rộng tự động */
+}
+
+/* Đảm bảo icon ẩn khi ảnh/video đã được chọn */
+.label-upload .preview img {
+    display: block;
+}
+
+/* Hiện thị ảnh đẹp khi hover */
+.preview img:hover,
+.preview video:hover {
+    opacity: 0.8; /* Thêm hiệu ứng hover cho ảnh và video */
+}
+
+/* Kiểu cho icon khi chưa chọn ảnh */
+.label-upload .icon {
+    font-size: 50px;
+    color: #007bff;
+    display: block;
+    z-index: 2;
+}
+
+.service-item {
+    margin: 5px;
+    padding: 10px 10px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    color: #007bff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.service-item.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+.service-item:hover {
+    background-color: #e2e6ea;
+}
+
+.amenity-item {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    color: #007bff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.amenity-item.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+.amenity-item:hover {
+    background-color: #e2e6ea;
+}
+
+#new-amenity {
+    margin-right: 8px; /* Thêm khoảng cách giữa input và button */
+}
+
+.delete-room {
+    margin-left: 8px;
+}

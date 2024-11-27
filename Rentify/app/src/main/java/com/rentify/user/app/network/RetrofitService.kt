@@ -16,11 +16,19 @@ class RetrofitService {
         .addInterceptor(logging)
         .build()
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:3000/api/")
+        .baseUrl("http://192.168.6.102:3000/api/") // 192.168.6.102
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     val ApiService: APIService = retrofit.create(APIService::class.java)
+}
+
+object LocationService{
+    val location: Retrofit = Retrofit.Builder()
+        .baseUrl("https://provinces.open-api.vn/api/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    val ApiService: APIService = location.create(APIService::class.java)
 }
 
 object ApiClient {

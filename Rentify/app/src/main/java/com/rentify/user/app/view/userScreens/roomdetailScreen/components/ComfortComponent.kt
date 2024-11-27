@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.roomdetailScreen.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,7 +9,10 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,197 +28,106 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.R
 
-// tiện nghi
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun ComfortComponent(){
-    LayoutComfort()
+fun LayoutComfort(
+    listAmenities: List<String>
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.phitn),
+                contentDescription = "",
+                modifier = Modifier.size(30.dp)
+            )
+            Text(
+                text = "Tiện nghi ",
+                modifier = Modifier.padding(start = 5.dp),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(color = Color(0xffCECECE))
+        )
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            listAmenities.forEach { amenity ->
+                val imageResId = when (amenity) {
+                    "Vệ sinh khép kín" -> R.drawable.khepkin
+                    "Gác xép" -> R.drawable.gacxep
+                    "Ra vào vân tay" -> R.drawable.vantay
+                    "Nuôi pet" -> R.drawable.pet
+                    "Không chung chủ" -> R.drawable.khongchungchu
+                    else -> R.drawable.khac
+                }
+                IconWithTextButton(
+                    imageResId = imageResId, // Truyền ảnh theo tiện nghi
+                    text = amenity // Truyền tên tiện nghi
+                )
+            }
+        }
+    }
 }
+
 @Composable
-fun LayoutComfort(){
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(20.dp)
+fun IconWithTextButton(
+    imageResId: Int,
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .width(130.dp)
+            .padding(5.dp)
+            .shadow(4.dp, RoundedCornerShape(8.dp))
+            .background(Color.White)
+            .padding(10.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 15.dp)
-    ) {
+        // Image với shadow
         Image(
-            painter = painterResource(id = R.drawable.phitn),
-            contentDescription = "",
-            modifier = Modifier.size(40.dp)
+            painter = painterResource(id = imageResId),
+            contentDescription = null,
+            modifier = Modifier
+                .size(35.dp)
         )
+        Spacer(modifier = Modifier.padding(2.dp))
+        // Text căn giữa
         Text(
-            text = "Phí tiện nghi ",
+            text = text,
+            fontSize = 14.sp,
+            color = Color.Black,
             modifier = Modifier
-                .padding(start = 5.dp)
-                .padding(top = 10.dp),
-            fontSize = 20.sp
+                .align(Alignment.CenterHorizontally),
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(30.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(color = Color(0xffd9d9d9))
-            .padding(start = 20.dp, end = 20.dp)
-    ) {
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 10.dp)
-            .horizontalScroll(rememberScrollState())
-    ) {
-        // Thẻ 1
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .background(color = Color.White)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .clickable { },
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.khepkin),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(40.dp)
-                )
-
-                Text(
-                    text = "Khép kín",
-                    fontSize = 15.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(start = 8.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-
-        // Thẻ 2
-        Box(
-            modifier = Modifier
-                .weight(1f) // Chia đều không gian
-                .padding(8.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .background(color = Color.White)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .clickable { },
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.bancong),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(40.dp)
-                )
-
-                Text(
-                    text = "Ban công ",
-                    fontSize = 15.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(start = 8.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-
-        // Thẻ 3
-        Box(
-            modifier = Modifier
-                .weight(1f) // Chia đều không gian
-                .padding(8.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .background(color = Color.White)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFfafafa),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .clickable { },
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.camm),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(40.dp)
-                )
-
-                Text(
-                    text = "Không chung chủ",
-                    fontSize = 15.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(start = 8.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(30.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-            .background(color = Color(0xfff7f7f7))
-    ) {
     }
 }

@@ -137,10 +137,9 @@ fun ItemPaid(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     // Hiển thị các item theo tháng khi mở rộng
                     itemsByMonth.forEach { (monthYear, itemsInMonth) ->
-                        itemsInMonth.forEach { roomPayment ->
-                            // Hiển thị từng item trong tháng
-                            ItemPaidExpand(roomPayment)
-                        }
+                        ItemPaidExpand(
+                            item = itemsInMonth.first(), // Sử dụng item đầu tiên làm thông tin tháng
+                        )
                     }
                 }
             }

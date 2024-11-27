@@ -34,11 +34,17 @@ import com.rentify.user.app.ui.theme.textFieldBackgroundColor
 import kotlinx.coroutines.launch
 import androidx.compose.material.*
 import androidx.compose.ui.text.TextStyle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 
 @Preview (showBackground = true)
 @Composable
-fun PolicyScreen() {
+fun PolicyScreenPreview() {
+    PolicyScreen(navController = rememberNavController())
+}
+@Composable
+fun PolicyScreen(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Phòng</title>
+    <link rel="stylesheet" href="../../../../assets/style/AddUpdateRoomPage.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-1">
+        <h2 class="text-center text-primary fw-bold mb-4">Thêm Phòng</h2>
+        <form id="update-room-form" method="put" enctype="multipart/form-data">
+
+            <div class="row mb-3">
+                <!-- Photos -->
+                <div class="col-md-6">
+                    <label for="" class="form-label">Ảnh Phòng</label>
+                    <label class="label-upload" for="photos_room">
+                        <i class="fas fa-camera"></i>
+                        <div class="preview"></div>
+                    </label>
+                    <input type="file" id="photos_room" name="photos_room" class="form-control" multiple
+                        onchange="previewFiles(this)">
+                </div>
+
+                <!-- Videos -->
+                <div class="col-md-6">
+                    <label for="" class="form-label">Video Phòng</label>
+                    <label class="label-upload" for="video_room">
+                        <i class="fas fa-video"></i>
+                        <div class="preview"></div>
+                    </label>
+                    <input type="file" id="video_room" name="video_room" class="form-control" multiple
+                        onchange="previewFiles(this)">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <!-- Room Name -->
+                <div class="col-md-6">
+                    <label for="room_name" class="form-label">Tên Phòng</label>
+                    <input type="text" id="room_name" name="room_name" class="form-control" placeholder="Nhập tên phòng"
+                        required>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Trạng Thái</label>
+                    <select id="status" name="status" class="form-control" required>
+                        <option value="" disabled selected>Chọn trạng thái</option>
+                        <option value="0">Chưa cho thuê</option>
+                        <option value="1">Đã cho thuê</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <!-- Price -->
+                <div class="col-md-6">
+                    <label for="price" class="form-label">Giá Thuê</label>
+                    <input type="number" id="price" name="price" class="form-control" min="0"
+                        placeholder="Nhập giá thuê" required>
+                </div>
+
+                <!-- Room Type -->
+                <div class="col-md-6">
+                    <label for="room_type" class="form-label">Loại Phòng</label>
+                    <select id="room_type" name="room_type" class="form-control" required>
+                        <option value="" disabled selected>Chọn loại phòng</option>
+                        <option value="single">Phòng Đơn</option>
+                        <option value="double">Phòng Đôi</option>
+                        <option value="studio">Studio</option>
+                        <option value="suite">Suite</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <!-- Size -->
+                <div class="col-md-6">
+                    <label for="size" class="form-label">Diện Tích</label>
+                    <input type="text" id="size" name="size" class="form-control"
+                        placeholder="Nhập diện tích (VD: 40m2)" required>
+                </div>
+
+                <!-- Limit Person -->
+                <div class="col-md-6">
+                    <label for="limit_person" class="form-label">Giới Hạn Người Ở</label>
+                    <input type="number" id="limit_person" name="limit_person" class="form-control" min="1"
+                        placeholder="Nhập số người tối đa" required>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Mô Tả</label>
+                <textarea id="description" name="description" class="form-control" rows="3"
+                    placeholder="Mô tả ngắn gọn về phòng" required></textarea>
+            </div>
+
+            <!-- Services -->
+            <div class="mb-3">
+                <label for="services" class="form-label">Dịch Vụ</label>
+                <div id="services-container" class="d-flex flex-wrap">
+                    <!-- Các dịch vụ sẽ được chèn động tại đây -->
+                </div>
+                <small class="form-text text-muted">Nhấp vào để chọn nhiều dịch vụ.</small>
+            </div>
+
+            <!-- Amenities -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label for="new-amenity" class="form-label">Tiện Nghi</label>
+                    <div class="d-flex align-items-center">
+                        <input type="text" id="new-amenity" class="form-control me-2" placeholder="Nhập tiện nghi mới">
+                        <button type="button" id="add-amenity" class="btn btn-success">Thêm</button>
+                    </div>
+                </div>
+                
+                <div id="amenities-container" class="d-flex flex-wrap">
+                    <!-- Các tiện nghi sẽ được render ở đây -->
+                </div>          
+                <div id="selected-amenities" class="d-flex flex-wrap">
+                    <!-- Các tiện nghi đã chọn sẽ hiển thị ở đây -->
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">Chỉnh Sửa Phòng</button>
+                <button id="delete-room" type="button" class="btn btn-danger delete-room">Xoá Phòng</button>
+                <a href="/landlord/BuildingPage" class="btn btn-secondary ml-2">Quay Lại</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal Xác nhận Xoá Phòng -->
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" role="dialog" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteRoomModalLabel">Xác Nhận Xoá Phòng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn chắc chắn muốn xoá phòng này? Hành động này không thể hoàn tác.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xoá</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../../../../assets/js/UpdateRoomPage.js"></script>
+</body>
+
+</html>

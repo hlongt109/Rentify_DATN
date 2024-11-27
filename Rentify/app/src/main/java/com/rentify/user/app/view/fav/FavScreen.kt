@@ -40,13 +40,21 @@ import com.rentify.user.app.R
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
 
 @Preview(showBackground = true)
 @Composable
-fun FavScreen() {
+fun FavScreenPreview() {
+    FavScreen(navController = rememberNavController())
+}
+
+@Composable
+fun FavScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -1,22 +1,34 @@
 package com.rentify.user.app.view.userScreens.roomdetailScreen.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,45 +42,54 @@ fun NameComponent() {
     LayoutNameComponent(navController= rememberNavController())
 }
 @Composable
-fun LayoutNameComponent (navController: NavHostController){
-    Row (
+fun LayoutNameComponent(navController: NavHostController) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(Color.White)
             .height(50.dp)
-    ){
-        Image(
-            painter = painterResource(id = R.drawable.back),
-            contentDescription = "back",
-            modifier = Modifier
-                .width(40.dp)
-                .height(40.dp)
-                .padding(5.dp)
-                .clip(CircleShape)
-                .clickable {
-                    navController.popBackStack()
-                }
-        )
-        Column(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .weight(1f) // Cho phép cột chiếm không gian còn lại
+            .padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
         ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .size(30.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "Back",
+                    tint = Color.Black
+                )
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
             Text(
                 text = "Chi tiết phòng",
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold
             )
         }
-        // Sử dụng Spacer để đẩy hình ảnh "next" sang bên phải
-        Spacer(modifier = Modifier.width(8.dp))
-        Image(
-            painter = painterResource(id = R.drawable.yeuthich),
-            contentDescription = null,
+
+        IconButton(
+            onClick = { /* TODO: Xử lý logic yêu thích */ },
             modifier = Modifier
-                .width(30.dp)
-                .height(30.dp)
-                .padding(top = 10.dp, end = 10.dp)
-        )
+                .size(40.dp)
+                .background(color = Color(0xFFF7F7F7), shape = CircleShape)
+                .clip(CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.FavoriteBorder,
+                contentDescription = "Favorite",
+                tint = Color.Black
+            )
+        }
     }
 }

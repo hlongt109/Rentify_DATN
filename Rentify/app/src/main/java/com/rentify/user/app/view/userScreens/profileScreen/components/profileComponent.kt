@@ -34,37 +34,42 @@ fun ProfileComponentPreview() {
 
 @Composable
 fun ProfileComponent(navController: NavHostController) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.trove),
-            contentDescription = "back",
+    Column (
+        modifier = Modifier.fillMaxWidth()
+            .height(100.dp)
+    ){
+        Row(
             modifier = Modifier
-                .width(40.dp)
-                .height(40.dp)
-                .padding(top = 10.dp)
-                .clip(CircleShape)
-                .clickable {
-                    navController.popBackStack()
-                }
-        )
-        Column(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally, // Center horizontally
-            verticalArrangement = Arrangement.Center // Center vertically
+                .fillMaxWidth()
+                .padding(top = 50.dp)
         ) {
-            Text(
-                text = "Hồ sơ cá nhân",
-                fontSize = 25.sp,
-                color = Color(0xff122457),
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+            Image(
+                painter = painterResource(id = R.drawable.trove),
+                contentDescription = "back",
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp)
+                    .padding(top = 10.dp)
+                    .clip(CircleShape)
+                    .clickable {
+                        navController.popBackStack()
+                    }
             )
+            Column(
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally, // Center horizontally
+                verticalArrangement = Arrangement.Center // Center vertically
+            ) {
+                Text(
+                    text = "Hồ sơ cá nhân",
+                    fontSize = 25.sp,
+                    color = Color(0xff122457),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

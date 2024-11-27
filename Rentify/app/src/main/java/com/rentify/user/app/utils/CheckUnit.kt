@@ -19,10 +19,11 @@ object CheckUnit {
     }
 
     fun formattedPrice(price: Float): String {
-        // Định dạng số tiền theo chuẩn của Việt Nam (VND)
-        return NumberFormat.getCurrencyInstance(Locale("vi", "VN")).apply {
+        val formatted = NumberFormat.getCurrencyInstance(Locale("vi", "VN")).apply {
             currency = Currency.getInstance("VND")
+            maximumFractionDigits = 0 // Không hiển thị phần thập phân
         }.format(price)
+        return formatted.replace("₫", " VND") // Thay thế "₫" bằng " VND"
     }
 
     fun formatYear(date: Date): String {
