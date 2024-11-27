@@ -30,7 +30,7 @@ router.get("/supports_mgr", async(req, res) => {
 })
 
 router.get("/statistics_ld", async(req, res) => {
-    res.render("Landlord_website/screens/HomePage")
+    res.render("Landlord_website/screens/Statistic")
 })
 
 router.get("/payments_ld", async(req, res) => {

@@ -91,4 +91,18 @@ router.get('/post_mgr', (req, res, next) => {
   });
 });
 
+//statistic
+
+router.get('/statistic_mrg', (req, res, next) => {
+  res.render('Landlord_website/screens/Statistic', (err, html) => {
+    if(err){
+      return res.status(500).send(err)
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Quản lý bài đăng',
+      body: html
+    });
+  })
+})
+
 module.exports = router;
