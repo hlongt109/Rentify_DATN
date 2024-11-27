@@ -10,6 +10,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,12 +28,15 @@ import java.util.Calendar
 @Composable
 fun PaidStaffScreen(
     navController: NavController,
-    viewModel: InvoiceStaffViewModel = viewModel()
+    viewModel: InvoiceStaffViewModel = viewModel(),
+    staffId: String
 ) {
 
     val paidInvoices by viewModel.paidInvoices.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-
+    LaunchedEffect(Unit) {
+        viewModel.getInvoiceList(staffId)
+    }
     val groupedByYear = paidInvoices.groupBy {
         val calendar =
             Calendar.getInstance().apply { time = CheckUnit.parseDate(it.created_at ?: "") }

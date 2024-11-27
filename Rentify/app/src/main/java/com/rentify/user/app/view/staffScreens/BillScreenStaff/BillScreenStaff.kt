@@ -101,7 +101,7 @@ fun BillScreenStaff(navController: NavController) {
                         staffId
                     )
 
-                    1 -> PaidStaffScreen(navController)
+                    1 -> PaidStaffScreen(navController, invoiceStaffViewModel, staffId)
                 }
 
             }

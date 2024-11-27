@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Room = require('../../models/Room');
 const upload = require('../../config/common/upload');
+const Invoice = require('../../models/Invoice')
 // Lấy danh sách phòng
 router.get('/list', async (req, res) => {
     try {
@@ -103,21 +105,53 @@ router.get('/search', async (req, res) => {
     }
 });
 
+// router.get("/get-room-buildingId/:buildingId", async (req, res) => {
+//     try {
+//         const buildingId = req.params.buildingId;
+//         const rooms = await Room.find({ building_id: buildingId })
+//             .populate('service')  // thêm populate để lấy thông tin chi tiết của service
+//             .populate('building_id', "serviceFees"); // có thể thêm populate building nếu cần
+//         res.json({
+//             status: 200,
+//             message: "Lấy danh sách phòng thành công",
+//             data: rooms
+//         });
+//     } catch (error) {
+//         res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
+//     }
+// });
 router.get("/get-room-buildingId/:buildingId", async (req, res) => {
     try {
         const buildingId = req.params.buildingId;
-        const rooms = await Room.find({ building_id: buildingId })
-            .populate('service')  // thêm populate để lấy thông tin chi tiết của service
-            .populate('building_id', "serviceFees"); // có thể thêm populate building nếu cần
+        const currentMonth = new Date().getMonth() + 1; // Lấy tháng hiện tại
+        const currentYear = new Date().getFullYear(); // Lấy năm hiện tại
+
+        // Tìm các phòng thuộc building và chưa có hóa đơn trong tháng hiện tại
+        const rooms = await Room.find({
+            building_id: buildingId
+        }).populate('service').populate('building_id', "serviceFees").lean();
+
+        // Lọc các phòng chưa có hóa đơn
+        const roomsWithoutInvoice = await Promise.all(rooms.map(async (room) => {
+            const existingInvoice = await Invoice.findOne({
+                room_id: room._id,
+                month: currentMonth,
+                year: currentYear
+            });
+
+            return existingInvoice ? null : room;
+        }));
+
+        const filteredRooms = roomsWithoutInvoice.filter(room => room !== null);
+
         res.json({
             status: 200,
-            message: "Lấy danh sách phòng thành công",
-            data: rooms
+            message: "Lấy danh sách phòng chưa có hóa đơn thành công",
+            data: filteredRooms
         });
     } catch (error) {
         res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
     }
 });
-
 
 module.exports = router;

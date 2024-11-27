@@ -286,6 +286,7 @@ class InvoiceStaffViewModel(
                     },
                     onFailure = { exception ->
                         _isLoading.postValue(false)
+                        _errorMessage.value = "Thêm hóa đơn thất bại"
                         _uiState.value =
                             InvoiceUiState.Error(exception.message ?: "Lỗi không xác định")
                     }

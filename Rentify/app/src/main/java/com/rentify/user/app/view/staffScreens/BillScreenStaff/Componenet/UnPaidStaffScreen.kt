@@ -18,6 +18,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -42,7 +43,9 @@ fun UnPaidStaffScreen(
 ) {
     val unpaidInvoices by viewModel.unpaidInvoices.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-
+    LaunchedEffect(Unit) {
+        viewModel.getInvoiceList(staffId)
+    }
     val expandedItems = remember { mutableStateListOf<String>() }
     Log.d("UnPaidList", "UnPaidStaffScreen: $unpaidInvoices")
     Box(
