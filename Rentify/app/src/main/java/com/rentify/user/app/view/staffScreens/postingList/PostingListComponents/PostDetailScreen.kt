@@ -66,20 +66,11 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.rentify.user.app.R
-import com.rentify.user.app.network.RetrofitClient
-
-import com.rentify.user.app.view.staffScreens.UpdatePostScreen.TriangleShape
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
-
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
-import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 
 
 @OptIn(ExperimentalPagerApi::class)

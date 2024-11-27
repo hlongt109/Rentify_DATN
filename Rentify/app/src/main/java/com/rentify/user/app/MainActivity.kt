@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
+        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -243,6 +243,25 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ADDBILL_STAFF.name){
                 AddBillStaff(navController = navController)
             }
+
+            //những màn hình thiên thêm
+            composable(
+                route = "ROOMDETAILS/{roomId}",
+                arguments = listOf(navArgument("roomId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val roomId = backStackEntry.arguments?.getString("roomId")
+                LayoutRoomdetails(navController = navController, roomId = roomId)
+            }
+            composable(
+                route = "ROOMDETAILS2/{roomId}",
+                arguments = listOf(navArgument("roomId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val roomId = backStackEntry.arguments?.getString("roomId")
+                LayoutRoomdetails2(navController = navController, roomId = roomId)
+            }
+            composable(ROUTER.AppointmentScreen.name) {
+                AppointmentScreen(navController = navController)
+            }
         }
     }
 
@@ -293,6 +312,9 @@ enum class ROUTER {
         CONTRACT_STAFF,
         POSTING_STAFF,
         REPORT_STAFF,
-        ADDPOST_staff
+        ADDPOST_staff,
+    //những màn hình thiên thêm
+    RoomDetails2,
+    AppointmentScreen
     }
 }
