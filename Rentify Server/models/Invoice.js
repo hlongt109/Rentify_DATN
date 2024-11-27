@@ -24,9 +24,10 @@ const Invoice = new Schema({
     type: String,
     enum: ["income", "expense"],
     require: true,
+    default: "expense",
   },
   due_date: { type: String }, // hạn chót
-  payment_status: { type: String, enum: ["paid", "unpaid"] },
+  payment_status: { type: String, enum: ["paid", "unpaid"], default: "unpaid" },
   created_at: { type: String },
   detail_invoice: [
     {

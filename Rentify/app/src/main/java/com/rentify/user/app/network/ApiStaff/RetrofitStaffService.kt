@@ -17,7 +17,7 @@ object RetrofitStaffService {
         .addInterceptor(logging)
         .build()
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:3000/api/staff/invoices/")
+        .baseUrl("http://10.0.2.2:3000/api/staff/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

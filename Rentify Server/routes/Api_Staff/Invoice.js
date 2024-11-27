@@ -163,8 +163,8 @@ router.post("/addBillStaff", async (req, res) => {
       })
       .populate("user_id", "name phoneNumber");
 
-    return res.status(201).json({
-      status: 201,
+    return res.status(200).json({
+      status: 200,
       message: "Thêm hóa đơn thành công",
       data: populatedInvoice,
     });

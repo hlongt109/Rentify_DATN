@@ -21,17 +21,42 @@ data class InvoiceData(
     val unpaid: List<Invoice>
 )
 
+data class InvoiceAdd(
+    val _id: String,
+    val user_id: String,
+    val room_id: String,
+    val description: List<Description>,
+    val amount: Double,
+    val transaction_type: String = "expense",
+    val due_date: String,
+    val payment_status: String = "unpaid",
+    val created_at: String,
+//    val detail_invoice: List<DetailInvoice>
+)
+
 data class Invoice(
     val _id: String,
     val user_id: User,
     val room_id: RoomDetail,
-    val description: List<Map<String, String>>,
+    val description: List<Description>,
     val amount: Double,
     val transaction_type: String,
     val due_date: String,
     val payment_status: String,
     val created_at: String,
     val detail_invoice: List<Any> = emptyList()
+)
+data class Description(
+    val service_name: String,
+    val quantity: Int,
+    val price_per_unit: Double,
+    val total: Double
+)
+
+data class DetailInvoice(
+    val name: String,
+    val fee: Double,
+    val quantity: Int
 )
 
 data class User(

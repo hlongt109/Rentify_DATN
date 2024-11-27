@@ -203,10 +203,16 @@ fun ItemUnPaidStaff(
                                 CheckUnit.formattedPrice(invoice.room_id.price.toFloat())
                             )
                             // Hiển thị các dịch vụ từ invoice.description
-                            invoice.room_id.service.forEach { service ->
-                               PaymentDetailRow(
-                                    service.name,
-                                    CheckUnit.formattedPrice(service.price.toFloat())
+                            invoice.description?.forEach { service ->
+                                val serviceName = service.service_name ?: "Dịch vụ không xác định"
+                                val totalPrice = if (service.total != null) {
+                                    CheckUnit.formattedPrice(service.total.toFloat())
+                                } else {
+                                    "0"
+                                }
+                                PaymentDetailRow(
+                                    serviceName,
+                                    totalPrice
                                 )
                             }
 

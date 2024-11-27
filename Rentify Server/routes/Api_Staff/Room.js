@@ -17,7 +17,7 @@ router.get('/list', async (req, res) => {
 router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_room' }]), async (req, res) => {
     const room = new Room({
         building_id: req.body.building_id,
-        room_name:req.body.room_name,
+        room_name: req.body.room_name,
         room_type: req.body.room_type,
         description: req.body.description,
         price: req.body.price,
@@ -102,5 +102,22 @@ router.get('/search', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+router.get("/get-room-buildingId/:buildingId", async (req, res) => {
+    try {
+        const buildingId = req.params.buildingId;
+        const rooms = await Room.find({ building_id: buildingId })
+            .populate('service')  // thêm populate để lấy thông tin chi tiết của service
+            .populate('building_id', "serviceFees"); // có thể thêm populate building nếu cần
+        res.json({
+            status: 200,
+            message: "Lấy danh sách phòng thành công",
+            data: rooms
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
+    }
+});
+
 
 module.exports = router;

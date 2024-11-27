@@ -129,7 +129,6 @@ fun ItemPaidStaff(
                            invoices = invoices
                        )
                    }
-
                 }
             }
         }

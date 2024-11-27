@@ -21,4 +21,19 @@ class InvoiceRepository(
             Result.failure(e)
         }
     }
+
+    suspend fun addBillStaff(invoice: InvoiceAdd): Result<InvoiceResponse>{
+        return try {
+            val response = api.addInvoice(invoice)
+            if(response.isSuccessful){
+                response.body()?.let { invoiceResponse ->
+                    Result.success(invoiceResponse)
+                } ?: Result.failure(Exception("Response body is null"))
+            }else{
+                Result.failure(Exception("Error: ${response.code()}"))
+            }
+        }catch(e: Exception){
+            Result.failure(e)
+        }
+    }
 }

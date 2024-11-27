@@ -35,6 +35,11 @@ object CheckUnit {
         return format.format(date)
     }
 
+    fun formatDay(date: Date): String{
+        val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Chỉ định định dạng năm
+        return format.format(date)
+    }
+
     fun parseDate(dateString: String): Date {
         return try {
             val dateFormat = SimpleDateFormat(
