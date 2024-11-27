@@ -14,7 +14,10 @@ const Room = new Schema({
     size: { type: String, required: true },// vd: 40m2 nên sẽ để là String
     video_room: { type: Array },
     photos_room: { type: Array },
-    service:{type:Array},
+    service:[{ // lấy danh sách dịch vụ của toà nhà click chọn các dịch phòng có
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service",
+    }],
     amenities: { type: Array }, // tiện nghi
     limit_person: { type: Number}, // giới hạn người ở
     status: { type: Number, required: true }, // 0: chua cho thue, 1: cho thue
