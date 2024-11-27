@@ -1,5 +1,4 @@
 package com.rentify.user.app.viewModel.PostViewModel
-
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -144,79 +143,29 @@ fun deletePostWithFeedback(postId: String) {
     }
 }
 
-fun resetDeleteStatus() {
-    _deleteStatus.value = null
-}
+    private val _buildings = mutableStateOf<List<Building>>(emptyList())
+    val buildings: State<List<Building>> = _buildings
+    // Biến lưu tòa nhà đã chọn (selected building)
+    private val _selectedBuilding = mutableStateOf<String?>(null)
+    val selectedBuilding: State<String?> = _selectedBuilding
 
-private val _updateStatus = MutableLiveData<Boolean?>()
-val updateStatus: LiveData<Boolean?> get() = _updateStatus
-//
-//    fun updatePost(
-//        postId: String,
-//        userId: RequestBody,
-//        building_id: RequestBody,
-//        room_id: RequestBody,
-//        title: RequestBody,
-//        content: RequestBody,
-//        status: RequestBody,
-//        postType: RequestBody,
-//        videos: List<MultipartBody.Part>?,
-//        photos: List<MultipartBody.Part>?
-//    ) {
-//        viewModelScope.launch {
-//            try {
-//                // Gọi API cập nhật bài đăng
-//                val response = RetrofitClient.apiService.updatePost(
-//                    postId, userId, title, content, status, postType,
-//                    building_id, room_id, videos, photos
-//                )
-//
-//                if (response.isSuccessful) {
-//                    _updateStatus.value = true // Cập nhật thành công
-//                    _errorMessage.value = "" // Xóa thông báo lỗi nếu thành công
-//                } else {
-//                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
-//                    _updateStatus.value = false // Cập nhật thất bại
-//                    _errorMessage.value = "Update failed: ${response.code()} - $errorBody"
-//                }
-//            } catch (e: Exception) {
-//                _updateStatus.value = false // Xử lý lỗi
-//                _errorMessage.value = "Exception: ${e.localizedMessage ?: "Unknown exception"}"
-//            }
-//        }
-//    }
+    private val apiService: APIService = RetrofitClient.apiService // Kết nối Retrofit instance
 
-/**
- * Reset trạng thái cập nhật để tránh thông báo lặp lại
- */
-fun resetUpdateStatus() {
-    _updateStatus.value = null
-}
-
-private val _buildings = mutableStateOf<List<Building>>(emptyList())
-val buildings: State<List<Building>> = _buildings
-
-// Biến lưu tòa nhà đã chọn (selected building)
-private val _selectedBuilding = mutableStateOf<String?>(null)
-val selectedBuilding: State<String?> = _selectedBuilding
-
-private val apiService: APIService = RetrofitClient.apiService // Kết nối Retrofit instance
-
-fun getBuildings(userId: String) {
-    viewModelScope.launch {
-        try {
-            val response = apiService.getBuildings(userId) // Giả sử apiService là service gọi API
-            if (response.isSuccessful) {
-                val buildingsResponse = response.body() // BuildingsResponse
-                _buildings.value = buildingsResponse?.data ?: emptyList()
-                Log.d("PostViewModel", "Buildings fetched: ${_buildings.value}")
-            } else {
-                Log.e("PostViewModel", "Error fetching buildings: ${response.message()}")
+    fun getBuildings(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getBuildings(userId) // Giả sử apiService là service gọi API
+                if (response.isSuccessful) {
+                    val buildingsResponse = response.body() // BuildingsResponse
+                    _buildings.value = buildingsResponse?.data ?: emptyList()
+                    Log.d("PostViewModel", "Buildings fetched: ${_buildings.value}")
+                } else {
+                    Log.e("PostViewModel", "Error fetching buildings: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "Exception: ${e.message}")
             }
-        } catch (e: Exception) {
-            Log.e("PostViewModel", "Exception: ${e.message}")
         }
-    }
 
 }
 
