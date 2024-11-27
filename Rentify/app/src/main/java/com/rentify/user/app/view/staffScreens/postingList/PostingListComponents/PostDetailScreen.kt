@@ -98,6 +98,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
     }
 
     postDetail?.let { detail ->
+        Log.d("detail", "RequestBody check:${detail} ")
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -234,9 +235,6 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                             modifier = Modifier.padding(horizontal = 10.dp),
 
                             )
-
-
-
                         Spacer(
                             modifier = Modifier
                                 .padding(vertical = 5.dp)

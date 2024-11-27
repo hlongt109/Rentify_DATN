@@ -42,23 +42,6 @@ class PostViewModel : ViewModel() {
         }
     }
 
-
-    fun deletePost(postId: String) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitClient.apiService.deletePost(postId)
-                if (response.isSuccessful) {
-                    // Cập nhật danh sách sau khi xóa
-                    _posts.value = _posts.value.filter { it._id != postId }
-                } else {
-                    Log.e("deletePost", "Error: ${response.code()} - ${response.errorBody()?.string()}")
-                }
-            } catch (e: Exception) {
-                Log.e("deletePost", "Exception: ${e.message}")
-            }
-        }
-    }
-
     private val _postDetail = MutableLiveData<PostingDetail?>()
     val postDetail: LiveData<PostingDetail?> get() = _postDetail
     // Lấy chi tiết bài đăng
@@ -66,6 +49,7 @@ class PostViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val detail = RetrofitClient.apiService.getPostDetail(postId)
+                Log.d("API_Response", "Detail: $detail") // In toàn bộ dữ liệu trả về
                 _postDetail.value = detail
             } catch (e: Exception) {
                 Log.e("getPostDetail", "Error: ${e.message}")
@@ -73,6 +57,7 @@ class PostViewModel : ViewModel() {
             }
         }
     }
+
 
     private val _deleteStatus = MutableLiveData<Boolean?>()
     val deleteStatus: MutableLiveData<Boolean?> get() = _deleteStatus

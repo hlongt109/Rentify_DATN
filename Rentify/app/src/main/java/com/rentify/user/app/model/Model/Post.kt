@@ -81,20 +81,11 @@ data class PostingDetail(
     val room: Room_post?
 )
 
-data class UpdatePostResponse(
-    val success: Boolean,         // Trạng thái thành công
-    val message: String,          // Thông báo từ server
-    val updatedPost: PostingDetail? // Dữ liệu bài đăng đã cập nhật (nếu có)
-)
 data class Building(
     val _id: String,
     val nameBuilding: String,
     val address: String,
     val post_count: Int
-)
-data class BuildingsResponse(
-    val status: Int,
-    val data: List<Building>
 )
 data class Room_post(
     val _id: String,
@@ -103,7 +94,17 @@ data class Room_post(
     val room_type: String,
     val price: Int
 )
+data class BuildingsResponse(
+    val status: Int,
+    val data: List<Building>
+)
+
 data class RoomsResponse(
     val status: Int,
     val data: List<Room_post> // Danh sách phòng
+)
+data class UpdatePostResponse(
+    val success: Boolean,         // Trạng thái thành công
+    val message: String,          // Thông báo từ server
+    val updatedPost: PostingDetail? // Dữ liệu bài đăng đã cập nhật (nếu có)
 )

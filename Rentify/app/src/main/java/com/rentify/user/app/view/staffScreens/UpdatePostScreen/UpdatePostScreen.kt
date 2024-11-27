@@ -89,6 +89,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.PlayerView
+import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
@@ -147,14 +148,6 @@ fun isFieldEmpty(field: String): Boolean {
     return field.isBlank() // Kiểm tra trường có trống không
 }
 
-fun isValidPrice(price: String): Boolean {
-    return price.toDoubleOrNull() != null // Kiểm tra giá có phải là số hợp lệ
-}
-
-fun isValidPhoneNumber(phone: String): Boolean {
-    // Kiểm tra số điện thoại có đúng 10 chữ số và bắt đầu bằng "0"
-    return phone.startsWith("0") && phone.length == 10 && phone.all { it.isDigit() }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -163,22 +156,17 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
-    var selectedRoomTypes1 by remember { mutableStateOf(listOf<String>()) }
-
-    var selectedComfortable_up by remember { mutableStateOf(listOf<String>()) }
-    var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
-    var selectedService by remember { mutableStateOf(listOf<String>()) }
-    var selectedService_up by remember { mutableStateOf(listOf<String>()) }
+    var selectedBuilding by remember { mutableStateOf<String?>(null) }
+    var selectedBuilding1 by remember { mutableStateOf<String?>(null) }
+    var selectedRoom by remember { mutableStateOf<String?>(null) }
+    var selectedRoom1 by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-    var address by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
+
     var isEdited by remember { mutableStateOf(false) }
     var content by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var roomPrice by remember { mutableStateOf("") }
     val postId = navController.currentBackStackEntry?.arguments?.getString("postId")
     val viewModel: PostViewModel = viewModel()
     val postDetail by viewModel.postDetail.observeAsState()
@@ -189,577 +177,601 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
         }
     }
 
-//    postDetail?.let { detail ->
-//        if (!isEdited) {
-//            title = detail.title ?: "" // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
-//            content = detail.content ?: ""
-//            roomPrice = detail.price?.toString() ?: ""
-//            address = detail.address ?: ""
-//            phoneNumber = detail.phoneNumber ?: ""
-//        }
-//
-//
-//        selectedComfortable = detail.amenities?.let { amenities ->
-//            amenities.toString() // Chuyển thành chuỗi
-//                .removeSurrounding("[", "]") // Loại bỏ ký tự không mong muốn
-//                .split(",") // Tách thành danh sách
-//                .map { it.trim() } // Xóa khoảng trắng dư thừa
-//                .filter { it.isNotEmpty() } // Lọc bỏ chuỗi rỗng
-//        } ?: listOf()
-//        selectedRoomTypes = detail.room_type?.let { room_type ->
-//            room_type.toString() // Chuyển thành chuỗi
-//                .removeSurrounding("[", "]") // Loại bỏ ký tự không mong muốn
-//                .split(",") // Tách thành danh sách
-//                .map { it.trim() } // Xóa khoảng trắng dư thừa
-//                .filter { it.isNotEmpty() } // Lọc bỏ chuỗi rỗng
-//        } ?: listOf()
-//        selectedService = detail.services?.let { services ->
-//            services.toString() // Chuyển thành chuỗi
-//                .removeSurrounding("[", "]") // Loại bỏ ký tự không mong muốn
-//                .split(",") // Tách thành danh sách
-//                 .map { it.trim() } // Xóa khoảng trắng dư thừa
-//                .filter { it.isNotEmpty() } // Lọc bỏ chuỗi rỗng
-//        } ?: listOf()
-
-//        val images = detail.photos ?: listOf()
-//        val videos = detail.videos ?: listOf()
-//        Log.d("image", "đtail: $images")
-//        Log.d("video", "detail: $videos")
-//        // Ghi log toàn bộ dữ liệu
-//        Log.d("UpdatePostScreen", "Post Detail: ${detail}")
-//        Log.d("UpdatePostScreen", "Title: $title")
-//        Log.d("UpdatePostScreen", "Content: $content")
-//        Log.d("UpdatePostScreen", "Room Price: $roomPrice")
-//        Log.d("UpdatePostScreen", "Address: $address")
-//        Log.d("UpdatePostScreen", "Phone Number: $phoneNumber")
-//        Log.d("UpdatePostScreen", "Selected Room Types: $selectedRoomTypes")
-//        Log.d("UpdatePostScreen", "Selected Comfortable: $selectedComfortable")
-//        Log.d("UpdatePostScreen", "Selected Service: $selectedService")
-//        Log.d("UpdatePostScreen", "Images: $images")
-//        Log.d("UpdatePostScreen", "Videos: $videos")
+    postDetail?.let { detail ->
+          // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
+        if (!isEdited) {
+            title = detail.title ?: ""
+            content = detail.content ?: ""
+        }
+        Log.d("EditPostScreen", "Editing title: $title, content: $content")
+        // Gán thông tin tòa nhà nếu có
+        selectedBuilding = detail.building?._id
+        Log.d("EditPostScreen", "Initial selected building: $selectedBuilding")
+        // Gán thông tin phòng nếu có
+        selectedRoom = detail.room?._id ?: ""
     }
 
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(color = Color(0xfff7f7f7))
-//    ) {
-//
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .statusBarsPadding()
-//                .navigationBarsPadding()
-//                .background(color = Color(0xfff7f7f7))
-//                .padding(bottom = screenHeight.dp/7f)
-//
-//        ) {
-//
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .background(color = Color(0xffffffff))
-//                    .padding(10.dp)
-//
-//            ) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//
-//                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    IconButton(onClick = {   navController.navigate("POSTING_STAFF")}) {
-//                        Image(
-//                            painter = painterResource(id = R.drawable.back),
-//                            contentDescription = null,
-//                            modifier = Modifier.size(30.dp, 30.dp)
-//                        )
-//                    }
-//                    Text(
-//                        text = "Sửa bài đăng",
-//                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                        color = Color.Black,
-//                        fontWeight = FontWeight(700),
-//                        fontSize = 17.sp,
-//                    )
-//                    IconButton(onClick = { /*TODO*/ }) {
-//                    }
-//                }
-//            }
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .verticalScroll(scrollState)
-//                    .background(color = Color(0xfff7f7f7))
-//                    .padding(15.dp)
-//            ) {
-//                // tiêu đề
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(5.dp)
-//                ) {
-//                    Row {
-//                        Text(
-//                            text = "Tiêu đề bài đằng",
-//                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                            color = Color(0xff7f7f7f),
-//                            // fontWeight = FontWeight(700),
-//                            fontSize = 13.sp,
-//                        )
-//                        Text(
-//
-//                            text = " *",
-//                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                            color = Color(0xffff1a1a),
-//                            // fontWeight = FontWeight(700),
-//                            fontSize = 16.sp,
-//
-//                            )
-//                    }
-//                    TextField(
-//                        value = title,
-//                        onValueChange = { newValue ->
-//                            title = newValue // Cập nhật giá trị title khi người dùng thay đổi
-//                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-//                        },
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//
-//                        colors = TextFieldDefaults.colors(
-//                            focusedIndicatorColor = Color(0xFFcecece),
-//                            unfocusedIndicatorColor = Color(0xFFcecece),
-//                            focusedPlaceholderColor = Color.Black,
-//                            unfocusedPlaceholderColor = Color.Gray,
-//                            unfocusedContainerColor = Color(0xFFf7f7f7),
-//                            focusedContainerColor = Color(0xFFf7f7f7),
-//                        ),
-//                        placeholder = {
-//                            Text(
-//                                text = "Nhập tiêu đề bài đăng",
-//                                fontSize = 13.sp,
-//                                color = Color(0xFF898888),
-//                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                            )
-//                        },
-//                        shape = RoundedCornerShape(size = 8.dp),
-//                        textStyle = TextStyle(
-//                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                        )
-//                    )
-//                }
-//                // loai phòng
-//                Column {
-//                    RoomTypeLabel()
-//
-//                    RoomTypesDisplay (
-//                        roomTypes = selectedRoomTypes, // Danh sách tiện ích đã chọn
-//                        onRoomTypeChange = { updatedRoomType ->
-//                            selectedRoomTypes1 = updatedRoomType // Cập nhật danh sách tiện ích trong state ngoài
-//                            Log.d("logUi", "updated rroom: $updatedRoomType") // Kiểm tra kết quả
-//                        }
-//                    )
-//                }
-////video
-//                postDetail?.let {
-//                    SelectMedia(
-//                        onMediaSelected = { images, videos ->
-//                            selectedImages = images
-//                            selectedVideos = videos
-//
-//                            Log.d("SelectedImages", "Selected images: $selectedImages")
-//                            Log.d("SelectedVideos", "Selected videos: $selectedVideos")
-//                        },
-//                        detail = it
-//                    )
-//                }
-//                // gía phòng
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(5.dp)
-//                ) {
-//                    Row {
-//                        Text(
-//                            text = "Giá Phòng",
-//                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                            color = Color(0xff7f7f7f),
-//                            // fontWeight = FontWeight(700),
-//                            fontSize = 13.sp,
-//                        )
-//                        Text(
-//
-//                            text = " *",
-//                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                            color = Color(0xffff1a1a),
-//                            // fontWeight = FontWeight(700),
-//                            fontSize = 16.sp,
-//
-//                            )
-//                    }
-//                    TextField(
-//                        value = roomPrice,
-//
-//                        onValueChange = { newValue ->
-//                            roomPrice = newValue // Cập nhật giá trị title khi người dùng thay đổi
-//                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-//                        },
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//
-//                        colors = TextFieldDefaults.colors(
-//                            focusedIndicatorColor = Color(0xFFcecece),
-//                            unfocusedIndicatorColor = Color(0xFFcecece),
-//                            focusedPlaceholderColor = Color.Black,
-//                            unfocusedPlaceholderColor = Color.Gray,
-//                            unfocusedContainerColor = Color(0xFFf7f7f7),
-//                            focusedContainerColor = Color(0xFFf7f7f7),
-//                        ),
-//                        placeholder = {
-//                            Text(
-//                                text = "Nhập giá phòng",
-//                                fontSize = 13.sp,
-//                                color = Color(0xFF898888),
-//                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                            )
-//                        },
-//                        shape = RoundedCornerShape(size = 8.dp),
-//                        textStyle = TextStyle(
-//                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                        )
-//                    )
-//                }
-//                //  Nội dung
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(5.dp)
-//                ) {
-//                    Row {
-//                        Text(
-//                            text = "Nội dung",
-//                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                            color = Color(0xff7f7f7f),
-//                            // fontWeight = FontWeight(700),
-//                            fontSize = 13.sp,
-//                        )
-//                        Text(
-//                            text = " *",
-//                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                            color = Color(0xffff1a1a),
-//                            // fontWeight = FontWeight(700),
-//                            fontSize = 16.sp,
-//
-//                            )
-//                    }
-//                    TextField(
-//                        value = content,
-//                        onValueChange = { newValue ->
-//                            content = newValue // Cập nhật giá trị title khi người dùng thay đổi
-//                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-//                        },
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                        colors = TextFieldDefaults.colors(
-//                            focusedIndicatorColor = Color(0xFFcecece),
-//                            unfocusedIndicatorColor = Color(0xFFcecece),
-//                            focusedPlaceholderColor = Color.Black,
-//                            unfocusedPlaceholderColor = Color.Gray,
-//                            unfocusedContainerColor = Color(0xFFf7f7f7),
-//                            focusedContainerColor = Color(0xFFf7f7f7),
-//                        ),
-//                        placeholder = {
-//                            Text(
-//                                text = "Nhập nội dung",
-//                                fontSize = 13.sp,
-//                                color = Color(0xFF898888),
-//                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                            )
-//                        },
-//                        shape = RoundedCornerShape(size = 8.dp),
-//                        textStyle = TextStyle(
-//                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                        )
-//                    )
-//                }
-//                // dịa chỉ
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(5.dp)
-//                ) {
-//                    Row {
-//                        Text(
-//                            text = "Địa chỉ",
-//                            color = Color(0xff7f7f7f),
-//                            fontSize = 13.sp,
-//                        )
-//                        Text(
-//                            text = " *",
-//                            color = Color(0xffff1a1a),
-//                            fontSize = 16.sp,
-//
-//                            )
-//                    }
-//                    TextField(
-//                        value = address,
-//
-//                        onValueChange = { newValue ->
-//                            address = newValue // Cập nhật giá trị title khi người dùng thay đổi
-//                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-//                        },
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(53.dp),
-//                        colors = TextFieldDefaults.colors(
-//                            focusedIndicatorColor = Color(0xFFcecece),
-//                            unfocusedIndicatorColor = Color(0xFFcecece),
-//                            focusedPlaceholderColor = Color.Black,
-//                            unfocusedPlaceholderColor = Color.Gray,
-//                            unfocusedContainerColor = Color(0xFFf7f7f7),
-//                            focusedContainerColor = Color(0xFFf7f7f7),
-//                        ),
-//                        placeholder = {
-//                            Text(
-//                                text = "Nhập địa chỉ *",
-//                                fontSize = 13.sp,
-//                                color = Color(0xFF898888),
-//                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                            )
-//                        },
-//                        shape = RoundedCornerShape(size = 8.dp),
-//                        textStyle = TextStyle(
-//                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                        )
-//                    )
-//                }
-//                // sóo điện thoại
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(5.dp)
-//                ) {
-//                    Row {
-//                        Text(
-//                            text = "Số điện thoại",
-//                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                            color = Color(0xff7f7f7f),
-//                            // fontWeight = FontWeight(700),
-//                            fontSize = 13.sp,
-//                        )
-//                        Text(
-//
-//                            text = " *",
-//                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                            color = Color(0xffff1a1a),
-//                            // fontWeight = FontWeight(700),
-//                            fontSize = 16.sp,
-//
-//                            )
-//                    }
-//                    TextField(
-//                        value = phoneNumber,
-//
-//                        onValueChange = { newValue ->
-//                            phoneNumber = newValue // Cập nhật giá trị title khi người dùng thay đổi
-//                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-//                        },
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(53.dp),
-//                        colors = TextFieldDefaults.colors(
-//                            focusedIndicatorColor = Color(0xFFcecece),
-//                            unfocusedIndicatorColor = Color(0xFFcecece),
-//                            focusedPlaceholderColor = Color.Black,
-//                            unfocusedPlaceholderColor = Color.Gray,
-//                            unfocusedContainerColor = Color(0xFFf7f7f7),
-//                            focusedContainerColor = Color(0xFFf7f7f7),
-//                        ),
-//                        placeholder = {
-//                            Text(
-//                                text = "Nhập địa chỉ *",
-//                                fontSize = 13.sp,
-//                                color = Color(0xFF898888),
-//                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                            )
-//                        },
-//                        shape = RoundedCornerShape(size = 8.dp),
-//                        textStyle = TextStyle(
-//                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-//                        )
-//                    )
-//                }
-//                Spacer(modifier = Modifier.height(3.dp))
-//                Column {
-//                    ComfortableLabel()
-//                    AmenitiesDisplay(
-//                        amenities = selectedComfortable, // Danh sách tiện ích đã chọn
-//                        onAmenitiesChange = { updatedAmenities ->
-//                            selectedComfortable_up = updatedAmenities // Cập nhật danh sách tiện ích trong state ngoài
-//                            Log.d("EditPostScreen", "Updated Amenities: $updatedAmenities") // Kiểm tra kết quả
-//                        }
-//                    )
-//                }
-//                // dịch vụ
-//                Spacer(modifier = Modifier.height(10.dp))
-//                Column {
-//                    ServiceLabel()
-//                    ServicesDisplay(
-//                        services = selectedService, // Danh sách tiện ích đã chọn
-//                        onServicesChange = { updatedServices ->
-//                            selectedService_up = updatedServices // Cập nhật danh sách tiện ích trong state ngoài
-//                            Log.d("logUi", "updatedService: $updatedServices") // Kiểm tra kết quả
-//                        }
-//                    )
-//                }
-//
-//            }
-//        }
-//        Box(
-//            modifier = Modifier
-//                .align(Alignment.BottomCenter)
-//                .fillMaxWidth()
-//                .height(screenHeight.dp/7f)
-//                .background(color = Color(0xfff7f7f7))
-//        ) {
-//            fun logRequestBody(requestBody: RequestBody) {
-//                val buffer = Buffer()
-//                try {
-//                    requestBody.writeTo(buffer)
-//                    val content = buffer.readUtf8()
-//                    Log.d("click", "RequestBody content: $content")
-//                } catch (e: Exception) {
-//                    Log.e("click", "Error reading RequestBody: ${e.message}")
-//                }
-//            }
-//
-//            Box(modifier = Modifier.padding(20.dp)) {
-//                Button(
-//                    onClick = {
-////                        if (isFieldEmpty(title)) {
-////                            // Hiển thị thông báo lỗi nếu title trống
-////                            Toast.makeText(context, "Tiêu đề không thể trống", Toast.LENGTH_SHORT).show()
-////                            return@Button        }
-////                        if (isFieldEmpty(roomPrice)) {
-////                            // Hiển thị thông báo lỗi nếu roomPrice trống
-////                            Toast.makeText(context, "Giá phòng không thể trống", Toast.LENGTH_SHORT).show()
-////                            return@Button
-////                        }
-////// Kiểm tra giá phòng có phải là số hợp lệ không
-////                        if (!isValidPrice(roomPrice)) {
-////                            Toast.makeText(context, "Giá phòng phải là số hợp lệ", Toast.LENGTH_SHORT).show()
-////                            return@Button
-////                        }
-////                        if (isFieldEmpty(content)) {
-////                            // Hiển thị thông báo lỗi nếu content trống
-////                            Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
-////                            return@Button
-////                        }
-////                        if (isFieldEmpty(address)) {
-////                            // Hiển thị thông báo lỗi nếu address trống
-////                            Toast.makeText(context, "Địa chỉ không thể trống", Toast.LENGTH_SHORT).show()
-////                            return@Button
-////                        }
-////
-////                        if (isFieldEmpty(phoneNumber)) {
-////                            // Hiển thị thông báo lỗi nếu phoneNumber trống
-////                            Toast.makeText(context, "Số điện thoại không thể trống", Toast.LENGTH_SHORT).show()
-////                            return@Button
-////                        }
-////                        // Kiểm tra số điện thoại có đúng định dạng không (10 chữ số và bắt đầu bằng 0)
-////                        if (!isValidPhoneNumber(phoneNumber)) {
-////                            Toast.makeText(context, "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0", Toast.LENGTH_SHORT).show()
-////                            return@Button
-////                        }
-////
-////
-////
-////                        val userId = "672490e5ce87343d0e701012".toRequestBody("text/plain".toMediaTypeOrNull())
-////                        val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val postType = "rent".toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val price = roomPrice.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val address = address.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val phoneNumber = phoneNumber.toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val roomType = selectedRoomTypes1.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val amenities = selectedComfortable_up.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        val services = selectedService_up.joinToString(",").toRequestBody("multipart/form-data".toMediaTypeOrNull())
-////                        // Kiểm tra trống các trường quan trọng
-////
-////                        Log.d("click", "${selectedService_up.joinToString(",")}")
-////
-////                        logRequestBody(services)   // Log nội dung services
-////
-////                        fun isRemoteUri(uri: Uri): Boolean {
-////                            val scheme = uri.scheme ?: return false
-////                            return scheme.startsWith("http")
-////                        }
-////                        val videoParts = selectedVideos.mapNotNull { uri ->
-////                            val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
-////                           prepareMultipartBody(
-////                                context,
-////                                uri,
-////                                "video",
-////                                ".mp4",
-////                                mimeType
-////                            )
-////                        }
-////                        val photoParts = selectedImages.mapNotNull { uri ->
-////                            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-////                         prepareMultipartBody(
-////                                context,
-////                                uri,
-////                                "photo",
-////                                ".jpg",
-////                                mimeType
-////                            )
-////                        }
-////                        // Gửi yêu cầu cập nhật
-////                        postId?.let {
-////                            viewModel.updatePost(
-////                                postId = it,
-////                                userId = userId,
-////                                room_id = userId,
-////                                building_id = userId,
-////                                title = title,
-////                                content = content,
-////                                status = status,
-////                                postType = postType,
-////                                videos = videoParts,
-////                                photos = photoParts
-////                            )
-////                        }
-////                        navController.navigate("post_detail/$postId")
-////                        {
-////                            popUpTo("update_post_screen/$postId") { inclusive = true }
-////                        }
-//
-//                    }, modifier = Modifier.height(50.dp).fillMaxWidth(),
-//                    shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
-//                        containerColor = Color(0xff5dadff)
-//                    )
-//                ) {
-//                    Text(
-//                        text = "Sửa bài đăng",
-//                        fontSize = 16.sp,
-//                        fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                        color = Color(0xffffffff)
-//                    )
-//                }
-//
-//            }
-//        }
-//    }
-//}
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color(0xfff7f7f7))
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .background(color = Color(0xfff7f7f7))
+                .padding(bottom = screenHeight.dp/7f)
+
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xffffffff))
+                    .padding(10.dp)
+
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+
+                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    IconButton(onClick = {   navController.navigate("POSTING_STAFF")}) {
+                        Image(
+                            painter = painterResource(id = R.drawable.back),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp, 30.dp)
+                        )
+                    }
+                    Text(
+                        text = "Sửa bài đăng",
+                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color.Black,
+                        fontWeight = FontWeight(700),
+                        fontSize = 17.sp,
+                    )
+                    IconButton(onClick = { /*TODO*/ }) {
+                    }
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .background(color = Color(0xfff7f7f7))
+                    .padding(15.dp)
+            ) {
+                // tiêu đề
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                ) {
+  // tieeu de
+                    Row {
+                        Text(
+                            text = "Tiêu đề bài đằng",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xff7f7f7f),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 13.sp,
+                        )
+                        Text(
+
+                            text = " *",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xffff1a1a),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 16.sp,
+
+                            )
+                    }
+                    TextField(
+                        value = title,
+                        onValueChange = { newValue ->
+                            title = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFFcecece),
+                            unfocusedIndicatorColor = Color(0xFFcecece),
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFf7f7f7),
+                            focusedContainerColor = Color(0xFFf7f7f7),
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Nhập tiêu đề bài đăng",
+                                fontSize = 13.sp,
+                                color = Color(0xFF898888),
+                                fontFamily = FontFamily(Font(R.font.cairo_regular))
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 8.dp),
+                        textStyle = TextStyle(
+                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
+                        )
+                    )
+                }
+
+                postDetail?.let {
+                    SelectMedia(
+                        onMediaSelected = { images, videos ->
+                            selectedImages = images
+                            selectedVideos = videos
+
+                            Log.d("SelectedImages", "Selected images: $selectedImages")
+                            Log.d("SelectedVideos", "Selected videos: $selectedVideos")
+                        },
+                        detail = it
+                    )
+                }
+
+                //  Nội dung
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                ) {
+                    Row {
+                        Text(
+                            text = "Nội dung",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xff7f7f7f),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 13.sp,
+                        )
+                        Text(
+                            text = " *",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xffff1a1a),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 16.sp,
+
+                            )
+                    }
+                    TextField(
+                        value = content,
+                        onValueChange = { newValue ->
+                            content = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFFcecece),
+                            unfocusedIndicatorColor = Color(0xFFcecece),
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFf7f7f7),
+                            focusedContainerColor = Color(0xFFf7f7f7),
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Nhập nội dung",
+                                fontSize = 13.sp,
+                                color = Color(0xFF898888),
+                                fontFamily = FontFamily(Font(R.font.cairo_regular))
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 8.dp),
+                        textStyle = TextStyle(
+                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
+                        )
+                    )
+                }
 
 
 
 
+                Spacer(modifier = Modifier.height(3.dp))
+                Column {
+                    ComfortableLabel()
+                    BuildingOptions(
+                        userId = "67362213c6d421d3027fb5a7",
+                        selectedBuilding = selectedBuilding, // Truyền giá trị ban đầu
+                        onBuildingSelected = { buildingId ->
+                            viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
+                            Log.d("toa nha looo", "Updated selected building: $selectedBuilding1")
+                          //  onBuildingUpdated(buildingId) // Gửi callback ra ngoài
+                        }
+                    )
+                }
+                // dịch vụ
+                Spacer(modifier = Modifier.height(10.dp))
+                Column {
+                    ServiceLabel()
+
+                    viewModel.selectedBuilding.value?.let { buildingId ->
+                        // Lấy phòng cho tòa nhà đã chọn
+                        RoomOptions(
+                            buildingId = buildingId, // Truyền tòa nhà đã chọn
+                            selectedRoom = selectedRoom, // Truyền giá trị phòng đã chọn
+                            onRoomSelected = { roomId ->
+                                selectedRoom1 = roomId // Cập nhật phòng đã chọn
+                                Log.d("room toa nha", "Updated selected room: $selectedRoom1")
+                            }
+                        )
+                    }
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(screenHeight.dp/7f)
+                .background(color = Color(0xfff7f7f7))
+        ) {
+            fun logRequestBody(requestBody: RequestBody) {
+                val buffer = Buffer()
+                try {
+                    requestBody.writeTo(buffer)
+                    val content = buffer.readUtf8()
+                    Log.d("click", "RequestBody content: $content")
+                } catch (e: Exception) {
+                    Log.e("click", "Error reading RequestBody: ${e.message}")
+                }
+            }
+
+            Box(modifier = Modifier.padding(20.dp)) {
+                Button(
+                    onClick = {
+                        if (isFieldEmpty(title)) {
+                            // Hiển thị thông báo lỗi nếu title trống
+                            Toast.makeText(context, "Tiêu đề không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button        }
+                        if (isFieldEmpty(content)) {
+                            // Hiển thị thông báo lỗi nếu content trống
+                            Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
 
 
+
+                        val userId = "67362213c6d421d3027fb5a7".toRequestBody("text/plain".toMediaTypeOrNull())
+                        val title = title.toRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
+                        val postType = "rent".toRequestBody("multipart/form-data".toMediaTypeOrNull())
+
+                        val buildingId = viewModel.selectedBuilding.value?.toRequestBody("text/plain".toMediaTypeOrNull())
+                            ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
+
+                        val roomId  = selectedRoom1?.toRequestBody("text/plain".toMediaTypeOrNull())
+                            ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
+
+                        val videoParts = selectedVideos.mapNotNull { uri ->
+                            val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
+                           prepareMultipartBody(
+                                context,
+                                uri,
+                                "video",
+                                ".mp4",
+                                mimeType
+                            )
+                        }
+                        val photoParts = selectedImages.mapNotNull { uri ->
+                            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+                         prepareMultipartBody(
+                                context,
+                                uri,
+                                "photo",
+                                ".jpg",
+                                mimeType
+                            )
+                        }
+
+                        if (roomId != null) {
+                            logRequestBody(roomId)
+                        }
+                        Log.e("click", "log room_id : ${selectedRoom1}")
+                       logRequestBody(content)
+                        logRequestBody(userId)
+
+                        logRequestBody(postType)
+                        logRequestBody(buildingId)
+                        Log.e("click", "log building : ${viewModel.selectedBuilding.value}")
+                        // Gửi yêu cầu cập nhật
+                        postId?.let {
+                            viewModel.updatePost(
+                                postId = postId,
+                                userId = userId,
+                                building_id = buildingId,
+                                room_id = roomId,
+                                title = title,
+                                content = content,
+                                status = status,
+                                postType = postType,
+                                videos = videoParts,  // List<MultipartBody.Part>
+                                photos = photoParts   // List<MultipartBody.Part>
+                            )
+                        }
+                        navController.navigate("post_detail/$postId")
+                        {
+                            popUpTo("update_post_screen/$postId") { inclusive = true }
+                        }
+
+                    }, modifier = Modifier.height(50.dp).fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xff5dadff)
+                    )
+                ) {
+                    Text(
+                        text = "Sửa bài đăng",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color(0xffffffff)
+                    )
+                }
+
+            }
+        }
+    }
+}
+
+
+
+
+@Composable
+fun BuildingOptions(
+    userId: String,
+    selectedBuilding: String?, // Tòa nhà đã chọn ban đầu
+    onBuildingSelected: (String) -> Unit // Hàm được gọi khi chọn tòa nhà
+) {
+    val buildingViewModel: PostViewModel = viewModel()
+    val buildings by buildingViewModel.buildings // Danh sách tòa nhà từ ViewModel
+    val context = LocalContext.current // Context để sử dụng khi cần
+
+    // Tạo trạng thái tòa nhà đã chọn
+    val selectedBuildingState = remember(selectedBuilding) { mutableStateOf(selectedBuilding) }
+
+    Log.d("toa da chon", "tòa đã chọn $selectedBuildingState")
+
+
+    // Gọi API lấy danh sách tòa nhà theo userId
+    LaunchedEffect(userId) {
+        buildingViewModel.getBuildings(userId)
+    }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        // Hiển thị thông tin tòa nhà đã chọn
+        selectedBuildingState.value?.let { buildingId ->
+            val selectedBuildingName = buildings.find { it._id == buildingId }?.nameBuilding
+            selectedBuildingName?.let {
+                Text(
+                    text = "Tòa nhà đã chọn: $it",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+        } ?: run {
+            Text(
+                text = "Chưa chọn tòa nhà nào",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
+        // Danh sách các tòa nhà để chọn lại
+        FlowRow(
+            modifier = Modifier.padding(5.dp),
+            mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
+            crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+        ) {
+            // Hiển thị các tùy chọn tòa nhà
+            buildings.forEach { building ->
+                BuildingOption(
+                    text = building.nameBuilding,
+                    isSelected = selectedBuildingState.value == building._id,
+                    onClick = {
+                        // Khi chọn, cập nhật trạng thái và gọi callback
+                        selectedBuildingState.value = building._id
+                        onBuildingSelected(building._id)
+                        Toast.makeText(context, "Bạn đã chọn tòa nhà: ${building.nameBuilding}", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun BuildingOption(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clickable(
+                onClick = onClick,
+                indication = null, // Tắt hiệu ứng nhấp
+                interactionSource = remember { MutableInteractionSource() } // Tùy chỉnh tương tác
+            )
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
+            .border(
+                width = 1.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
+                shape = RoundedCornerShape(9.dp)
+            )
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
+            .padding(0.dp)
+    ) {
+        Text(
+            text = text,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
+            fontSize = 13.sp,
+            modifier = Modifier
+                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
+                .padding(14.dp)
+                .align(Alignment.Center)
+        )
+
+        // Hiển thị dấu tích nếu được chọn
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .size(23.dp)
+                    .align(Alignment.TopStart)
+                    .background(
+                        color = Color(0xFF44acfe),
+                        shape = TriangleShape() // Dấu tích dạng tam giác
+                    ),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.tick),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(10.dp)
+                        .offset(x = 3.dp, y = 2.dp)
+                )
+            }
+        }
+    }
+}
+//
+//
+@Composable
+fun RoomOptions(
+    buildingId: String,
+    selectedRoom: String?,
+    onRoomSelected: (String) -> Unit
+) {
+    val roomViewModel: PostViewModel = viewModel()
+    val rooms by roomViewModel.rooms // Danh sách phòng từ ViewModel
+    val context = LocalContext.current
+
+    val selectedRoomState = remember { mutableStateOf(selectedRoom) }
+
+    // Gọi API lấy danh sách phòng khi buildingId thay đổi
+    LaunchedEffect(buildingId) {
+        Log.d("RoomOptions", "Fetching rooms for buildingId: $buildingId")
+        roomViewModel.getRooms(buildingId)
+    }
+
+    // Kiểm tra xem rooms có được lấy đúng không
+    LaunchedEffect(rooms) {
+        Log.d("RoomOptions", "Fetched rooms: ${rooms.size} rooms")
+    }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        selectedRoomState.value?.let { roomId ->
+            val selectedRoomName = rooms.find { it._id == roomId }?.room_name
+            selectedRoomName?.let {
+                Text(
+                    text = "Phòng đã chọn: $it",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+        } ?: run {
+            Text(
+                text = "Chưa chọn phòng nào",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
+        // Hiển thị danh sách các phòng
+        FlowRow(
+            modifier = Modifier.padding(5.dp),
+            mainAxisSpacing = 10.dp,
+            crossAxisSpacing = 10.dp
+        ) {
+            rooms.forEach { room ->
+                RoomOption(
+                    text = room.room_name,
+                    isSelected = selectedRoomState.value == room._id,
+                    onClick = {
+                        selectedRoomState.value = room._id
+                        onRoomSelected(room._id)
+                        Toast.makeText(context, "Bạn đã chọn phòng: ${room.room_name}", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun RoomOption(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clickable(
+                onClick = onClick,
+                indication = null, // Tắt hiệu ứng nhấp
+                interactionSource = remember { MutableInteractionSource() } // Tùy chỉnh tương tác
+            )
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
+            .border(
+                width = 1.dp,
+                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
+                shape = RoundedCornerShape(9.dp)
+            )
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
+            .padding(0.dp)
+    ) {
+        Text(
+            text = text,
+            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
+            fontSize = 13.sp,
+            modifier = Modifier
+                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
+                .padding(14.dp)
+                .align(Alignment.Center)
+        )
+
+        // Hiển thị dấu tích nếu được chọn
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .size(23.dp)
+                    .align(Alignment.TopStart)
+                    .background(
+                        color = Color(0xFF44acfe),
+                        shape = TriangleShape() // Dấu tích dạng tam giác
+                    ),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.tick),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(10.dp)
+                        .offset(x = 3.dp, y = 2.dp)
+                )
+            }
+        }
+    }
+}
 @Composable
 fun StaticComfortableOptions(
     amenities: List<String>, // Danh sách tiện ích từ dữ liệu

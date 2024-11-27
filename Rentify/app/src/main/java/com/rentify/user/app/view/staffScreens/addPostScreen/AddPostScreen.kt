@@ -146,6 +146,7 @@ fun AddPostScreens(navController: NavHostController) {
         val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val postType = "rent".toRequestBody("multipart/form-data".toMediaTypeOrNull())
+
         val videoPart = selectedVideos.mapNotNull { uri ->
             val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
             prepareMultipartBody(
@@ -166,8 +167,8 @@ fun AddPostScreens(navController: NavHostController) {
                 mimeType
             )
         }
-        Log.d("anh", "da chon anh: $selectedImages")
-        Log.d("video", "da chon video: $selectedVideos")
+
+
         // Gửi dữ liệu đến API
         return try {
             val response = apiService.addPost(
