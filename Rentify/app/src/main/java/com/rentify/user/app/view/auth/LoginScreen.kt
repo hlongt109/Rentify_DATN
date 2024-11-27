@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,10 +64,11 @@ import com.rentify.user.app.viewModel.LoginViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreenApp(navigator: NavController) {
+    val context = LocalContext.current
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
     val loginViewModel: LoginViewModel = viewModel(
-        factory = LoginViewModel.LoginViewModelFactory(userRepository)
+        factory = LoginViewModel.LoginViewModelFactory(userRepository, context)
     )
     // Khai báo biến để lưu thông tin đăng nhập
     var username by remember { mutableStateOf("") }

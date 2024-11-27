@@ -25,3 +25,6 @@ val elevator = R.drawable.elevator
 val parking = R.drawable.parking
 val wifi = R.drawable.wifi_staff
 val calender = R.drawable.calender
+val building_icon = R.drawable.building_2
+val room = R.drawable.room_2
+val service = R.drawable.service_2

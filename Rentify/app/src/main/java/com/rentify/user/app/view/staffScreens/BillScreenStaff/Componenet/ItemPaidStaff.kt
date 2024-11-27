@@ -39,19 +39,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
+import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.utils.CheckUnit
 import com.rentify.user.app.view.userScreens.BillScreen.Component.ItemPaidExpand
 import java.util.Calendar
 
 @Composable
-fun ItemPaidStaff(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>) {
+fun ItemPaidStaff(
+    year: String,
+    itemsByMonth: Map<String, List<Invoice>>
+) {
     var isExpanded by remember { mutableStateOf(false) }
     // Card cho từng item
-    Box (
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-    ){
+    ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -69,8 +73,7 @@ fun ItemPaidStaff(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>
                 .clickable {
                     isExpanded = !isExpanded
                 }
-                .clip(shape = RoundedCornerShape(8.dp))
-            ,
+                .clip(shape = RoundedCornerShape(8.dp)),
             shape = RoundedCornerShape(8.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
@@ -120,12 +123,12 @@ fun ItemPaidStaff(year: String, itemsByMonth: Map<String, List<RoomPaymentInfo>>
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     // Hiển thị các item theo tháng khi mở rộng
-                    itemsByMonth.forEach { (monthYear, itemsInMonth) ->
-                        ItemPaidExpandStaff(
-                            item = itemsInMonth.first(), // Sử dụng item đầu tiên làm thông tin tháng
-                            paidRooms = itemsInMonth // Truyền toàn bộ danh sách phòng trong tháng
-                        )
-                    }
+                   itemsByMonth.forEach{(monthYear, invoices) ->
+                       ItemPaidExpandStaff(
+                           monthYear = monthYear,
+                           invoices = invoices
+                       )
+                   }
                 }
             }
         }

@@ -1,6 +1,15 @@
 package com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet
 
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,24 +26,26 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rentify.user.app.repository.StaffRepository.BuildingRepository.Building
+import com.rentify.user.app.repository.StaffRepository.RoomRepository.Room
 import com.rentify.user.app.ui.theme.ColorBlack
+import com.rentify.user.app.ui.theme.building_icon
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.colorLocation
-import com.rentify.user.app.ui.theme.greenInput
+import com.rentify.user.app.ui.theme.location
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,11 +56,20 @@ fun TextFiledComponent(
     placeHolder: String,
     isFocused: MutableState<Boolean>,
     isShowIcon: Boolean = false,
-    isIcon: Any? =null
-){
+    isIcon: Any? = null,
+    listBuilding: List<Building>? = null,
+    listRoom: List<Room>? = null,
+    enable: Boolean = false,
+    onExpandedChange: ((Boolean) -> Unit)? = null,
+    onExpandedRoom: ((Boolean) -> Unit)? = null,
+    onBuildingSelected: ((String) -> Unit)? = null,
+    onRoomSelected: ((Room) -> Unit)? = null
+) {
     var showIcon = remember { mutableStateOf(false) }
-    Column {
+    var isExpanded by remember { mutableStateOf(false) }
+    var isExpandedRoom by remember { mutableStateOf(false) }
 
+    Column {
         Text(
             text = placeHolder,
             fontSize = 16.sp,
@@ -59,12 +79,18 @@ fun TextFiledComponent(
         )
 
         TextField(
+            textStyle = TextStyle( // Cập nhật style chữ
+                color = Color.Black, // Đặt màu chữ đậm
+                fontWeight = FontWeight.SemiBold, // Làm đậm chữ
+                fontSize = 14.sp // Kích thước chữ
+            ),
             value = value,
             onValueChange = { newValue ->
                 // Kiểm tra xem onValueChange có khác null không
                 onValueChange?.invoke(newValue)
             },
-            placeholder = {Text(text = placeHolder)},
+            enabled = enable,
+            placeholder = { Text(text = placeHolder, color = ColorBlack) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 10.dp)
@@ -73,28 +99,37 @@ fun TextFiledComponent(
                     color = if (isFocused.value) colorLocation else colorInput,
                     shape = RoundedCornerShape(15.dp)
                 )
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessHigh
+                    )
+                )
                 .focusable()
                 .onFocusChanged { focusState -> isFocused.value = focusState.isFocused }
-                .clickable(
-                    enabled = onClick != null,
-                    onClick = {
-                        // Gọi onClick nếu onClick khác null
-                        onClick?.invoke()
+                .clickable {
+                    // Xử lý click cho cả trường hợp chọn ngày và chọn building/room
+                    onClick?.invoke()
+                    if (listBuilding != null || listRoom != null) {
+                        isExpanded = !isExpanded
+                        isExpandedRoom = !isExpandedRoom
+                        onExpandedChange?.invoke(isExpanded)
+                        onExpandedRoom?.invoke(isExpandedRoom)
                     }
-                )
-            ,
+                },
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = colorInput,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = colorLocation
+                focusedIndicatorColor = Color.Transparent,  // Ẩn indicator khi focus
+                unfocusedIndicatorColor = Color.Transparent,  // Ẩn indicator khi không focus
+                disabledIndicatorColor = Color.Transparent,  // Ẩn indicator khi disable
+                cursorColor = colorLocation,
             ),
             shape = RoundedCornerShape(15.dp),
             // Thêm trailing icon cho password
             trailingIcon = if (isShowIcon) {
                 {
                     IconButton(onClick = { showIcon.value = !showIcon.value }) {
-                        when(isIcon){
+                        when (isIcon) {
                             is ImageVector ->
                                 Icon(
                                     imageVector = if (showIcon.value)
@@ -106,11 +141,67 @@ fun TextFiledComponent(
                                     else
                                         "Down"
                                 )
-                            is Int -> Image(painter = painterResource(isIcon), contentDescription = null)
+
+                            is Int -> Image(
+                                painter = painterResource(isIcon),
+                                contentDescription = null
+                            )
                         }
                     }
                 }
             } else null,
         )
+
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // Hiển thị các item theo tháng khi mở rộng
+                if (listBuilding != null) {
+                    listBuilding.forEachIndexed { index, building ->
+                        ItemBuildingAndRoom(
+                            icon = building_icon,
+                            building = building,
+                            onItemClick = {
+                                onValueChange?.invoke(building.nameBuilding)
+                                isExpanded = false
+                                onExpandedChange?.invoke(false)
+                                onBuildingSelected?.invoke(building._id)
+                            },
+                            isLastItem = index == listBuilding.size - 1
+                        )
+                    }
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = isExpandedRoom,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // Hiển thị các item theo tháng khi mở rộng
+                if (listRoom != null) {
+                    listRoom.forEachIndexed { index, room ->
+                        ItemBuildingAndRoom(
+                            icon = building_icon,
+                            room = room,
+                            onItemClick = {
+                                onValueChange?.invoke(room.room_name)
+                                isExpanded = false
+                                isExpandedRoom = false
+                                onExpandedChange?.invoke(false)
+                                onRoomSelected?.invoke(room)
+                            },
+                            isLastItem = index == listRoom.size - 1
+                        )
+                    }
+                }
+            }
+        }
+
     }
 }

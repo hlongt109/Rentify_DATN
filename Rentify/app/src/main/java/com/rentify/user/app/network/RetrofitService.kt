@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -37,12 +38,25 @@ class RetrofitService {
     val ApiService: APIService = retrofit.create(APIService::class.java)
 }
 
-object LocationService{
+object LocationService {
     val location: Retrofit = Retrofit.Builder()
         .baseUrl("https://provinces.open-api.vn/api/")
         .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(CoroutineCallAdapterFactory()) // Thêm để hỗ trợ coroutines
+        .client(createOkHttpClient()) // Thêm logging cho debug
         .build()
+
     val ApiService: APIService = location.create(APIService::class.java)
+
+    private fun createOkHttpClient(): OkHttpClient {
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        return OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build()
+    }
 }
 
 object ApiClient {

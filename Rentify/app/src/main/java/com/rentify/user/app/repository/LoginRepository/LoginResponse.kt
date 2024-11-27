@@ -9,12 +9,19 @@ data class RegisterRequest(
     var password: String
 )
 data class LoginResponse(
-    @SerializedName("_id") val userId: String,
-    @SerializedName("email") val email: String,
-    @SerializedName("password") val password: String,
-    @SerializedName("role") val role: String, // Vai trò (admin, user, nhan vien, ...)
-    @SerializedName("name") val name: String,
-    @SerializedName("verified") val verified: Boolean,
+    val _id: String,
+    val email: String,
+    val password: String,
+    val role: String, // Vai trò (admin, user, nhan vien, ...)
+    val name: String,
+    val verified: Boolean,
+    val phoneNumber: String,
+    val dob: String, // Ngày sinh
+    val gender: String, // Giới tính
+    val address: String,
+    val profilePictureUrl: String,
+    val createdAt: String,
+    val updatedAt: String
 )
 
 data class ApiResponse(

@@ -45,15 +45,15 @@ fun PaidScreen(){
                 horizontalAlignment = Alignment.CenterHorizontally,
                 contentPadding = PaddingValues(7.dp)
             ) {
-                sortedGroupedByYear.forEach { (year, paymentsByYear) ->
-                    // Nhóm các mục trong năm hiện tại theo tháng
-                    val groupedByMonth = groupItemsByMonthYear(paymentsByYear)
-
-                    // Thêm ItemPaid cho mỗi năm
-                    item {
-                        ItemPaid(year = year.toString(), itemsByMonth = groupedByMonth)
-                    }
-                }
+//                sortedGroupedByYear.forEach { (year, paymentsByYear) ->
+//                    // Nhóm các mục trong năm hiện tại theo tháng
+//                    val groupedByMonth = groupItemsByMonthYear(paymentsByYear)
+//
+//                    // Thêm ItemPaid cho mỗi năm
+//                    item {
+//                        ItemPaid(year = year.toString(), itemsByMonth = groupedByMonth)
+//                    }
+//                }
             }
         }
     }

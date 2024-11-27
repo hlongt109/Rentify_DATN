@@ -1,113 +1,126 @@
-package com.rentify.user.app.viewModel
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import com.rentify.user.app.model.Model.District
-import com.rentify.user.app.model.Model.Location
 import com.rentify.user.app.model.Model.Province
-import com.rentify.user.app.model.Model.Ward
+import com.rentify.user.app.network.ApiClient.apiService
 import com.rentify.user.app.repository.GetLocationRepository.LocationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
+
+// Tạo một data class để lưu trữ thông tin location state
+data class LocationState(
+    val provinceName: String = "",
+    val districtName: String = "",
+    val wardName: String = "",
+    val fullAddress: String = "Toàn quốc"
+)
 
 class LocationViewModel(
-    private val repository: LocationRepository = LocationRepository()
+    private val repository: LocationRepository
 ) : ViewModel() {
-    private val _locationState = MutableStateFlow<UiState<List<Location>>>(UiState.Loading)
-    val locationState: StateFlow<UiState<List<Location>>> = _locationState
 
-    private val _provinces = MutableStateFlow<UiState<List<Province>>>(UiState.Loading)
-    val provinces = _provinces.asStateFlow()
+    private val _locationState = MutableStateFlow(LocationState())
+    val locationState = _locationState.asStateFlow()
 
-    private val _districts = MutableStateFlow<UiState<List<District>>>(UiState.Loading)
-    val districts = _districts.asStateFlow()
+    // LiveData chứa danh sách các tỉnh
+    private val _provinces = MutableLiveData<Result<List<Province>>>()
+    val provinces: LiveData<Result<List<Province>>> get() = _provinces
 
-    private val _wards = MutableStateFlow<UiState<List<Ward>>>(UiState.Loading)
-    val wards = _wards.asStateFlow()
+    // LiveData chứa chi tiết tỉnh cùng danh sách quận/huyện
+    private val _provinceWithDistricts = MutableLiveData<Result<Province>>()
+    val provinceWithDistricts: LiveData<Result<Province>> get() = _provinceWithDistricts
 
-    private val _selectedProvince = MutableStateFlow<UiState<Province>>(UiState.Loading)
-    val selectedProvince = _selectedProvince.asStateFlow()
+    // LiveData chứa chi tiết quận cùng danh sách xã/phường
+    private val _districtWithWards = MutableLiveData<Result<District>>()
+    val districtWithWards: LiveData<Result<District>> get() = _districtWithWards
 
-    private val _selectedDistrict = MutableStateFlow<UiState<District>>(UiState.Loading)
-    val selectedDistrict = _selectedDistrict.asStateFlow()
+    private val _filteredProvinces = MutableStateFlow<List<Province>>(emptyList())
+    val filteredProvinces: StateFlow<List<Province>> = _filteredProvinces
+
+    private var allProvinces: List<Province> = emptyList()
 
     init {
-        loadProvinces()
+        loadAllProvinces()
     }
 
-    fun loadProvinces() {
+    // Lấy danh sách tỉnh
+    fun fetchProvinces() {
+        viewModelScope.launch {
+            _provinces.value = repository.getProvinces()
+        }
+    }
+
+    // Lấy danh sách quận/huyện theo tỉnh
+    fun fetchDistrictsByProvince(provinceCode: String) {
+        viewModelScope.launch {
+            _provinceWithDistricts.value = repository.getProvinceWithDistricts(provinceCode)
+        }
+    }
+
+    // Lấy danh sách xã/phường theo quận/huyện
+    fun fetchWardsByDistrict(districtCode: String) {
+        viewModelScope.launch {
+            _districtWithWards.value = repository.getWard(districtCode)
+        }
+    }
+    //tìm kiếm
+    private fun loadAllProvinces() {
         viewModelScope.launch {
             try {
-                _locationState.value = UiState.Loading
-                // Lấy dữ liệu tỉnh từ repository, kết quả trả về là Result<List<Province>>
-                val result = repository.getProvinces()
-
-                // Kiểm tra kết quả trả về và chuyển đổi dữ liệu
-                result.onSuccess { provinces ->
-                    // Chuyển đổi List<Province> thành List<Location>
-                    val locations = provinces.map { province ->
-                        // Tạo đối tượng Location từ Province (hoặc thêm thông tin về District, Ward nếu cần)
-                        Location(province = province, district = null, ward = null)
-                    }
-                    _locationState.value = UiState.Success(locations)
-                }.onFailure { exception ->
-                    _locationState.value = UiState.Error(exception.message ?: "Có lỗi xảy ra")
-                }
+                allProvinces = apiService.getProvinces()
+                _filteredProvinces.value = allProvinces // Hiển thị toàn bộ khi không có tìm kiếm
             } catch (e: Exception) {
-                _locationState.value = UiState.Error(e.message ?: "Có lỗi xảy ra")
+                // Xử lý lỗi nếu cần
+                _filteredProvinces.value = emptyList()
             }
         }
     }
 
-    fun selectProvince(province: Province) {
-        viewModelScope.launch {
-            _selectedProvince.value = UiState.Success(province)
-            loadDistricts(province.code)
-            // Reset wards when selecting new province
-            _wards.value = UiState.Success(emptyList())
-            _selectedDistrict.value = UiState.Loading
+    fun searchProvinces(query: String) {
+        val filtered = allProvinces.filter {
+            it.name.contains(query, ignoreCase = true) // Lọc theo tên tỉnh
         }
+        _filteredProvinces.value = filtered
     }
 
-    fun selectDistrict(district: District) {
-        viewModelScope.launch {
-            _selectedDistrict.value = UiState.Success(district)
-            loadWards(district.code)
-        }
-    }
+    fun updateLocation(province: String = "", district: String = "", ward: String = "") {
+        _locationState.update { currentState ->
+            val fullAddress = buildString {
+                append(province)
+                if (district.isNotEmpty()) {
+                    append(", ")
+                    append(district)
+                }
+                if (ward.isNotEmpty()) {
+                    append(", ")
+                    append(ward)
+                }
+            }
 
-    private fun loadDistricts(provinceCode: String) {
-        viewModelScope.launch {
-            _districts.value = UiState.Loading
-            repository.getProvinceWithDistricts(provinceCode)
-                .onSuccess { province ->
-                    // Xử lý districts bị null bằng cách gán danh sách trống
-                    _districts.value = UiState.Success(province.districts ?: emptyList())
-                }
-                .onFailure {
-                    _districts.value = UiState.Error(it.message ?: "Lỗi không xác định")
-                }
-        }
-    }
-
-    private fun loadWards(districtCode: String) {
-        viewModelScope.launch {
-            _wards.value = UiState.Loading
-            repository.getWard(districtCode)
-                .onSuccess { district ->
-                    _wards.value = UiState.Success(district.wards ?: emptyList())
-                }
-                .onFailure {
-                    _wards.value = UiState.Error(it.message ?: "Unknown error")
-                }
+            currentState.copy(
+                provinceName = province,
+                districtName = district,
+                wardName = ward,
+                fullAddress = if (fullAddress.isEmpty()) "Toàn quốc" else fullAddress
+            )
         }
     }
 }
 
-sealed class UiState<out T> {
-    object Loading : UiState<Nothing>()
-    data class Success<T>(val data: T) : UiState<T>()
-    data class Error(val message: String) : UiState<Nothing>()
+class LocationViewModelFactory(
+    private val repository: LocationRepository
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(LocationViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return LocationViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

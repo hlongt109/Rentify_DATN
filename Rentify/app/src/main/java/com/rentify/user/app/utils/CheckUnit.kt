@@ -35,6 +35,24 @@ object CheckUnit {
         return format.format(date)
     }
 
+    fun formatDay(date: Date): String{
+        val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Chỉ định định dạng năm
+        return format.format(date)
+    }
+
+    fun parseDate(dateString: String): Date {
+        return try {
+            val dateFormat = SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.getDefault()
+            ) // Hoặc định dạng ngày tháng tùy thuộc vào định dạng của bạn
+            dateFormat.parse(dateString)
+                ?: Date() // Trả về Date mặc định nếu parse không thành công
+        } catch (e: Exception) {
+            Date() // Trả về Date mặc định nếu gặp lỗi khi parse
+        }
+    }
+
     // 2. Tạo extension function để encode/decode Service
     fun Service.toJson(): String {
         return URLEncoder.encode(Gson().toJson(this), "UTF-8")

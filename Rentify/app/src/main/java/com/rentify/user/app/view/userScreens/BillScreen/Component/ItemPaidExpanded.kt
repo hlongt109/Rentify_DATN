@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
+import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2
@@ -56,12 +57,12 @@ import com.rentify.user.app.utils.CheckUnit
 
 @Composable
 fun ItemPaidExpand(
-    item: RoomPaymentInfo
+    item: Invoice
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    val monthYear = CheckUnit.formatMonth(item.invoiceDate)
-    val amount = item.paymentDetails.calculateTotal()
-    val formatMoney = CheckUnit.formattedPrice(amount.toFloat())
+    val monthYear = CheckUnit.formatMonth(CheckUnit.parseDate(item.created_at ?: ""))
+//    val amount = item.description.calculateTotal()
+    val formatMoney = CheckUnit.formattedPrice(item.amount.toFloat())
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -150,22 +151,22 @@ fun ItemPaidExpand(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    PaymentDetailRow(
-                        "Tiền phòng",
-                        CheckUnit.formattedPrice(item.paymentDetails.roomCharge.toFloat())
-                    )
-                    PaymentDetailRow(
-                        "Tiền điện",
-                        CheckUnit.formattedPrice(item.paymentDetails.electricityCharge.toFloat())
-                    )
-                    PaymentDetailRow(
-                        "Tiền nước",
-                        CheckUnit.formattedPrice(item.paymentDetails.waterCharge.toFloat())
-                    )
-                    PaymentDetailRow(
-                        "Tiền dịch vụ",
-                        CheckUnit.formattedPrice(item.paymentDetails.serviceCharge.toFloat())
-                    )
+//                    PaymentDetailRow(
+//                        "Tiền phòng",
+//                        CheckUnit.formattedPrice(item.description.roomCharge.toFloat())
+//                    )
+//                    PaymentDetailRow(
+//                        "Tiền điện",
+//                        CheckUnit.formattedPrice(item.paymentDetails.electricityCharge.toFloat())
+//                    )
+//                    PaymentDetailRow(
+//                        "Tiền nước",
+//                        CheckUnit.formattedPrice(item.paymentDetails.waterCharge.toFloat())
+//                    )
+//                    PaymentDetailRow(
+//                        "Tiền dịch vụ",
+//                        CheckUnit.formattedPrice(item.paymentDetails.serviceCharge.toFloat())
+//                    )
 
                 }
             }

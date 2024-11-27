@@ -37,6 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
+import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
+import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.RoomDetail
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.bill_staff
 import com.rentify.user.app.ui.theme.colorInput_2
@@ -44,10 +46,11 @@ import com.rentify.user.app.utils.CheckUnit
 
 @Composable
 fun ItemPaidRoom(
-    roomPayment: RoomPaymentInfo
+    room: RoomDetail,
+    invoice: Invoice
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    val price = CheckUnit.formattedPrice(roomPayment.paymentDetails.calculateTotal().toFloat())
+    val price = CheckUnit.formattedPrice(invoice.amount.toFloat())
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,31 +75,30 @@ fun ItemPaidRoom(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(bill_staff),
-                contentDescription = "",
-                modifier = Modifier.size(20.dp)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(bill_staff),
+                    contentDescription = "",
+                    modifier = Modifier.size(20.dp)
+                )
 
-            Text(
-                text = "Phòng",
-                fontSize = 13.sp,
-                color = ColorBlack,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-            Text(
-                text = roomPayment.roomInfo.roomNumber,
-                fontSize = 13.sp,
-                color = ColorBlack,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(start = 5.dp)
-            )
+                Text(
+                    text = "Phòng",
+                    fontSize = 13.sp,
+                    color = ColorBlack,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(start = 10.dp)
+                )
+                Text(
+                    text = room.room_name,
+                    fontSize = 13.sp,
+                    color = ColorBlack,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(start = 5.dp)
+                )
         }
-
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
