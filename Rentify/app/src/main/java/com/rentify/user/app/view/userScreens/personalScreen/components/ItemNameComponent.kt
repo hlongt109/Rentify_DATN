@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,76 +26,66 @@ import com.rentify.user.app.R
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ItemNameComponent() {
-    LayoutItemName(navController= rememberNavController())
+    LayoutItemName(navController = rememberNavController())
 }
 
 @Composable
 fun LayoutItemName(navController: NavHostController) {
-    Box(
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(9.dp)
-            .border(width = 1.dp, color = Color(0xffdddddd), shape = RoundedCornerShape(20.dp))
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .background(color = Color.White)
-                .border(
-                    width = 1.dp,
-                    color = Color(0xFFfafafa),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .padding(start = 20.dp)
-                .clickable {
-                    navController.navigate("PROFILE")
-                }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.user),
-                contentDescription = null,
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp)
-                    .padding(top = 5.dp)
-                    .clip(CircleShape)
-            )
-            Column(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .weight(1f) // Cho phép cột chiếm không gian còn lại
-            ) {
-                Text(
-                    text = "Vũ Văn Phúc",
-                    fontSize = 18.sp,
-                    color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 5.dp),
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "0981139895",
-                    fontSize = 15.sp,
-                    color = Color.Black,
-                    modifier = Modifier
-                        .padding(start = 5.dp),
-                    fontWeight = FontWeight.Bold
-                )
+            .padding(horizontal = 10.dp)
+            .height(70.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(color = Color.White)
+            .clickable {
+                navController.navigate("PROFILE")
             }
-            // Sử dụng Spacer để đẩy hình ảnh "next" sang bên phải
-            Spacer(modifier = Modifier.width(8.dp))
-            Image(
-                painter = painterResource(id = R.drawable.baseline_navigate_next_24),
-                contentDescription = null,
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.user),
+            contentDescription = null,
+            modifier = Modifier
+                .width(50.dp)
+                .height(50.dp)
+                .clip(CircleShape)
+        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Text(
+                text = "Vũ Văn Phúc",
+                fontSize = 14.sp,
+                color = Color(0xff2d293a),
                 modifier = Modifier
-                    .width(30.dp)
-                    .height(30.dp)
-                    .padding(end = 5.dp)
-                    .clip(CircleShape)
+                    .padding(start = 5.dp),
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.padding(3.dp))
+            Text(
+                text = "0981139895",
+                fontSize = 12.sp,
+                color = Color(0xff2d293a),
+                modifier = Modifier
+                    .padding(start = 5.dp),
+                fontWeight = FontWeight.Bold
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        // Sử dụng Spacer để đẩy hình ảnh "next" sang bên phải
+        Spacer(modifier = Modifier.width(8.dp))
+        Image(
+            painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+            contentDescription = null,
+            modifier = Modifier
+                .width(30.dp)
+                .height(30.dp)
+                .padding(end = 5.dp)
+                .clip(CircleShape)
+        )
     }
 }

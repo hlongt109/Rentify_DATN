@@ -1,5 +1,7 @@
 package com.rentify.user.app.model
 
+import com.google.gson.annotations.SerializedName
+
 data class User(
     val _id: String,
     val username: String,
@@ -15,4 +17,19 @@ data class User(
     val verified: Boolean,
     val createdAt: String,
     val updatedAt: String
+)
+
+// Xử lý user với màn roomDetail
+data class UserOfRoomDetail(
+    @SerializedName("landlord")val landlord: Landlord,
+    @SerializedName("totalRooms")val totalRooms: Int
+)
+
+data class Landlord(
+    @SerializedName("_id")val _id: String,
+    @SerializedName("address")val address: String,
+    @SerializedName("email")val email: String,
+    @SerializedName("name")val name: String,
+    @SerializedName("phoneNumber")val phoneNumber: String,
+    @SerializedName("profile_picture_url")val profile_picture_url: String
 )

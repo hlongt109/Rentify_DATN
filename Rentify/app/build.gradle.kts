@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -104,6 +106,16 @@ dependencies {
     //wipe to delete
     implementation ("androidx.compose.foundation:foundation:1.7.5")
     implementation ("androidx.compose.material:material-icons-extended:1.7.5")
+
+
+    // thiên import
+    implementation ("io.coil-kt:coil-compose:2.5.0")
+    implementation ("com.google.accompanist:accompanist-pager:0.24.13-rc")
+    implementation ("com.google.accompanist:accompanist-flowlayout:0.32.0")
+    implementation ("com.airbnb.android:lottie-compose:6.0.1")
+    implementation("io.coil-kt:coil-gif:2.4.0")
+
+
 
 }
 // Allow references to generated code

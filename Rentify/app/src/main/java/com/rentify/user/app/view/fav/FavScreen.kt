@@ -42,7 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.rentify.user.app.view.appointment.AppointmentScreen
+import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
 
 @Preview(showBackground = true)
 @Composable

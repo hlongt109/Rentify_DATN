@@ -8,9 +8,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
@@ -35,6 +37,7 @@ import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
+import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
 import com.rentify.user.app.view.userScreens.cancelContract.CancelContractScreen
 import com.rentify.user.app.view.userScreens.chatScreen.TinnhanScreen
 import com.rentify.user.app.view.userScreens.contractScreen.ContractScreen
@@ -48,6 +51,7 @@ import com.rentify.user.app.view.userScreens.profileScreen.ProfileScreen
 import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
 import com.rentify.user.app.view.userScreens.rentalPost.RentalPostScreen
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
+import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails2
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
@@ -68,7 +72,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.HOME_STAFF.name) {
+        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -98,9 +102,6 @@ class MainActivity : ComponentActivity() {
             }
             composable(ROUTER.PERSONAL.name) {
                 LayoutPersonal(navController = navController)
-            }
-            composable(ROUTER.ROOMDETAILS.name) {
-                LayoutRoomdetails(navController = navController)
             }
             composable(ROUTER.PROFILE.name) {
                 ProfileScreen(navController = navController)
@@ -193,6 +194,25 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.PersonalProfileScreen.name) {
                 PersonalProfileScreen(navController = navController)
             }
+
+            //những màn hình thiên thêm
+            composable(
+                route = "ROOMDETAILS/{roomId}",
+                arguments = listOf(navArgument("roomId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val roomId = backStackEntry.arguments?.getString("roomId")
+                LayoutRoomdetails(navController = navController, roomId = roomId)
+            }
+            composable(
+                route = "ROOMDETAILS2/{roomId}",
+                arguments = listOf(navArgument("roomId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val roomId = backStackEntry.arguments?.getString("roomId")
+                LayoutRoomdetails2(navController = navController, roomId = roomId)
+            }
+            composable(ROUTER.AppointmentScreen.name) {
+                AppointmentScreen(navController = navController)
+            }
         }
     }
 
@@ -243,5 +263,8 @@ class MainActivity : ComponentActivity() {
         POSTING_STAFF,
         REPORT_STAFF,
 
+        //những màn hình thiên thêm
+        RoomDetails2,
+        AppointmentScreen
     }
 }

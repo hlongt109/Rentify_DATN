@@ -28,11 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
@@ -54,14 +52,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun RoomdetailsScreen() {
-    LayoutRoomdetails(navController = rememberNavController(), "")
-}
-
-@Composable
-fun LayoutRoomdetails(
+fun LayoutRoomdetails2(
     navController: NavHostController,
     roomId: String?,
     roomDetailViewModel: RoomDetailViewModel = viewModel(),

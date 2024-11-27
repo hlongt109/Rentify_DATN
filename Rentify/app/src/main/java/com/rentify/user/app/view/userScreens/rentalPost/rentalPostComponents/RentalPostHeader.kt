@@ -27,12 +27,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rentify.user.app.view.userScreens.appointment.SearchBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun RentalPostHeader() {
-
+    var searchText by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,7 +41,7 @@ fun RentalPostHeader() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RentalPostTopBar()
-        RentalPostSearchBar()
+        SearchBar(searchText = searchText, onSearchTextChange = { searchText = it })
         RentalPostArrange()
         RentalPostRoomType()
 
@@ -49,69 +50,31 @@ fun RentalPostHeader() {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RentalPostTopBar() {
-    val searchQuery = remember { mutableStateOf(TextFieldValue("")) }
-
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                "Tin đăng cho thuê",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.h6
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBackIosNew,
-                    contentDescription = "Localized description"
-                )
-            }
-        }
-    )
-}
-
-@Composable
-fun RentalPostSearchBar() {
-    var searchText by remember { mutableStateOf("") }
-
-    TextField(
-        singleLine = true,
-        value = searchText,
-        onValueChange = { searchText = it },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Nhập tên Quận/Huyện..."
-            )
-        },
-        trailingIcon = {
-            if (searchText.isNotEmpty()) {
-                IconButton(onClick = { searchText = "" }) {
-                    Icon(
-                        imageVector = Icons.Filled.Clear,
-                        contentDescription = "Clear"
-                    )
-                }
-            }
-        },
-        placeholder = {
-            Text(
-                text = "Nhập tên Quận/Huyện...",
-                color = Color.Gray,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center
-            )
-        },
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 3.dp)
-            .height(55.dp)
-            .clip(RoundedCornerShape(15.dp))
-    )
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically // Canh giữa theo chiều dọc
+    ) {
+        IconButton(
+            onClick = { /* doSomething() */ }
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew,
+                contentDescription = "Back"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và text
+
+        Text(
+            text = "Tin đăng cho thuê",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
+    }
 }
