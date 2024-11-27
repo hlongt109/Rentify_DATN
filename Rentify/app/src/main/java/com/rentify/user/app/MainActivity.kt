@@ -17,8 +17,13 @@ import com.rentify.user.app.view.auth.RegisterScreen
 import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.navigator.ROUTER
+import com.rentify.user.app.view.staffScreens.ListRommScreen.ListRoomScreen
+import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
 import com.rentify.user.app.view.staffScreens.ReportScreen.ReportScreen
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.RoomDetailScreen
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.UpdateRoomScreen
+//import com.rentify.user.app.view.staffScreens.RoomDetailScreen.RoomDetailScreen
 import com.rentify.user.app.view.staffScreens.addRoomScreen.AddRoomScreen
 import com.rentify.user.app.view.staffScreens.building.BuildingScreen
 import com.rentify.user.app.view.staffScreens.homeScreen.HomeScreen
@@ -27,9 +32,13 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.UpdatePostScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
+
+import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
@@ -52,6 +61,7 @@ import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoon
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
+import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -60,7 +70,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MainNavigation()
-//            PostRoomScreen(navController = rememberNavController())
         }
     }
 
@@ -113,7 +122,7 @@ class MainActivity : ComponentActivity() {
                 LaundryDetailScreenScreen(navController = navController)
             }
             composable(ROUTER.CATEGORYPOST.name) {
-                CategoryPostScreen( navController)
+                CategoryPostScreen(navController)
             }
             composable(ROUTER.SEARCHPOSTROOMATE.name) {
                 SearchPostRoomateScreen(navController = navController)
@@ -164,7 +173,18 @@ class MainActivity : ComponentActivity() {
                 PersonalScreen(navController = navController)
             }
             composable(ROUTER.ADDROOM.name) {
-                AddRoomScreen(navController = navController)
+                AddRoomScreen(navController = navController, buildingId = "")
+            }
+
+            composable(ROUTER.PersonalProfileScreen.name) {
+                PersonalProfileScreen(navController = navController)
+            }
+            composable(ROUTER.ReportScreen.name) {
+                ReportScreen(navController = navController)
+            }
+            composable("ADDROOM/{buildingId}") { backStackEntry ->
+                val buildingId = backStackEntry.arguments?.getString("buildingId")
+                AddRoomScreen(navController = navController, buildingId = buildingId)
             }
             composable(ROUTER.HOME_STAFF.name) {
                 HomeScreen(navController = navController)
@@ -172,10 +192,19 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.BUILDING.name) {
                 BuildingScreen(navController = navController)
             }
-            composable(ROUTER.RoomDetailScreen.name) {
-                RoomDetailScreen(navController = navController)
+            composable("RoomDetailScreen/{id}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                RoomDetailScreen(navController = navController, id = id ?: "")
             }
-            ///
+
+            composable("ListRoom/{buildingId}") { backStackEntry ->
+                val buildingId = backStackEntry.arguments?.getString("buildingId")
+                ListRoomScreen(navController = navController, buildingId = buildingId)
+            }
+            composable("UpdateRoomScreen/{id}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                UpdateRoomScreen(navController = navController, id = id ?: "")
+            }
             composable(ROUTER.RENTAL_POST.name) {
                 RentalPostScreen(navController = navController)
             }
@@ -194,13 +223,29 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.PersonalProfileScreen.name) {
                 PersonalProfileScreen(navController = navController)
             }
+            composable(ROUTER.ADDPOST_staff.name) {
+                AddPostScreens(navController = navController)
+            }
+            composable("post_detail/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    PostDetailScreen( navController = navController,postId = postId)
+                }
+            }
+            composable("update_post_screen/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    UpdatePostScreen(navController = navController, postId = postId)
+                }
+
+            }
             composable(ROUTER.ADDBILL_STAFF.name){
                 AddBillStaff(navController = navController)
             }
         }
     }
 
-    enum class ROUTER {
+enum class ROUTER {
         HOME,
         HOME_STAFF,
         SERVICE,
@@ -239,6 +284,7 @@ class MainActivity : ComponentActivity() {
         ReportScreen,
         ADDROOM,
         BUILDING,
+        UpdateRoomScreen,
         RoomDetailScreen,
         BILL_STAFF,
         ADDBILL_STAFF,
@@ -246,6 +292,6 @@ class MainActivity : ComponentActivity() {
         CONTRACT_STAFF,
         POSTING_STAFF,
         REPORT_STAFF,
-
+        ADDPOST_staff
     }
 }

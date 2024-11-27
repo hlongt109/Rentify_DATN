@@ -1,13 +1,13 @@
 package com.rentify.user.app.repository.LoginRepository
 
 import com.google.gson.annotations.SerializedName
+import java.lang.Error
 
 data class RegisterRequest(
     val username: String,
     var email: String,
     var password: String
 )
-
 data class LoginResponse(
     val _id: String,
     val email: String,
@@ -27,5 +27,6 @@ data class LoginResponse(
 data class ApiResponse(
     @SerializedName("status") val status: Int,
     @SerializedName("message") val message: String,
-    @SerializedName("data") val data: LoginResponse
+    @SerializedName("data") val data: LoginResponse,
+    @SerializedName("fileUrl") val fileUrl: String?
 )

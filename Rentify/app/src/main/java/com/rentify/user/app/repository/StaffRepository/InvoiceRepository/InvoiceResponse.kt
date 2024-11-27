@@ -1,13 +1,16 @@
 package com.rentify.user.app.repository.StaffRepository.InvoiceRepository
 
+
 import com.rentify.user.app.model.Model.InvoiceDetail
 import com.rentify.user.app.model.Model.ServiceDescription
 import com.rentify.user.app.model.Model.TransactionType
+
 
 // Enum cho trạng thái thanh toán
 enum class InvoiceStatus {
     PAID, UNPAID
 }
+
 
 // Data Classes
 data class InvoiceResponse(
@@ -16,10 +19,12 @@ data class InvoiceResponse(
     val data: InvoiceData
 )
 
+
 data class InvoiceData(
     val paid: List<Invoice>,
     val unpaid: List<Invoice>
 )
+
 
 data class InvoiceAdd(
     val _id: String,
@@ -33,6 +38,7 @@ data class InvoiceAdd(
     val created_at: String,
 //    val detail_invoice: List<DetailInvoice>
 )
+
 
 data class Invoice(
     val _id: String,
@@ -53,17 +59,20 @@ data class Description(
     val total: Double
 )
 
+
 data class DetailInvoice(
     val name: String,
     val fee: Double,
     val quantity: Int
 )
 
+
 data class User(
     val _id: String,
     val phoneNumber: String,
     val name: String
 )
+
 
 data class RoomDetail(
     val _id: String,
@@ -73,10 +82,13 @@ data class RoomDetail(
     val limit_person: Int
 )
 
+
 data class ServiceDetail(
     val _id: String,
     val name: String,
     val description: String,
     val price: Double
 )
+
+
 

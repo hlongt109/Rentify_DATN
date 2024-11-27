@@ -1,7 +1,9 @@
 package com.rentify.user.app.repository.StaffRepository.InvoiceRepository
 
+
 import com.rentify.user.app.network.ApiStaff.ApiServiceStaff
 import com.rentify.user.app.network.ApiStaff.RetrofitStaffService
+
 
 class InvoiceRepository(
     private val api: ApiServiceStaff = RetrofitStaffService.ApiService
@@ -22,6 +24,7 @@ class InvoiceRepository(
         }
     }
 
+
     suspend fun addBillStaff(invoice: InvoiceAdd): Result<InvoiceResponse>{
         return try {
             val response = api.addInvoice(invoice)
@@ -37,3 +40,4 @@ class InvoiceRepository(
         }
     }
 }
+

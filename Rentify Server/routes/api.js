@@ -38,7 +38,7 @@ const apiUser = require("./Api_User/UserApi");
 const personalContractApi = require("./Api_User/personalContractApi");
 const bookingApi = require("./Api_User/RoomBookingApi");
 const findPostApi = require("./Api_User/findPostApi");
-
+const post_UserApi = require("./Api_User/Post");
 // staff
 const post_staffApi = require("./Api_Staff/Post");
 const contract_staffApi = require("./Api_Staff/Contract");
@@ -48,9 +48,11 @@ const room_staffApi = require("./Api_Staff/Room");
 const invoice_staffApi = require("./Api_Staff/Invoice");
 const request_staffApi = require("./Api_Staff/Request");
 const login_staffApi = require("./Api_Staff/login");
+const User_staffApi = require("./Api_Staff/User");
 const building_staff = require("./Api_Staff/Building");
 
 // nối
+router.use("", post_UserApi);
 router.use("/", authApi);
 router.use("/", reportApiAdmin);
 router.use("", QuanLy);
@@ -61,7 +63,7 @@ router.use("/", reportApi);
 router.use("/", paymentApi);
 router.use("", supportManageApi);
 router.use("", staffManageApi);
-router.use("", serviceManageApi);
+router.use("/", serviceManageApi);
 router.use("", statisticApi);
 router.use("", paymentApi_BuildingOwner);
 router.use("", UserManage);
@@ -84,6 +86,7 @@ router.use("/staff/rooms", room_staffApi); // Đổi đường dẫn cho contrac
 router.use("/staff/invoices", invoice_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/requests", request_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/logins", login_staffApi); // Đổi đường dẫn cho contract_staffApi
+router.use("/staff/users", User_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/buildings", building_staff);
 router.use("/", UserManage);
 router.use("/", PostManage);

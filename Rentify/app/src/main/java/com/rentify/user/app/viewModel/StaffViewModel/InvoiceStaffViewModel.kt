@@ -1,5 +1,6 @@
 package com.rentify.user.app.viewModel.StaffViewModel
 
+
 import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -32,66 +33,87 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
+
 sealed class InvoiceUiState {
     object Loading : InvoiceUiState()
     data class Success(val data: InvoiceData) : InvoiceUiState()
     data class Error(val message: String) : InvoiceUiState()
 }
 
+
 enum class InvoiceStatus {
     PAID, UNPAID
 }
+
 
 class InvoiceStaffViewModel(
     private val repository: InvoiceRepository = InvoiceRepository(),
 ) : ViewModel() {
 
+
     private val _uiState = MutableStateFlow<InvoiceUiState>(InvoiceUiState.Loading)
     val uiState: StateFlow<InvoiceUiState> = _uiState.asStateFlow()
+
 
     // StateFlow lưu danh sách hóa đơn đã phân loại
     private val _paidInvoices = MutableStateFlow<List<Invoice>>(emptyList())
     val paidInvoices: StateFlow<List<Invoice>> = _paidInvoices.asStateFlow()
 
+
     private val _unpaidInvoices = MutableStateFlow<List<Invoice>>(emptyList())
     val unpaidInvoices: StateFlow<List<Invoice>> = _unpaidInvoices.asStateFlow()
+
 
     private val _addBillResult = MutableStateFlow<Result<InvoiceResponse>?>(null)
     val addBillResult: StateFlow<Result<InvoiceResponse>?> = _addBillResult
 
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
+
     private val _successMessage = MutableLiveData<String?>()
     val successMessage: LiveData<String?> = _successMessage
+
 
     private val _waterErrorMessage = MutableLiveData<String?>()
     val waterErrorMessage: LiveData<String?> = _waterErrorMessage
 
+
     private val _elecErrorMessage = MutableLiveData<String?>()
     val elecErrorMessage: LiveData<String?> = _elecErrorMessage
+
 
     private val _oldWaterErrorMessage = MutableLiveData<String?>()
     val oldWaterErrorMessage: LiveData<String?> = _oldWaterErrorMessage
 
+
     private val _oldElecErrorMessage = MutableLiveData<String?>()
     val oldElecErrorMessage: LiveData<String?> = _oldElecErrorMessage
+
 
     private val _roomErrorMessage = MutableLiveData<String?>()
     val roomErorMessage: LiveData<String?> = _roomErrorMessage
 
 
+
+
     private val _buildingErrorMessage = MutableLiveData<String?>()
     val buildingErrorMessage: LiveData<String?> = _buildingErrorMessage
+
 
     private val _dateErrorMessage = MutableLiveData<String?>()
     val dateErrorMessage: LiveData<String?> = _dateErrorMessage
 
+
     private val _roomsWithoutInvoice = MutableStateFlow<List<Room>>(emptyList())
     val roomsWithoutInvoice: StateFlow<List<Room>> = _roomsWithoutInvoice.asStateFlow()
+
+
 
 
     fun getInvoiceList(staffId: String) {
@@ -102,6 +124,7 @@ class InvoiceStaffViewModel(
                     // Kiểm tra và xử lý dữ liệu từ InvoiceData
                     if (response.status == 200 && response.data != null) {
                         _uiState.value = InvoiceUiState.Success(response.data)
+
 
                         // Phân loại hóa đơn dựa trên danh sách paid và unpaid
                         _paidInvoices.value = response.data.paid
@@ -150,11 +173,13 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+
                         roomName.isEmpty() -> {
                             _roomErrorMessage.postValue("Phòng không được để trống")
                             _isLoading.postValue(false)
                             return@launch
                         }
+
 
                         water == null || water == 0 -> {
                             _waterErrorMessage.postValue("Số nước không được để trống")
@@ -162,11 +187,13 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+
                         water < 0 -> {
                             _waterErrorMessage.postValue("Số nước không được âm")
                             _isLoading.postValue(false)
                             return@launch
                         }
+
 
                         elec == null || elec == 0 -> {
                             _elecErrorMessage.postValue("Số điện không được để trống")
@@ -174,11 +201,13 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+
                         elec < 0 -> {
                             _elecErrorMessage.postValue("Số điện không được âm")
                             _isLoading.postValue(false)
                             return@launch
                         }
+
 
                         oldWater == null || oldWater == 0 -> {
                             _oldWaterErrorMessage.postValue("Số nước không được để trống")
@@ -186,11 +215,13 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+
                         oldWater < 0 -> {
                             _oldWaterErrorMessage.postValue("Số nước không được âm")
                             _isLoading.postValue(false)
                             return@launch
                         }
+
 
                         oldElec == null || oldElec == 0 -> {
                             _oldElecErrorMessage.postValue("Số điện không được để trống")
@@ -198,24 +229,29 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+
                         oldElec < 0 -> {
                             _oldElecErrorMessage.postValue("Số điện không được âm")
                             _isLoading.postValue(false)
                             return@launch
                         }
 
+
                         water < oldWater -> {
                             _waterErrorMessage.postValue("Số nước không được giảm")
                             _isLoading.postValue(false)
                             return@launch
 
+
                         }
+
 
                         elec < oldElec -> {
                             _elecErrorMessage.postValue("Số điện không được giảm")
                             _isLoading.postValue(false)
                             return@launch
                         }
+
 
                         dueDate.isEmpty() -> {
                             _dateErrorMessage.postValue("Vui lòng nhập hạn thanh toán")
@@ -224,6 +260,7 @@ class InvoiceStaffViewModel(
                         }
                     }
                 }
+
 
                 val otherService = serviceFees
                     .filter { it.name.toLowerCase() !in listOf("điện", "nước") }
@@ -235,6 +272,7 @@ class InvoiceStaffViewModel(
                             total = service.price
                         )
                     }
+
 
                 // Tạo danh sách mô tả dịch vụ
                 val descriptions = listOf(
@@ -252,6 +290,7 @@ class InvoiceStaffViewModel(
                     )
                 ) + otherService
 
+
                 // Tạo danh sách hóa đơn chi tiết
 //                val detailInvoices = serviceFees.map { service ->
 //                    DetailInvoice(
@@ -259,6 +298,7 @@ class InvoiceStaffViewModel(
 //                        fee = service.price,
 //                    )
 //                }
+
 
                 // Tạo hóa đơn
                 val invoice = InvoiceAdd(
@@ -272,6 +312,7 @@ class InvoiceStaffViewModel(
                     transaction_type = "expense",
                     created_at = ""
                 )
+
 
                 // Gọi API để thêm hóa đơn
                 _uiState.value = InvoiceUiState.Loading
@@ -299,6 +340,7 @@ class InvoiceStaffViewModel(
         }
     }
 
+
     fun clearAll() {
         clearDateError()
         clearBuildingError()
@@ -309,33 +351,42 @@ class InvoiceStaffViewModel(
         clearRoomError()
     }
 
+
     fun clearDateError() {
         _dateErrorMessage.value = null
     }
+
 
     fun clearBuildingError() {
         _buildingErrorMessage.value = null
     }
 
+
     fun clearRoomError() {
         _roomErrorMessage.value = null
     }
+
 
     fun clearWaterError() {
         _waterErrorMessage.value = null
     }
 
+
     fun clearElecError() {
         _elecErrorMessage.value = null
     }
+
 
     fun clearOldWaterError() {
         _oldWaterErrorMessage.value = null
     }
 
+
     fun clearOldElecError() {
         _oldElecErrorMessage.value = null
     }
+
+
 
 
     class InvoiceStaffViewModelFactory(
@@ -351,4 +402,6 @@ class InvoiceStaffViewModel(
         }
     }
 }
+
+
 

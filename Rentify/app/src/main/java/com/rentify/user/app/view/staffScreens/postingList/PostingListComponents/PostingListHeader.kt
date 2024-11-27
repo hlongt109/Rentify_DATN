@@ -27,13 +27,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.view.contract.contractComponents.ContractSearchBar
 import org.checkerframework.checker.units.qual.m
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
+
 @Composable
-fun PostingListTopBar() {
+fun PostingListTopBar(navController: NavHostController) {
     val searchQuery = remember { mutableStateOf(TextFieldValue("")) }
     Box(
         modifier = Modifier
@@ -48,7 +51,7 @@ fun PostingListTopBar() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(onClick = { /* Xử lý sự kiện khi nhấn nút back */ }) {
+            IconButton(onClick = { navController.navigate("HOME_STAFF")}) {
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
                     contentDescription = "Back"

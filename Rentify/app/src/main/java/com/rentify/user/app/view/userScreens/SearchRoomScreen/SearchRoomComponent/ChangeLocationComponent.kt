@@ -111,6 +111,7 @@ fun ChangeLocation(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.padding(top = 15.dp))
             Text(
                 text = title,
                 fontSize = 17.sp,

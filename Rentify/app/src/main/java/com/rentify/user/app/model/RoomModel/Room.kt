@@ -1,27 +1,64 @@
 package com.rentify.user.app.model
 
-import java.util.Date
+import android.os.Parcel
+import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Room(
-    val landlordId: String,  // ID của chủ nhà
-    val buildingId: String,  // ID của tòa nhà
-
-    val roomType: String,  // Loại phòng
-    val description: String,  // Mô tả phòng
-    val price: Double,  // Giá phòng
-    val size: String,  // Kích thước phòng (ví dụ: "40m2")
-
-    val availabilityStatus: String,  // Trạng thái sẵn có
-
-    val videoRoom: String? = null,  // Video về phòng (nếu có)
-    val photosRoom: List<String>? = null,  // Danh sách ảnh về phòng
-    val serviceIds: List<String>? = null,  // Danh sách ID các dịch vụ (máy giặt, tủ lạnh, ...)
-    val amenities: List<String>? = null,  // Tiện nghi phòng
-    val serviceFees: List<String>? = null,  // Phí dịch vụ
-
-    val limitPerson: Int,  // Giới hạn số người
-    val status: Int,  // Trạng thái (0: chưa cho thuê, 1: đã cho thuê)
-
+    @SerializedName("_id") val id: String = "",
+    val buildingId: String,         // ID của tòa nhà
+    val room_name: String?,          // Tên phòng
+    val room_type: String,           // Loại phòng
+    val description: String,        // Mô tả phòng
+    val price: Double,              // Giá phòng
+    val size: String,               // Kích thước phòng (ví dụ: "40m2")
+    val video_room: List<String>,  // URL video của phòng (nếu có)
+    val photos_room: List<String>, // Danh sách URL ảnh của phòng
+    val service: List<String> = listOf(), // Danh sách ID dịch vụ liên quan đến phòng
+    val amenities: List<String> = listOf(),  // Tiện nghi của phòng
+    val limit_person: Int,           // Giới hạn số người
+    val status: Int,                // 0: Chưa cho thuê, 1: Đã cho thuê
     val createdAt: String? = null,  // Ngày tạo
-    val updatedAt: String? = null,  // Ngày cập
+    val updatedAt: String? = null   // Ngày cập nhật
 )
+
+data class AddRoomResponse(
+    val success: Boolean,
+    val message: String,
+    val room: RoomDetail
+)
+
+@Serializable
+data class RoomDetail(
+    val _id: String,
+    val building_id: String,
+    val room_name: String,
+    val room_type: String,
+    val description: String,
+    val price: Double,
+    val size: String,
+    val video_room: List<String> = emptyList(),
+    val photos_room: List<String> = emptyList(),
+    val service: List<String> = emptyList(),
+    val amenities: List<String> = emptyList(),
+    val limit_person: Int,
+    val status: Int,
+    val created_at: String,
+    val updated_at: String
+)
+
+@Serializable
+data class PhotoRoom(
+    val url: String
+)
+
+data class BuildingWithRooms(
+    val _id: String,
+    val nameBuilding: String,
+    val address: String,
+    val rooms: List<Room>
+)
+
+
