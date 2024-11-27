@@ -1,8 +1,12 @@
 // api/BuildingOwner/BuildingManageApi.js
 var express = require('express');
 var router = express.Router();
+const mongoose = require('mongoose');
 const Building = require('../../models/Building');
-
+const Room = require('../../models/Room')
+//const upload = require('../../config/common/uploadImageRoom')
+const fs = require('fs');
+const path = require('path');
 
 // #1. Thêm tòa nhà (POST): http://localhost:3000/api/buildings
 router.post('/buildings', async (req, res) => {
@@ -113,7 +117,32 @@ router.delete('/buildings/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete building.' });
     }
 });
+// API lấy danh sách dịch vụ của một tòa nhà cụ thể
+router.get('/building/:id/services', async (req, res) => {
+    const { id } = req.params;
 
+    // Kiểm tra ID là ObjectId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid building ID.' });
+    }
+
+    try {
+        // Tìm tòa nhà theo ID và populate dịch vụ
+        const building = await Building.findById(id)
+            .populate('service', 'name');
+
+        // Nếu không tìm thấy tòa nhà
+        if (!building) {
+            return res.status(404).json({ error: 'Building not found.' });
+        }
+
+        // Trả về danh sách dịch vụ của tòa nhà
+        res.status(200).json(building.service);
+    } catch (error) {
+        console.error('Error fetching building services:', error.message);
+        res.status(500).json({ error: 'Failed to fetch building services. Please try again later.' });
+    }
+});
 
 
 
