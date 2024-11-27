@@ -21,6 +21,7 @@ import retrofit2.http.POST
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 data class RegisterRequest(
@@ -80,6 +81,15 @@ interface APIService {
 
     @GET("room/get-empty-rooms/{building_id}")
     suspend fun getEmptyRooms(@Path("building_id") buildingId: String): Response<List<EmptyRoomResponse>>
+
+    @GET("room/search-rooms")
+    suspend fun searchRooms(
+        @Query("address") address: String? = null,
+        @Query("minPrice") minPrice: Int? = null,
+        @Query("maxPrice") maxPrice: Int? = null,
+        @Query("roomType") roomType: String? = null,
+        @Query("sortBy") sortBy: String? = null
+    ): Response<List<RoomResponse>>
 
     // Xử lý các api liên quan tới xem phòng
     @POST("add-booking")
