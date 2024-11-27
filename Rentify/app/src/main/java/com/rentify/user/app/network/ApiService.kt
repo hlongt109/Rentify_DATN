@@ -19,11 +19,10 @@ import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
-import com.rentify.user.app.model.User
-import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
@@ -32,15 +31,12 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Multipart
-import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.PartMap
-import retrofit2.http.Query
 
 
 ////
