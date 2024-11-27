@@ -16,20 +16,29 @@ import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.rentify.user.app.model.Model.RoomResponse
+import com.rentify.user.app.viewModel.HomeScreenViewModel
+import java.text.DecimalFormat
 
 
 @Composable
-fun RentalPostList(getRentalPostList: List<RentalPostRoom>) {
-
+fun RentalPostList(
+    getRentalPostList: List<RoomResponse>,
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -47,60 +56,64 @@ fun RentalPostList(getRentalPostList: List<RentalPostRoom>) {
 
 
 @Composable
-fun RentalPostCard(room: RentalPostRoom) {
+fun RentalPostCard(room: RoomResponse) {
+    val imageLoading = remember { mutableStateOf(true) }
     Card(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .fillMaxWidth()
-            .height(230.dp),
+            .height(220.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
+        val imageUrl = "http://10.0.2.2:3000/" + room.photos_room[0]
+        val formattedPrice = DecimalFormat("#,###,###").format(room.price)
         Column {
             // Hình ảnh phòng
-            Image(
-                painter = painterResource(id = R.drawable.a),
+            AsyncImage(
+                model = imageUrl,
                 contentDescription = "Room Image",
+                modifier = Modifier.fillMaxWidth().height(120.dp),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
+                onLoading = {
+                    imageLoading.value = true // Khi ảnh đang tải, sẽ hiển thị CircularProgressIndicator
+                },
+                onSuccess = {
+                    imageLoading.value = false // Khi ảnh tải thành công, ẩn CircularProgressIndicator
+                },
+                onError = {
+                    imageLoading.value = false // Ẩn loading khi có lỗi
+                },
+                placeholder = painterResource(id = R.drawable.g), // Ảnh mặc định khi đang tải
+                error = painterResource(id = R.drawable.g) // Ảnh thay thế khi tải thất bại
             )
 
             Column (modifier = Modifier.padding(8.dp)) {
-                // Thời gian đăng
-                Text(
-                    maxLines = 1,
-                    text = room.timePosted,
-                    color = Color(0xFF2196F3),
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
 
                 // Tiêu đề phòng
                 Text(
-
-                    text = room.title,
+                    text = "${room.room_type} - ${room.room_name}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis, // Hiển thị '...' khi văn bản dài
                 )
-
+                Spacer(modifier = Modifier.height(4.dp))
                 // Giá phòng
                 Text(
                     maxLines = 1,
-                    text = "Từ ${room.price}  /Tháng" ,
+                    text = "Từ ${formattedPrice}đ /Tháng" ,
                     color = Color.Red,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(3.dp))
 
                 // Diện tích và số người
                 Row(
+                    modifier = Modifier.padding(end = 5.dp),
                     verticalAlignment = Alignment.CenterVertically
-
                 ) {
                     Icon(
                         imageVector = Icons.Default.CropSquare,
@@ -110,10 +123,11 @@ fun RentalPostCard(room: RentalPostRoom) {
                     )
                     Text(
                         maxLines = 1,
-                        text = " ${room.area} m2  ",
+                        text = " ${room.size}",
                         color = Color.Gray,
                         fontSize = 12.sp
                     )
+                    Spacer(modifier = Modifier.weight(1f))
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Size",
@@ -122,12 +136,16 @@ fun RentalPostCard(room: RentalPostRoom) {
                     )
                     Text(
                         maxLines = 1,
-                        text = "${room.maxOccupants} người",
+                        text = if (room.limit_person == 0 || room.limit_person == null) {
+                            "Không giới hạn"
+                        } else {
+                            "${room.limit_person}"
+                        },
                         color = Color.Gray,
                         fontSize = 12.sp
                     )
                 }
-
+                Spacer(modifier = Modifier.height(3.dp))
                 // Địa chỉ
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -139,67 +157,15 @@ fun RentalPostCard(room: RentalPostRoom) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        maxLines = 1,
-                        text = room.address,
+                        text = room.building_id.address ?: "Địa chỉ không có sẵn",  // Nếu building_id là null, hiển thị thông báo mặc định
                         color = Color.Gray,
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis, // Hiển thị '...' khi văn bản dài
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(4.dp))
-
-
         }
     }
-}
-
-data class RentalPostRoom(
-    val imageResId: Int,        // ID của hình ảnh
-    val timePosted: String,      // Thời gian đăng
-    val title: String,           // Tiêu đề phòng
-    val price: String,           // Giá phòng
-    val area: String,            // Diện tích
-    val maxOccupants: Int,       // Số người tối đa
-    val address: String          // Địa chỉ
-)
-
-
-@Composable
-fun getRentalRoomList(): List<RentalPostRoom> {
-    return listOf(
-        RentalPostRoom(
-            imageResId = 1,
-            timePosted = "3 giờ trước",
-            title = "Phòng 1",
-            price = "500.000 VND",
-            area = "30 m2",
-            maxOccupants = 2,
-            address = "123 Đường 1, Quan 1, Tp HCM"
-        ),
-        RentalPostRoom(
-            imageResId = 1,
-            timePosted = "3 giờ trước",
-            title = "Phòng 2",
-            price = "500.000 VND",
-            area = "30 m2",
-            maxOccupants = 2,
-            address = "123 Đường 1, Quan 1, Tp HCM"
-        ),
-        RentalPostRoom(
-            imageResId = 1,
-            timePosted = "3 giờ trước",
-            title = "Phòng 3",
-            price = "500.000 VND",
-            area = "30 m2",
-            maxOccupants = 2,
-            address = "123 Đường 1, Quan 1, Tp HCM"
-        )
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RentalPostListPreview() {
-    RentalPostList(getRentalRoomList())
 }

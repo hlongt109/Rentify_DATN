@@ -152,3 +152,32 @@ h2 {
 #address-list li:hover {
     background-color: #f1f1f1; /* Hiển thị hiệu ứng hover */
 }
+
+#servicesFee-container {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+#servicesFee-container .service-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+#servicesFee-container .service-item label {
+    margin-left: 10px;
+    flex: 1;
+}
+#servicesFee-container .service-item input[type="number"] {
+    max-width: 100px;
+}
+
+#add-service {
+    margin-left: 8px; /* Khoảng cách giữa ô nhập và nút */
+}
+
+#new-service {
+    width: 88%; /* Hoặc giá trị mong muốn để thu nhỏ */
+}
+

@@ -1,0 +1,163 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa;
+}
+
+.container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+
+.form-title {
+    color: #5b7bfa;
+    font-weight: bold;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.form-control {
+    border-radius: 5px;
+}
+
+.upload-btn {
+    display: flex;
+    align-items: center;
+    background-color: #f0f5ff;
+    border: 1px solid #c4c4c4;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.upload-btn i {
+    margin-right: 10px;
+}
+
+.preview {
+    margin-top: 10px;
+    padding: 5px;
+    background-color: #e6e9f2;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.d-flex-end {
+    justify-content: flex-end;
+}
+
+.btn {
+    font-weight: bold;
+    padding: 12px 25px;
+    border-radius: 50px;
+}
+
+.btn-secondary {
+    background-color: #999;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #5b7bfa;
+    border: none;
+}
+
+.btn-secondary:hover, .btn-primary:hover {
+    opacity: 0.9;
+}
+
+#photos_room, #video_room {
+    display: none; /* Ẩn input mặc định */
+}
+
+.label-upload {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.label-upload:hover {
+    border-color: #0056b3;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.label-upload::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('https://example.com/crack-effect.png') repeat;
+    opacity: 0.2;
+    z-index: 1;
+}
+
+.label-upload i {
+    font-size: 50px;
+    color: #007bff;
+    display: block;
+    z-index: 2;
+}
+
+.label-upload span {
+    font-size: 16px;
+    color: #6c757d;
+    z-index: 2;
+}
+
+.label-upload img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    z-index: 3;
+}
+
+/* Khi ảnh/video được chọn */
+.preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.preview img {
+    max-width: 100px; /* Giới hạn kích thước ảnh */
+    max-height: 100px; /* Giới hạn kích thước ảnh */
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Đảm bảo icon ẩn khi ảnh/video đã được chọn */
+.label-upload .preview img {
+    display: block;
+}
+
+/* Hiện thị ảnh đẹp khi hover */
+.preview img:hover,
+.preview video:hover {
+    opacity: 0.8; /* Thêm hiệu ứng hover cho ảnh và video */
+}
+
+/* Kiểu cho icon khi chưa chọn ảnh */
+.label-upload .icon {
+    font-size: 50px;
+    color: #007bff;
+    display: block;
+    z-index: 2;
+}

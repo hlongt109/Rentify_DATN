@@ -39,8 +39,8 @@ fun TogetherScreen(navController: NavHostController) {
         }
         TogetherHeading(navController)
         TogetherContent(navController)
-        LayoutComfort()
-        LayoutInterior()
+//        LayoutComfort()
+//        LayoutInterior()
         TogetherLast(navController)
         Row(
             modifier = Modifier

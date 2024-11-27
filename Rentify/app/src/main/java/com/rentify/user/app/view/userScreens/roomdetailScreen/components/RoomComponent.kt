@@ -1,22 +1,30 @@
 package com.rentify.user.app.view.userScreens.roomdetailScreen.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,141 +33,149 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.EmptyRoomResponse
 
 // Define the TypeProduct data class
-data class TypeProduct(val type: String)
+data class TypeProduct(val type: String, val id: String)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayoutRoom() {
-    val listTypeProduct = listOf(
-        TypeProduct("P501"),
-        TypeProduct("P502"),
-        TypeProduct("P503"),
-        TypeProduct("P504"),
-        TypeProduct("P505"),
-    )
+fun LayoutRoom(
+    landlordName: String,
+    totalRooms: Int,
+    listEmptyRoom: List<EmptyRoomResponse>,
+    roomId: String,
+    onRoomSelected: (String) -> Unit
+) {
+    val listTypeProduct = listEmptyRoom.map { TypeProduct(it.room_name, it._id) }
+    var selectedType by remember {
+        mutableStateOf(
+            listTypeProduct.find { it.id == roomId }?.type.orEmpty().also {
+                if (it.isEmpty()) {
+                    Log.d("Debug", "Room ID ($roomId) does not exist. Defaulting to ${listTypeProduct.firstOrNull()?.type.orEmpty()}")
+                } else {
+                    Log.d("Debug", "Room ID ($roomId) matches room name: $it")
+                }
+            }
+        )
+    }
 
-    // State to keep track of the selected product type
-    var selectedType by remember { mutableStateOf(listTypeProduct.first().type) }
 
     Column(
         modifier = Modifier
-            .padding(7.dp)
-            .background(color = Color.White, shape = RoundedCornerShape(20.dp))
+            .background(color = Color.White)
     ) {
         // Horizontal scrollable row for product types
         ProductTypeRow(listTypeProduct, selectedType) { newType ->
             selectedType = newType
+            // Gửi sự kiện chọn phòng
+            onRoomSelected(newType)
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .background(color = Color(0xfff7f7f7))
+        ) {
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, bottom = 10.dp)
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.user),
+                contentDescription = "",
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape) // Bo tròn ảnh
+            )
+
+            Column {
+                Text(
+                    text = landlordName,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                        .padding(top = 10.dp),
+                    fontSize = 20.sp
+                )
+                Text(
+                    text = "$totalRooms bài đăng ",
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                        .padding(bottom = 10.dp),
+                    fontSize = 10.sp,
+                    color = Color(0xFF109bff)
+                )
+            }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProductTypeRow(
     listTypeProduct: List<TypeProduct>,
     selectedType: String,
     onTypeSelected: (String) -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(10.dp)
-            .background(color = Color(0xfff7f7f7))
-    ) {
-    }
-    Row(
+            .padding(horizontal = 10.dp)
+            .height(1.dp)
+            .background(color = Color(0xffCECECE))
+    )
+
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .height(30.dp)
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth() // Chiếm toàn bộ chiều rộng
-            .padding(start = 9.dp) // Padding bên trái
-    ) {
-        Spacer(modifier = Modifier.weight(1f)) // Spacer bên trái
-        Box(
-            modifier = Modifier
-                .width(350.dp)
-                .height(1.dp)
-                .background(color = Color(0xff8c8c8c))
-        )
-        Spacer(modifier = Modifier.weight(1f)) // Spacer bên phải
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-    ) {
-        listTypeProduct.forEach { type ->
+        items(listTypeProduct) { room ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(horizontal = 2.dp)
-                    .width(80.dp)
+                    .width(100.dp) // Đặt chiều rộng cố định cho từng mục
                     .height(40.dp)
-            ) {
-                // Button with a rectangular shape
-                IconButton(
-                    onClick = { onTypeSelected(type.type) },
-                    modifier = Modifier
-                        .background(
-                            color = if (selectedType == type.type) Color(0xff84d8ff) else Color(
-                                0xFFE0E0E0
-                            ), // Change color based on selection
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(6.dp) // Padding for better touch area
-                ) {
-                    Text(
-                        text = type.type,
-                        textAlign = TextAlign.Center,
-                        fontSize = 12.sp,
-                        color = Color.Black,
-                        maxLines = 2,
-                        softWrap = true
+                    .shadow(3.dp, RoundedCornerShape(10.dp))
+                    .background(
+                        color = if (selectedType == room.type) Color(0xff84d8ff) else Color(0xFFE0E0E0),
+                        shape = RoundedCornerShape(10.dp)
                     )
-                }
+                    .padding(6.dp)
+                    .clickable { onTypeSelected(room.type) },
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = room.type,
+                    textAlign = TextAlign.Center,
+                    fontSize = 12.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    softWrap = true
+                )
             }
         }
     }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth() // Chiếm toàn bộ chiều rộng
-            .padding(start = 9.dp) // Padding bên trái
-    ) {
-        Spacer(modifier = Modifier.weight(1f)) // Spacer bên trái
-        Box(
-            modifier = Modifier
-                .width(350.dp)
-                .height(1.dp)
-                .background(color = Color(0xff8c8c8c))
-        )
-        Spacer(modifier = Modifier.weight(1f)) // Spacer bên phải
-    }
 
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(30.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .height(1.dp)
+            .background(color = Color(0xffCECECE))
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp)
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
@@ -170,23 +186,15 @@ fun ProductTypeRow(
             text = "Tin đối tác ",
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(start = 5.dp)
+                .padding(start = 34.dp)
                 .padding(top = 10.dp),
-            fontSize = 20.sp
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Image(
-            painter = painterResource(id = R.drawable.baseline_navigate_next_24),
-            contentDescription = "",
-            modifier = Modifier
-                .size(30.dp)
-                .padding(top = 10.dp)
+            fontSize = 16.sp
         )
     }
 
 
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp).padding(horizontal = 10.dp)
     ) {
         Text(
             text = "Các tin đăng của chủ nhà đối tác hợp tác với Rentify được hiển thị nổi bật, uy tín hơn các chủ nhà thường để giúp bạn an tâm hơn khi thue phòng và trải nhiệm trên App Rentify",
@@ -195,71 +203,4 @@ fun ProductTypeRow(
             color = Color(0xff777777)
         )
     }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(30.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-            .background(color = Color(0xfff7f7f7))
-    ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(start = 15.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.user),
-            contentDescription = "",
-            modifier = Modifier.size(50.dp)
-        )
-
-        Column {
-            Text(
-                text = "GOHOMY",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(start = 5.dp)
-                    .padding(top = 10.dp),
-                fontSize = 20.sp
-            )
-            Text(
-                text = "42 bài đăng ",
-                modifier = Modifier
-                    .padding(start = 5.dp)
-                    .padding(bottom = 10.dp),
-                fontSize = 10.sp,
-                color = Color(0xFF109bff)
-            )
-        }
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-    ) {
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-            .background(color = Color(0xfff7f7f7))
-    ) {
-    }
-
-}
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun RoomComponen() {
-    LayoutRoom()
 }
