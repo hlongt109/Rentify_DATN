@@ -54,11 +54,9 @@ const User_staffApi = require("./Api_Staff/User");
 const building_staff = require("./Api_Staff/Building");
 
 // nối
-<<<<<<< HEAD
+
 router.use("", post_UserApi);
-=======
 router.use("/",invoiceMgr)
->>>>>>> dev_long
 router.use("/", authApi);
 router.use("/", notificationAdmin);
 router.use("/", reportApiAdmin);
