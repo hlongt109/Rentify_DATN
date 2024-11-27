@@ -38,7 +38,7 @@ const apiUser = require("./Api_User/UserApi");
 const personalContractApi = require("./Api_User/personalContractApi");
 const bookingApi = require("./Api_User/RoomBookingApi");
 const findPostApi = require("./Api_User/findPostApi");
-
+const post_UserApi = require("./Api_User/Post");
 // staff
 const post_staffApi = require("./Api_Staff/Post");
 const contract_staffApi = require("./Api_Staff/Contract");
@@ -50,6 +50,7 @@ const request_staffApi = require("./Api_Staff/Request");
 const login_staffApi = require("./Api_Staff/login");
 
 // nối
+router.use("", post_UserApi);
 router.use("/", authApi);
 router.use("/", reportApiAdmin);
 router.use("", QuanLy);
