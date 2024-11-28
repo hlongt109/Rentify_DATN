@@ -61,6 +61,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
@@ -164,10 +165,10 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
             title = detail.title ?: ""
             content = detail.content ?: ""
         }
-        Log.d("EditPostScreen", "Editing title: $title, content: $content")
+
         // Gán thông tin tòa nhà nếu có
         selectedBuilding = detail.building?._id
-        Log.d("EditPostScreen", "Initial selected building: $selectedBuilding")
+
         // Gán thông tin phòng nếu có
         selectedRoom = detail.room?._id ?: ""
     }
@@ -291,8 +292,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                             selectedImages = images
                             selectedVideos = videos
 
-                            Log.d("SelectedImages", "Selected images: $selectedImages")
-                            Log.d("SelectedVideos", "Selected videos: $selectedVideos")
+
                         },
                         detail = it
                     )
@@ -357,8 +357,8 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     BuildingOptions(
                         userId = "67362213c6d421d3027fb5a7",
                         selectedBuilding = selectedBuilding, // Truyền giá trị ban đầu
-                        onBuildingSelected = { buildingId ->
-                            viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
+                        onBuildingSelected = { selectedBuilding ->
+                            viewModel.setSelectedBuilding(selectedBuilding) // Cập nhật tòa nhà đã chọn
                             Log.d("toa nha looo", "Updated selected building: $selectedBuilding1")
                           //  onBuildingUpdated(buildingId) // Gửi callback ra ngoài
                         }
@@ -368,17 +368,18 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 Spacer(modifier = Modifier.height(10.dp))
                 Column {
                     ServiceLabel()
-
-                    viewModel.selectedBuilding.value?.let { buildingId ->
-                        // Lấy phòng cho tòa nhà đã chọn
+                    if (!selectedBuilding.isNullOrEmpty()) {
                         RoomOptions(
-                            buildingId = buildingId, // Truyền tòa nhà đã chọn
+                            buildingId = selectedBuilding!!, // Truyền tòa nhà đã chọn
                             selectedRoom = selectedRoom, // Truyền giá trị phòng đã chọn
                             onRoomSelected = { roomId ->
                                 selectedRoom1 = roomId // Cập nhật phòng đã chọn
-                                Log.d("room toa nha", "Updated selected room: $selectedRoom1")
+                                Log.d("room toa nha", "Updated selected room: $selectedRoom")
                             }
                         )
+                    } else {
+                        // Hiển thị thông báo nếu buildingId là null hoặc rỗng
+                        Text(text = "Vui lòng chọn tòa nhà", color = Color.Gray)
                     }
                 }
             }
@@ -467,71 +468,54 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
 @Composable
 fun BuildingOptions(
     userId: String,
-    selectedBuilding: String?, // Tòa nhà đã chọn ban đầu
-    onBuildingSelected: (String) -> Unit // Hàm được gọi khi chọn tòa nhà
+    selectedBuilding: String?,
+    onBuildingSelected: (String) -> Unit
 ) {
     val buildingViewModel: PostViewModel = viewModel()
     val buildings by buildingViewModel.buildings // Danh sách tòa nhà từ ViewModel
-    val context = LocalContext.current // Context để sử dụng khi cần
+    val context = LocalContext.current
 
     // Tạo trạng thái tòa nhà đã chọn
     val selectedBuildingState = remember(selectedBuilding) { mutableStateOf(selectedBuilding) }
 
-    Log.d("toa da chon", "tòa đã chọn $selectedBuildingState")
-
-
-    // Gọi API lấy danh sách tòa nhà theo userId
     LaunchedEffect(userId) {
-        buildingViewModel.getBuildings(userId)
+        buildingViewModel.getBuildings(userId) // Gọi API lấy danh sách tòa nhà
     }
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
-        // Hiển thị thông tin tòa nhà đã chọn
-        selectedBuildingState.value?.let { buildingId ->
-            val selectedBuildingName = buildings.find { it._id == buildingId }?.nameBuilding
-            selectedBuildingName?.let {
-                Text(
-                    text = "Tòa nhà đã chọn: $it",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        // Chỉ hiển thị khi danh sách tòa nhà đã được tải
+        if (buildings.isNotEmpty()) {
+            selectedBuildingState.value?.let { buildingId ->
+                val selectedBuildingName = buildings.find { it._id == buildingId }?.nameBuilding
+                selectedBuildingName?.let {
+                }
+            } ?: run {
             }
-        } ?: run {
-            Text(
-                text = "Chưa chọn tòa nhà nào",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
 
-        // Danh sách các tòa nhà để chọn lại
-        FlowRow(
-            modifier = Modifier.padding(5.dp),
-            mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-            crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
-        ) {
-            // Hiển thị các tùy chọn tòa nhà
-            buildings.forEach { building ->
-                BuildingOption(
-                    text = building.nameBuilding,
-                    isSelected = selectedBuildingState.value == building._id,
-                    onClick = {
-                        // Khi chọn, cập nhật trạng thái và gọi callback
-                        selectedBuildingState.value = building._id
-                        onBuildingSelected(building._id)
-                        Toast.makeText(context, "Bạn đã chọn tòa nhà: ${building.nameBuilding}", Toast.LENGTH_SHORT).show()
-                    }
-                )
+            FlowRow(
+                modifier = Modifier.padding(5.dp),
+                mainAxisSpacing = 10.dp,
+                crossAxisSpacing = 10.dp
+            ) {
+                buildings.forEach { building ->
+                    BuildingOption(
+                        text = building.nameBuilding,
+                        isSelected = selectedBuildingState.value == building._id,
+                        onClick = {
+                            selectedBuildingState.value = building._id
+                            onBuildingSelected(building._id)
+                            Toast.makeText(context, "Bạn đã chọn tòa nhà: ${building.nameBuilding}", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
             }
+        } else {
+            // Hiển thị một thông báo khi danh sách tòa nhà chưa được tải
+            Text(text = "Đang tải danh sách tòa nhà...", fontSize = 16.sp, color = Color.Gray)
         }
     }
 }
+
 
 
 @Composable
@@ -599,66 +583,52 @@ fun RoomOptions(
     onRoomSelected: (String) -> Unit
 ) {
     val roomViewModel: PostViewModel = viewModel()
-    val rooms by roomViewModel.rooms // Danh sách phòng từ ViewModel
+    val rooms by roomViewModel.rooms.collectAsState(initial = emptyList()) // Danh sách phòng từ ViewModel
     val context = LocalContext.current
-
     val selectedRoomState = remember { mutableStateOf(selectedRoom) }
 
-    // Gọi API lấy danh sách phòng khi buildingId thay đổi
     LaunchedEffect(buildingId) {
-        Log.d("RoomOptions", "Fetching rooms for buildingId: $buildingId")
-        roomViewModel.getRooms(buildingId)
-    }
-
-    // Kiểm tra xem rooms có được lấy đúng không
-    LaunchedEffect(rooms) {
-        Log.d("RoomOptions", "Fetched rooms: ${rooms.size} rooms")
-    }
-
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
-        selectedRoomState.value?.let { roomId ->
-            val selectedRoomName = rooms.find { it._id == roomId }?.room_name
-            selectedRoomName?.let {
-                Text(
-                    text = "Phòng đã chọn: $it",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-        } ?: run {
-            Text(
-                text = "Chưa chọn phòng nào",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+        if (buildingId.isNotEmpty()) {
+            roomViewModel.getRooms(buildingId) // Gọi API để lấy phòng cho tòa nhà
         }
+    }
 
-        // Hiển thị danh sách các phòng
-        FlowRow(
-            modifier = Modifier.padding(5.dp),
-            mainAxisSpacing = 10.dp,
-            crossAxisSpacing = 10.dp
-        ) {
-            rooms.forEach { room ->
-                RoomOption(
-                    text = room.room_name,
-                    isSelected = selectedRoomState.value == room._id,
-                    onClick = {
-                        selectedRoomState.value = room._id
-                        onRoomSelected(room._id)
-                        Toast.makeText(context, "Bạn đã chọn phòng: ${room.room_name}", Toast.LENGTH_SHORT).show()
-                    }
-                )
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        // Chỉ hiển thị khi danh sách phòng đã được tải
+        if (rooms.isNotEmpty()) {
+            selectedRoomState.value?.let { roomId ->
+                val selectedRoomName = rooms.find { it._id == roomId }?.room_name
+                selectedRoomName?.let {
+
+                }
+            } ?: run {
+
             }
+
+            FlowRow(
+                modifier = Modifier.padding(5.dp),
+                mainAxisSpacing = 10.dp,
+                crossAxisSpacing = 10.dp
+            ) {
+                rooms.forEach { room ->
+                    RoomOption(
+                        text = room.room_name,
+                        isSelected = selectedRoomState.value == room._id,
+                        onClick = {
+                            selectedRoomState.value = room._id
+                            onRoomSelected(room._id)
+                            Toast.makeText(context, "Bạn đã chọn phòng: ${room.room_name}", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            }
+        } else {
+            // Hiển thị một thông báo khi danh sách phòng chưa được tải
+            Text(text = "Đang tải danh sách phòng...", fontSize = 16.sp, color = Color.Gray)
         }
     }
 }
+
 
 
 @Composable
@@ -717,286 +687,7 @@ fun RoomOption(
         }
     }
 }
-@Composable
-fun StaticComfortableOptions(
-    amenities: List<String>, // Danh sách tiện ích từ dữ liệu
-    allOptions: List<String> = listOf(
-        "Vệ sinh khép kín",
-        "Gác xép",
-        "Ra vào vân tay",
-        "Ban công",
-        "Nuôi pet",
-        "Không chung chủ"
-    ),
-    onSelectAmenity: (String) -> Unit // Thêm tham số cho sự kiện chọn
-) {
 
-    FlowRow(
-        modifier = Modifier.padding(8.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
-    ) {
-        allOptions.forEach { option ->
-            StaticComfortableOption(
-                text = option,
-                isSelected = amenities.contains(option), // Hiển thị dấu tích nếu có trong danh sách tiện ích
-                onClick = { onSelectAmenity(option) } // Khi nhấp vào, gọi onSelectAmenity
-
-            )
-        }
-
-    }
-}
-
-@Composable
-fun StaticComfortableOption(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit // Thêm sự kiện nhấp vào
-) {
-
-    Box(
-        modifier = Modifier
-            .clickable(onClick = onClick) // Tạo sự kiện nhấp
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
-            .border(
-                width = 1.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
-            .padding(0.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp,
-            modifier = Modifier
-                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
-                .padding(14.dp)
-                .align(Alignment.Center)
-        )
-
-        // Hiển thị dấu tích nếu được chọn
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(23.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = Color(0xFF44acfe),
-                        shape = TriangleShape()
-                    ),
-                contentAlignment = Alignment.TopStart
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.tick),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(10.dp)
-                        .offset(x = 3.dp, y = 2.dp)
-                )
-            }
-        }
-    }
-}
-@Composable
-fun AmenitiesDisplay(
-    amenities: List<String>,
-    onAmenitiesChange: (List<String>) -> Unit
-) {
-    val context = LocalContext.current
-    val selectedAmenities = remember(amenities) { mutableStateOf(amenities) }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-
-        StaticComfortableOptions(
-            amenities = selectedAmenities.value,
-            onSelectAmenity = { amenity ->
-                val updatedAmenities = if (selectedAmenities.value.contains(amenity)) {
-                    selectedAmenities.value - amenity
-                } else {
-                    selectedAmenities.value + amenity
-                }
-                if (updatedAmenities.isEmpty()) {
-                    Toast.makeText(context, "Không được để trống tiện nghi", Toast.LENGTH_SHORT).show()
-                    return@StaticComfortableOptions
-                }
-                selectedAmenities.value = updatedAmenities
-                onAmenitiesChange(updatedAmenities) // Gửi danh sách mới qua callback
-                Log.d("hamm", "Updated Amenities: $updatedAmenities")
-            }
-        )
-    // Trạng thái danh sách tiện ích
-
-    }
-    }
-
-////
-///
-@Composable
-fun StaticServiceOptions(
-    services: List<String>, // Danh sách tiện ích từ dữ liệu
-    allOptions: List<String> = listOf( "Điều hoà","Kệ bếp","Tủ lạnh","Bình nóng lạnh","Máy giặt","Bàn ghế"),
-    onSelectService: (String) -> Unit // Thêm tham số cho sự kiện chọn
-) {
-
-    FlowRow(
-        modifier = Modifier.padding(8.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
-    ) {
-        allOptions.forEach { option ->
-            StaticComfortableOption(
-                text = option,
-                isSelected = services.contains(option), // Hiển thị dấu tích nếu có trong danh sách tiện ích
-                onClick = { onSelectService(option) } // Khi nhấp vào, gọi onSelectAmenity
-
-            )
-        }
-
-    }
-}
-@Composable
-fun ServicesDisplay(
-    services: List<String>,
-    onServicesChange: (List<String>) -> Unit
-) {
-    val context = LocalContext.current
-    val selectedServices = remember(services) { mutableStateOf(services) }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-
-        StaticServiceOptions(
-            services = selectedServices.value,
-            onSelectService = { amenity ->
-                val updatedService = if (selectedServices.value.contains(amenity)) {
-                    selectedServices.value - amenity
-                } else {
-                    selectedServices.value + amenity
-                }
-                if (updatedService.isEmpty()) {
-                    Toast.makeText(context, "Không được để trống dịch vụ", Toast.LENGTH_SHORT)
-                        .show()
-                    return@StaticServiceOptions
-                }
-                selectedServices.value = updatedService
-                onServicesChange(updatedService) // Gửi danh sách mới qua callback
-                Log.d("hamm", "Updated Amenities: $updatedService")
-            }
-        )
-        // Trạng thái danh sách tiện ích
-
-    }
-
-}
-@Composable
-fun StaticRoomTypeOptions(
-    roomTypes: List<String>, // Danh sách tiện ích từ dữ liệu
-    allOptions: List<String> = listOf(
-        "Phòng trọ",
-        "Nguyên căn",
-        "Chung cư"
-    ),
-    onSelectRoomType: (String) -> Unit // Thêm tham số cho sự kiện chọn
-) {
-
-    FlowRow(
-        modifier = Modifier.padding(8.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
-    ) {
-        allOptions.forEach { option ->
-            StaticRoomTypeOption(
-                text = option,
-                isSelected = roomTypes.contains(option), // Hiển thị dấu tích nếu có trong danh sách tiện ích
-                onClick = { onSelectRoomType(option) } // Khi nhấp vào, gọi onSelectAmenity
-
-            )
-        }
-
-    }
-}
-@Composable
-fun StaticRoomTypeOption(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit // Thêm sự kiện nhấp vào
-) {
-
-    Box(
-        modifier = Modifier
-            .clickable(onClick = onClick) // Tạo sự kiện nhấp
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
-            .border(
-                width = 1.dp,
-                color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
-            .padding(0.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
-            fontSize = 13.sp,
-            modifier = Modifier
-                .background(color = if (isSelected) Color(0xFFffffff) else Color(0xFFeeeeee))
-                .padding(14.dp)
-                .align(Alignment.Center)
-        )
-
-        // Hiển thị dấu tích nếu được chọn
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(23.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = Color(0xFF44acfe),
-                        shape = TriangleShape()
-                    ),
-                contentAlignment = Alignment.TopStart
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.tick),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(10.dp)
-                        .offset(x = 3.dp, y = 2.dp)
-                )
-            }
-        }
-    }
-}
-@Composable
-fun RoomTypesDisplay(
-    roomTypes: List<String>, // Danh sách các loại phòng (sẽ chỉ chứa tối đa 1 giá trị)
-    onRoomTypeChange: (List<String>) -> Unit // Callback để cập nhật danh sách
-) {
-    val selectedRoomType = remember(roomTypes) { mutableStateOf(roomTypes.firstOrNull() ?: "") }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        StaticRoomTypeOptions(
-            roomTypes = listOf(selectedRoomType.value), // Chỉ truyền loại phòng đang được chọn
-            onSelectRoomType = { roomType ->
-                selectedRoomType.value = roomType // Cập nhật giá trị đã chọn
-                onRoomTypeChange(listOf(roomType)) // Gửi danh sách mới chỉ chứa một giá trị
-            }
-        )
-    }
-}
 
 // Custom Shape cho góc dấu tích
 class TriangleShape : Shape {

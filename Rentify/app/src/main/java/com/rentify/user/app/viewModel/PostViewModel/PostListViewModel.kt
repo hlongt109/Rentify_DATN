@@ -14,6 +14,8 @@ import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.network.APIService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -151,21 +153,22 @@ fun deletePostWithFeedback(postId: String) {
         }
     }
 }
-
     private val _buildings = mutableStateOf<List<Building>>(emptyList())
     val buildings: State<List<Building>> = _buildings
+
     // Biến lưu tòa nhà đã chọn (selected building)
     private val _selectedBuilding = mutableStateOf<String?>(null)
     val selectedBuilding: State<String?> = _selectedBuilding
 
     private val apiService: APIService = RetrofitClient.apiService // Kết nối Retrofit instance
 
+    // Lấy danh sách các tòa nhà
     fun getBuildings(userId: String) {
         viewModelScope.launch {
             try {
-                val response = apiService.getBuildings(userId) // Giả sử apiService là service gọi API
+                val response = apiService.getBuildings(userId)
                 if (response.isSuccessful) {
-                    val buildingsResponse = response.body() // BuildingsResponse
+                    val buildingsResponse = response.body()
                     _buildings.value = buildingsResponse?.data ?: emptyList()
                     Log.d("PostViewModel", "Buildings fetched: ${_buildings.value}")
                 } else {
@@ -175,20 +178,19 @@ fun deletePostWithFeedback(postId: String) {
                 Log.e("PostViewModel", "Exception: ${e.message}")
             }
         }
+    }
 
-}
+    // Lưu danh sách phòng
+    private val _rooms = MutableStateFlow<List<Room_post>>(emptyList())
+    val rooms: StateFlow<List<Room_post>> = _rooms
 
-private val _rooms = mutableStateOf<List<Room_post>>(emptyList())
-val rooms: State<List<Room_post>> = _rooms
-
-
-fun getRooms(buildingId: String) {
-    _selectedBuilding.value?.let { buildingId ->
+    // Lấy danh sách phòng theo buildingId
+    fun getRooms(buildingId: String) {
         viewModelScope.launch {
             try {
                 val response = apiService.getRooms(buildingId) // Gọi API để lấy phòng
                 if (response.isSuccessful) {
-                    val roomsResponse = response.body() // RoomsResponse
+                    val roomsResponse = response.body()
                     _rooms.value = roomsResponse?.data ?: emptyList()
                     Log.d("PostViewModel", "Rooms fetched: ${_rooms.value}")
                 } else {
@@ -199,10 +201,10 @@ fun getRooms(buildingId: String) {
             }
         }
     }
-}
 
-fun setSelectedBuilding(buildingId: String) {
-    _selectedBuilding.value = buildingId
-    getRooms(buildingId) // Khi chọn tòa nhà, gọi API để lấy danh sách phòng
-}
+    // Cập nhật tòa nhà đã chọn và lấy danh sách phòng cho tòa nhà đó
+    fun setSelectedBuilding(buildingId: String) {
+        _selectedBuilding.value = buildingId // Cập nhật tòa nhà đã chọn
+        getRooms(buildingId) // Gọi API để lấy danh sách phòng cho tòa nhà đã chọn
+    }
 }
