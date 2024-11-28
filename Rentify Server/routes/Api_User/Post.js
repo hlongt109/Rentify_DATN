@@ -18,12 +18,10 @@ router.get("/list", async (req, res) => {
 // Lấy danh sách bài viết theo user_id
 router.get("/list/:user_id", async (req, res) => {
     const { user_id } = req.params;
-
     // Kiểm tra user_id có hợp lệ hay không
     if (!mongoose.Types.ObjectId.isValid(user_id)) {
         return res.status(400).json({ message: "ID người dùng không hợp lệ" });
     }
-
     try {
         // Tìm bài viết liên kết với user_id, đồng thời populate thông tin từ các bảng khác
         const posts = await Post.find({ user_id })
@@ -66,6 +64,58 @@ router.get("/list/:user_id", async (req, res) => {
         res.status(500).json({ message: "Đã xảy ra lỗi khi lấy danh sách bài viết.", error: error.message });
     }
 });
+
+
+// router.get("/list/:user_id", async (req, res) => {
+//     const { user_id } = req.params;
+
+//     // Kiểm tra user_id có hợp lệ hay không
+//     if (!mongoose.Types.ObjectId.isValid(user_id)) {
+//         return res.status(400).json({ message: "ID người dùng không hợp lệ" });
+//     }
+
+//     try {
+//         // Tìm bài viết liên kết với user_id, đồng thời populate thông tin từ các bảng khác
+//         const posts = await Post.find({ user_id })
+//             .populate("user_id", "name email") // Lấy thông tin người dùng
+//             .populate("building_id", "address") // Lấy địa chỉ tòa nhà
+//             .populate("room_id", "price") // Lấy giá phòng
+//             .sort({ created_at: -1 }); // Sắp xếp theo thời gian tạo mới nhất
+
+//         // Kiểm tra nếu không có bài viết nào
+//         if (!posts.length) {
+//             return res.status(404).json({ message: "Không có bài đăng nào của người dùng này." });
+//         }
+
+//         // Định dạng dữ liệu trả về
+//         const formattedPosts = posts.map(post => ({
+//             _id: post._id,
+//             title: post.title,
+//             content: post.content,
+//             status: post.status,
+//             video: post.video,
+//             photo: post.photo,
+//             post_type: post.post_type,
+//             created_at: post.created_at,
+//             updated_at: post.updated_at,
+//             price: post.room_id ? post.room_id.price : null, // Giá phòng từ Room
+//             address: post.building_id ? post.building_id.address : null, // Địa chỉ từ Building
+//             user: post.user_id ? {
+//                 name: post.user_id.name,
+//                 email: post.user_id.email
+//             } : null
+//         }));
+
+//         res.status(200).json({
+//             status: 200,
+//             message: "Danh sách bài viết được lấy thành công.",
+//             data: formattedPosts
+//         });
+//     } catch (error) {
+//         console.error("Lỗi server:", error.message);
+//         res.status(500).json({ message: "Đã xảy ra lỗi khi lấy danh sách bài viết.", error: error.message });
+//     }
+// });
 // API lấy danh sách các tòa nhà theo user_id
 router.get('/buildings', async (req, res) => {
     try {

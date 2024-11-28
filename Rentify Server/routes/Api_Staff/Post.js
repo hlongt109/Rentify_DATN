@@ -18,7 +18,7 @@ router.get("/list", async (req, res) => {
 // Lấy danh sách bài viết theo user_id
 router.get("/list/:user_id", async (req, res) => {
 
-
+    const { user_id } = req.params;
 
     // Kiểm tra user_id có hợp lệ hay không
     if (!mongoose.Types.ObjectId.isValid(user_id)) {
@@ -146,11 +146,20 @@ router.post('/add',  upload.fields([{ name: 'video' }, { name: 'photo' }]), asyn
 });
 
 
-
-// Route để lấy chi tiết bài viết theo ID
 router.get('/detail/:id', async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
+        const postId = req.params.id;
+
+        // Kiểm tra ID có hợp lệ hay không
+        if (!mongoose.Types.ObjectId.isValid(postId)) {
+            return res.status(400).json({ message: 'ID không hợp lệ' });
+        }
+
+        // Tìm bài đăng và populate thông tin người dùng, building và room
+        const post = await Post.findById(postId)
+            .populate('user_id', 'name email')
+            .populate('building_id', 'nameBuilding address')  // Populate thông tin từ bảng Building
+            .populate('room_id', 'room_type room_name price') // Populate thông tin từ bảng Room
 
         if (!post) {
             return res.status(404).json({ message: 'Bài đăng không tìm thấy' });
@@ -195,20 +204,21 @@ router.get('/detail/:id', async (req, res) => {
 });
 
 
-router.put("/update/:id", upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
+// Cập nhật bài viết theo ID
+router.put('/update/:id', upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
     try {
         const { id } = req.params;
-        const { user_id, building_id, room_id, title, content, status, post_type, room_type } = req.body;
+        const { user_id, building_id, room_id, title, content, status, post_type } = req.body;
 
-         // Kiểm tra ID có hợp lệ hay không
-         if (!mongoose.Types.ObjectId.isValid(id)) {
+        // Kiểm tra ID có hợp lệ hay không
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: 'ID không hợp lệ' });
         }
 
         // Tìm bài đăng đã tồn tại
         const existingPost = await Post.findById(id);
         if (!existingPost) {
-            return res.status(404).json({ message: "Bài đăng không tồn tại" });
+            return res.status(404).json({ message: 'Bài đăng không tồn tại' });
         }
 
         // Chuyển đổi các ID vào đúng dạng ObjectId nếu có
@@ -221,24 +231,14 @@ router.put("/update/:id", upload.fields([{ name: 'video' }, { name: 'photo' }]),
         existingPost.content = content || existingPost.content;
         existingPost.status = status || existingPost.status;
         existingPost.post_type = post_type || existingPost.post_type;
-        existingPost.room_type = room_type || existingPost.room_type;
 
         // Cập nhật video và ảnh nếu có
-        // Cập nhật các trường
-        existingPost.user_id = req.body.user_id ? mongoose.Types.ObjectId(req.body.user_id) : existingPost.user_id;
-        existingPost.title = req.body.title || existingPost.title;
-        existingPost.content = req.body.content || existingPost.content;
-        existingPost.status = req.body.status || existingPost.status;
-        existingPost.post_type = req.body.post_type || existingPost.post_type;
-
-        // Cập nhật video và photo
         if (req.files['video']) {
             existingPost.video = req.files['video'].map(file => file.path.replace('public/', ''));
         }
         if (req.files['photo']) {
             existingPost.photo = req.files['photo'].map(file => file.path.replace('public/', ''));
         }
-        existingPost.updated_at = new Date().toISOString();
         existingPost.updated_at = new Date().toISOString();
 
         // Lưu bài viết đã cập nhật
