@@ -52,20 +52,7 @@ data class PostResponse(
     val createdAt: String? = null,     // Ngày tạo
     val updatedAt: String? = null      // Ngày cập nhật
 )
-data class UpdatePostRequest(
-    val userId: String,         // ID của người dùng
-    val title: String?,         // Tiêu đề bài đăng (nullable vì không bắt buộc cập nhật)
-    val content: String?,       // Nội dung bài đăng
-    val status: Int?,           // Trạng thái bài đăng
-    val videos: List<String>?,   // Danh sách video
-    val photos: List<String>?,   // Danh sách ảnh
-    val price: Int?,            // Giá
-    val address: String?,       // Địa chỉ
-    val phoneNumber: String?,   // Số điện thoại
-    val roomType: String?,      // Loại phòng
-    val amenities: List<String>?, // Danh sách tiện nghi
-    val services: List<String>?  // Danh sách dịch vụ
-)
+
 data class PostingDetail(
     val id: String,
     val title: String,
@@ -108,3 +95,19 @@ data class UpdatePostResponse(
     val message: String,          // Thông báo từ server
     val updatedPost: PostingDetail? // Dữ liệu bài đăng đã cập nhật (nếu có)
 )
+
+data class UpdatePostRequest(
+    val _id: String,
+    val building_id: String,
+    val content: String,
+    val created_at: String,
+    val photo: List<String>,
+    val post_type: String,
+    val room_id: String,
+    val status: Int,
+    val title: String,
+    val updated_at: String,
+    val user_id: String,
+    val video: List<String>
+)
+

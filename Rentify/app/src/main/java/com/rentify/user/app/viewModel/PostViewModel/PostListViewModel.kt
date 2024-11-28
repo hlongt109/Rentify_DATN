@@ -9,15 +9,14 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
 import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.network.APIService
-import com.rentify.user.app.network.ApiClient.apiService
-import kotlinx.coroutines.Dispatchers
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class PostViewModel : ViewModel() {
     private val _posts = mutableStateOf<List<PostingList>>(emptyList())
@@ -26,106 +25,132 @@ class PostViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
-    fun getPostingList(userId: String) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitClient.apiService.getPosts(userId)
-                Log.d("API Response", response.toString())
-
-                // Lấy danh sách bài viết từ response.data
-                if (response.data.isNotEmpty()) {
-                    _posts.value = response.data
-                    Log.d("Posts Updated", _posts.value.toString())
-                } else {
-                    Log.d("Posts Empty", "Không có bài đăng nào được trả về")
-                }
-            } catch (e: Exception) {
-                Log.e("API Error", "Lỗi khi lấy danh sách bài viết: ${e.message}")
-            }
-        }
-    }
-
-    private val _postDetail = MutableLiveData<PostingDetail?>()
-    val postDetail: LiveData<PostingDetail?> get() = _postDetail
-    // Lấy chi tiết bài đăng
-    fun getPostDetail(postId: String) {
-        viewModelScope.launch {
-            try {
-                val detail = RetrofitClient.apiService.getPostDetail(postId)
-                Log.d("API_Response", "Detail: $detail") // In toàn bộ dữ liệu trả về
-                _postDetail.value = detail
-            } catch (e: Exception) {
-                Log.e("getPostDetail", "Error: ${e.message}")
-                _postDetail.value = null
-            }
-        }
-    }
-
-
-    private val _deleteStatus = MutableLiveData<Boolean?>()
-    val deleteStatus: MutableLiveData<Boolean?> get() = _deleteStatus
-
-    fun deletePostWithFeedback(postId: String) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitClient.apiService.deletePost(postId)
-                if (response.isSuccessful) {
-                    _posts.value = _posts.value.filter { it._id != postId }
-                    _deleteStatus.value = true // Thông báo thành công
-                } else {
-                    _deleteStatus.value = false // Thông báo thất bại
-                }
-            } catch (e: Exception) {
-                _deleteStatus.value = false // Xử lý lỗi
-            }
-        }}fun resetDeleteStatus() {
-        _deleteStatus.value = null
-    }
-
-    private val _updateStatus = MutableLiveData<Boolean?>()
-    val updateStatus: LiveData<Boolean?> get() = _updateStatus
+    private val _updateBookingStatusResult = MutableLiveData<Result<UpdatePostRequest>?>()
+    val updateBookingStatusResult: LiveData<Result<UpdatePostRequest>?> get() = _updateBookingStatusResult
+    // thien code phan nay
 
     fun updatePost(
         postId: String,
-        userId: RequestBody,
-        building_id: RequestBody,
-        room_id: RequestBody,
-        title: RequestBody,
-        content: RequestBody,
-        status: RequestBody,
-        postType: RequestBody,
-        videos: List<MultipartBody.Part>?,
-        photos: List<MultipartBody.Part>?
+        userId: String?,
+        buildingId: String?,
+        roomId: String?,
+        title: String?,
+        content: String?,
+        status: String?,
+        postType: String?,
+        videoFile: List<MultipartBody.Part>?,
+        photoFile: List<MultipartBody.Part>?
     ) {
         viewModelScope.launch {
             try {
-                // Gọi API cập nhật bài đăng
-                val response = RetrofitClient.apiService.updatePost(
-                    postId, userId, title, content, status, postType,
-                    building_id, room_id, videos, photos
+                // Chuẩn bị RequestBody cho từng tham số dạng chuỗi
+                val userIdBody = userId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val buildingIdBody = buildingId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val roomIdBody = roomId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val titleBody = title?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val contentBody = content?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val statusBody = status?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val postTypeBody = postType?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+                // Gọi API để cập nhật bài viết
+                val response = RetrofitClient.apiService.updatePostUser(
+                    postId,
+                    userIdBody,
+                    buildingIdBody,
+                    roomIdBody,
+                    titleBody,
+                    contentBody,
+                    statusBody,
+                    postTypeBody,
+                    videoFile,
+                    photoFile
                 )
 
+                // Logging thông tin phản hồi để kiểm tra
+                Log.d("updatePost", "API response code: ${response.code()}")
+                Log.d("updatePost", "API response message: ${response.message()}")
+                Log.d("updatePost", "API response body: ${response.body()}")
+
+                // Kiểm tra kết quả trả về từ API
                 if (response.isSuccessful) {
-                    _updateStatus.value = true // Cập nhật thành công
-                    _errorMessage.value = "" // Xóa thông báo lỗi nếu thành công
+                    val updatedPost = response.body()
+                    if (updatedPost != null) {
+                        // Trả về kết quả thành công
+                        _updateBookingStatusResult.postValue(Result.success(updatedPost))
+                        Log.d("updatePost", "Update successful: $updatedPost")
+                    } else {
+                        _updateBookingStatusResult.postValue(Result.failure(Exception("Update failed")))
+                        Log.e("updatePost", "Update failed: Response body is null")
+                    }
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                    _updateStatus.value = false // Cập nhật thất bại
-                    _errorMessage.value = "Update failed: ${response.code()} - $errorBody"
+                    _updateBookingStatusResult.postValue(Result.failure(Exception("API Error: ${response.message()}")))
+                    Log.e("updatePost", "API Error: ${response.message()}")
                 }
+
             } catch (e: Exception) {
-                _updateStatus.value = false // Xử lý lỗi
-                _errorMessage.value = "Exception: ${e.localizedMessage ?: "Unknown exception"}"
+                // Nếu có lỗi trong quá trình gọi API, trả về thông báo lỗi
+                _errorMessage.postValue(e.message)
+                Log.e("updatePost", "Exception: ${e.message}", e)
             }
         }
     }
+// thien code phan nay
 
-    /**
-     * Reset trạng thái cập nhật để tránh thông báo lặp lại
-     */
-    fun resetUpdateStatus() {
-        _updateStatus.value = null
+fun getPostingList(userId: String) {
+    viewModelScope.launch {
+        try {
+            val response = RetrofitClient.apiService.getPosts(userId)
+            Log.d("API Response", response.toString())
+
+            // Lấy danh sách bài viết từ response.data
+            if (response.data.isNotEmpty()) {
+                _posts.value = response.data
+                Log.d("Posts Updated", _posts.value.toString())
+            } else {
+                Log.d("Posts Empty", "Không có bài đăng nào được trả về")
+            }
+        } catch (e: Exception) {
+            Log.e("API Error", "Lỗi khi lấy danh sách bài viết: ${e.message}")
+        }
     }
+}
+
+private val _postDetail = MutableLiveData<PostingDetail?>()
+val postDetail: LiveData<PostingDetail?> get() = _postDetail
+
+// Lấy chi tiết bài đăng
+fun getPostDetail(postId: String) {
+    viewModelScope.launch {
+        try {
+            val detail = RetrofitClient.apiService.getPostDetail(postId)
+            Log.d("API_Response", "Detail: $detail") // In toàn bộ dữ liệu trả về
+            _postDetail.value = detail
+        } catch (e: Exception) {
+            Log.e("getPostDetail", "Error: ${e.message}")
+            _postDetail.value = null
+        }
+    }
+}
+
+
+private val _deleteStatus = MutableLiveData<Boolean?>()
+val deleteStatus: MutableLiveData<Boolean?> get() = _deleteStatus
+
+fun deletePostWithFeedback(postId: String) {
+    viewModelScope.launch {
+        try {
+            val response = RetrofitClient.apiService.deletePost(postId)
+            if (response.isSuccessful) {
+                _posts.value = _posts.value.filter { it._id != postId }
+                _deleteStatus.value = true // Thông báo thành công
+            } else {
+                _deleteStatus.value = false // Thông báo thất bại
+            }
+        } catch (e: Exception) {
+            _deleteStatus.value = false // Xử lý lỗi
+        }
+    }
+}
 
     private val _buildings = mutableStateOf<List<Building>>(emptyList())
     val buildings: State<List<Building>> = _buildings
@@ -153,29 +178,31 @@ class PostViewModel : ViewModel() {
 
 }
 
-    private val _rooms = mutableStateOf<List<Room_post>>(emptyList())
-    val rooms: State<List<Room_post>> = _rooms
+private val _rooms = mutableStateOf<List<Room_post>>(emptyList())
+val rooms: State<List<Room_post>> = _rooms
 
 
-    fun getRooms(buildingId: String) {
-        _selectedBuilding.value?.let { buildingId ->
-            viewModelScope.launch {
-                try {
-                    val response = apiService.getRooms(buildingId) // Gọi API để lấy phòng
-                    if (response.isSuccessful) {
-                        val roomsResponse = response.body() // RoomsResponse
-                        _rooms.value = roomsResponse?.data ?: emptyList()
-                        Log.d("PostViewModel", "Rooms fetched: ${_rooms.value}")
-                    } else {
-                        Log.e("PostViewModel", "Error fetching rooms: ${response.message()}")
-                    }
-                } catch (e: Exception) {
-                    Log.e("PostViewModel", "Exception: ${e.message}")
+fun getRooms(buildingId: String) {
+    _selectedBuilding.value?.let { buildingId ->
+        viewModelScope.launch {
+            try {
+                val response = apiService.getRooms(buildingId) // Gọi API để lấy phòng
+                if (response.isSuccessful) {
+                    val roomsResponse = response.body() // RoomsResponse
+                    _rooms.value = roomsResponse?.data ?: emptyList()
+                    Log.d("PostViewModel", "Rooms fetched: ${_rooms.value}")
+                } else {
+                    Log.e("PostViewModel", "Error fetching rooms: ${response.message()}")
                 }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "Exception: ${e.message}")
             }
-        }}
-    fun setSelectedBuilding(buildingId: String) {
-        _selectedBuilding.value = buildingId
-        getRooms(buildingId) // Khi chọn tòa nhà, gọi API để lấy danh sách phòng
+        }
     }
+}
+
+fun setSelectedBuilding(buildingId: String) {
+    _selectedBuilding.value = buildingId
+    getRooms(buildingId) // Khi chọn tòa nhà, gọi API để lấy danh sách phòng
+}
 }

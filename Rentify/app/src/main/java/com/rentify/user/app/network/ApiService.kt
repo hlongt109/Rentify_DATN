@@ -9,7 +9,7 @@ import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
-import com.rentify.user.app.model.UpdatePostResponse
+import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
@@ -127,24 +127,25 @@ interface APIService {
     suspend fun deletePost(@Path("id") postId: String): Response<Unit> // Giả sử API trả về `Unit` khi xóa thành công
     @GET("staff/posts/detail/{id}")
     suspend fun getPostDetail(@Path("id") postId: String): PostingDetail
-    @Multipart
-    @PUT("staff/posts/update/{id}")
-    suspend fun updatePost(
-        @Path("id") id: String, // ID của bài viết cần sửa
-        @Part("building_id") building_id: RequestBody?,
-        @Part("room_id") room_id: RequestBody?,
-        @Part("user_id") userId: RequestBody?,
-        @Part("title") title: RequestBody?,
-        @Part("content") content: RequestBody?,
-        @Part("status") status: RequestBody?,
-        @Part("post_type") postType: RequestBody?,
-        @Part videos: List<MultipartBody.Part>?,
-        @Part photos: List<MultipartBody.Part>?
-    ): Response<UpdatePostResponse>
+
     data class ApiResponsee<T>(
         val status: Int,
         val data: T
     )
+    @Multipart
+    @PUT("staff/posts/update/{id}")
+    suspend fun updatePostUser(
+        @Path("id") postId: String,
+        @Part("user_id") userId: RequestBody?,
+        @Part("building_id") buildingId: RequestBody?,
+        @Part("room_id") roomId: RequestBody?,
+        @Part("title") title: RequestBody?,
+        @Part("content") content: RequestBody?,
+        @Part("status") status: RequestBody?,
+        @Part("post_type") postType: RequestBody?,
+        @Part video: List<MultipartBody.Part>?, // Optional video
+        @Part photo: List<MultipartBody.Part>?  // Optional photo
+    ): Response<UpdatePostRequest>
 
     @Multipart
     @POST("add")
