@@ -229,7 +229,7 @@
                 <tbody id="user-table">
                     <% if (data && data.length> 0) { %>
                         <% data.forEach((item, index)=> { %>
-                            <tr data-status="<%= item.status %>">
+                            <tr data-status="<%= item.status %>" data-images='<%- JSON.stringify(item.images || []) %>'>
                                 <td>
                                     <%= index + 1 %>
                                 </td>
@@ -291,13 +291,15 @@
                     const title_support = row.cells[4]?.textContent;
                     const content_support = row.cells[5]?.textContent;
 
+                    const images = JSON.parse(row.getAttribute('data-images') || '[]');
                     data.push({
                         _id,
                         user_id,
                         room_id,
                         title_support,
                         content_support,
-                        status: rowStatus === "1" ? 1 : 0
+                        status: rowStatus === "1" ? 1 : 0,
+                        images
                     });
                 });
                 originalData = data;
@@ -307,19 +309,17 @@
 
             // Hàm lọc bảng theo trạng thái
             function filterTableByStatus(status) {
-                const filteredData = originalData.filter(item => {
-                    return status === "" || item.status.toString() === status;
-                });
-
-                // Đảm bảo `image` vẫn tồn tại
-                filteredData.forEach(item => {
-                    if (!item.image || !Array.isArray(item.image)) {
-                        item.image = []; // Gán mảng trống nếu thiếu trường
+                const rows = document.querySelectorAll('#user-table tr');
+                rows.forEach(row => {
+                    const rowStatus = row.getAttribute('data-status');
+                    if (status === "" || rowStatus === status) {
+                        row.style.display = ""; // Hiển thị dòng
+                    } else {
+                        row.style.display = "none"; // Ẩn dòng
                     }
                 });
-
-                renderTableData(filteredData);
             }
+
 
 
 
@@ -338,27 +338,25 @@
 
                         const row = document.createElement("tr");
 
-                        // row.setAttribute('data-id', item._id);
                         row.setAttribute('data-status', item.status);
-
                         row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${item._id}</td>
-                            <td>${item.user_id}</td>
-                            <td>${item.room_id}</td>
-                            <td>${item.title_support}</td>
-                            <td>${item.content_support}</td>
-                            <td class="status-column">
-                                ${item.status === 1 ? "<span class='badge status-waiting'>Đang đợi</span>" : "<span class='badge status-completed'>Đã hoàn thành</span>"}
-                            </td>
-                            <td>
-                                 <button class="btn btn-primary btn-sm" 
-                                 data-show-list='${JSON.stringify(item)}'
-                                    onclick="openDetailModal(this)">Xem chi tiết</button>
-                                <!-- Sửa button -->
-                                <button class="btn btn-warning btn-edit" data-id="${item._id}" data-status="${item.status}">Sửa</button>
-                            </td>
-                        `;
+    <td>${index + 1}</td>
+    <td>${item._id}</td>
+    <td>${item.user_id}</td>
+    <td>${item.room_id}</td>
+    <td>${item.title_support}</td>
+    <td>${item.content_support}</td>
+    <td class="status-column">
+        ${item.status === 1 ? "<span class='badge status-waiting'>Đang đợi</span>" : "<span class='badge status-completed'>Đã hoàn thành</span>"}
+    </td>
+    <td>
+         <button class="btn btn-primary btn-sm" 
+             data-show-list='${JSON.stringify(item)}'
+             onclick="openDetailModal(this)">Xem chi tiết</button>
+        <!-- Sửa button -->
+        <button class="btn btn-warning btn-edit" data-id="${item._id}" data-status="${item.status}">Sửa</button>
+    </td>
+`;
 
 
 
@@ -434,43 +432,38 @@
                 const showSupport = document.getElementById('showSupport');
 
                 const detailsHTML = `
-        <table class="table table-striped">
-            <tbody>
-                <tr>
-                    <td><strong>User ID:</strong></td>
-                    <td>${showList._id}</td>
-                </tr>
-                <tr>
-                    <td><strong>User ID:</strong></td>
-                    <td>${showList.user_id}</td>
-                </tr>
-                <tr>
-                    <td><strong>Room ID:</strong></td>
-                    <td>${showList.room_id}</td>
-                </tr>
-                <tr>
-                    <td><strong>Title:</strong></td>
-                    <td>${showList.title_support}</td>
-                </tr>
-                <tr>
-                    <td><strong>Content:</strong></td>
-                    <td>${showList.content_support}</td>
-                </tr>
-                
-            </tbody>
-        </table>
-    `;
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td><strong>User ID:</strong></td>
+                                <td>${showList._id}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>User ID:</strong></td>
+                                <td>${showList.user_id}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Room ID:</strong></td>
+                                <td>${showList.room_id}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Title:</strong></td>
+                                <td>${showList.title_support}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Content:</strong></td>
+                                <td>${showList.content_support}</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                `;
                 showSupport.innerHTML = detailsHTML;
 
                 // Hiển thị modal
                 const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
                 detailModal.show();
             }
-
-
-
-
-
 
             // Khi nhấn nút Edit, hiển thị modal sửa với dữ liệu hiện tại
             function editUser(userId, currentStatus) {
