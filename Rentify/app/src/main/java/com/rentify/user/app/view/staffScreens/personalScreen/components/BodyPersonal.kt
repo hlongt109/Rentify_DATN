@@ -46,10 +46,12 @@ fun BodyPersonalPreview() {
 fun BodyPersonal(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
     val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
+    val errorMessage by viewModel.error.observeAsState()  // Quan sát LiveData lỗi
     val context = LocalContext.current
 
+    // Gọi API để lấy thông tin người dùng khi composable được gọi
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailByEmail("")  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserDetailById("6727bee93361c4e22f074cd5")  // Gọi API với userId hợp lệ
     }
 
     Column(
@@ -79,7 +81,15 @@ fun BodyPersonal(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                if (userDetail == null) {
+                // Kiểm tra lỗi hoặc đang tải dữ liệu
+                if (errorMessage != null) {
+                    Text(
+                        text = errorMessage ?: "Lỗi không xác định",
+                        color = Color.Red,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                } else if (userDetail == null) {
                     Text("Đang tải thông tin người dùng ...")  // Hiển thị thông báo khi đang tải
                 } else {
                     Text(
@@ -104,4 +114,5 @@ fun BodyPersonal(navController: NavHostController) {
         }
     }
 }
+
 

@@ -37,7 +37,7 @@ fun FeetPersonalProfile(navController: NavHostController){
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailByEmail("")  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserDetailById("6727bee93361c4e22f074cd5")  // Lấy dữ liệu người dùng khi composable được gọi
     }
     Column {
             Row(
@@ -143,7 +143,7 @@ fun FeetPersonalProfile1(navController: NavHostController){
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailByEmail("")  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserDetailById("6727bee93361c4e22f074cd5")  // Lấy dữ liệu người dùng khi composable được gọi
     }
     Column {
         Row(

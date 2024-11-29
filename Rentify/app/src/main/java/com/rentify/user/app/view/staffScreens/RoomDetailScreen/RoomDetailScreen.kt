@@ -434,7 +434,8 @@ fun ExoPlayerView(context: Context, videoUri: Uri) {
             }
         },
         modifier = Modifier
-            .size(200.dp)
+            .fillMaxWidth() // Độ dài ngang full màn hình
+            .height(200.dp) // Chiều cao cố định
             .clip(RoundedCornerShape(10.dp))
             .background(Color.Black)
     )

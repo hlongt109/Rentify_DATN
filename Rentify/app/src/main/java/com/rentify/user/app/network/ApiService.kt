@@ -7,6 +7,7 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.User
+import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
@@ -112,7 +113,7 @@ interface APIService {
         @Path("id") id: String
     ): Response<ApiResponse>
 
-    // UPDATE PHÒNG
+    // UPDATE PHÒNG🍕
     @Multipart
     @PUT("staff/rooms/updateRoom/{id}")
     suspend fun updateRoom(
@@ -121,9 +122,9 @@ interface APIService {
         @Part photos: List<MultipartBody.Part>?,
         @Part videos: List<MultipartBody.Part>?
     ): Response<ApiResponse>
-    // LẤY THÔNG TIN NGƯỜI DÙNG
-    @GET("staff/users/usermail/{email}")
+    // LẤY THÔNG TIN NGƯỜI DÙNG😬
+    @GET("staff/users/getUser/{id}")
     suspend fun getUserDetail(
-        @Path("email") email: String
-    ): Response<User>
+        @Path("id") id: String
+    ): Response<UserResponse>
 }

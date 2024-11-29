@@ -55,7 +55,6 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMed
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
-import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)

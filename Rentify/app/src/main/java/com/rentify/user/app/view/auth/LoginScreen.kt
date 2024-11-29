@@ -86,9 +86,9 @@ fun LoginScreenApp(navigator: NavController) {
             // Xử lý chuyển màn khi đăng nhập thành công
                 role ->
             if (role == "user") {
-                navigator.navigate(ROUTER.HOME.name)
+                navigator.navigate("${ROUTER.HOME.name}/${username}")
             } else if (role == "staffs") {
-                navigator.navigate(MainActivity.ROUTER.HOME_STAFF.name)
+                navigator.navigate("${MainActivity.ROUTER.HOME_STAFF.name}/${username}")
             }
         }
     }
@@ -200,3 +200,5 @@ fun LoginScreenPreview() {
     val navController = rememberNavController()
     LoginScreenApp(navController)
 }
+//phongnd122004@gmail.com
+//Phong1204

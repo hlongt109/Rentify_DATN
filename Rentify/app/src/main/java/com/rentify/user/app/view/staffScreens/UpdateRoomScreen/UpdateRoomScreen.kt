@@ -3,6 +3,7 @@ package com.rentify.user.app.view.staffScreens.UpdateRoomScreen
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,7 +25,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -61,6 +61,12 @@ import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ServiceOptionschitiet
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ComfortableLabelUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ComfortableOptionsUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.RoomTypeLabelUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.RoomTypeOptionsUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceLabelUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceOptionsUpdate
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
@@ -108,14 +114,14 @@ fun UpdateRoomScreen(
     Log.d("TAG", "dịch vụ select: $selectedService")
     Log.d("TAG", " tiện nghi select : $selectedComfortable")
     Log.d("TAG", "Người select: $currentPeopleCount")
-    // Observe states
-    val isLoading by viewModel.isLoading.observeAsState(false)
-    val addRoomResponse by viewModel.addRoomResponse.observeAsState()
-    val updateRoomResponse by viewModel.updateRoomResponse.observeAsState()
-    val error by viewModel.error.observeAsState()
-    // Observe states
+    val successMessage by viewModel.successMessage.observeAsState()
+    LaunchedEffect(successMessage) {
+        successMessage?.let {
+            Toast.makeText(context, "Update thành công ", Toast.LENGTH_SHORT).show()
+            navController.popBackStack()
+        }
+    }
     LaunchedEffect(id) {
-        // Kiểm tra xem đã có dữ liệu phòng chưa, nếu chưa thì gọi API
         if (roomDetail == null) {
             viewModel.fetchRoomDetailById(id)
         }
@@ -134,14 +140,11 @@ fun UpdateRoomScreen(
                 .padding(bottom = screenHeight.dp / 7f)
 
         ) {
-
-
             HeaderComponent(
                 backgroundColor = Color(0xffffffff),
                 title = "Update room",
                 navController = navController
             )
-            Text("id : ${id}")
             Spacer(modifier = Modifier.height(10.dp))
             Column(
                 modifier = Modifier
@@ -233,8 +236,8 @@ fun UpdateRoomScreen(
                         )
                     }
                     Column {
-                        RoomTypeLabel()
-                        RoomTypeOptions(
+                        RoomTypeLabelUpdate()
+                        RoomTypeOptionsUpdate(
                             selectedRoomTypes = selectedRoomTypes,
                             onRoomTypeSelected = { roomType ->
                                 selectedRoomTypes =
@@ -409,8 +412,8 @@ fun UpdateRoomScreen(
                     Spacer(modifier = Modifier.height(3.dp))
                     Spacer(modifier = Modifier.height(3.dp))
                     Column {
-                        ComfortableLabel()
-                        ComfortableOptions(
+                        ComfortableLabelUpdate()
+                        ComfortableOptionsUpdate(
                             selectedComfortable = selectedComfortable,
                             onComfortableSelected = { comfortable ->
                                 selectedComfortable = if (selectedComfortable.contains(comfortable)) {
@@ -423,8 +426,8 @@ fun UpdateRoomScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                     Spacer(modifier = Modifier.height(10.dp))
                     Column {
-                        ServiceLabel()
-                        ServiceOptions(
+                        ServiceLabelUpdate()
+                        ServiceOptionsUpdate(
                             selectedService = selectedService,
                             onServiceSelected = { service ->
                                 selectedService = if (selectedService.contains(service)) {
@@ -480,14 +483,6 @@ fun UpdateRoomScreen(
                     // Hiển thị trạng thái loading hoặc lỗi nếu không có thông tin
                     androidx.compose.material3.Text(text = "Loading room details...")
                 }
-
-                // Hiển thị thông báo lỗi nếu có
-                if (error != null) {
-                    Log.d("PHUC", "thất bại: $error")
-                } else {
-                    Log.d("PHUC", "thành công")
-                }
-
             }
         }
     }
