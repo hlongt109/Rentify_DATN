@@ -1,84 +1,58 @@
 package com.rentify.user.app.view.userScreens.AddPostScreen.Components
 
-import androidx.compose.foundation.background
-
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.IconButton
-
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 
 import androidx.compose.ui.Alignment
-
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.rentify.user.app.R
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.Icon
 
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+import com.google.accompanist.flowlayout.FlowRow
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 
 
 @Composable
-fun RoomTypeLabel() {
+fun RoomLabel() {
     Row(
         modifier = Modifier
             .border(
@@ -88,69 +62,70 @@ fun RoomTypeLabel() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            painter = painterResource(id = R.drawable.roomtype),
+            painter = painterResource(id = R.drawable.service),
             contentDescription = null,
             modifier = Modifier.size(30.dp, 30.dp)
         )
-
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(3.dp))
         Text(
-            text = "Loại phòng",
-            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+            text = "Phòng",
             color = Color.Black,
-            // fontWeight = FontWeight(700),
             fontSize = 13.sp,
-
-            )
+        )
     }
 }
-
 @Composable
-fun RoomTypeOptions(
-    selectedRoomTypes: List<String>,
-    onRoomTypeSelected: (String) -> Unit
+fun RoomOptions(
+    userId: String,
+    selectedRoom: String?,
+    onRoomSelected: (String) -> Unit
 ) {
-    Row(
-        modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically
-    ) {
-        RoomTypeOption(text = "Phòng trọ",
-            isSelected = selectedRoomTypes.contains("Phòng trọ"),
-            onClick = { onRoomTypeSelected("Phòng trọ") }
-        )
+    val roomViewModel: PostViewModel = viewModel()
+    val rooms by roomViewModel.roomsFromContracts.collectAsState(initial = emptyList())
+    val selectedBuilding by roomViewModel.selectedBuilding
 
-        Spacer(modifier = Modifier.width(10.dp))
+    // Gọi API lấy danh sách phòng từ hợp đồng
+    LaunchedEffect(userId) {
+        roomViewModel.fetchRoomsFromContracts(userId)
+    }
 
-        RoomTypeOption(text = "Nguyên căn",
-            isSelected = selectedRoomTypes.contains("Nguyên căn"),
-            onClick = { onRoomTypeSelected("Nguyên căn") }
-        )
+    Column(modifier = Modifier.padding(0.dp)) {
+        // Danh sách phòng
+        FlowRow(
+            modifier = Modifier.padding(5.dp),
+            mainAxisSpacing = 10.dp,
+            crossAxisSpacing = 10.dp
+        ) {
+            rooms.forEach { room ->
+                RoomOption(
+                    text = room.room_name ?: "Unknown Room",
+                    isSelected = selectedRoom == room._id,
+                    onClick = {
+                        onRoomSelected(room._id)
+                        roomViewModel.updateSelectedBuilding(room.building_id)
+                    }
+                )
+            }
+        }
 
-        Spacer(modifier = Modifier.width(10.dp))
-
-        RoomTypeOption(text = "Chung cư",
-            isSelected = selectedRoomTypes.contains("Chung cư"),
-            onClick = { onRoomTypeSelected("Chung cư") }
-        )
     }
 }
 
+
 @Composable
-fun RoomTypeOption(
+fun RoomOption(
     text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .clickable(
-                onClick = onClick,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() })
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
+            .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
             .border(
                 width = 1.dp,
                 color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
                 shape = RoundedCornerShape(9.dp)
             )
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
             .padding(0.dp)
     ) {
         Text(
@@ -204,3 +179,5 @@ class TriangleShape : Shape {
         return Outline.Generic(path)
     }
 }
+
+

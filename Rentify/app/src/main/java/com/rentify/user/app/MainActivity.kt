@@ -8,9 +8,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
@@ -43,6 +45,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
+import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.cancelContract.CancelContractScreen
 import com.rentify.user.app.view.userScreens.chatScreen.TinnhanScreen
@@ -58,6 +61,7 @@ import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
 import com.rentify.user.app.view.userScreens.rentalPost.RentalPostScreen
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
+import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.PostDetailUserScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
@@ -78,7 +82,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
+        NavHost(navController = navController, startDestination = ROUTER.HOME_STAFF.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -130,7 +134,15 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.SEARCHPOSTROOM.name) {
                 SearchPostRoonmScreen(navController = navController)
             }
-            composable(ROUTER.ADDPOST.name) {
+            composable(
+                route = "${ROUTER.ADDPOST.name}?postType={postType}",
+                arguments = listOf(
+                    navArgument("postType") {
+                        type = NavType.StringType
+                        defaultValue = "default" // Giá trị mặc định nếu không truyền
+                    }
+                )
+            ) {
                 AddPostScreen(navController = navController)
             }
             composable(ROUTER.INCIDENTREPORT.name) {
@@ -232,16 +244,29 @@ class MainActivity : ComponentActivity() {
                     PostDetailScreen( navController = navController,postId = postId)
                 }
             }
+            composable("post_user_detail/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    PostDetailUserScreen( navController = navController,postId = postId)
+                }
+            }
             composable("update_post_screen/{postId}") { backStackEntry ->
                 val postId = backStackEntry.arguments?.getString("postId")
                 if (postId != null) {
                     UpdatePostScreen(navController = navController, postId = postId)
+                }
+            }
+            composable("update_post_user_screen/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    UpdatePostUserScreen(navController = navController, postId = postId)
                 }
 
             }
             composable(ROUTER.ADDBILL_STAFF.name){
                 AddBillStaff(navController = navController)
             }
+
         }
     }
 

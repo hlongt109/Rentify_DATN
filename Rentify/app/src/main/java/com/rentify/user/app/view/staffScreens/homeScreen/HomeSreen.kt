@@ -68,12 +68,7 @@ import com.rentify.user.app.MainActivity
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.HeaderSection
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.ListFunction
 
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableLabel
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ComfortableOptions
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomTypeLabel
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomTypeOptions
 
-import com.rentify.user.app.view.userScreens.AddPostScreen.Components.ServiceOptions
 
 
 @OptIn(ExperimentalMaterial3Api::class)

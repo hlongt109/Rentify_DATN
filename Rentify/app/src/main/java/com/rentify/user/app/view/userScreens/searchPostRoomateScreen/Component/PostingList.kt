@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.rentify.user.app.view.staffScreens.postingList.PostingListComponents
+package com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component
 
 import android.util.Log
 import android.widget.Toast
@@ -41,16 +41,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.rentify.user.app.model.Post
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlin.math.roundToInt
-data class PostingList(
-    val _id: String,
-    val title: String,  // Tương ứng với trường title trong API
-    val price: String,  // Tương ứng với trường price trong API
-    val address: String, // Tương ứng với trường address trong API
-    val status: String
-)
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PostListScreen(navController: NavController, userId: String) {
@@ -135,7 +130,7 @@ fun PostListScreen(navController: NavController, userId: String) {
                 PostingListCard(
                     postlist = post,
                     onClick = {
-                        navController.navigate("post_detail/${post._id}")
+                        navController.navigate("post_user_detail/${post._id}")
                     },
                     modifier = Modifier.graphicsLayer {
                         translationX = swipeableState.offset.value

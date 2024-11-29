@@ -55,8 +55,8 @@ fun HeaderComponent(navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(
-                modifier = Modifier.width(100.dp),
-                onClick = { navController.popBackStack() }
+
+                onClick = { navController.navigate("CATEGORYPOST") }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.back),
@@ -64,7 +64,6 @@ fun HeaderComponent(navController: NavController) {
                     modifier = Modifier.size(30.dp, 30.dp)
                 )
             }
-
             Text(
                 text = "Bài đăng tìm bạn ở ghép",
                 color = Color.Black,
@@ -73,7 +72,7 @@ fun HeaderComponent(navController: NavController) {
             )
 
             IconButton(
-                modifier = Modifier.width(100.dp),
+
                 onClick = { navController.navigate("ADDPOST?postType=roomate")  }
             ) {
                 Image(

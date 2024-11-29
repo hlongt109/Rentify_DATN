@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.staffScreens.postingList.PostingListComponents
+package com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -84,7 +84,7 @@ import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun PostDetailScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
+fun PostDetailUserScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
     val postDetail by viewModel.postDetail.observeAsState()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -119,7 +119,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    IconButton(onClick = { navController.navigate("POSTING_STAFF")}) {
+                    IconButton(onClick = { navController.navigate("SEARCHPOSTROOMATE")}) {
                         Image(
                             painter = painterResource(id = R.drawable.back),
                             contentDescription = null,
@@ -379,8 +379,8 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             ) {
                 Button(
                     onClick = {
-                        navController.navigate("update_post_screen/${postId}") {
-                            popUpTo("post_detail/$postId") { inclusive = true }
+                        navController.navigate("update_post_user_screen/${postId}") {
+                            popUpTo("post_user_detail/$postId") { inclusive = true }
                         }
                     },
                     modifier = Modifier.height(50.dp).fillMaxWidth(),
@@ -400,16 +400,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
         Text("Đang tải chi tiết bài đăng...")
     }
 }
-@Preview(showBackground = true)
-@Composable
-fun PostDetailScreenPreview() {
-    val mockNavController = rememberNavController() // Tạo NavController giả lập cho preview
-    PostDetailScreen(
-        navController = mockNavController,
-        postId = "mockPostId", // Truyền postId giả lập
-        viewModel = PostViewModel()
-    )
-}
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PostImageSection(images: List<String>) {

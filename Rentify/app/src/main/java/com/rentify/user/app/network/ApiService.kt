@@ -4,8 +4,11 @@ import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
+import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
+import com.rentify.user.app.model.Contract
+import com.rentify.user.app.model.ContractsResponse
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
@@ -192,18 +195,38 @@ interface APIService {
     @POST("add")
     suspend fun addPost_user(
         @Part("user_id") userId: RequestBody,
+        @Part("building_id") buildingId: RequestBody,
+        @Part("room_id") roomId: RequestBody?,
         @Part("title") title: RequestBody,
         @Part("content") content: RequestBody,
-        @Part("status") status: RequestBody,
         @Part("post_type") postType: RequestBody,
-        @Part("price") price: RequestBody,
-        @Part("address") address: RequestBody,
-        @Part("phoneNumber") phoneNumber: RequestBody,
-        @Part("room_type") roomType: RequestBody,
-        @Part("amenities") amenities: RequestBody,
-        @Part("services") services: RequestBody,
+        @Part("status") status: RequestBody,
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
 
+    @GET("contracts/{user_id}")
+    suspend fun getContracts(
+        @Path("user_id") userId: String
+    ): Response<ContractsResponse>
+
+    @Multipart
+    @PUT("update/{id}")
+    suspend fun updatePostuser(
+        @Path("id") postId: String,
+        @Part("user_id") userId: RequestBody?,
+        @Part("building_id") buildingId: RequestBody?,
+        @Part("room_id") roomId: RequestBody?,
+        @Part("title") title: RequestBody?,
+        @Part("content") content: RequestBody?,
+        @Part("status") status: RequestBody?,
+        @Part("post_type") postType: RequestBody?,
+        @Part video: List<MultipartBody.Part>?, // Optional video
+        @Part photo: List<MultipartBody.Part>?  // Optional photo
+    ): Response<UpdatePostRequest>
+
+    @GET("room/{roomId}/building")
+    suspend fun getBuildingFromRoom(
+        @Path("roomId") roomId: String
+    ): Response<Building>
 }

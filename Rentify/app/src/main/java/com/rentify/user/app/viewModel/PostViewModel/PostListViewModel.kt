@@ -10,6 +10,7 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.rentify.user.app.model.Building
+import com.rentify.user.app.model.Contract
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.model.UpdatePostRequest
@@ -20,6 +21,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
+import retrofit2.HttpException
+import java.io.IOException
 class PostViewModel : ViewModel() {
     private val _posts = mutableStateOf<List<PostingList>>(emptyList())
     val posts: State<List<PostingList>> = _posts
@@ -206,5 +209,124 @@ fun deletePostWithFeedback(postId: String) {
     fun setSelectedBuilding(buildingId: String) {
         _selectedBuilding.value = buildingId // Cập nhật tòa nhà đã chọn
         getRooms(buildingId) // Gọi API để lấy danh sách phòng cho tòa nhà đã chọn
+    }
+
+
+    // hợp đòng user
+    // StateFlow để lưu danh sách hợp đồng
+    private val _roomsFromContracts = MutableStateFlow<List<Room_post>>(emptyList())
+    val roomsFromContracts: StateFlow<List<Room_post>> = _roomsFromContracts
+
+
+
+    fun fetchRoomsFromContracts(userId: String) {
+        viewModelScope.launch {
+            try {
+                // Gọi API lấy hợp đồng
+                val response = apiService.getContracts(userId)
+                if (response.isSuccessful) {
+                    val contracts = response.body()?.data ?: emptyList()
+
+                    // Lấy danh sách các phòng từ hợp đồng
+                    val rooms = contracts.mapNotNull { it.room_id }
+                    _roomsFromContracts.value = rooms
+             //       fetchBuildings(contracts)
+                } else {
+                    Log.e("PostViewModel", "Error fetching contracts: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+    private val _buildingss = MutableStateFlow<List<Building>>(emptyList())
+    val buildingss: StateFlow<List<Building>> = _buildingss
+
+    fun fetchBuildingForRoom(roomId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getBuildingFromRoom(roomId)
+                if (response.isSuccessful) {
+                    response.body()?.let { building ->
+                        _buildingss.value = listOf(building) // Cập nhật danh sách tòa nhà
+                        Log.d("PostViewModel", "Building fetched: $building")
+                    } ?: Log.e("PostViewModel", "Building is null")
+                } else {
+                    Log.e("PostViewModel", "Error fetching building: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "Error fetching building: ${e.message}")
+            }
+        }
+    }
+
+    fun updateSelectedBuilding(buildingId: String) {
+        _selectedBuilding.value = buildingId
+    }
+    //update user
+    fun updatePost_user(
+        postId: String,
+        userId: String?,
+        buildingId: String?,
+        roomId: String?,
+        title: String?,
+        content: String?,
+        status: String?,
+        postType: String?,
+        videoFile: List<MultipartBody.Part>?,
+        photoFile: List<MultipartBody.Part>?
+    ) {
+        viewModelScope.launch {
+            try {
+                // Chuẩn bị RequestBody cho từng tham số dạng chuỗi
+                val userIdBody = userId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val buildingIdBody = buildingId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val roomIdBody = roomId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val titleBody = title?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val contentBody = content?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val statusBody = status?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val postTypeBody = postType?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+                // Gọi API để cập nhật bài viết
+                val response = RetrofitClient.apiService.updatePostuser(
+                    postId,
+                    userIdBody,
+                    buildingIdBody,
+                    roomIdBody,
+                    titleBody,
+                    contentBody,
+                    statusBody,
+                    postTypeBody,
+                    videoFile,
+                    photoFile
+                )
+
+                // Logging thông tin phản hồi để kiểm tra
+                Log.d("updatePost", "API response code: ${response.code()}")
+                Log.d("updatePost", "API response message: ${response.message()}")
+                Log.d("updatePost", "API response body: ${response.body()}")
+
+                // Kiểm tra kết quả trả về từ API
+                if (response.isSuccessful) {
+                    val updatedPost = response.body()
+                    if (updatedPost != null) {
+                        // Trả về kết quả thành công
+                        _updateBookingStatusResult.postValue(Result.success(updatedPost))
+                        Log.d("updatePost", "Update successful: $updatedPost")
+                    } else {
+                        _updateBookingStatusResult.postValue(Result.failure(Exception("Update failed")))
+                        Log.e("updatePost", "Update failed: Response body is null")
+                    }
+                } else {
+                    _updateBookingStatusResult.postValue(Result.failure(Exception("API Error: ${response.message()}")))
+                    Log.e("updatePost", "API Error: ${response.message()}")
+                }
+
+            } catch (e: Exception) {
+                // Nếu có lỗi trong quá trình gọi API, trả về thông báo lỗi
+                _errorMessage.postValue(e.message)
+                Log.e("updatePost", "Exception: ${e.message}", e)
+            }
+        }
     }
 }
