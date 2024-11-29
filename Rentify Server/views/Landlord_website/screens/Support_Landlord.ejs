@@ -217,6 +217,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>ID</th>
                         <th>User ID</th>
                         <th>Room ID</th>
                         <th>Title</th>
@@ -231,6 +232,9 @@
                             <tr data-status="<%= item.status %>">
                                 <td>
                                     <%= index + 1 %>
+                                </td>
+                                <td>
+                                    <%= item._id %>
                                 </td>
                                 <td>
                                     <%= item.user_id %>
@@ -281,11 +285,12 @@
                 let data = [];
                 rows.forEach(row => {
                     const rowStatus = row.getAttribute('data-status');
-                    const user_id = row.cells[1]?.textContent;
-                    const room_id = row.cells[2]?.textContent;
-                    const title_support = row.cells[3]?.textContent;
-                    const content_support = row.cells[4]?.textContent;
-                    const _id = row.getAttribute('data-id');
+                    const _id = row.cells[1]?.textContent.trim();
+                    const user_id = row.cells[2]?.textContent;
+                    const room_id = row.cells[3]?.textContent;
+                    const title_support = row.cells[4]?.textContent;
+                    const content_support = row.cells[5]?.textContent;
+
                     data.push({
                         _id,
                         user_id,
@@ -295,57 +300,84 @@
                         status: rowStatus === "1" ? 1 : 0
                     });
                 });
-                originalData = data; // Lưu dữ liệu gốc
+                originalData = data;
+
+
             }
 
             // Hàm lọc bảng theo trạng thái
             function filterTableByStatus(status) {
-                let filteredData = [];
-                // Lọc dữ liệu gốc dựa trên trạng thái
-                if (status === "") {
-                    filteredData = originalData;
-                } else {
-                    filteredData = originalData.filter(item => item.status.toString() === status);
-                }
-                renderTableData(filteredData); // Render lại bảng với dữ liệu đã lọc
+                const filteredData = originalData.filter(item => {
+                    return status === "" || item.status.toString() === status;
+                });
+
+                // Đảm bảo `image` vẫn tồn tại
+                filteredData.forEach(item => {
+                    if (!item.image || !Array.isArray(item.image)) {
+                        item.image = []; // Gán mảng trống nếu thiếu trường
+                    }
+                });
+
+                renderTableData(filteredData);
             }
+
+
+
 
             // Hàm render lại bảng với dữ liệu mới
             function renderTableData(data) {
                 const userTable = document.getElementById("user-table");
                 userTable.innerHTML = ""; // Xóa nội dung bảng trước khi render mới
+                if (data && data.length > 0) {
+                    data.forEach((item, index) => {
 
-                data.forEach((item, index) => {
-                    // Làm sạch dữ liệu
-                    console.log(item);
+                        // item.user_id = item.user_id.trim();
+                        // item.room_id = item.room_id.trim();
+                        // item.title_support = item.title_support.trim();
+                        // item.content_support = item.content_support.trim();
 
-                    item.user_id = item.user_id.trim();
-                    item.room_id = item.room_id.trim();
-                    item.title_support = item.title_support.trim();
-                    item.content_support = item.content_support.trim();
+                        const row = document.createElement("tr");
 
-                    const row = document.createElement("tr");
+                        // row.setAttribute('data-id', item._id);
+                        row.setAttribute('data-status', item.status);
 
-                    row.setAttribute('data-id', item._id);
-                    row.setAttribute('data-status', item.status);
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${item._id}</td>
+                            <td>${item.user_id}</td>
+                            <td>${item.room_id}</td>
+                            <td>${item.title_support}</td>
+                            <td>${item.content_support}</td>
+                            <td class="status-column">
+                                ${item.status === 1 ? "<span class='badge status-waiting'>Đang đợi</span>" : "<span class='badge status-completed'>Đã hoàn thành</span>"}
+                            </td>
+                            <td>
+                                 <button class="btn btn-primary btn-sm" 
+                                 data-show-list='${JSON.stringify(item)}'
+                                    onclick="openDetailModal(this)">Xem chi tiết</button>
+                                <!-- Sửa button -->
+                                <button class="btn btn-warning btn-edit" data-id="${item._id}" data-status="${item.status}">Sửa</button>
+                            </td>
+                        `;
 
-                    row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${item.user_id}</td>
-                <td>${item.room_id}</td>
-                <td>${item.title_support}</td>
-                <td>${item.content_support}</td>
-                <td class="status-column">
-                    ${item.status === 1 ? "<span class='badge status-waiting'>Đang đợi</span>" : "<span class='badge status-completed'>Đã hoàn thành</span>"}
-                </td>
-                <td>
-                    <button class="btn btn-info btn-sm" onclick="viewDetails('${item._id}')">Xem</button>
-                    <button class="btn btn-warning btn-sm" onclick="editUser('${item._id}','${item.status}')">Sửa</button>
-                </td>
-            `;
-                    userTable.appendChild(row);
+
+
+                        userTable.appendChild(row);
+                    });
+                }
+                // Cập nhật sự kiện cho các nút "Sửa" sau khi render lại
+                const editButtons = document.querySelectorAll('.btn-edit');
+                editButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const userId = this.getAttribute('data-id');
+                        const currentStatus = this.getAttribute('data-status');
+                        editUser(userId, currentStatus);
+                    });
                 });
+
+
             }
+
 
 
             // Khi người dùng thay đổi lựa chọn bộ lọc
@@ -359,64 +391,95 @@
             window.onload = loadData;
 
 
-
-
-
-            //xem chi tiet
+            // Xem chi tiết
             function openDetailModal(button) {
                 const showList = JSON.parse(button.getAttribute('data-show-list'));
 
+                //const showList = JSON.parse(decodeURIComponent(button.getAttribute('data-show-list')));
+                console.log("Dữ liệu showList:", showList);
+                if (showList.image && Array.isArray(showList.image) && showList.image.length > 0) {
+                    console.log("Danh sách ảnh:", showList.image);
+                } else {
+                    console.log("Không có hình ảnh trong dữ liệu này.");
+                }
+
                 const modalContent = document.getElementById('modalContent');
-                const showSupport = document.getElementById('showSupport');
-                modalContent.innerHTML = ''; // Xóa nội dung cũ
-                showSupport.innerHTML = '';
+                modalContent.innerHTML = ''; // Reset modal content before adding images
 
-                // Hiển thị thông tin chi tiết
-                const detailsHTML = `
-            <table class="table table-striped">
-                <tbody>
-                    <tr>
-                        <td><strong>User ID:</strong></td>
-                        <td>${showList.user_id}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Room ID:</strong></td>
-                        <td>${showList.room_id}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Title:</strong></td>
-                        <td>${showList.title_support}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Content:</strong></td>
-                        <td>${showList.content_support}</td>
-                    </tr>
-                </tbody>
-            </table>
-        `;
-                showSupport.innerHTML = detailsHTML;
-
-                // Hiển thị ảnh (nếu có)
-                if (showList.image && showList.image.length > 0) {
+                // Hiển thị ảnh nếu có trong showList
+                if (Array.isArray(showList.image) && showList.image.length > 0) {
                     showList.image.forEach(photo => {
+                        // Tạo đường dẫn chính xác đến ảnh trong thư mục imageReport
+                        const imageUrl = `/public/imageReport/${photo}`;
+
+                        // Kiểm tra URL hợp lệ
+                        console.log("URL ảnh:", imageUrl);
+
+                        // Tạo thẻ <img> để hiển thị ảnh
                         const img = document.createElement('img');
-                        img.src = `/public/imageReport/${photo}`;
-                        img.alt = 'Ảnh';
-                        img.className = 'img-fluid mb-2'; // Đảm bảo ảnh responsive
+                        img.src = imageUrl;  // Đặt đường dẫn ảnh
+                        img.alt = 'Không thể tải ảnh';  // Mô tả khi ảnh không thể tải
+                        img.className = 'img-fluid mb-2';  // Căn chỉnh responsive cho ảnh
+                        img.style.maxWidth = '100%'; // Đảm bảo ảnh không bị tràn modal
+
+                        // Thêm ảnh vào nội dung modal
                         modalContent.appendChild(img);
                     });
                 } else {
-                    modalContent.innerHTML = '<p>Không có ảnh</p>';
+                    modalContent.innerHTML = '<p>Không có ảnh để hiển thị.</p>';
                 }
+
+                // Hiển thị thông tin chi tiết
+                //const detailsBody = document.getElementById('detailsBody');
+                const showSupport = document.getElementById('showSupport');
+
+                const detailsHTML = `
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td><strong>User ID:</strong></td>
+                    <td>${showList._id}</td>
+                </tr>
+                <tr>
+                    <td><strong>User ID:</strong></td>
+                    <td>${showList.user_id}</td>
+                </tr>
+                <tr>
+                    <td><strong>Room ID:</strong></td>
+                    <td>${showList.room_id}</td>
+                </tr>
+                <tr>
+                    <td><strong>Title:</strong></td>
+                    <td>${showList.title_support}</td>
+                </tr>
+                <tr>
+                    <td><strong>Content:</strong></td>
+                    <td>${showList.content_support}</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    `;
+                showSupport.innerHTML = detailsHTML;
+
+                // Hiển thị modal
                 const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
                 detailModal.show();
             }
 
+
+
+
+
+
             // Khi nhấn nút Edit, hiển thị modal sửa với dữ liệu hiện tại
             function editUser(userId, currentStatus) {
                 // Set giá trị hiện tại của status vào modal
-                document.getElementById("editUserId").value = userId;
+                document.getElementById("editUserId").value = userId.trim();
                 document.getElementById("editRole").value = currentStatus;
+
+                // Sau đó, log chung
+                console.log("420:", userId, status); // In cả 2 giá trị này ra
 
                 // Hiển thị modal sửa
                 const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
@@ -429,6 +492,7 @@
 
                 const userId = document.getElementById("editUserId").value; // Lấy ID người dùng
                 const status = document.getElementById("editRole").value; // Lấy giá trị trạng thái mới
+                console.log("432: ", userId, status);
 
                 try {
                     // Gửi yêu cầu cập nhật đến server
@@ -441,6 +505,8 @@
                     });
 
                     const data = await response.json();
+
+
                     if (response.ok) {
                         // Cập nhật giao diện danh sách
                         const row = document.querySelector(`tr[data-id="${userId}"]`); // Dòng tương ứng với userId
@@ -455,7 +521,7 @@
                         window.location.reload();
                         //filterTableByStatus(selectedStatus);
                         //renderTableData(data);
-                        alert("Cập nhật trạng thái thành công!");
+                        //alert("Cập nhật trạng thái thành công!");
                     } else {
                         throw new Error(data.message || "Cập nhật thất bại.");
                     }
@@ -468,6 +534,7 @@
 
         <!-- Thêm Bootstrap JS vào cuối trang -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

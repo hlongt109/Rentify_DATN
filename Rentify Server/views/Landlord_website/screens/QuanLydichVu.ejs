@@ -227,7 +227,7 @@
     <script>
         // const service = [];
         // let userId = localStorage.getItem('user_id');
-        
+
         document.getElementById("btnAdd").addEventListener("click", function () {
             // Mở modal thêm dịch vụ
             const addUserModal = new bootstrap.Modal(document.getElementById("addUserModal"));
@@ -252,7 +252,7 @@
             for (const file of photos) {
                 formData.append("photos", file);
             }
-           
+
             try {
                 // Gửi dữ liệu tới API
                 const response = await fetch(`/api/services/add/${userId}`, {

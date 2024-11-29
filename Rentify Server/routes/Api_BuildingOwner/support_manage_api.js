@@ -88,7 +88,7 @@ router.put("/support_mgr/update/:id", async (req, res) => {
     const { status } = req.body;
     const userId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'ID người dùng không hợp lệ.' });
+        return res.status(400).json({ message: 'ID không hợp lệ.' });
     }
 
     const support = await Support.findById(userId);
