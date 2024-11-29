@@ -327,9 +327,9 @@ fun RoomDetailScreen(
                     Column {
                         ServiceLabel()
 
-                        roomDetail?.service?.let { serviceList ->
+                        roomDetail?.service?.let { service ->
                             ServiceOptionschitiet(
-                                selectedServices = serviceList
+                                selectedServices = service // Lấy tên dịch vụ từ `ServiceOfRoom`
                             )
                         } ?: run {
                             Text(
@@ -354,7 +354,8 @@ fun RoomDetailScreen(
                             .clickable(
                                 onClick = {
                                     val id=room.id
-                                    navController.navigate("UpdateRoomScreen/${id}")
+                                    val buildingId= room.buildingId
+                                    navController.navigate("UpdateRoomScreen/${id}/${buildingId}")
                                 },
                                 indication = null, // Tắt hiệu ứng gợn sóng
                                 interactionSource = remember { MutableInteractionSource() }

@@ -51,7 +51,7 @@ fun RoomTypeLabelUpdate() {
 
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = "Loại phòng",
+            text = "Loại phòng new",
             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
             color = Color.Black,
             // fontWeight = FontWeight(700),

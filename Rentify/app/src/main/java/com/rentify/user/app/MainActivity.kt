@@ -196,10 +196,12 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("buildingId")
                 ListRoomScreen(navController = navController, buildingId = buildingId)
             }
-            composable("UpdateRoomScreen/{id}") { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("id")
-                UpdateRoomScreen(navController = navController, id = id ?: "")
+            composable("UpdateRoomScreen/{id}/{buildingId}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id") ?: ""
+                val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
+                UpdateRoomScreen(navController = navController, id = id, buildingId = buildingId)
             }
+
             composable(ROUTER.RENTAL_POST.name) {
                 RentalPostScreen(navController = navController)
             }

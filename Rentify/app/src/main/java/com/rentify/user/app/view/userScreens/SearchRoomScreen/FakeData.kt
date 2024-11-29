@@ -13,92 +13,92 @@ import com.rentify.user.app.ui.theme.clock
 import com.rentify.user.app.ui.theme.home_arrange
 
 class FakeData {
-    val rooms: List<Room>
-        get() = listOf(
-            Room(
-                buildingId = "building_001",
-                room_name = "P501",
-                room_type = "phòng trọ",
-                description = "Phòng trọ sạch sẽ, thoáng mát",
-                price = 2000000.0,
-                size = "20m2",
-                video_room = listOf("video_url_1"),
-                photos_room = listOf("photo_url_1", "photo_url_2"),
-                service = listOf("washing_machine", "fridge"),
-                amenities = listOf("wifi", "air_conditioner"),
-                limit_person = 2,
-                status = 0,
-                createdAt = "2024-01-01",
-                updatedAt = "2024-01-10"
-            ),
-            Room(
-                buildingId = "building_002",
-                room_name = "P501",
-                room_type = "nguyên căn",
-                description = "Nhà nguyên căn rộng rãi, thích hợp cho gia đình",
-                price = 15000000.0,
-                size = "100m2",
-
-                video_room = listOf("video_url_2"),
-                photos_room = listOf("photo_url_3", "photo_url_4"),
-                service = listOf("washing_machine", "fridge", "tv"),
-                amenities = listOf("wifi", "air_conditioner", "garage"),
-
-                limit_person = 6,
-                status = 1,
-                createdAt = "2024-02-01",
-                updatedAt = "2024-02-15"
-            ),
-            Room(
-                buildingId = "building_003",
-                room_name = "P501",
-                room_type = "chung cư",
-                description = "Chung cư cao cấp, view đẹp",
-                price = 10000000.0,
-                size = "60m2",
-
-                video_room = listOf("video_url_3"),
-                photos_room = listOf("photo_url_5", "photo_url_6"),
-                service = listOf("fridge", "tv", "microwave"),
-                amenities = listOf("wifi", "air_conditioner", "gym", "swimming_pool"),
-                limit_person = 4,
-                status = 0,
-                createdAt = "2024-03-01",
-                updatedAt = "2024-03-10"
-            ),
-            Room(
-                buildingId = "building_004",
-                room_name = "P501",
-                room_type = "homestay",
-                description = "Homestay gần biển, tiện nghi đầy đủ",
-                price = 5000000.0,
-                size = "30m2",
-                video_room = listOf("video_url_4"),
-                photos_room = listOf("photo_url_7", "photo_url_8"),
-                service = listOf("washing_machine", "fridge", "tv", "kitchen"),
-                amenities = listOf("wifi", "air_conditioner", "kitchen", "balcony"),
-                limit_person = 3,
-                status = 1,
-                createdAt = "2024-04-01",
-                updatedAt = "2024-04-15"
-            ),
-            Room(
-                buildingId = "building_005",
-                room_name = "P501",
-                room_type = "chung cư mini",
-                description = "Chung cư mini tiện lợi, gần trung tâm",
-                price = 3000000.0,
-                size = "25m2",
-                video_room = listOf("video_url_5"),
-                photos_room = listOf("photo_url_9", "photo_url_10"),
-                service = listOf("fridge", "microwave"),
-                amenities = listOf("wifi", "air_conditioner", "parking"),
-                limit_person = 2,
-                status = 0,
-                createdAt = "2024-05-01",
-                updatedAt = "2024-05-10"
-            )
-        )
+//    val rooms: List<Room>
+//        get() = listOf(
+//            Room(
+//                buildingId = "building_001",
+//                room_name = "P501",
+//                room_type = "phòng trọ",
+//                description = "Phòng trọ sạch sẽ, thoáng mát",
+//                price = 2000000.0,
+//                size = "20m2",
+//                video_room = listOf("video_url_1"),
+//                photos_room = listOf("photo_url_1", "photo_url_2"),
+//                service = listOf("washing_machine", "fridge"),
+//                amenities = listOf("wifi", "air_conditioner"),
+//                limit_person = 2,
+//                status = 0,
+//                createdAt = "2024-01-01",
+//                updatedAt = "2024-01-10"
+//            ),
+//            Room(
+//                buildingId = "building_002",
+//                room_name = "P501",
+//                room_type = "nguyên căn",
+//                description = "Nhà nguyên căn rộng rãi, thích hợp cho gia đình",
+//                price = 15000000.0,
+//                size = "100m2",
+//
+//                video_room = listOf("video_url_2"),
+//                photos_room = listOf("photo_url_3", "photo_url_4"),
+//                service = listOf("washing_machine", "fridge", "tv"),
+//                amenities = listOf("wifi", "air_conditioner", "garage"),
+//
+//                limit_person = 6,
+//                status = 1,
+//                createdAt = "2024-02-01",
+//                updatedAt = "2024-02-15"
+//            ),
+//            Room(
+//                buildingId = "building_003",
+//                room_name = "P501",
+//                room_type = "chung cư",
+//                description = "Chung cư cao cấp, view đẹp",
+//                price = 10000000.0,
+//                size = "60m2",
+//
+//                video_room = listOf("video_url_3"),
+//                photos_room = listOf("photo_url_5", "photo_url_6"),
+//                service = listOf("fridge", "tv", "microwave"),
+//                amenities = listOf("wifi", "air_conditioner", "gym", "swimming_pool"),
+//                limit_person = 4,
+//                status = 0,
+//                createdAt = "2024-03-01",
+//                updatedAt = "2024-03-10"
+//            ),
+//            Room(
+//                buildingId = "building_004",
+//                room_name = "P501",
+//                room_type = "homestay",
+//                description = "Homestay gần biển, tiện nghi đầy đủ",
+//                price = 5000000.0,
+//                size = "30m2",
+//                video_room = listOf("video_url_4"),
+//                photos_room = listOf("photo_url_7", "photo_url_8"),
+//                service = listOf("washing_machine", "fridge", "tv", "kitchen"),
+//                amenities = listOf("wifi", "air_conditioner", "kitchen", "balcony"),
+//                limit_person = 3,
+//                status = 1,
+//                createdAt = "2024-04-01",
+//                updatedAt = "2024-04-15"
+//            ),
+//            Room(
+//                buildingId = "building_005",
+//                room_name = "P501",
+//                room_type = "chung cư mini",
+//                description = "Chung cư mini tiện lợi, gần trung tâm",
+//                price = 3000000.0,
+//                size = "25m2",
+//                video_room = listOf("video_url_5"),
+//                photos_room = listOf("photo_url_9", "photo_url_10"),
+//                service = listOf("fridge", "microwave"),
+//                amenities = listOf("wifi", "air_conditioner", "parking"),
+//                limit_person = 2,
+//                status = 0,
+//                createdAt = "2024-05-01",
+//                updatedAt = "2024-05-10"
+//            )
+//        )
 
     val post1 = Post(
         userId = "user1",

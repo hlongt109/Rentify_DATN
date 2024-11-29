@@ -49,7 +49,7 @@ fun ComfortableLabelUpdate() {
         )
         Spacer(modifier = Modifier.width(3.dp))
         Text(
-            text = "Tiện nghi",
+            text = "Tiện nghi new",
             color = Color.Black,
             fontSize = 13.sp,
         )

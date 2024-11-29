@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -82,13 +83,15 @@ fun UpdateRoomScreenPreview(){
     UpdateRoomScreen(
         navController= rememberNavController(),
         id = "",
+        buildingId = ""
     )
 }
 @Composable
 fun UpdateRoomScreen(
     navController: NavHostController,
     id: String,
-){
+    buildingId:String,
+){ Log.d("UpdateRoomScreen", "Room ID: $id, Building ID: $buildingId")
     val context = LocalContext.current
     val viewModel: RoomViewModel = viewModel(
         factory = RoomViewModel.RoomViewModeFactory(context = context)
@@ -235,6 +238,17 @@ fun UpdateRoomScreen(
                             )
                         )
                     }
+                    // dữ liệu loại phòng cũ
+                    Column {
+                        RoomTypeLabel()
+                        RoomTypeOptionschitiet(
+                            apiSelectedRoomTypes = listOfNotNull(roomDetail?.room_type), // Chuyển loại phòng từ roomDetail thành danh sách
+                            onRoomTypeSelected = { selectedRoomType ->
+                                println("Selected Room Type: $selectedRoomType")
+                            }
+                        )
+                    }
+                    // dữ liệu loại phòng mới
                     Column {
                         RoomTypeLabelUpdate()
                         RoomTypeOptionsUpdate(
@@ -409,7 +423,23 @@ fun UpdateRoomScreen(
                             )
                         )
                     }
+                    // tiện nghi cũ
                     Spacer(modifier = Modifier.height(3.dp))
+                    Column {
+                        ComfortableLabel()
+                        roomDetail?.amenities?.let { amenities ->
+                            ComfortableOptionsFromApi(
+                                apiSelectedComfortable = amenities
+                            )
+                        } ?: run {
+                            Text(
+                                text = "Không có tiện nghi nào được cung cấp.",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                    // tiện nghi mới
                     Spacer(modifier = Modifier.height(3.dp))
                     Column {
                         ComfortableLabelUpdate()
@@ -423,7 +453,24 @@ fun UpdateRoomScreen(
                                 }
                             })
                     }
+                    // dịch vụ cũ
                     Spacer(modifier = Modifier.height(10.dp))
+                    Column {
+                        ServiceLabel()
+
+                        roomDetail?.service?.let { service ->
+                            ServiceOptionschitiet(
+                                selectedServices = service // Lấy tên dịch vụ từ `ServiceOfRoom`
+                            )
+                        } ?: run {
+                            Text(
+                                text = "Không có dịch vụ nào được cung cấp.",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                    // dịch vụ với
                     Spacer(modifier = Modifier.height(10.dp))
                     Column {
                         ServiceLabelUpdate()
@@ -435,7 +482,9 @@ fun UpdateRoomScreen(
                                 } else {
                                     selectedService + service
                                 }
-                            })
+                            },
+                            buildingId = buildingId
+                        )
                     }
                     Row(
                         modifier = Modifier

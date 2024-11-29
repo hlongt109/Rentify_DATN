@@ -72,6 +72,7 @@ fun AddRoomScreen(
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     var selectedService by remember { mutableStateOf(listOf<String>()) }
+
     val scrollState = rememberScrollState()
 
 
