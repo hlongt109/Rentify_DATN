@@ -1,7 +1,5 @@
 package com.rentify.user.app.model
 
-import android.os.Parcel
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
@@ -61,4 +59,9 @@ data class BuildingWithRooms(
     val rooms: List<Room>
 )
 
+// tao mot data class de hien thi du lieu tra ve
+data class ServiceOfBuilding(
+    @SerializedName("_id")val _id: String,
+    @SerializedName("name")val name: String,
+)
 

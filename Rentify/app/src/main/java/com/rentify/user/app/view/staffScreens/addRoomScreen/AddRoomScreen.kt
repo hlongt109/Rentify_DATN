@@ -367,7 +367,9 @@ fun AddRoomScreen(
                             } else {
                                 selectedService + service
                             }
-                        })
+                        },
+                        buildingId = buildingId!!
+                    )
                 }
 
 

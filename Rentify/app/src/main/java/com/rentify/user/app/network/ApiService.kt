@@ -6,6 +6,7 @@ import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.ServiceOfBuilding
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
@@ -127,4 +128,8 @@ interface APIService {
     suspend fun getUserDetail(
         @Path("id") id: String
     ): Response<UserResponse>
+
+    // lay dich vu cua toa
+    @GET("staff/rooms/building/{id}/services")
+    suspend fun getServiceOfBuilding( @Path("id") id: String): Response<List<ServiceOfBuilding>>
 }
