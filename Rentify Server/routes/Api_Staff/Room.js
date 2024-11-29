@@ -67,7 +67,7 @@ router.get('/RoomDetail/:id', async (req, res) => {
         return res.status(400).json({ error: 'Invalid room ID.' });
     }
     try {
-        const room = await Room.findById(id).lean(); 
+        const room = await Room.findById(id).lean().populate("service", "name"); 
         if (!room) {
             return res.status(404).json({ error: 'Room not found.' });
         }
