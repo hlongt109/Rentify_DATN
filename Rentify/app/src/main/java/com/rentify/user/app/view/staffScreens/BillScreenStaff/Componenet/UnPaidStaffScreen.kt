@@ -95,7 +95,9 @@ fun UnPaidStaffScreen(
                                         }else{
                                             expandedItems.add(invoice._id)
                                         }
-                                    }
+                                    },
+                                    viewModel = viewModel,
+                                    staffId = staffId
                                 )
                             }
                         }
@@ -104,7 +106,7 @@ fun UnPaidStaffScreen(
 
                 is InvoiceUiState.Error -> {
                     Text(
-                        text = "Lỗi lấy dữ liệu: ${(uiState as InvoiceUiState.Error).message}",
+                        text = "Lỗi lấy dữ liệu",
                         modifier = Modifier.align(Alignment.Center),
                         color = Color.Red
                     )

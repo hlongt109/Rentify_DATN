@@ -25,6 +25,9 @@ data class InvoiceData(
     val unpaid: List<Invoice>
 )
 
+data class InvoiceConfirmPaid(
+    val payment_status: String
+)
 
 data class InvoiceAdd(
     val _id: String,

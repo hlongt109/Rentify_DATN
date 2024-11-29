@@ -2,6 +2,7 @@ package com.rentify.user.app.viewModel.StaffViewModel
 
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -339,6 +340,32 @@ class InvoiceStaffViewModel(
             }
         }
     }
+
+    fun confirmPaidInvoice(invoiceId: String, staffId: String) {
+        viewModelScope.launch {
+            _uiState.value = InvoiceUiState.Loading
+            _isLoading.postValue(true)
+
+            repository.confirmPaidStaff(invoiceId).fold(
+                onSuccess = { response ->
+                    if (response.status == 200 && response.data != null) {
+                        _uiState.value = InvoiceUiState.Success(response.data)
+                        _successMessage.postValue("Đã xác nhận thành công")
+                        getInvoiceList(staffId)
+                        // Log trạng thái mới
+//                        Log.d("InvoiceUpdate", "Cập nhật thành công: ${response.data.paid}")
+                    } else {
+                        _uiState.value = InvoiceUiState.Error("Cập nhật thất bại")
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.value = InvoiceUiState.Error(error.message ?: "Đã xảy ra lỗi")
+                }
+            )
+            _isLoading.postValue(false)
+        }
+    }
+
 
 
     fun clearAll() {

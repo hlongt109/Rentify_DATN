@@ -117,6 +117,8 @@ fun AddBillStaff(navController: NavController) {
     )
     var isExpanded by remember { mutableStateOf(false) }
     var isExpandedRoom by remember { mutableStateOf(false) }
+    var isExpandedRoomNull by remember { mutableStateOf(false) }
+    var isExpandedBuildingNull by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         buildingStaffViewModel.getBuildingList(staffId)
     }
@@ -249,6 +251,9 @@ fun AddBillStaff(navController: NavController) {
                     room = ""
                     priceRoom = 0.0
                     formattedPriceRoom = ""
+                },
+                onExpandedBuildingNull = {
+                    isExpandedBuildingNull = it
                 }
             )
             errorBuilding?.let { ShowReport.ShowError(message = it) }
@@ -266,10 +271,15 @@ fun AddBillStaff(navController: NavController) {
                 isIcon = Icons.Filled.KeyboardArrowDown,
                 listRoom = listRoom,
                 enable = false,
-                onExpandedRoom = { isExpandedRoom = it },
+                onExpandedRoom = {
+                    isExpandedRoom = it
+                },
                 onRoomSelected = { selectedRoom ->
                     priceRoom = selectedRoom.price.toDouble()
                     formattedPriceRoom = CheckUnit.formattedPrice(selectedRoom.price.toFloat())
+                },
+                onExpandedRoomNull = {
+                    isExpandedRoomNull = it
                 }
             )
             errorRoom?.let { ShowReport.ShowError(message = it) }
