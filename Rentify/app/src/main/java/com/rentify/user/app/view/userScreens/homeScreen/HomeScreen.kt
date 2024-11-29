@@ -78,10 +78,10 @@ fun LayoutHome(
         }
         item {
             Spacer(modifier = Modifier.padding(2.dp))
-            VideoComponent()
+            VideoComponent(navController)
         }
         item {
-            DoitacComponent()
+            DoitacComponent(navController)
         }
         items(listRoom.take(3)) { room ->
             LayoutItemHome(navController = navController, room = room)

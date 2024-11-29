@@ -35,52 +35,70 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.rentify.user.app.view.userScreens.appointment.SearchBar
 import com.rentify.user.app.viewModel.RentalPostRoomViewModel
 
 @Composable
 fun RentalPostHeader(
-    rentalPostRoomViewModel: RentalPostRoomViewModel
+    rentalPostRoomViewModel: RentalPostRoomViewModel,
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    selectedRoomType: RoomType?,
+    onRoomTypeSelected: (RoomType?) -> Unit,
+    minPrice: Int?,
+    maxPrice: Int?,
+    onPriceRangeSelected: (Int?, Int?) -> Unit,
+    sortBy: String?,
+    onSortSelected: (String?) -> Unit,
+    onFilterApplied: () -> Unit,
+    navController: NavController
 ) {
-    var searchText by remember { mutableStateOf("") }
-    var selectedRoomType by remember { mutableStateOf<RoomType?>(null) } // Sử dụng RoomType? thay vì String?
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RentalPostTopBar()
+        RentalPostTopBar(navController)
+
         // Search bar
         SearchBarRentalPostRoom(
             searchText = searchText,
-            onSearchTextChange = { searchText = it },
-            onSearch = {
-                rentalPostRoomViewModel.searchRooms(
-                    address = searchText,
-                    roomType = selectedRoomType?.name  // Truyền tên của RoomType (String) vào hàm tìm kiếm
-                )
-            }
+            onSearchTextChange = onSearchTextChange,
+            onSearch = onFilterApplied
         )
+
         Spacer(modifier = Modifier.padding(5.dp))
+
         // Hiển thị loại phòng
         RentalPostRoomType(
             selectedRoomType = selectedRoomType,
             onRoomTypeSelected = {
-                selectedRoomType = it
-                rentalPostRoomViewModel.searchRooms(
-                    address = searchText,
-                    roomType = it?.name  // Truyền tên loại phòng (String) thay vì RoomType
-                )
+                onRoomTypeSelected(it)
+                onFilterApplied()
             }
         )
-        RentalPostArrange()
+
+        RentalPostArrange(
+            onPriceRangeSelected = { min, max ->
+                onPriceRangeSelected(min, max)
+                onFilterApplied()
+            },
+            onSortSelected = { selectedSort ->
+                onSortSelected(selectedSort)
+                onFilterApplied()
+            }
+        )
     }
 }
 
+
+
 @Composable
-fun RentalPostTopBar() {
+fun RentalPostTopBar(
+    navController: NavController
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -88,7 +106,7 @@ fun RentalPostTopBar() {
         verticalAlignment = Alignment.CenterVertically // Canh giữa theo chiều dọc
     ) {
         IconButton(
-            onClick = { /* doSomething() */ }
+            onClick = { navController.popBackStack() }
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBackIosNew,

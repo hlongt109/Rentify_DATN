@@ -206,9 +206,22 @@ class MainActivity : ComponentActivity() {
                 val id = backStackEntry.arguments?.getString("id")
                 UpdateRoomScreen(navController = navController, id = id ?: "")
             }
-            composable(ROUTER.RENTAL_POST.name) {
-                RentalPostScreen(navController = navController)
+
+            composable("RENTAL_POST") {
+                RentalPostScreen(navController = navController, title = null)
             }
+
+            composable(
+                route = "RENTAL_POST/{title}",
+                arguments = listOf(navArgument("title") {
+                    type = NavType.StringType
+                    nullable = true
+                })
+            ) { backStackEntry ->
+                val title = backStackEntry.arguments?.getString("title")
+                RentalPostScreen(navController = navController, title = title)
+            }
+
             composable(ROUTER.CONTRACT_STAFF.name) {
                 com.rentify.manager.app.view.contract.ContractScreen(navController = navController)
             }

@@ -13,6 +13,7 @@ import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
+import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
@@ -93,6 +94,12 @@ interface APIService {
     @GET("room/get-random-rooms")
     suspend fun getListOfRandomRooms(): Response<List<RoomResponse>>
 
+    @GET("room/get-random-rooms-page")
+    suspend fun getRandomRooms(
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 10
+    ): RoomPage
+
     @GET("room/get-landlord-buildings/{landlord_id}")
     suspend fun getDetailLandlord(@Path("landlord_id") landlordId: String): Response<UserOfRoomDetail>
 
@@ -101,12 +108,15 @@ interface APIService {
 
     @GET("room/search-rooms")
     suspend fun searchRooms(
-        @Query("address") address: String? = null,
-        @Query("minPrice") minPrice: Int? = null,
-        @Query("maxPrice") maxPrice: Int? = null,
-        @Query("roomType") roomType: String? = null,
-        @Query("sortBy") sortBy: String? = null
-    ): Response<List<RoomResponse>>
+        @Query("address") address: String?,
+        @Query("minPrice") minPrice: Int?,
+        @Query("maxPrice") maxPrice: Int?,
+        @Query("roomType") roomType: String?,
+        @Query("sortBy") sortBy: String?,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 10,
+        @Query("random") random: String? = null
+    ): Response<RoomPage>
 
     // Xử lý các api liên quan tới xem phòng
     @POST("add-booking")

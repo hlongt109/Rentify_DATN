@@ -20,6 +20,15 @@ data class Room(
     val video_room: List<Any>
 )
 
+// Thử nghiệm loadmore
+data class RoomPage(
+    val totalRooms: Int,
+    val totalPages: Int,
+    val currentPage: Int,
+    val rooms: List<RoomResponse>
+)
+// Thử nghiệm loadmore
+
 data class RoomResponse(
     @SerializedName("_id")val _id: String,
     @SerializedName("amenities")val amenities: List<String>,

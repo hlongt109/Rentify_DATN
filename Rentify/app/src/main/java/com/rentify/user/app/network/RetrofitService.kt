@@ -31,7 +31,7 @@ class RetrofitService {
         .addInterceptor(logging)
         .build()
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.6.102:3000/api/") // 192.168.6.102
+        .baseUrl("http://10.0.2.2:3000/api/") // 192.168.6.102
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
