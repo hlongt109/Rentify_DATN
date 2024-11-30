@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.contract.contractComponents
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,7 +23,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,23 +43,38 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.rentify.user.app.R
+import com.rentify.user.app.model.Contract
+import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
-@Preview (showBackground = true)
+
 @Composable
-fun ContractRoomListScreen() {
+fun ContractRoomListScreen(navController: NavController,manageId:String) {
+    val viewModel: ContractViewModel = viewModel()
+    val contracts by viewModel.contracts.observeAsState(emptyList())
+    val context = LocalContext.current
+    val error by viewModel.error.observeAsState()
+    LaunchedEffect(manageId) {
+        viewModel.fetchContractsByBuilding(manageId)
+    }
+
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(10.dp)
     ) {
-        items(getContractRoomList()) { contractRoom ->
-            ContractRoomCard(room = contractRoom)
+            items(contracts) { contract ->
+                ContractCard(contract , onClick = {
+
+                    navController.navigate("contract_detail/${contract._id}")
+                }, )
         }
     }
 }
 
 @Composable
-fun ContractRoomCard(room: ContractRoom) {
+fun ContractCard(contract: Contract ,onClick: () -> Unit) {
     Card(
         elevation = 4.dp,
         modifier = Modifier
@@ -63,6 +82,7 @@ fun ContractRoomCard(room: ContractRoom) {
             .padding(horizontal = 8.dp)
             .shadow(elevation = 4.dp, shape = RoundedCornerShape(10.dp))
             .clip(RoundedCornerShape(8.dp))
+            .clickable { onClick() } // Thêm clickable vào đây
     ) {
         Row(
             modifier = Modifier
@@ -85,7 +105,7 @@ fun ContractRoomCard(room: ContractRoom) {
             // Room Info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Phòng:   ${room.name}",
+                    text = "Số hợp đồng:   ${contract.building_id?.nameBuilding}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     maxLines = 1,
@@ -93,7 +113,7 @@ fun ContractRoomCard(room: ContractRoom) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Loại hợp đồng:    ${room.type}",
+                    text = "Loại hợp đồng:   ${contract.duration}",
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
@@ -101,91 +121,16 @@ fun ContractRoomCard(room: ContractRoom) {
             }
         }
     }
-}
-// Data model for room
-data class ContractRoom(
-    val name: String,
-    val type: String,
-    val imageRes: Int
-)
-
-// Sample data for room list
-fun getContractRoomList(): List<ContractRoom> {
-    return listOf(
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 ",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 ",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 ",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 ",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 tháng",
-            1
-        ),
-        ContractRoom(
-            "ABC - 123 - Hiện đại",
-            "6 ",
-            1
-        )
-    )
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(8.dp)
+//    ) {
+//        Column(modifier = Modifier.padding(16.dp)) {
+//            Text(text = "Building: ${contract.building_id?.nameBuilding ?: "Unknown"}")
+//           Text(text = "Room: ${contract.duration?: "Unknown"}")
+//           // Text(text = "Start Date: ${contract.start_date ?: "N/A"}")
+//          //  Text(text = "End Date: ${contract.end_date ?: "N/A"}")
+//        }
+//    }
 }

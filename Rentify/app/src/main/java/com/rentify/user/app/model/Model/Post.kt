@@ -111,14 +111,7 @@ data class UpdatePostRequest(
     val video: List<String>
 )
 
-data class Contract(
-    val _id: String,
-    val room_id: Room_post?, // Thông tin phòng
-    val user_id: User?, // Thông tin người dùng
-    val status: Int, // Trạng thái hợp đồng
-    val createdAt: String?, // Thời gian tạo (nếu có)
-    val updatedAt: String? // Thời gian cập nhật (nếu có)
-)
+
 
 data class ContractsResponse(
     val status: Int,

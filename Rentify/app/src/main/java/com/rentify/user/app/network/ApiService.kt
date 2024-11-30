@@ -190,6 +190,16 @@ interface APIService {
         @Part video: List<MultipartBody.Part>?, // Optional video
         @Part photo: List<MultipartBody.Part>?  // Optional photo
     ): Response<UpdatePostRequest>
+    // hopjw ddoong
+    @GET("staff/contracts/contracts-by-building")
+    suspend fun getContractsByBuilding(
+        @Query("manage_id") manageId: String
+    ): Response<List<Contract>>
+    // chi tiet hop dong
+    @GET("staff/contracts/contract-detail/{id}")
+    suspend fun getContractDetail(
+        @Path("id") contractId: String
+    ): Response<Contract>
 
     @Multipart
     @POST("add")
@@ -229,4 +239,7 @@ interface APIService {
     suspend fun getBuildingFromRoom(
         @Path("roomId") roomId: String
     ): Response<Building>
+    //hợp đồng
+
+
 }

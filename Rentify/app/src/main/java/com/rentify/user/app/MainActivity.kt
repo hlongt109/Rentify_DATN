@@ -35,11 +35,14 @@ import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.UpdatePostScreen
+import com.rentify.user.app.view.staffScreens.addContractScreen.AddContractScreens
 import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
 
 import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
+import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractDetailScreen
+import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractImageScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
@@ -261,12 +264,27 @@ class MainActivity : ComponentActivity() {
                 if (postId != null) {
                     UpdatePostUserScreen(navController = navController, postId = postId)
                 }
-
             }
             composable(ROUTER.ADDBILL_STAFF.name){
                 AddBillStaff(navController = navController)
             }
+            composable(ROUTER.ADDCONTRAC_STAFF.name){
+                AddContractScreens(navController = navController)
+            }
+            composable("contract_detail/{postId}") { backStackEntry ->
+                val contractId = backStackEntry.arguments?.getString("postId")
+                if (contractId != null) {
+                    ContractDetailScreen( navController = navController,contractId =contractId)
+                }
 
+            }
+            composable("contract_image_detail/{postId}") { backStackEntry ->
+                val contractId = backStackEntry.arguments?.getString("postId")
+                if (contractId != null) {
+                    ContractImageScreen( navController = navController,contractId =contractId)
+                }
+
+            }
         }
     }
 
@@ -317,6 +335,7 @@ enum class ROUTER {
         CONTRACT_STAFF,
         POSTING_STAFF,
         REPORT_STAFF,
-        ADDPOST_staff
+        ADDPOST_staff,
+    ADDCONTRAC_STAFF
     }
 }
