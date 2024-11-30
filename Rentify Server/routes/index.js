@@ -105,5 +105,17 @@ router.get("/api/reports/list", async (req, res) => {
     });
   })
 });
+// service
+router.get("/api/service/adm", async (req, res) => {
+  res.render("Services/ServiceManager", (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('index', {
+      title: 'Quản lý dịch vụ',
+      body: html
+    });
+  })
+});
 
 module.exports = router;
