@@ -104,11 +104,13 @@
             display: flex;
             justify-content: space-between;
         }
+
         .form-select.form-select-lg {
             height: 33px;
             border-color: lightgray;
             border-radius: 5px;
         }
+
         .input_style {
             height: 35px;
             border-radius: 5px;
@@ -149,7 +151,8 @@
 
                     <div class="col-md-4">
                         <label for="type-fee" class="form-label">Lọc theo loại</label>
-                        <select class="form-select form-select-lg mb-3 px-2" id="type-fee" aria-label="Chọn tháng và năm">
+                        <select class="form-select form-select-lg mb-3 px-2" id="type-fee"
+                            aria-label="Chọn tháng và năm">
                             <option selected value="electric"> Tiền điện</option>
                             <option value="water"> Tiền nước</option>
                         </select>
@@ -157,7 +160,8 @@
                     <!-- Dropdown chọn tháng năm -->
                     <div class="col-md-4">
                         <label for="month-year" class="form-label">Lọc theo tháng</label>
-                        <select class="form-select form-select-lg mb-3 px-2" id="month-year" aria-label="Chọn tháng và năm">
+                        <select class="form-select form-select-lg mb-3 px-2" id="month-year"
+                            aria-label="Chọn tháng và năm">
                             <option selected value="">-- Chọn tháng --</option>
                         </select>
                     </div>
@@ -221,7 +225,8 @@
             <!-- Input Rows -->
             <div style="margin-top: 10px;">
                 <label style="width: 150px;">Mô tả:</label>
-                <input class="input_style border px-2" style="margin-right: 50px;" type="text" id="describe" placeholder="Nhập mô tả">
+                <input class="input_style border px-2" style="margin-right: 50px;" type="text" id="describe"
+                    placeholder="Nhập mô tả">
                 <label style="width: 150px;">Số tiền:</label>
                 <input class="input_style border px-2" type="number" id="fee" placeholder="Nhập số tiền">
             </div>
@@ -624,8 +629,18 @@
             ? new Date(year, selectMonth - 1, today.getDate()) // Giữ nguyên ngày nếu là tháng hiện tại
             : new Date(year, selectMonth - 1, 10);
 
+        const description = [
+            {
+                service_name: typeSelect === "electric" ? "Tiền điện" : "Tiền nước",
+                quantity: 1,
+                price_per_unit: fee,
+                total: fee
+            }
+        ];
+
         const invoice = {
             building_id: buildingId,
+            description: description,
             describe: describe,
             type_invoice: typeSelect,
             amount: fee,

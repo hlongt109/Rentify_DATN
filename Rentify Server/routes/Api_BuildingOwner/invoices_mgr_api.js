@@ -309,6 +309,7 @@ router.put("/invoice_mgr_status/:id", async(req, res) => {
         invoice.building_id =  invoice.building_id 
         invoice.room_id =  invoice.room_id 
         invoice.description = invoice.description 
+        invoice.describe = invoice.describe
         invoice.type_invoice = invoice.type_invoice ?? 'rent'
         invoice.amount = invoice.amount
         invoice.transaction_type = invoice.transaction_type
@@ -343,12 +344,13 @@ router.put('/invoice_mgr/:id', async (req, res) => {
         invoice.building_id = data.buildingId ?? invoice.building_id 
         invoice.room_id = data.room_id ?? invoice.room_id 
         invoice.description = data.description ?? invoice.description 
+        invoice.describe = data.describe ?? invoice.describe,
         invoice.type_invoice = data.type_invoice ?? invoice.type_invoice ?? 'rent'
         invoice.amount = data.amount ?? invoice.amount
         invoice.transaction_type = data.transaction_type ?? invoice.transaction_type
         invoice.due_date = data.due_date ?? invoice.due_date
         invoice.payment_status = data.payment_status ?? invoice.payment_status
-        invoice.created_at = invoice.created_at
+        invoice.created_at = invoice.created_at ?? data.created_at
 
         const result = await invoice.save();
         if (result) {

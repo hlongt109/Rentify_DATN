@@ -5,7 +5,7 @@ const Invoice = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
-    building_id: { // cho hóa đơn phí dv, lương, bảo trì
+    building_id: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: "Building",
     },

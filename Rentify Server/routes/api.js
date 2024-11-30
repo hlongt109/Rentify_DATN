@@ -30,6 +30,7 @@ const PaymentManage = require("./Api_BuildingOwner/PaymentManageApi");
 const ContractManage = require("./Api_BuildingOwner/ContractManageApi");
 const BuildingManage = require("./Api_BuildingOwner/BuildingManageApi");
 const QuanLy = require('./Api_BuildingOwner/UserNV');
+const statisticMgrAPi = require("./Api_BuildingOwner/statistic_mgr_api");
 // user
 const roomApi = require("./Api_User/roomApi");
 const invoiceApi = require("./Api_User/invoiceApi");
@@ -52,6 +53,7 @@ const request_staffApi = require("./Api_Staff/Request");
 const login_staffApi = require("./Api_Staff/login");
 
 // nối
+router.use("/", statisticMgrAPi)
 router.use("/",invoiceMgr)
 router.use("/", authApi);
 router.use("/", notificationAdmin);
