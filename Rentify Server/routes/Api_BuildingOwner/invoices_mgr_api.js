@@ -350,7 +350,7 @@ router.put('/invoice_mgr/:id', async (req, res) => {
         invoice.transaction_type = data.transaction_type ?? invoice.transaction_type
         invoice.due_date = data.due_date ?? invoice.due_date
         invoice.payment_status = data.payment_status ?? invoice.payment_status
-        invoice.created_at = invoice.created_at
+        invoice.created_at = invoice.created_at ?? data.created_at
 
         const result = await invoice.save();
         if (result) {
