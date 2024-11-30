@@ -189,6 +189,8 @@ router.get('/statistic_mrg', (req, res, next) => {
   })
 })
 
+//
+
 router.get('/BuildingPage', (req, res) => {
   res.render('Landlord_website/screens/Building/BuildingPage', (err, html) => {
       if (err) {
