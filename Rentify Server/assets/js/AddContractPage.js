@@ -1,8 +1,8 @@
 const params = new URLSearchParams(window.location.search);
 const buildingId = params.get('buildingId');
-// let userId = localStorage.getItem('user_id');
+let manageId = localStorage.getItem('user_id');
 const contractId = params.get('contractId');
-const contractStatus  = params.get('status');
+const contractStatus = params.get('status');
 
 const buttonContainer = document.getElementById('buttonContainer');
 console.log(buttonContainer);
@@ -104,11 +104,44 @@ const fetchContractDetails = async () => {
                 img.src = `/${photo}`;
                 previewContainer.appendChild(img);
             });
-            
+
             const photosIconContainer = document.querySelector('#photos_room').parentNode.querySelector('i');
             if (contract.photos_contract.length > 0) {
                 photosIconContainer.style.display = 'none';
             }
+
+            // Generate user_id input fields
+            const inputContainer = document.getElementById('inputContainer');
+            inputContainer.innerHTML = ""; // Clear existing inputs
+            contract.user_id.forEach(userId => {
+                // Tạo một div chứa ô input và nút xóa
+                const inputGroup = document.createElement('div');
+                inputGroup.className = 'input-group mb-2';
+
+                // Tạo ô nhập
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'form-control';
+                input.value = userId; // Gán giá trị user_id
+
+                // Tạo nút xóa
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.className = 'btn btn-danger ml-2';
+                deleteButton.textContent = 'Xóa';
+
+                // Gắn sự kiện xóa cho nút
+                deleteButton.addEventListener('click', () => {
+                    inputGroup.remove();
+                });
+
+                // Thêm ô nhập và nút xóa vào nhóm
+                inputGroup.appendChild(input);
+                inputGroup.appendChild(deleteButton);
+
+                // Thêm nhóm vào container
+                inputContainer.appendChild(inputGroup);
+            });
 
             // Change form submit button text to "Cập Nhật Hợp Đồng"
             document.querySelector('h2').textContent = 'Cập Nhật Hợp Đồng';
@@ -128,18 +161,71 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('room_id').disabled = true;
         document.getElementById('start_date').disabled = true;
         document.getElementById('end_date').disabled = true;
-    
+
         // Có thể thêm logic để điền giá trị vào các trường nếu cần
         fetchContractDetails();  // Hàm bạn đã định nghĩa trước đó để lấy thông tin hợp đồng
     }
     fetchContractDetails();
 });
+//  ==================  add update =========================== 
+
+// Lấy nút và container
+const btnAddUser = document.getElementById('btnAddUser');
+const inputContainer = document.getElementById('inputContainer');
+
+// Hàm thêm ô nhập mới
+btnAddUser.addEventListener('click', () => {
+    // Tạo một div chứa ô input và nút xóa
+    const inputGroup = document.createElement('div');
+    inputGroup.className = 'input-group mb-2'; // Bootstrap styling
+
+    // Tạo ô nhập
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'form-control';
+    input.placeholder = 'Nhập ID người dùng';
+
+    // Tạo nút xóa
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'btn btn-danger ml-2';
+    deleteButton.innerHTML = 'Xóa';
+
+    // Gắn sự kiện xóa cho nút
+    deleteButton.addEventListener('click', () => {
+        inputGroup.remove();
+    });
+
+    // Thêm ô nhập và nút xóa vào nhóm
+    inputGroup.appendChild(input);
+    inputGroup.appendChild(deleteButton);
+
+    // Thêm nhóm vào container
+    inputContainer.appendChild(inputGroup);
+});
 
 document.getElementById('addContractForm').addEventListener('submit', async function (event) {
     event.preventDefault();
 
+    // Kiểm tra nếu chưa có ô nhập nào trong container
+    if (inputContainer.children.length === 0) {
+        alert("Vui lòng thêm ít nhất một khách hàng!");
+        return;
+    }
+
+    // Thu thập tất cả các user_id từ các ô nhập
+    const userIds = Array.from(inputContainer.querySelectorAll('input')).map(input => input.value.trim());
+
+    // Kiểm tra danh sách user_id
+    if (userIds.some(id => id.trim() === "")) {
+        alert("Vui lòng nhập ID người dùng!");
+        return;
+    }
+
     const formData = new FormData();
-    formData.append('user_id', userId);
+    formData.append('manage_id', manageId)
+    formData.append('building_id', buildingId)
+    formData.append('user_id', JSON.stringify(userIds));
     formData.append('room_id', document.getElementById('room_id').value);
     formData.append('content', document.getElementById('content').value);
     formData.append('start_date', document.getElementById('start_date').value);

@@ -29,9 +29,19 @@
                 <div class="col-md-6">
                     <label for="status" class="form-label">Trạng Thái</label>
                     <select id="status" name="status" class="form-control" required disabled>
-                        <option value="0" selected>Còn Hợp Đồng</option> <!-- Trạng thái mặc định luôn là Còn Hợp Đồng -->
+                        <option value="0" selected>Còn Hợp Đồng</option>
+                        <!-- Trạng thái mặc định luôn là Còn Hợp Đồng -->
                     </select>
-                </div>                
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-auto">
+                    <button id="btnAddUser" class="btn btn-primary">Nhập người thuê</button>
+                </div>
+                <div class="col-md-4" id="inputContainer">
+                    <!-- Các ô nhập sẽ được thêm vào đây -->
+                </div>
             </div>
 
             <div class="row mb-3">
@@ -49,7 +59,8 @@
                 <!-- Contract Content -->
                 <div class="col-md-6">
                     <label for="content" class="form-label">Nội Dung Hợp Đồng</label>
-                    <textarea id="content" name="content" class="form-control" rows="4" placeholder="Mô tả nội dung hợp đồng" required></textarea>
+                    <textarea id="content" name="content" class="form-control" rows="8"
+                        placeholder="Mô tả nội dung hợp đồng" required></textarea>
                 </div>
             </div>
 
@@ -72,12 +83,13 @@
                 <button type="submit" class="btn btn-primary">Thêm Hợp Đồng</button>
                 <a href="/landlord/ContractPage" class="btn btn-secondary ml-2">Quay Lại</a>
             </div>
-            
+
         </form>
     </div>
 
     <!-- Modal Xác nhận Xoá Phòng -->
-    <div class="modal fade" id="deleteBuildingModal" tabindex="-1" role="dialog" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteBuildingModal" tabindex="-1" role="dialog" aria-labelledby="deleteRoomModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
