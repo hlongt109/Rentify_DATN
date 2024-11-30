@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Building = require('../../models/Building');
 const Room = require('../../models/Room');
 const upload = require('../../config/common/uploadImageRoom')
+const Invoice = require('../../models/Invoice')
 // api lấy danh sách tòa 😊
 router.get('/buildings-by-manager/:manager_id', async (req, res) => {
   const { manager_id } = req.params;
@@ -336,23 +337,33 @@ router.put(
 router.get("/get-room-buildingId/:buildingId", async (req, res) => {
   try {
     const buildingId = req.params.buildingId;
-    const currentMonth = new Date().getMonth() + 1; // Lấy tháng hiện tại
+    const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0'); // Lấy tháng hiện tại
     const currentYear = new Date().getFullYear(); // Lấy năm hiện tại
 
-    // Tìm các phòng thuộc building và chưa có hóa đơn trong tháng hiện tại
+    // Tìm các phòng thuộc building
     const rooms = await Room.find({
       building_id: buildingId
     }).populate('service').populate('building_id', "serviceFees").lean();
 
     // Lọc các phòng chưa có hóa đơn
     const roomsWithoutInvoice = await Promise.all(rooms.map(async (room) => {
+      // Tạo pattern để tìm hóa đơn trong tháng hiện tại
+      const monthPattern = `${currentYear}-${currentMonth}`;
+
       const existingInvoice = await Invoice.findOne({
         room_id: room._id,
-        month: currentMonth,
-        year: currentYear
+        created_at: { $regex: monthPattern }
       });
 
-      return existingInvoice ? null : room;
+      if (!existingInvoice) {
+        // Thêm thông tin về tháng/năm hiện tại vào response
+        return {
+          ...room,
+          currentMonth,
+          currentYear
+        };
+      }
+      return null;
     }));
 
     const filteredRooms = roomsWithoutInvoice.filter(room => room !== null);
@@ -360,10 +371,20 @@ router.get("/get-room-buildingId/:buildingId", async (req, res) => {
     res.json({
       status: 200,
       message: "Lấy danh sách phòng chưa có hóa đơn thành công",
-      data: filteredRooms
+      data: filteredRooms,
+      metadata: {
+        total: filteredRooms.length,
+        month: currentMonth,
+        year: currentYear
+      }
     });
   } catch (error) {
-    res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
+    console.error("Error:", error);
+    res.status(500).json({
+      status: 500,
+      message: "Có lỗi xảy ra",
+      error: error.message
+    });
   }
 });
 

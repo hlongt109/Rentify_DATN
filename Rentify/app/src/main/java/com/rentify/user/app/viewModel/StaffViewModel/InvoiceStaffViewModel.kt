@@ -110,11 +110,11 @@ class InvoiceStaffViewModel(
     private val _dateErrorMessage = MutableLiveData<String?>()
     val dateErrorMessage: LiveData<String?> = _dateErrorMessage
 
+    private val _describeErrorMessage = MutableLiveData<String?>()
+    val describeErrorMessage: LiveData<String?> = _describeErrorMessage
 
     private val _roomsWithoutInvoice = MutableStateFlow<List<Room>>(emptyList())
     val roomsWithoutInvoice: StateFlow<List<Room>> = _roomsWithoutInvoice.asStateFlow()
-
-
 
 
     fun getInvoiceList(staffId: String) {
@@ -145,6 +145,8 @@ class InvoiceStaffViewModel(
     fun addBill(
         userId: String,
         roomId: String,
+        buildingId:String,
+        describe: String,
         consumeElec: Int,
         totalElec: Double,
         consumeWater: Int,
@@ -166,7 +168,7 @@ class InvoiceStaffViewModel(
             _isLoading.postValue(true)
             try {
                 // Kiểm tra giá trị hợp lệ
-                if (dueDate.isEmpty() || buildingName.isEmpty() || roomName.isEmpty() || water == null || elec == null || oldWater == null || oldElec == null) {
+                if (dueDate.isEmpty() || buildingName.isEmpty() || roomName.isEmpty() || water == null || elec == null || oldWater == null || oldElec == null || describe.isEmpty()) {
                     when {
                         buildingName.isEmpty() -> {
                             _buildingErrorMessage.postValue("Tòa nhà không được để trống")
@@ -174,6 +176,11 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+                        describe.isEmpty() -> {
+                            _describeErrorMessage.postValue("Mô tả không được để trống")
+                            _isLoading.postValue(false)
+                            return@launch
+                        }
 
                         roomName.isEmpty() -> {
                             _roomErrorMessage.postValue("Phòng không được để trống")
@@ -310,8 +317,11 @@ class InvoiceStaffViewModel(
                     due_date = dueDate,
                     description = descriptions,
                     payment_status = "unpaid",
-                    transaction_type = "expense",
-                    created_at = ""
+                    transaction_type = "income",
+                    created_at = "",
+                    building_id = buildingId,
+                    describe = describe,
+                    type_invoice = "rent"
                 )
 
 
@@ -323,6 +333,7 @@ class InvoiceStaffViewModel(
                             _uiState.value = InvoiceUiState.Success(response.data)
                             _addBillResult.value = Result.success(response)
                             _successMessage.value = "Thêm hóa đơn thành công"
+                            getInvoiceList(staffId = userId)
                             clearAll()
                         }
                         _isLoading.postValue(false)
@@ -376,8 +387,12 @@ class InvoiceStaffViewModel(
         clearOldElecError()
         clearOldWaterError()
         clearRoomError()
+        clearDescribeError()
     }
 
+    fun clearDescribeError() {
+        _describeErrorMessage.value = null
+    }
 
     fun clearDateError() {
         _dateErrorMessage.value = null

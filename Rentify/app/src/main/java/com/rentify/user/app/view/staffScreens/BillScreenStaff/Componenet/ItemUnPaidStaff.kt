@@ -230,23 +230,23 @@ fun ItemUnPaidStaff(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            Button(
-                                onClick = {},
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = colorLocation
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text(
-                                    text = "Chỉnh sửa hóa đơn",
-                                    color = Color.White,
-                                    modifier = Modifier.padding(vertical = 4.dp),
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
+//                            Button(
+//                                onClick = {},
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .height(50.dp),
+//                                colors = ButtonDefaults.buttonColors(
+//                                    containerColor = colorLocation
+//                                ),
+//                                shape = RoundedCornerShape(8.dp)
+//                            ) {
+//                                Text(
+//                                    text = "Chỉnh sửa hóa đơn",
+//                                    color = Color.White,
+//                                    modifier = Modifier.padding(vertical = 4.dp),
+//                                    fontWeight = FontWeight.Medium
+//                                )
+//                            }
 
                             Button(
                                 onClick =

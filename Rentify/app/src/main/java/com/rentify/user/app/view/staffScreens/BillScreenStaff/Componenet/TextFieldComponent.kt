@@ -228,35 +228,5 @@ fun TextFiledComponent(
                 }
             }
         }
-
-        AnimatedVisibility(
-            visible = isExpandedBuildingNull,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            Box(modifier = Modifier.fillMaxWidth().height(50.dp)){
-                Text(
-                    text = "Không có tòa nhà nào bạn đang quản lý",
-                    modifier = Modifier.align(Alignment.Center),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-
-        AnimatedVisibility(
-            visible = isExpandedRoomNull,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            Box(modifier = Modifier.fillMaxWidth().height(50.dp)){
-                Text(
-                    text = "Không có phòng hoặc các phòng đã có hóa đơn",
-                    modifier = Modifier.align(Alignment.Center),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-
-
     }
 }

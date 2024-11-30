@@ -84,18 +84,44 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
 //them hoa don
 router.post("/addBillStaff", async (req, res) => {
   try {
-    const { user_id, room_id, description, amount, due_date, payment_status } =
-      req.body;
+    const {
+      user_id,
+      building_id,
+      room_id,
+      description,
+      describe,
+      type_invoice,
+      amount,
+      transaction_type,
+      due_date,
+      payment_status
+    } = req.body;
 
-    // Kiểm tra dữ liệu đầu vào
-    if (!user_id || !room_id || !amount || !due_date) {
+    // Kiểm tra các trường bắt buộc
+    if (!user_id || !room_id || !amount || !due_date || !transaction_type || !type_invoice) {
       return res.status(400).json({
         status: 400,
-        message: "Vui lòng điền đầy đủ thông tin hóa đơn",
+        message: "Vui lòng điền đầy đủ thông tin bắt buộc",
       });
     }
 
-    // Kiểm tra phòng có tồn tại không
+    // Kiểm tra transaction_type hợp lệ
+    if (!["income", "expense"].includes(transaction_type)) {
+      return res.status(400).json({
+        status: 400,
+        message: "Loại giao dịch không hợp lệ",
+      });
+    }
+
+    // Kiểm tra type_invoice hợp lệ
+    if (!["rent", "electric", "water", "salary", "maintain"].includes(type_invoice)) {
+      return res.status(400).json({
+        status: 400,
+        message: "Loại hóa đơn không hợp lệ",
+      });
+    }
+
+    // Kiểm tra phòng tồn tại
     const room = await Room.findById(room_id);
     if (!room) {
       return res.status(404).json({
@@ -104,7 +130,7 @@ router.post("/addBillStaff", async (req, res) => {
       });
     }
 
-    // Kiểm tra người dùng có tồn tại không
+    // Kiểm tra người dùng tồn tại
     const user = await User.findById(user_id);
     if (!user) {
       return res.status(404).json({
@@ -113,14 +139,25 @@ router.post("/addBillStaff", async (req, res) => {
       });
     }
 
-    // Lấy tháng và năm từ due_date
+    // Kiểm tra tòa nhà tồn tại (nếu có building_id)
+    if (building_id) {
+      const building = await Building.findById(building_id);
+      if (!building) {
+        return res.status(404).json({
+          status: 404,
+          message: "Không tìm thấy tòa nhà",
+        });
+      }
+    }
+
+    // Kiểm tra hóa đơn trùng lặp trong tháng
     const billDate = new Date(due_date);
-    const billMonth = billDate.getMonth() + 1; // getMonth() trả về 0-11
+    const billMonth = billDate.getMonth() + 1;
     const billYear = billDate.getFullYear();
 
-    // Kiểm tra xem phòng đã có hóa đơn trong tháng này chưa
     const existingInvoice = await Invoice.findOne({
-      room_id: room_id,
+      room_id,
+      type_invoice,
       due_date: {
         $regex: `${billYear}-${String(billMonth).padStart(2, "0")}`,
       },
@@ -129,7 +166,7 @@ router.post("/addBillStaff", async (req, res) => {
     if (existingInvoice) {
       return res.status(400).json({
         status: 400,
-        message: `Phòng này đã có hóa đơn trong tháng ${billMonth}/${billYear}`,
+        message: `Đã tồn tại hóa đơn ${type_invoice} cho phòng này trong tháng ${billMonth}/${billYear}`,
         existingInvoice: {
           invoice_id: existingInvoice._id,
           created_at: existingInvoice.created_at,
@@ -141,15 +178,19 @@ router.post("/addBillStaff", async (req, res) => {
     // Tạo hóa đơn mới
     const newInvoice = new Invoice({
       user_id,
+      building_id,
       room_id,
-      description: description || [],
+      description: description || [], // Mảng các chi tiết dịch vụ
+      describe: describe || "",
+      type_invoice,
       amount,
+      transaction_type,
       due_date,
       payment_status: payment_status || "unpaid",
       created_at: new Date().toISOString(),
     });
 
-    // Lưu hóa đơn vào database
+    // Lưu hóa đơn
     const savedInvoice = await newInvoice.save();
 
     // Populate thông tin chi tiết
@@ -162,7 +203,8 @@ router.post("/addBillStaff", async (req, res) => {
           select: "nameBuilding address",
         },
       })
-      .populate("user_id", "name phoneNumber");
+      .populate("user_id", "name phoneNumber")
+      .populate("building_id", "nameBuilding address");
 
     return res.status(200).json({
       status: 200,
