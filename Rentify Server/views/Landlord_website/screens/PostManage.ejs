@@ -776,7 +776,7 @@
     }
 
     async function deletePost(postId) {
-        if (confirm("Bạn có chắc chắn muốn xóa bài việt này?")) {
+        if (confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
             try {
                 const response = await fetch(`http://localhost:3000/api/posts_mgr/${postId}`, {
                     method: 'DELETE',

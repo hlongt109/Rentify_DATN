@@ -1,7 +1,7 @@
 const { type } = require('express/lib/response');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Report = new Schema({  // bảng hỏng hóc 
+const Report = new Schema({ 
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

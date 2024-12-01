@@ -16,6 +16,7 @@ const spAdmin = require("./Api_Admin/supportApi");
 const statAdmin = require("./Api_Admin/statsApi");
 const reportApiAdmin = require("./Api_Admin/report_mgr_api");
 const authApi = require("./Api_Auth/auth_Api");
+const serviceAdmApi = require("./Api_Admin/service_adm_api");
 // building_owner
 const invoiceMgr = require("./Api_BuildingOwner/invoices_mgr_api");
 const supportManageApi = require("./Api_BuildingOwner/support_manage_api");
@@ -55,6 +56,7 @@ const User_staffApi = require("./Api_Staff/User");
 const building_staff = require("./Api_Staff/Building");
 
 // nối
+router.use("/", serviceAdmApi);
 router.use("/", statisticMgrAPi)
 router.use("", post_UserApi);
 router.use("/",invoiceMgr)
