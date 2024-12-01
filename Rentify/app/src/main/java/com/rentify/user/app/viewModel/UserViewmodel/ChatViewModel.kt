@@ -16,6 +16,7 @@ import com.rentify.user.app.viewModel.LoginViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 data class Message(
     val sender: String = "",
@@ -69,7 +70,8 @@ class ChatViewModel() : ViewModel() {
         //tao tin nhan moi
         val messageId = messageRef.push().key ?: return
         val messageData = mapOf(
-            "sender" to senderId,
+            "messageId" to UUID.randomUUID().toString(),
+            "senderId" to senderId,
             "content" to messageContent,
             "timestamp" to System.currentTimeMillis()
         )
