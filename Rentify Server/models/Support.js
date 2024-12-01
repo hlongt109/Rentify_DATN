@@ -10,9 +10,10 @@ const Support = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room',
     },
-    landlord_id: {
+    building_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: "Building",
+        required: true
     },
     title_support: { type: String, require: true },
     content_support: { type: String, require: true },
