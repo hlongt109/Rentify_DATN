@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Support = new Schema({  // bảng hỏng hóc 
+const Support = new Schema({ 
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -9,7 +9,10 @@ const Support = new Schema({  // bảng hỏng hóc
     room_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room',
-        required: true
+    },
+    landlord_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
     title_support: { type: String, require: true },
     content_support: { type: String, require: true },
