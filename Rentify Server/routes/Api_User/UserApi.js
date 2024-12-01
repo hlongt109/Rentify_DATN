@@ -67,7 +67,7 @@ router.post("/login-user", async (req, res) => {
         return res.status(400).send("Tài khoản của bạn chưa được xác minh");
       }
     } else {
-      return res.status(400).send("Tài khoản không tồn tại");
+      return res.status(404).send("Tài khoản không tồn tại");
     }
   } catch (error) {
     console.error(error);
