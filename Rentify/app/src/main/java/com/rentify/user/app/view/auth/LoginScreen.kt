@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.auth
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -81,6 +82,7 @@ fun LoginScreenApp(navigator: NavController) {
     val errorPass by loginViewModel.errorPass.observeAsState()
     // Quan sát thông báo thành công
     val successMessage by loginViewModel.successMessage.observeAsState()
+    val errorMessage by loginViewModel.errorMessage.observeAsState()
 
     // Hiển thị thông báo khi đăng nhập thành công
     LaunchedEffect(successMessage) {
@@ -150,7 +152,9 @@ fun LoginScreenApp(navigator: NavController) {
                 )
                 //loi cho password
                 errorPass?.let { ShowReport.ShowError(message = it) }
+                errorMessage?.let { ShowReport.ShowError(message = it) }
                 //quen mat khau
+                //
 
                 Text(
                     text = "Quên mật khẩu ?",
@@ -165,6 +169,9 @@ fun LoginScreenApp(navigator: NavController) {
                 Button(
                     onClick = {
                         loginViewModel.login(username, password)
+                        successMessage?.let {
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()

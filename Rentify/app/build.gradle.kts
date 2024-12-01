@@ -44,6 +44,7 @@ android {
 }
 
 dependencies {
+
     // _vanphuc :
     implementation ("io.ktor:ktor-client-core:2.2.3")
     implementation ("io.ktor:ktor-client-cio:2.2.3")
@@ -140,7 +141,12 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0") // Thêm dòng này nếu cần indicators (dấu chấm chỉ số trang)
     implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
+    // Firebase
+    implementation ("com.google.firebase:firebase-database-ktx:20.2.2")
+    implementation ("com.google.firebase:firebase-auth-ktx:21.3.0")
 
+    // Coroutines
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 }
 // Allow references to generated code
 kapt {

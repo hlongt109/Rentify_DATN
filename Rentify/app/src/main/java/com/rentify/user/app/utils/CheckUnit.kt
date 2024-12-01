@@ -46,6 +46,12 @@ object CheckUnit {
         return format.format(date)
     }
 
+    fun formatTimeMessage(timestamp: Long): String{
+        val date = Date(timestamp)
+        val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+        return formatter.format(date)
+    }
+
     fun parseDate(dateString: String): Date {
         return try {
             val dateFormat = SimpleDateFormat(

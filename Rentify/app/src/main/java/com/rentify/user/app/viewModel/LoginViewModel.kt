@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.FirebaseDatabase
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.model.User
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
@@ -187,6 +188,7 @@ class LoginViewModel(
                                     _userData.postValue(result)
                                     _isLoggedIn.postValue(true)
                                     saveUserData(result)
+                                    saveUserDataToFirestore(result)
                                     result.role?.let { role ->
                                         _successMessage.postValue(role)
                                         Log.d("LoginSuccess", "Role: $role")
@@ -213,6 +215,29 @@ class LoginViewModel(
                 _errorMessage.postValue("Đăng nhập thất bại: ${e.message}")
             }
         }
+    }
+
+    fun saveUserDataToFirestore(user: LoginResponse){
+        val database = FirebaseDatabase.getInstance()
+        val userRef = database.getReference("users")
+        //tao map tu user
+        val userMap = mapOf(
+            "id" to user._id,
+            "email" to user.email,
+            "name" to user.name,
+            "avatar" to user.profilePictureUrl,
+            "isOnline" to true,
+            "lastLogin" to System.currentTimeMillis()
+        )
+
+        //luu du lieu vao realtime database
+        userRef.child(user._id).setValue(userMap)
+            .addOnSuccessListener {
+
+            }
+            .addOnFailureListener { exception ->
+                Log.e("SaveUserData", "Lỗi khi lưu thông tin người dùng", exception)
+            }
     }
 
     fun clearEmailError() {
