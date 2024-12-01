@@ -307,6 +307,35 @@ fun RoomDetailScreen(
                             )
                         }
                     }
+                    // trang thai
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                    ) {
+                        Text(
+                            text = "Trạng thái*",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xFF7c7b7b),
+                            //  fontWeight = FontWeight(700),
+                            fontSize = 13.sp,
+
+                            )
+                        Column {
+                            Text(
+                                text = "${roomDetail?.status}",
+                                color = Color(0xFF7c7b7b),
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(20.dp)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(color = Color(0xFFcccccc))
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.height(3.dp))
                     Column {
                         ComfortableLabel()
@@ -377,10 +406,10 @@ fun RoomDetailScreen(
                             .height(50.dp)
                             .fillMaxWidth()
                             .padding(start = 15.dp, end = 15.dp, top = 10.dp)
-                            .background(color = Color(0xFF84d8ff))
+                            .background(color = Color.Red)
                             .border(
                                 width = 1.dp,
-                                color = Color(0xFF84d8ff),
+                                color = Color.Red,
                                 shape = RoundedCornerShape(20.dp)
                             )
                             .clickable(

@@ -7,6 +7,8 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.ServiceOfBuilding
+import com.rentify.user.app.model.SupportModel.RoomListResponse
+import com.rentify.user.app.model.SupportModel.SupportResponse
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
@@ -69,7 +71,7 @@ interface APIService {
     suspend fun getDistrictWithWards(@Path("code") code: String): District
 
 
-    // Thêm phòng mới _vanphuc:
+    // Thêm phòng mới _vanphuc:_vanphuc
     @Multipart
     @POST("staff/rooms/addRoom")
     suspend fun addRoom(
@@ -86,35 +88,36 @@ interface APIService {
         @Part photos_room: List<MultipartBody.Part>,
         @Part video_room: List<MultipartBody.Part>
     ): Response<AddRoomResponse>
+
     @Multipart
     @POST("upload-file")
     suspend fun uploadFile(
         @Part file: MultipartBody.Part // Tệp file cần upload
     ): Response<ApiResponse>
 
-    //    get danh sách _vanphuc:
+    //    get danh sách _vanphuc:_vanphuc
     @GET("staff/rooms/buildings-by-manager/{manager_id}")
     suspend fun getBuildingsWithRooms(
         @Path("manager_id") manager_id: String
     ): Response<List<BuildingWithRooms>>
 
-    // Lấy tên danh sách phòng theo tòa nhà
+    // Lấy tên danh sách phòng theo tòa nhà_vanphuc
     @GET("staff/rooms/RoomsForBuilding/{building_id}")
     suspend fun getRoomsForBuilding(@Path("building_id") building_id: String): List<Room>
 
-    // hiển thị chi tiết phòng theo id tự động sinh ra trong mongodb
+    // hiển thị chi tiết phòng theo id tự động sinh ra trong mongodb_vanphuc
     @GET("staff/rooms/RoomDetail/{id}")
     suspend fun getRoomDetailById(
         @Path("id") id: String
     ): Response<Room>
 
-    // xóa phòng 👽:
+    // xóa phòng 👽:_vanphuc
     @DELETE("staff/rooms/DeleteRooms/{id}")
     suspend fun deleteRoom(
         @Path("id") id: String
     ): Response<ApiResponse>
 
-    // UPDATE PHÒNG🍕
+    // UPDATE PHÒNG🍕_vanphuc
     @Multipart
     @PUT("staff/rooms/updateRoom/{id}")
     suspend fun updateRoom(
@@ -123,13 +126,33 @@ interface APIService {
         @Part photos: List<MultipartBody.Part>?,
         @Part videos: List<MultipartBody.Part>?
     ): Response<ApiResponse>
-    // LẤY THÔNG TIN NGƯỜI DÙNG😬
+
+    // LẤY THÔNG TIN NGƯỜI DÙNG😬 _vanphuc
     @GET("staff/users/getUser/{id}")
     suspend fun getUserDetail(
         @Path("id") id: String
     ): Response<UserResponse>
 
-    // lay dich vu cua toa
+    // lay dich vu cua toa _vanphuc
     @GET("staff/rooms/building/{id}/services")
-    suspend fun getServiceOfBuilding( @Path("id") id: String): Response<List<ServiceOfBuilding>>
+    suspend fun getServiceOfBuilding(@Path("id") id: String): Response<List<ServiceOfBuilding>>
+
+    // HIỂN THỊ DANH SÁCH  CẦN HỖ TRỢ
+    @GET("staff/SOS/supports")
+    suspend fun getSupports(): Response<List<SupportResponse>>
+
+    // Lấy danh sách room_id có chung landlord_id
+    @GET("staff/SOS/ListRoom/{landlord_id}")
+    suspend fun getRoomsByLandlordId(
+        @Path("landlord_id") landlordId: String
+    ): Response<RoomListResponse>
+
+    // API endpoint to get support details by room_id
+    @GET("staff/SOS/supports/{room_id}")
+    suspend fun getSupportDetail(
+        @Path("room_id") RoomId: String
+    ): Response<List<SupportResponse>>
+
+
+
 }

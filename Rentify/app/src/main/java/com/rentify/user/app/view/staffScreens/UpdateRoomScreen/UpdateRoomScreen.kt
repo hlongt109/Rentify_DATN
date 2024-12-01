@@ -110,6 +110,7 @@ fun UpdateRoomScreen(
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
+    var Status by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>())}
     var selectedVideos by remember {mutableStateOf(listOf<Uri>())}
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
@@ -423,6 +424,45 @@ fun UpdateRoomScreen(
                             )
                         )
                     }
+                    // status
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = "Trạng thái *",
+                            color = Color(0xFF7c7b7b),
+                            fontSize = 13.sp
+                        )
+                        TextField(
+                            value = Status,
+                            onValueChange = { Status = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(53.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Color(0xFFcecece),
+                                unfocusedIndicatorColor = Color(0xFFcecece),
+                                focusedPlaceholderColor = Color.Black,
+                                unfocusedPlaceholderColor = Color.Gray,
+                                unfocusedContainerColor = Color(0xFFf7f7f7),
+                                focusedContainerColor = Color.White
+                            ),
+                            placeholder = {
+                                androidx.compose.material3.Text(
+                                    text = "${roomDetail?.status}",
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF898888)
+                                )
+                            },
+                            shape = RoundedCornerShape(size = 8.dp),
+                            textStyle = TextStyle(
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.cairo_regular))
+                            )
+                        )
+                    }
                     // tiện nghi cũ
                     Spacer(modifier = Modifier.height(3.dp))
                     Column {
@@ -509,6 +549,7 @@ fun UpdateRoomScreen(
                                         service = selectedService,
                                         amenities = selectedComfortable,
                                         limit_person = numberOfRoommates.toIntOrNull() ?: 0,
+                                        status= Status,
                                         photoUris = selectedImages,
                                         videoUris = selectedVideos
                                     )

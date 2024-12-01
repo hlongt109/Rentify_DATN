@@ -81,6 +81,7 @@ fun AddRoomScreen(
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
+    var Status by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>())}
     var selectedVideos by remember {mutableStateOf(listOf<Uri>())}
@@ -338,6 +339,40 @@ fun AddRoomScreen(
                         )
                     )
                 }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                ) {
+                    Text(text = "Trạng thái *", color = Color(0xFF7c7b7b), fontSize = 13.sp)
+                    TextField(
+                        value = Status,
+                        onValueChange = { Status = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(53.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFFcecece),
+                            unfocusedIndicatorColor = Color(0xFFcecece),
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFf7f7f7),
+                            focusedContainerColor = Color.White
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Nhập trạng thái",
+                                fontSize = 13.sp,
+                                color = Color(0xFF898888)
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 8.dp),
+                        textStyle = TextStyle(
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.cairo_regular))
+                        )
+                    )
+                }
 
 
                 // Tiện nghi
@@ -418,7 +453,7 @@ fun AddRoomScreen(
                                     description = numberOfRoommates,
                                     price = roomPrice.toDoubleOrNull() ?: 0.0,
                                     size = area,
-                                    status = 1,
+                                    status = Status,
                                     videoUris = selectedVideos,
                                     photoUris = selectedImages,
                                     service =selectedService,

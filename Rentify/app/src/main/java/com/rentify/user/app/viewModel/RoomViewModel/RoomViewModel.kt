@@ -155,7 +155,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         service: Any,
         amenities: Any,
         limit_person: Int,
-        status: Int,
+        status: String,
         photoUris: List<Uri>,
         videoUris: List<Uri>
     ) {
@@ -307,6 +307,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         service: Any,
         amenities: Any,
         limit_person: Int,
+        status: String,
         photoUris: List<Uri>,
         videoUris: List<Uri>
     ) {
@@ -341,6 +342,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     "price" to createPartFromString(price.toString()),
                     "size" to createPartFromString(size),
                     "limit_person" to createPartFromString(limit_person.toString()),
+                    "status" to createPartFromString(status.toString()),
                     "service" to createPartFromString(parsedService),
                     "amenities" to createPartFromString(parsedAmenities)
                 )
