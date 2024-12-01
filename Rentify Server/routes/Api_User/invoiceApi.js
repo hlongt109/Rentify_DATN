@@ -2,13 +2,19 @@ const express = require('express');
 const router = express.Router();
 const Invoice = require('../../models/Invoice')
 
-// hiển thị hoá đơn của người dùng hiện tại
-router.get('/get-list-invoices/:user_id', async (req, res) => {
+// Lấy hoá đơn theo trạng thái payment_status và user_id
+router.get('/get-invoices-by-status/:user_id/:status', async (req, res) => {
     try {
-        const invoices = await Invoice.find({ user_id: req.params.user_id })
-        res.status(200).json(invoices)
+        const invoices = await Invoice.find({ 
+            user_id: req.params.user_id,
+            payment_status: req.params.status 
+        }).populate({
+            path: 'room_id',
+            select: 'room_name room_type price'
+        });
+        res.status(200).json(invoices);
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
 });
 

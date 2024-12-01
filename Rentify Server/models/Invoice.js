@@ -25,6 +25,7 @@ const Invoice = new Schema({
   type_invoice: { type: String, enum: ["rent", "electric", "water", "salary", "maintain"] },
   due_date: { type: String }, // hạn chót
   payment_status: { type: String, enum: ["paid", "unpaid"], default: "unpaid" },
+  payment_image: { type: String },
   created_at: { type: String },
 });
 module.exports = mongoose.model("Invoice", Invoice);

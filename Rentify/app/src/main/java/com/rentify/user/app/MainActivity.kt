@@ -158,12 +158,16 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.TINNHAN.name) {
                 TinnhanScreen(navController = navController)
             }
-            composable(ROUTER.PaymentConfirmation.name) {
-                PaymentConfirmationScreen(navController = navController)
+
+            composable("PaymentConfirmation/{amount}") { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
+                PaymentConfirmationScreen(amount = amount, navController = navController)
             }
+
             composable(ROUTER.Payments.name) {
                 PaymentScreen(navController = navController)
             }
+
             composable(ROUTER.ConTract.name) {
                 com.rentify.user.app.view.userScreens.contract.ContractScreen(navController = navController)
             }

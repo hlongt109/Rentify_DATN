@@ -8,19 +8,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.rentify.user.app.view.userScreens.BillScreen.Component.ItemUnPaid
+import com.rentify.user.app.viewModel.InvoiceViewModel
 
 @Composable
-fun UnPaidScreen( navController: NavController ) {
-    val list = FakeData().fakeRoomPayments
-
-    // Lọc danh sách chỉ lấy các item có status == 0
-    val filteredList = list.filter { it.status == 0 }
+fun UnPaidScreen(
+    navController: NavController,
+    userId: String,
+    invoiceViewModel: InvoiceViewModel,
+    status: String
+) {
+    val listInvoices by invoiceViewModel.listInvoice.observeAsState(emptyList())
+    LaunchedEffect(userId, status) {
+        invoiceViewModel.fetchListInvoice(userId, status)
+    }
 
     Box(
         modifier = Modifier
@@ -30,19 +39,18 @@ fun UnPaidScreen( navController: NavController ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-
         ) {
-
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 contentPadding = PaddingValues(7.dp)
             ) {
-                items(filteredList) { item ->
-                    ItemUnPaid(item, navController = navController)
+                items(listInvoices) { item ->
+                    ItemUnPaid(item = item, navController = navController)
                 }
             }
         }
     }
 }
+
 

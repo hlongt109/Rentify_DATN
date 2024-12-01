@@ -177,7 +177,7 @@ fun ItemPaidExpand(
 }
 
 @Composable
-private fun PaymentDetailRow(label: String, value: String) {
+fun PaymentDetailRow(label: String, value: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

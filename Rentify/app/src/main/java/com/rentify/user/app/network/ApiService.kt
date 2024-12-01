@@ -14,6 +14,7 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.ContractResponse
+import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
@@ -266,4 +267,9 @@ interface APIService {
     // thiên thực hiện sử lý phần hợp đồng
     @GET("contract-detail/{user_id}")
     suspend fun getContractDetail(@Path("user_id") userId: String): Response<List<ContractResponse>>
+
+    // thiên thực hiển sử lí phần hoá đơn với user
+    @GET("get-invoices-by-status/{user_id}/{status}")
+    suspend fun getInvoicesByStatus(@Path("user_id") userId: String, @Path("status") status: String): Response<List<InvoiceResponse>>
+
 }

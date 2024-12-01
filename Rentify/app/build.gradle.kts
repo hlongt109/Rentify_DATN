@@ -50,6 +50,17 @@ dependencies {
     implementation ("io.ktor:ktor-client-serialization:2.2.3")
     // thư viện tải ảnh _vanphuc :
     implementation ("com.github.bumptech.glide:glide:4.14.2")
+    implementation(fileTree(mapOf(
+        "dir" to "D:\\ZaloPayLib",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("")
+    )))
+    implementation(fileTree(mapOf(
+        "dir" to "D:\\Zalo",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("")
+    )))
+
     annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
     implementation ("androidx.media3:media3-exoplayer:1.0.0")
     implementation ("androidx.media3:media3-ui:1.0.0")
@@ -134,7 +145,7 @@ dependencies {
     implementation ("com.airbnb.android:lottie-compose:6.0.1")
     implementation("io.coil-kt:coil-gif:2.4.0")
 
-
+    //thuc hien zalopay
 
 }
 // Allow references to generated code
