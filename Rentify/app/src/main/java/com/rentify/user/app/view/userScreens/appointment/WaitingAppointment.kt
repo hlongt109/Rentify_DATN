@@ -205,7 +205,7 @@ fun BookingCard(
                         modifier = Modifier.size(20.dp)
                     )
                     Text(
-                        text = bookingResponse.manager_id.phoneNumber,
+                        text = bookingResponse.manager_id.phoneNumber ?: "",
                         color = Color(0xffcdccd1),
                         fontSize = 12.sp,
                         maxLines = 1,

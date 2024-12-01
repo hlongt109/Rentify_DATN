@@ -8,9 +8,8 @@ const Service = new Schema({
         require: false
     },
     name: { type: String, require: true },
-    description: { type: String, require: true }, // mô tả
+    description: { type: String, require: true },
     price: { type: Number, require: true },
-    // photos: { type: Array },
     photos: { type: [String], required: true },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }

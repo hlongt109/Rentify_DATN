@@ -49,7 +49,7 @@ import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncident
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
 import com.rentify.user.app.view.userScreens.cancelContract.CancelContractScreen
 import com.rentify.user.app.view.userScreens.chatScreen.TinnhanScreen
-import com.rentify.user.app.view.userScreens.contractScreen.ContractScreen
+import com.rentify.user.app.view.userScreens.contractScreen.ContractImageScreen
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
 import com.rentify.user.app.view.userScreens.laundrydetailScreen.LaundryDetailScreenScreen
 import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
@@ -140,9 +140,15 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ADDINCIDENTREPORT.name) {
                 AddIncidentReportScreen(navController = navController)
             }
-            composable(ROUTER.CONTRACT.name) {
-                ContractScreen(navController = navController)
+
+            composable(
+                route = "CONTRACT/{imageUrls}",
+                arguments = listOf(navArgument("imageUrls") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val imageUrlsJson = backStackEntry.arguments?.getString("imageUrls") ?: "[]"
+                ContractImageScreen(navController, imageUrlsJson)
             }
+
             composable(ROUTER.CANCELCONTRACT.name) {
                 CancelContractScreen(navController = navController)
             }

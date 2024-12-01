@@ -11,7 +11,8 @@ const Support = new Schema({  // bảng hỏng hóc
         ref: 'Room',
     },
     landlord_id: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
     title_support: { type: String, require: true },//kien nghi / khieu nai
     content_support: { type: String, require: true },

@@ -26,13 +26,6 @@ const Invoice = new Schema({
   due_date: { type: String }, // hạn chót
   payment_status: { type: String, enum: ["paid", "unpaid"], default: "unpaid" },
   created_at: { type: String },
-  detail_invoice: [
-    {
-      name: { type: String }, //ten dich vu
-      fee: { type: Number }, // tien dich vu
-      quantity: { type: Number }, // so luong (so dien, so nuoc)
-    },
-  ],
 });
 module.exports = mongoose.model("Invoice", Invoice);
 

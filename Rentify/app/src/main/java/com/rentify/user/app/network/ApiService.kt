@@ -13,6 +13,7 @@ import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
+import com.rentify.user.app.model.Model.ContractResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
@@ -262,4 +263,7 @@ interface APIService {
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
 
+    // thiên thực hiện sử lý phần hợp đồng
+    @GET("contract-detail/{user_id}")
+    suspend fun getContractDetail(@Path("user_id") userId: String): Response<List<ContractResponse>>
 }

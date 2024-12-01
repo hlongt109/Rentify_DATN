@@ -90,4 +90,42 @@ router.post("/request-contract", async (req, res) => {
   }
 });
 
+// Lấy chi tiết hợp đồng và thông tin liên quan
+router.get("/contract-detail/:user_id", async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    if (!user_id) {
+      return res.status(404).json({
+        message: "Không tìm thấy người dùng",
+      });
+    }
+    const contracts = await Contract.find({ user_id })
+      .populate({
+        path: 'room_id',
+        select: 'room_name room_type price',
+      })
+      .populate({
+        path: 'building_id',
+        select: 'nameBuilding',
+      })
+      .populate({
+        path: 'user_id',
+        select: 'name',
+      });
+
+    if (contracts.length === 0) {
+      return res.status(404).json({
+        message: "Không tìm thấy hợp đồng nào",
+      });
+    }
+
+    res.status(200).json(contracts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+});
+
 module.exports = router;

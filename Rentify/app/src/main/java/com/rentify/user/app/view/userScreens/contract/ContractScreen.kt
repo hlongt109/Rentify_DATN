@@ -1,13 +1,10 @@
 package com.rentify.user.app.view.userScreens.contract
 
+import android.net.Uri
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,81 +13,57 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.rentify.user.app.view.userScreens.CategoryPostScreen.components.SpacerHeightCompose
+import com.google.gson.Gson
 import com.rentify.user.app.R
-import com.rentify.user.app.view.userScreens.cancelContract.components.CancelContractOptions
 import com.rentify.user.app.view.userScreens.cancelContract.components.ContractInfoRow
-import com.rentify.user.app.view.userScreens.cancelContract.components.HeaderSection
-import com.rentify.user.app.view.userScreens.cancelContract.components.ViewContractButton
-import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
+import com.rentify.user.app.view.userScreens.cancelContract.components.CustomButton
+import com.rentify.user.app.view.userScreens.contract.components.ContractTopBar
+import com.rentify.user.app.viewModel.ContractViewModel
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
-fun ContractScreen(navController: NavController)
-{
-    var isShowDialog by remember {
-        mutableStateOf(false)
+fun ContractScreen(
+    navController: NavController,
+    contractViewModel: ContractViewModel = viewModel()
+) {
+    val userId = "67453db554300d0f1c2b16c8"
+    val contractDetails by contractViewModel.contract.observeAsState()
+
+    val imageUrls = contractDetails?.firstOrNull()?.let { details ->
+        details.photos_contract.map { photo ->
+            "http://10.0.2.2:3000/$photo"
+        }
+    } ?: emptyList()
+
+    LaunchedEffect(userId) {
+        contractViewModel.getContractDetails(userId)
     }
-    var context = LocalContext.current
-
-    if (isShowDialog) {
-        DialogCompose(
-            onConfirmation = {
-
-                isShowDialog = false
-
-                Toast.makeText(
-                    context,
-                    "Hủy thành công",
-                    Toast.LENGTH_SHORT
-                ).show()
-navController.navigate("CANCELCONTRACT")
-            },
-            onCloseDialog = { isShowDialog = false },
-            titleDialog = "Thông báo !",
-            mess = "Bạn có chắc chắn muốn hủy hơph đồng không?"
-        )
-    }
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp
     val scrollState = rememberScrollState()
-    Box(
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding()
@@ -100,125 +73,122 @@ navController.navigate("CANCELCONTRACT")
         Column(
             modifier = Modifier
                 .fillMaxSize()
-
-                .padding(bottom = screenHeight.dp / 6f)
         ) {
-            HeaderSection(backgroundColor = Color.White, title = "Xem hợp đồng", navController = navController)
-            Spacer(modifier = Modifier.height(30.dp))
-            Column( modifier = Modifier
-                .verticalScroll(scrollState)
-                .fillMaxWidth()
-            ){
+            ContractTopBar(navController)
+            Spacer(modifier = Modifier.height(10.dp))
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .fillMaxWidth()
+            ) {
                 Column(
                     modifier = Modifier
-
+                        .padding(10.dp)
+                        .clip(RoundedCornerShape(10.dp))
                         .background(color = Color(0xFFffffff))
-                ){
+                ) {
                     Column(
                         modifier = Modifier
-                            .padding(15.dp)
+                            .padding(10.dp)
                             .background(color = Color(0xFFffffff))
                     ) {
+                        Spacer(modifier = Modifier.padding(5.dp))
                         Text(
                             text = "Thông tin hợp đồng",
                             color = Color.Black,
                             fontWeight = FontWeight(700),
                             fontSize = 17.sp
                         )
-                        ContractInfoRow("Số hợp đồng", "ABC/1234")
-                        ContractInfoRow("Loại hợp đồng", "6 tháng")
-                        ContractInfoRow("Thời hạn ký kết", "01/09/2024")
-                        ContractInfoRow("Thời hạn kết thúc", "01/04/2024")
-                        ContractInfoRow("Tiền cọc", "3.500.000")
-                        ContractInfoRow("Tiền thuê", "3.500.000 VND / tháng")
-                        ContractInfoRow("Kỳ thanh toán", "01 - 05 hằng tháng")
-                    }}
-                Spacer(modifier = Modifier
-                    .background(color = Color(0xFFeeeeee))
-                    .fillMaxWidth()
-                    .height(25.dp))
-                Box(
-                    modifier = Modifier
+                        contractDetails?.let { detailsList ->
+                            detailsList.firstOrNull()?.let { details ->
+                                // Định dạng giá trị tiền
+                                val formattedPrice = DecimalFormat("#,###,###").format(details.room_id.price)
 
-                        .padding(15.dp)
-                        .fillMaxWidth()){
-                    ViewContractButton(onClick = { navController.navigate("CONTRACT") })
+                                // Định dạng ngày tháng
+                                val startDate = details.start_date.let {
+                                    try {
+                                        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                        val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                                        val date = inputFormat.parse(it)
+                                        outputFormat.format(date ?: Date())
+                                    } catch (e: Exception) {
+                                        it
+                                    }
+                                }
+
+                                val endDate = details.end_date.let {
+                                    try {
+                                        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                        val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                                        val date = inputFormat.parse(it)
+                                        outputFormat.format(date ?: Date())
+                                    } catch (e: Exception) {
+                                        it
+                                    }
+                                }
+
+                                ContractInfoRow("Toà nhà", details.building_id.nameBuilding ?: "N/A")
+                                ContractInfoRow("Tên phòng", "${details.room_id.room_name} - ${details.room_id.room_type}" ?: "N/A")
+                                ContractInfoRow("Thời hạn ký kết", startDate ?: "N/A")
+                                ContractInfoRow("Thời hạn kết thúc", endDate ?: "N/A")
+                                ContractInfoRow("Tiền cọc", "$formattedPrice VNĐ", isImportant = true) // Màu sắc khác cho tiền cọc
+                                ContractInfoRow("Tiền thuê", "$formattedPrice VNĐ", isImportant = true) // Màu sắc khác cho tiền thuê
+                                ContractInfoRow("Kỳ thanh toán", "01 - 05 hằng tháng")
+                            }
+                        }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Spacer(modifier = Modifier.padding(10.dp))
+                            CustomButton(
+                                onClick = {
+                                    val gson = Gson()
+                                    val encodedImageUrls = Uri.encode(gson.toJson(imageUrls))
+                                    navController.navigate("CONTRACT/$encodedImageUrls")
+                                },
+                                backgroundColor = Color(0xFFFFFFFF), // Nền trắng
+                                imageRes = R.drawable.clipboard,
+                                buttonText = "Xem hình ảnh hợp đồng",
+                                textColor = Color(0xFF0066CC), // Chữ xanh dương
+                                borderWidth = 1.dp, // Độ rộng viền
+                                borderColor = Color(0xFF0066CC), // Màu viền xanh dương
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .shadow(2.dp, RoundedCornerShape(10.dp))
+                            )
+                            Spacer(modifier = Modifier.padding(6.dp))
+                            CustomButton(
+                                onClick = { /* Handle click */ },
+                                backgroundColor = Color(0xFF4CAF50),
+                                buttonText = "Gia hạn hợp đồng",
+                                textColor = Color.White,
+                                borderWidth = 0.dp, // Độ rộng viền
+                                borderColor = Color(0xFF0066CC),
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .shadow(2.dp, RoundedCornerShape(10.dp))
+                            )
+                            Spacer(modifier = Modifier.padding(6.dp))
+                            CustomButton(
+                                onClick = { /* Handle click */ },
+                                backgroundColor = Color(0xFFFF5252),
+                                buttonText = "Yêu cầu hợp đồng",
+                                textColor = Color.White,
+                                borderWidth = 0.dp, // Độ rộng viền
+                                borderColor = Color(0xFF0066CC),
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .shadow(2.dp, RoundedCornerShape(10.dp))
+                            )
+                            Spacer(modifier = Modifier.padding(6.dp))
+                        }
+                    }
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(screenHeight.dp/6f)
-
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color(0xfff5f5f5)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Nút Hủy hợp đồng
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 16.dp)
-                        .background(color = Color(0xffffffff))
-                        .clickable(
-                            onClick = { isShowDialog = true },
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
-                        .border(
-                            width = 2.dp,
-                            color = Color(0xFF84d8ff),
-                            shape = RoundedCornerShape(9.dp)
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 20.dp),
-                        text = "Hủy hợp đồng",
-                        color = Color(0xff000000),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa hai nút
-
-                // Nút Gia hạn hợp đồng
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 16.dp)
-                        .clickable(
-                            onClick = { /* Handle extend contract */ },
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
-                        .background(
-                            color = Color(0xFF84d8ff),
-                            shape = RoundedCornerShape(9.dp)
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 20.dp),
-                        text = "Gia hạn hợp đồng",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                }
-            }
-
-
-        }}}
+    }
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
