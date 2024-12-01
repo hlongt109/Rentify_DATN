@@ -7,7 +7,6 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.ServiceOfBuilding
-import com.rentify.user.app.model.SupportModel.RoomListResponse
 import com.rentify.user.app.model.SupportModel.SupportResponse
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserResponse
@@ -137,22 +136,11 @@ interface APIService {
     @GET("staff/rooms/building/{id}/services")
     suspend fun getServiceOfBuilding(@Path("id") id: String): Response<List<ServiceOfBuilding>>
 
-    // HIỂN THỊ DANH SÁCH  CẦN HỖ TRỢ
-    @GET("staff/SOS/supports")
-    suspend fun getSupports(): Response<List<SupportResponse>>
-
-    // Lấy danh sách room_id có chung landlord_id
-    @GET("staff/SOS/ListRoom/{landlord_id}")
-    suspend fun getRoomsByLandlordId(
-        @Path("landlord_id") landlordId: String
-    ): Response<RoomListResponse>
-
-    // API endpoint to get support details by room_id
+    // hiển thị chi tiết sự cố theo phòng
     @GET("staff/SOS/supports/{room_id}")
     suspend fun getSupportDetail(
-        @Path("room_id") RoomId: String
+        @Path("room_id") roomId: String
     ): Response<List<SupportResponse>>
-
 
 
 }

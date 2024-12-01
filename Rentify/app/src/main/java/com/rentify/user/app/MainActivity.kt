@@ -32,6 +32,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.ReportScreen.Components.ListSupportByRoom
 import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
@@ -196,6 +197,10 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("buildingId")
                 ListRoomScreen(navController = navController, buildingId = buildingId)
             }
+            composable("ListSupportByRoom/{buildingId}") { backStackEntry ->
+                val buildingId = backStackEntry.arguments?.getString("buildingId")
+                ListSupportByRoom(navController = navController, buildingId = buildingId)
+            }
             composable("UpdateRoomScreen/{id}/{buildingId}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id") ?: ""
                 val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
@@ -223,7 +228,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-enum class ROUTER {
+    enum class ROUTER {
         HOME,
         HOME_STAFF,
         SERVICE,
@@ -270,7 +275,7 @@ enum class ROUTER {
         CONTRACT_STAFF,
         POSTING_STAFF,
         REPORT_STAFF,
-
+        ListSupportByRoom
     }
 }
 
