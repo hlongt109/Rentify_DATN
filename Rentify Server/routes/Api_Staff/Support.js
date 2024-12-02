@@ -41,6 +41,53 @@ router.get('/supports/:room_id', async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error });
     }
 });
+// update 
+router.put('/supports/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
 
+        // Validate ID format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid support ticket ID' });
+        }
 
+        // Validate required fields
+        if (!updateData.title_support || !updateData.content_support) {
+            return res.status(400).json({ message: 'Title and content are required' });
+        }
+
+        // Update the support entry
+        const updatedSupport = await Support.findByIdAndUpdate(
+            id,
+            {
+                ...updateData,
+                updated_at: new Date().toISOString(), // Automatically set updated_at
+            },
+            { new: true } // Return the updated document
+        ).populate('user_id', 'name email')
+         .populate('building_id', 'name address')
+         .lean();
+
+        // If no support entry is found, return 404
+        if (!updatedSupport) {
+            return res.status(404).json({ message: 'Support ticket not found' });
+        }
+
+        // Format the response
+        const formattedSupport = {
+            ...updatedSupport,
+            _id: updatedSupport._id.toString(),
+            user_id: updatedSupport.user_id ? { ...updatedSupport.user_id, _id: updatedSupport.user_id._id.toString() } : null,
+            building_id: updatedSupport.building_id ? { ...updatedSupport.building_id, _id: updatedSupport.building_id._id.toString() } : null,
+            room_id: updatedSupport.room_id ? updatedSupport.room_id.toString() : null,
+        };
+
+        // Return the updated support ticket
+        res.status(200).json(formattedSupport);
+    } catch (error) {
+        console.error('Error updating support ticket:', error);
+        res.status(500).json({ message: 'Internal server error', error });
+    }
+});
 module.exports = router;
