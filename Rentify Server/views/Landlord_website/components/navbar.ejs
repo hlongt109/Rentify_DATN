@@ -55,7 +55,7 @@
       </li>
       <li>
         <!-- <a href="/api/supports_mgr"> -->
-        <a id="support-link">
+        <a href="/landlord/support_mgr">
           <i class="fas fa-headset"></i> <span>Hỗ trợ khách hàng</span> <!-- Giữ nguyên -->
         </a>
       </li>
@@ -73,8 +73,6 @@
     document.getElementById('service-link').href = `/landlord/api/services_mgr/list/${userId}`;
     //list user theo ID cuar landlord
     document.getElementById('user-link').href = `/landlord/api/staffs_mgr/list/${userId}`;
-    //list support theo ID cuar landlord
-    document.getElementById('support-link').href = `/landlord/api/support_mgr/list/${userId}`;
   </script>
 </body>
 

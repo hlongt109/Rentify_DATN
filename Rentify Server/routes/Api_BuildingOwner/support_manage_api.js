@@ -3,27 +3,37 @@ var router = express.Router();
 const mongoose = require('mongoose');
 
 const Support = require("../../models/Support")
+const Building = require("../../models/Building")
 
 // api
+// Đảm bảo route này đã được định nghĩa trong server của bạn
 router.get("/support_mgr/list/:id", async (req, res) => {
     try {
-        const userId = req.params.id;
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
+        const landlordId = req.params.id;
+        console.log('Landlord ID nhận được từ client:', landlordId);
+        if (!mongoose.Types.ObjectId.isValid(landlordId)) {
             return res.status(400).json({ message: "Invalid landlord_id format" });
         }
 
-        const landlordObjectId = new mongoose.Types.ObjectId(userId);
-        const data = await Support.find({ landlord_id: landlordObjectId })
-            .populate('user_id', 'name email')  // Lấy thông tin người gửi yêu cầu
-            .populate('room_id', 'name')        // Lấy thông tin phòng liên quan
-            .exec();
+        // Tìm tất cả các tòa nhà liên kết với landlord_id
+        const buildings = await Building.find({ landlord_id: landlordId });
+        if (buildings.length === 0) {
+            return res.status(404).json({ message: "Không tìm thấy tòa nhà cho landlord này." });
+        }
+
+        // Lấy danh sách building_id từ các tòa nhà
+        const buildingIds = buildings.map(building => building._id);
+
+        // Tìm tất cả các yêu cầu hỗ trợ có building_id trong danh sách buildingIds
+        const data = await Support.find({ building_id: { $in: buildingIds } });
+
+        console.log('Dữ liệu trả về từ cơ sở dữ liệu:', data);
 
         if (data.length === 0) {
             return res.status(404).json({ message: "No support requests found for this landlord." });
         }
 
-        // Render dữ liệu ra view
-        res.render("Landlord_website/screens/Support_Landlord", { data });
+        res.json({ data });
     } catch (error) {
         console.error("Error fetching support requests:", error.message);
         return res.status(500).json({
@@ -32,6 +42,8 @@ router.get("/support_mgr/list/:id", async (req, res) => {
         });
     }
 });
+
+
 
 //UPDATE
 // router.put("/support-customer/update/:id", async (req, res) => {
