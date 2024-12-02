@@ -172,7 +172,7 @@
                             <!-- đây là phần show ảnh -->
                             <div class="col">
                                 <div class="modal-body" id="modalBody">
-                                    <h5 class="text-start mb-3">Hình ảnh</h5>
+                                    <h5 class="text-start mb-3 text-primary">Hình ảnh</h5>
                                     <div id="modalContent"></div>
                                 </div>
                             </div>
@@ -219,13 +219,16 @@
 
 
         <div class="container-fluid my-4">
-            <select class="form-select w-auto" id="roomFilter">
-                <option value="">Tất cả</option>
-                <option value="supported">Đã hỗ trợ</option>
-                <!-- Các phòng sẽ được thêm động từ server -->
-            </select>
-
+            <div class="d-flex align-items-center">
+                <label for="roomFilter" class="me-3 fw-bold text-primary">Lọc phòng:</label>
+                <select class="form-select w-auto shadow-sm" id="roomFilter" style="min-width: 200px;">
+                    <option value="">Tất cả</option>
+                    <option value="supported">Đã hỗ trợ</option>
+                    <!-- Các phòng sẽ được thêm động từ server -->
+                </select>
+            </div>
         </div>
+
 
         <!-- Thông báo khi không có dữ liệu -->
         <div id="noDataMessage" class="text-center mt-4" style="display: none;">
@@ -234,24 +237,25 @@
 
         <!-- Bảng hiển thị dữ liệu -->
         <div class="container-fluid my-4">
-            <table id="supportTable">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Content</th>
-                        <th>Status</th>
-                        <th>Act</th>
-
-                    </tr>
-                </thead>
-                <tbody id="user-table">
-                    <!-- Nội dung sẽ được render vào đây -->
-                </tbody>
-            </table>
-
+            <div class="table-responsive shadow-lg p-3 mb-5 bg-white rounded">
+                <table id="supportTable" class="table table-hover table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Content</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table">
+                        <!-- Nội dung sẽ được render vào đây -->
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../../../../assets/js/support_script.js"> </script>

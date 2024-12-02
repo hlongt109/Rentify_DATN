@@ -160,34 +160,34 @@ function openDetailModal(button) {
 
             // Hiển thị thông tin yêu cầu hỗ trợ và thông tin Building
             showSupport.innerHTML = `
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
-                    <h5 class="text-start mb-3">Dữ liệu yêu cầu</h5>
-                        <tbody>
-                            <tr>
-                                <td style="width: 150px; font-weight: bold;">ID:</td>
-                                <td>${showList._id}</td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: bold;">Title:</td>
-                                <td>${showList.title_support}</td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: bold;">Content:</td>
-                                <td>${showList.content_support}</td>
-                            </tr>
-                            <!-- Hiển thị Address của Building -->
-                            <tr>
-                                <td style="font-weight: bold;">Address:</td>
-                                <td>${building ? building.address : 'Không có địa chỉ'}</td>
-                            </tr>
-                            <tr>
-                        <td style="font-weight: bold;">Tên phòng:</td>
-                        <td id="roomName">Đang tải...</td>  
-                    </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <div class="table-responsive shadow-lg p-4 bg-white rounded">
+    <h5 class="text-start mb-3 text-primary">Dữ liệu yêu cầu</h5>
+    <table class="table table-bordered table-hover align-middle">
+        <tbody>
+            <tr class="table-light">
+                <td class="fw-bold" style="width: 150px;">ID:</td>
+                <td>${showList._id}</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">Title:</td>
+                <td>${showList.title_support}</td>
+            </tr>
+            <tr class="table-light">
+                <td class="fw-bold">Content:</td>
+                <td>${showList.content_support}</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">Address:</td>
+                <td>${building ? building.address : 'Không có địa chỉ'}</td>
+            </tr>
+            <tr class="table-light">
+                <td class="fw-bold">Tên phòng:</td>
+                <td id="roomName">Đang tải...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
             `;
 
             // Gọi API để lấy tên phòng
