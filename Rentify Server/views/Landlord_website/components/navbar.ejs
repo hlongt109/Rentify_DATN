@@ -19,7 +19,7 @@
       background: rgba(0, 0, 0, 0.5);
       justify-content: center;
       align-items: center;
-      z-index: 9999; 
+      z-index: 9999;
     }
 
     .dialog-box {
@@ -106,7 +106,7 @@
       </li>
       <li>
         <!-- <a href="/api/supports_mgr"> -->
-        <a id="support-link">
+        <a href="/landlord/support_mgr">
           <i class="fas fa-headset"></i> <span>Hỗ trợ khách hàng</span> <!-- Giữ nguyên -->
         </a>
       </li>
@@ -137,7 +137,7 @@
     //list user theo ID cuar landlord
     document.getElementById('user-link').href = `/landlord/api/staffs_mgr/list/${userId}`;
     //list support theo ID cuar landlord
-    document.getElementById('support-link').href = `/landlord/api/support_mgr/list/${userId}`;
+    // document.getElementById('support-link').href = `/landlord/api/support_mgr/list/${userId}`;
 
     // Lấy phần tử logout-link và logout-dialog
     const logoutLink = document.getElementById('logout-link');

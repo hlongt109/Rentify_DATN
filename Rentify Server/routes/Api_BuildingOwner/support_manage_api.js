@@ -3,27 +3,37 @@ var router = express.Router();
 const mongoose = require('mongoose');
 
 const Support = require("../../models/Support")
+const Building = require("../../models/Building")
 
 // api
+// Đảm bảo route này đã được định nghĩa trong server của bạn
 router.get("/support_mgr/list/:id", async (req, res) => {
     try {
-        const userId = req.params.id;
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
+        const landlordId = req.params.id;
+        console.log('Landlord ID nhận được từ client:', landlordId);
+        if (!mongoose.Types.ObjectId.isValid(landlordId)) {
             return res.status(400).json({ message: "Invalid landlord_id format" });
         }
 
-        const landlordObjectId = new mongoose.Types.ObjectId(userId);
-        const data = await Support.find({ landlord_id: landlordObjectId })
-            .populate('user_id', 'name email')  // Lấy thông tin người gửi yêu cầu
-            .populate('room_id', 'name')        // Lấy thông tin phòng liên quan
-            .exec();
+        // Tìm tất cả các tòa nhà liên kết với landlord_id
+        const buildings = await Building.find({ landlord_id: landlordId });
+        if (buildings.length === 0) {
+            return res.status(404).json({ message: "Không tìm thấy tòa nhà cho landlord này." });
+        }
+
+        // Lấy danh sách building_id từ các tòa nhà
+        const buildingIds = buildings.map(building => building._id);
+
+        // Tìm tất cả các yêu cầu hỗ trợ có building_id trong danh sách buildingIds
+        const data = await Support.find({ building_id: { $in: buildingIds } });
+
+        console.log('Dữ liệu trả về từ cơ sở dữ liệu:', data);
 
         if (data.length === 0) {
             return res.status(404).json({ message: "No support requests found for this landlord." });
         }
 
-        // Render dữ liệu ra view
-        res.render("Landlord_website/screens/Support_Landlord", { data });
+        res.json({ data });
     } catch (error) {
         console.error("Error fetching support requests:", error.message);
         return res.status(500).json({
@@ -32,6 +42,31 @@ router.get("/support_mgr/list/:id", async (req, res) => {
         });
     }
 });
+// API để lấy tên phòng theo room_id của một support
+router.get('/support_mgr/room_name/:supportId', async (req, res) => {
+    const { supportId } = req.params;  // Lấy supportId từ URL params
+
+    try {
+        // Tìm hỗ trợ (support) theo supportId
+        const support = await Support.findById(supportId).populate('room_id');  // Tìm support và populate room_id
+        if (!support || !support.room_id) {
+            return res.status(404).json({ message: 'Không tìm thấy hỗ trợ hoặc phòng' });
+        }
+
+        // Trả về tên phòng
+        return res.json({
+            success: true,
+            data: {
+                roomName: support.room_id.room_name,  // Trả về tên phòng
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Lỗi server' });
+    }
+});
+
+
 
 //UPDATE
 // router.put("/support-customer/update/:id", async (req, res) => {
@@ -88,7 +123,7 @@ router.put("/support_mgr/update/:id", async (req, res) => {
     const { status } = req.body;
     const userId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'ID người dùng không hợp lệ.' });
+        return res.status(400).json({ message: 'ID không hợp lệ.' });
     }
 
     const support = await Support.findById(userId);
