@@ -654,4 +654,28 @@ router.get('/building/:id/service-fees', async (req, res) => {
     }
 });
 
+//hoan
+router.get('/buildings/address/:buildingId', async (req, res) => {
+    const { buildingId } = req.params;  // Lấy buildingId từ URL params
+
+    try {
+        // Tìm Building trong cơ sở dữ liệu
+        const building = await Building.findById(buildingId);
+
+        if (!building) {
+            return res.status(404).json({ message: 'Building không tồn tại' });
+        }
+
+        // Trả về dữ liệu địa chỉ
+        return res.json({
+            success: true,
+            data: {
+                address: building.address  // Chỉ trả về địa chỉ
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Lỗi server' });
+    }
+});
 module.exports = router;

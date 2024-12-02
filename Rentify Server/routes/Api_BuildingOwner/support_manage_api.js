@@ -42,6 +42,29 @@ router.get("/support_mgr/list/:id", async (req, res) => {
         });
     }
 });
+// API để lấy tên phòng theo room_id của một support
+router.get('/support_mgr/room_name/:supportId', async (req, res) => {
+    const { supportId } = req.params;  // Lấy supportId từ URL params
+
+    try {
+        // Tìm hỗ trợ (support) theo supportId
+        const support = await Support.findById(supportId).populate('room_id');  // Tìm support và populate room_id
+        if (!support || !support.room_id) {
+            return res.status(404).json({ message: 'Không tìm thấy hỗ trợ hoặc phòng' });
+        }
+
+        // Trả về tên phòng
+        return res.json({
+            success: true,
+            data: {
+                roomName: support.room_id.room_name,  // Trả về tên phòng
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Lỗi server' });
+    }
+});
 
 
 

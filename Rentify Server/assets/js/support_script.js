@@ -138,42 +138,76 @@ document.getElementById("editUserForm").addEventListener("submit", async (e) => 
 });
 
 
-
-/** Hiển thị modal chi tiết */
+// Hiển thị modal chi tiết
 function openDetailModal(button) {
     const showList = JSON.parse(button.getAttribute('data-show-list'));
     const modalContent = document.getElementById('modalContent');
     const showSupport = document.getElementById('showSupport');
 
-    // tair anhr
-    modalContent.innerHTML = showList.image?.length
-        ? showList.image.map(img => `<img src="/${img}" class="img-fluid mb-2" alt="Không thể tải ảnh">`).join("")
-        : '<p>Không có ảnh để hiển thị.</p>';
+    // Lấy thông tin Building từ building_id
+    const buildingId = showList.building_id; // Đây là building_id trong model Support
 
-    showSupport.innerHTML = `
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-            <h5 class="text-start mb-3">Dữ liệu yêu cầu</h5>
-                <tbody>
-                    <tr>
-                        <td style="width: 150px; font-weight: bold;">ID:</td>
-                        <td>${showList._id}</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: bold;">Title:</td>
-                        <td>${showList.title_support}</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: bold;">Content:</td>
-                        <td>${showList.content_support}</td>
-                    </tr>
-                    
-                </tbody>
-            </table>
-        </div>
-    `;
+    // Tạo một API gọi để lấy thông tin Building theo buildingId
+    fetch(`http://localhost:3000/api/buildings/address/${buildingId}`)
+        .then(response => response.json())
+        .then(buildingData => {
+            const building = buildingData.data;
 
+            // Hiển thị ảnh (nếu có)
+            modalContent.innerHTML = showList.image?.length
+                ? showList.image.map(img => `<img src="/${img}" class="img-fluid mb-2" alt="Không thể tải ảnh">`).join("")
+                : '<p>Không có ảnh để hiển thị.</p>';
 
-    new bootstrap.Modal(document.getElementById('detailModal')).show();
+            // Hiển thị thông tin yêu cầu hỗ trợ và thông tin Building
+            showSupport.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                    <h5 class="text-start mb-3">Dữ liệu yêu cầu</h5>
+                        <tbody>
+                            <tr>
+                                <td style="width: 150px; font-weight: bold;">ID:</td>
+                                <td>${showList._id}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Title:</td>
+                                <td>${showList.title_support}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Content:</td>
+                                <td>${showList.content_support}</td>
+                            </tr>
+                            <!-- Hiển thị Address của Building -->
+                            <tr>
+                                <td style="font-weight: bold;">Address:</td>
+                                <td>${building ? building.address : 'Không có địa chỉ'}</td>
+                            </tr>
+                            <tr>
+                        <td style="font-weight: bold;">Tên phòng:</td>
+                        <td id="roomName">Đang tải...</td>  
+                    </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            // Gọi API để lấy tên phòng
+            fetch(`http://localhost:3000/api/support_mgr/room_name/${showList._id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('roomName').innerText = data.data.roomName;
+                    } else {
+                        console.log('Không tìm thấy tên phòng');
+                    }
+                })
+                .catch(error => console.error('Lỗi khi lấy tên phòng:', error));
+
+            // Mở modal chi tiết
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
+        })
+        .catch(error => {
+            console.error("Lỗi khi tải thông tin Building:", error);
+            alert("Lỗi khi tải thông tin Building.");
+        });
 }
 
