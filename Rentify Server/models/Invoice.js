@@ -25,6 +25,7 @@ const Invoice = new Schema({
     transaction_type: { type: String, enum: ['income', 'expense'], require: true },
     due_date: { type: String }, // hạn chót
     payment_status: { type: String, enum: ["paid", "unpaid"]},
+    payment_image: { type: String },
     created_at: { type: String }
 })
 module.exports = mongoose.model("Invoice", Invoice);

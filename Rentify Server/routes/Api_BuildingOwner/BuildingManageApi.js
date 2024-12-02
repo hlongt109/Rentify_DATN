@@ -146,29 +146,110 @@ router.put('/buildings/:id', async (req, res) => {
     } = req.body;
 
     // Validate ID là ObjectId hợp lệ
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid building ID.' });
     }
 
+    if (manager_id && !mongoose.Types.ObjectId.isValid(manager_id)) {
+        return res.status(400).json({ error: 'Invalid manager ID.' });
+    }
+
+    // Kiểm tra dữ liệu đầu vào
+    if (!address || !description || !number_of_floors || !nameBuilding) {
+        return res.status(400).json({ error: 'All fields (address, description, number_of_floors, nameBuilding) are required.' });
+    }
+
+    // Kiểm tra service (nếu có)
+    if (service && !Array.isArray(service)) {
+        return res.status(400).json({ error: 'Service should be an array of ObjectIds.' });
+    }
+
+    if (service && !service.every(s => mongoose.Types.ObjectId.isValid(s))) {
+        return res.status(400).json({ error: 'Each service ID must be a valid ObjectId.' });
+    }
+
+    // Kiểm tra serviceFees (nếu có)
+    if (serviceFees && !Array.isArray(serviceFees)) {
+        return res.status(400).json({ error: 'Service fees should be an array of objects.' });
+    }
+
+    if (serviceFees) {
+        for (const fee of serviceFees) {
+            if (!fee.name || typeof fee.name !== 'string') {
+                return res.status(400).json({ error: `Service fee name is invalid.` });
+            }
+            if (!fee.price || typeof fee.price !== 'number') {
+                return res.status(400).json({ error: `Service fee price for "${fee.name}" is invalid.` });
+            }
+        }
+    }
 
     try {
-        // Tìm tòa nhà theo ID và populate dịch vụ
-        const building = await Building.findById(id)
-            .populate('service', 'name');
+        // Tìm tòa nhà bằng ID và cập nhật
+        const updatedBuilding = await Building.findByIdAndUpdate(
+            id,
+            {
+                nameBuilding,
+                address,
+                description,
+                number_of_floors,
+                service, // Cập nhật dịch vụ
+                serviceFees, // Cập nhật phí dịch vụ
+                manager_id,
+                updated_at: new Date().toISOString(),
+            },
+            { new: true, runValidators: true } // Đảm bảo validation của Mongoose chạy khi cập nhật
+        );
 
-        // Nếu không tìm thấy tòa nhà
-        if (!building) {
+        // Nếu không tìm thấy building
+        if (!updatedBuilding) {
             return res.status(404).json({ error: 'Building not found.' });
         }
 
-        // Trả về danh sách dịch vụ của tòa nhà
-        res.status(200).json(building.service);
+        // Thành công, trả về building đã được cập nhật
+        res.status(200).json({ message: 'Building updated successfully!', building: updatedBuilding });
     } catch (error) {
-        console.error('Error fetching building services:', error.message);
-        res.status(500).json({ error: 'Failed to fetch building services. Please try again later.' });
+        console.error('Error updating building:', error.message);
+        res.status(500).json({ error: 'Failed to update building. Please try again later.' });
     }
 });
+
+// router.put('/buildings/:id', async (req, res) => {
+//     const { id } = req.params;
+//     const { 
+//         address, 
+//         description, 
+//         number_of_floors, 
+//         nameBuilding, 
+//         service, 
+//         serviceFees, // Thêm phí dịch vụ
+//         manager_id 
+//     } = req.body;
+
+//     // Validate ID là ObjectId hợp lệ
+
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//         return res.status(400).json({ error: 'Invalid building ID.' });
+//     }
+
+
+//     try {
+//         // Tìm tòa nhà theo ID và populate dịch vụ
+//         const building = await Building.findById(id)
+//             .populate('service', 'name');
+
+//         // Nếu không tìm thấy tòa nhà
+//         if (!building) {
+//             return res.status(404).json({ error: 'Building not found.' });
+//         }
+
+//         // Trả về danh sách dịch vụ của tòa nhà
+//         res.status(200).json(building.service);
+//     } catch (error) {
+//         console.error('Error fetching building services:', error.message);
+//         res.status(500).json({ error: 'Failed to fetch building services. Please try again later.' });
+//     }
+// });
 
     if (manager_id && !mongoose.Types.ObjectId.isValid(manager_id)) {
         return res.status(400).json({ error: 'Invalid manager ID.' });
