@@ -208,7 +208,12 @@ class LoginViewModel(
                     }
                 } else {
                     Log.e("LoginError", "Response not successful: ${response.code()}")
-                    _errorMessage.postValue("Đăng nhập thất bại. Mã lỗi: ${response.code()}")
+                    // Kiểm tra nếu mã lỗi là tài khoản không tồn tại
+                    if (response.code() == 404) {
+                        _errorMessage.postValue("Tài khoản không tồn tại.")
+                    } else {
+                        _errorMessage.postValue("Đăng nhập thất bại. Mã lỗi: ${response.code()}")
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("LoginError", "Exception during login", e)

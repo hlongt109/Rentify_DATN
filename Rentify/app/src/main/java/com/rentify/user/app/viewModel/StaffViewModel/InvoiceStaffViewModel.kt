@@ -101,8 +101,6 @@ class InvoiceStaffViewModel(
     val roomErorMessage: LiveData<String?> = _roomErrorMessage
 
 
-
-
     private val _buildingErrorMessage = MutableLiveData<String?>()
     val buildingErrorMessage: LiveData<String?> = _buildingErrorMessage
 
@@ -142,10 +140,11 @@ class InvoiceStaffViewModel(
             )
         }
     }
+
     fun addBill(
         userId: String,
         roomId: String,
-        buildingId:String,
+        buildingId: String,
         describe: String,
         consumeElec: Int,
         totalElec: Double,
@@ -237,20 +236,16 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
-
                         oldElec < 0 -> {
                             _oldElecErrorMessage.postValue("Số điện không được âm")
                             _isLoading.postValue(false)
                             return@launch
                         }
 
-
                         water < oldWater -> {
                             _waterErrorMessage.postValue("Số nước không được giảm")
                             _isLoading.postValue(false)
                             return@launch
-
-
                         }
 
 
@@ -260,6 +255,21 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+                        !water.isNumber() -> {
+                            _waterErrorMessage.postValue("Số nước phải là số hợp lệ")
+                        }
+
+                        !elec.isNumber() -> {
+                            _elecErrorMessage.postValue("Số điện phải là số hợp lệ")
+                        }
+
+                        !oldWater.isNumber() -> {
+                            _oldWaterErrorMessage.postValue("Số nước phải là số hợp lệ")
+                        }
+
+                        !oldElec.isNumber() -> {
+                            _oldElecErrorMessage.postValue("Số điện phải là số hợp lệ")
+                        }
 
                         dueDate.isEmpty() -> {
                             _dateErrorMessage.postValue("Vui lòng nhập hạn thanh toán")
@@ -377,7 +387,13 @@ class InvoiceStaffViewModel(
         }
     }
 
-
+    fun Any?.isNumber(): Boolean {
+        return when (this) {
+            is Int, is Float, is Double, is Long -> true
+            is String -> this.toDoubleOrNull() != null
+            else -> false
+        }
+    }
 
     fun clearAll() {
         clearDateError()
@@ -427,8 +443,6 @@ class InvoiceStaffViewModel(
     fun clearOldElecError() {
         _oldElecErrorMessage.value = null
     }
-
-
 
 
     class InvoiceStaffViewModelFactory(
