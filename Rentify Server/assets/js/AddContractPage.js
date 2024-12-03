@@ -284,6 +284,6 @@ document.getElementById('addContractForm').addEventListener('submit', async func
     }
 });
 
-if (!contractId) {
-    document.addEventListener('DOMContentLoaded', fetchAvailableRooms);
-}
+// if (!contractId) {
+//     document.addEventListener('DOMContentLoaded', fetchAvailableRooms);
+// }

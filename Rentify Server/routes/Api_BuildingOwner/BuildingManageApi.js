@@ -66,9 +66,7 @@ router.delete('/buildings/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete building.' });
     }
 });
-// API lấy danh sách dịch vụ của một tòa nhà cụ thể
-router.get('/building/:id/services', async (req, res) => {
-    const { id } = req.params;
+
 
     // các api thiên viết
     router.post('/add-building', async (req, res) => {
@@ -168,7 +166,7 @@ router.get('/building/:id/services', async (req, res) => {
             console.error('Error fetching building services:', error.message);
             res.status(500).json({ error: 'Failed to fetch building services. Please try again later.' });
         }
-    });
+    
 
     if (manager_id && !mongoose.Types.ObjectId.isValid(manager_id)) {
         return res.status(400).json({ error: 'Invalid manager ID.' });

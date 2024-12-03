@@ -117,11 +117,13 @@
         select {
             flex: 2;
         }
+
         .form-select.form-select-lg {
             height: 33px;
             border-color: lightgray;
             border-radius: 5px;
         }
+
         .input_style {
             height: 35px;
             border-radius: 5px;
@@ -163,7 +165,8 @@
                     <!-- Dropdown chọn tháng năm -->
                     <div class="col-md-4">
                         <label for="month-year" class="form-label">Lọc theo tháng</label>
-                        <select class="form-select form-select-lg mb-3 px-2" id="month-year" aria-label="Chọn tháng và năm">
+                        <select class="form-select form-select-lg mb-3 px-2" id="month-year"
+                            aria-label="Chọn tháng và năm">
                             <option selected value="">-- Chọn tháng --</option>
                         </select>
                     </div>
@@ -226,19 +229,26 @@
             <!-- Input Rows -->
             <div style="margin-top: 10px;">
                 <label style="width: 150px;">Số điện:</label>
-                <input class="input_style border px-2" style="margin-right: 50px;" type="number" id="electricUnits" placeholder="Nhập số điện"
-                    oninput="calculateTotal()">
+                <input class="input_style border px-2" style="margin-right: 50px;" type="number" id="electricUnits"
+                    placeholder="Nhập số điện" oninput="calculateTotal()">
                 <label style="width: 150px;">Giá điện (VNĐ/số):</label>
-                <input class="input_style border px-2" type="number" id="electricPrice" placeholder="Nhập giá điện" oninput="calculateTotal()">
+                <input class="input_style border px-2" type="number" id="electricPrice" placeholder="Nhập giá điện"
+                    oninput="calculateTotal()" readonly>
             </div>
 
             <div style="margin-top: 10px;">
                 <label style="width: 150px;">Số nước:</label>
-                <input class="input_style border px-2" style="margin-right: 50px;" type="number" id="waterUnits" placeholder="Nhập số nước"
-                    oninput="calculateTotal()">
+                <input class="input_style border px-2" style="margin-right: 50px;" type="number" id="waterUnits"
+                    placeholder="Nhập số nước" oninput="calculateTotal()">
                 <label style="width: 150px;">Giá nước (VNĐ/số):</label>
-                <input class="input_style border px-2" type="number" id="waterPrice" placeholder="Nhập giá nước" oninput="calculateTotal()">
+                <input class="input_style border px-2" type="number" id="waterPrice" placeholder="Nhập giá nước"
+                    oninput="calculateTotal()" readonly>
             </div>
+
+            <div style="margin-top: 10px; display: none" id="service-fee-other">
+                <!-- danh sách phí dv khác -->
+            </div>
+
 
             <div style="margin-top: 10px;">
                 <label style="width: 150px;">Trạng thái thanh toán:</label>
@@ -276,7 +286,7 @@
 
     function goBack() { window.history.back(); }
     // 
-    // let userId = localStorage.getItem('user_id');
+    let landlord_id = localStorage.getItem('user_id');
     // console.log("userId :", userId)
     let buildings = [];
     let isMonthLoad = true;
@@ -289,7 +299,7 @@
     // ============ Building ===========
     const getListBuildings = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${userId}`);
+            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${landlord_id}`);
             const data = await res.json();
             if (res.ok) {
                 buildings = data.data;
@@ -316,6 +326,7 @@
     }
     getListBuildings()
 
+
     // Hàm hiển thị danh sách tòa nhà
     const displayBuildings = () => {
         const buildingsListDiv = document.getElementById('buildings-list');
@@ -340,6 +351,7 @@
             buildingsListDiv.appendChild(buildingRow); // Thêm phần tử vào danh sách
         });
     }
+
     // Hàm để chọn tòa nhà
     const selectBuilding = (buildingId) => {
         selectedBuildingId = buildingId;
@@ -361,8 +373,9 @@
         } else {
             getInvoicesYear(selectedYear, selectPaymentStatus)
         }
-
     }
+
+
     // ============ Tabs ===============
     function selectTab(tab) {
         const tabs = document.querySelectorAll('.tab-item');
@@ -563,11 +576,57 @@
     }
 
     // Mở dialog thêm hóa đơn
-    function openInvoiceDialog() {
+    async function openInvoiceDialog() {
         console.log("open dialog add");
         populateBuildings();
         populateMonthDropdown();
+        setDataServiceFee()
         document.getElementById('invoiceDialog').style.display = 'flex';
+    }
+
+    async function setDataServiceFee() {
+        console.log("load load")
+        const service_fee = await fetchBuildingServiceFees(selectedBuildingId);
+
+        const electricService = service_fee.find(service => service.name === "Điện");
+        document.getElementById('electricPrice').value = electricService ? electricService.price : "";
+
+        const waterService = service_fee.find(service => service.name === "Nước");
+        document.getElementById('waterPrice').value = waterService ? waterService.price : "";
+
+        // Lọc các dịch vụ khác
+        const otherServices = service_fee.filter(service => service.name !== "Điện" && service.name !== "Nước");
+
+        // Xóa nội dung cũ của div "service-fee-other"
+        const serviceFeeContainer = document.getElementById('service-fee-other');
+        serviceFeeContainer.innerHTML = ""; // Xóa nội dung cũ
+
+        // Thêm các dịch vụ khác vào div
+        otherServices.forEach(service => {
+            const serviceDiv = document.createElement('div');
+            serviceDiv.style.marginTop = "10px";
+
+            // Label cho tên dịch vụ
+            const serviceLabel = document.createElement('label');
+            serviceLabel.style.width = "155px";
+            serviceLabel.textContent = `${service.name}:`;
+            serviceDiv.appendChild(serviceLabel);
+
+            // Input cho giá dịch vụ
+            const serviceInput = document.createElement('input');
+            serviceInput.type = "number";
+            serviceInput.value = service.price;
+            serviceInput.className = "input_style border px-2";
+            serviceInput.style.marginRight = "50px";
+            serviceInput.readOnly = true; // Giá chỉ đọc
+            serviceDiv.appendChild(serviceInput);
+
+            // Thêm div con vào container
+            serviceFeeContainer.appendChild(serviceDiv);
+        });
+
+        // Hiển thị div nếu có dịch vụ khác
+        serviceFeeContainer.style.display = otherServices.length > 0 ? 'block' : 'none';
     }
 
     // Đóng dialog
@@ -622,6 +681,7 @@
         const roomSelect = document.getElementById('roomSelect');
         const selectedRoomPrice = roomSelect.options[roomSelect.selectedIndex].dataset.price;
         document.getElementById('roomPrice').value = selectedRoomPrice;
+        setDataServiceFee()
         calculateTotal();  // Tính lại tổng tiền
     }
 
@@ -633,7 +693,15 @@
         const waterPrice = Number(document.getElementById('waterPrice').value) || 0;
         const roomPrice = Number(document.getElementById('roomPrice').value) || 0;
 
-        const total = (electricUnits * electricPrice) + (waterUnits * waterPrice) + roomPrice;
+        let total = (electricUnits * electricPrice) + (waterUnits * waterPrice) + roomPrice;
+
+        // Tính tổng cho các dịch vụ khác
+        const otherServiceInputs = document.querySelectorAll('#service-fee-other input');
+        otherServiceInputs.forEach(input => {
+            total += Number(input.value) || 0; // Lấy giá trị của input và cộng vào tổng
+        });
+
+        // Hiển thị tổng tiền
         document.getElementById('totalAmount').textContent = total.toLocaleString('vi-VN');
     }
 
@@ -763,6 +831,9 @@
         try {
             populateBuildings();
             populateMonthDropdown();
+
+            const service_fee = await fetchBuildingServiceFees(selectedBuildingId)
+
             const response = await fetch(`http://localhost:3000/api/invoice_mgr/${invoiceId}`);
             if (!response.ok) {
                 alert("Không tìm thấy hóa đơn!");
@@ -817,6 +888,21 @@
             console.error("Lỗi khi mở form cập nhật:", error);
         }
     }
+
+    const fetchBuildingServiceFees = async (buildingId) => {
+        try {
+            const response = await axios.get(`/api/building/${buildingId}/service-fees`);
+            if (Array.isArray(response.data)) {
+                return response.data;
+            } else {
+                console.error('Dữ liệu không phải là mảng:', response.data);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy phí dịch vụ của tòa nhà:', error);
+            return [];
+        }
+    };
+
     async function deleteInvoice(invoiceId) {
         if (confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) {
             try {
