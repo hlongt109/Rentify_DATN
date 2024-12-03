@@ -1,10 +1,10 @@
 package com.rentify.user.app.viewModel
 
+import ContractResponse
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rentify.user.app.model.Model.ContractResponse
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.ContractRepository
 import kotlinx.coroutines.launch

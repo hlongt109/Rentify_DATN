@@ -1,5 +1,7 @@
 package com.rentify.user.app.network
 
+import Contract
+import ContractResponse
 import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.District
@@ -14,10 +16,8 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
-import com.rentify.user.app.model.Model.ContractResponse
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
-import com.rentify.user.app.model.Contract
 import com.rentify.user.app.model.ContractsResponse
 import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostResponse
@@ -133,10 +133,16 @@ interface APIService {
     suspend fun getUserDetails(@Path("user_id") userId: String): Response<UserOfBooking>
 
     @GET("get-bookings/{user_id}/{status}")
-    suspend fun getBookings(@Path("user_id") userId: String, @Path("status") status: Int): Response<List<BookingResponse>>
+    suspend fun getBookings(
+        @Path("user_id") userId: String,
+        @Path("status") status: Int
+    ): Response<List<BookingResponse>>
 
     @PUT("update-booking-status/{booking_id}")
-    suspend fun updateBookingStatus(@Path("booking_id") bookingId: String, @Body status: StatusBookingRequest): Response<StatusBookingRequest>
+    suspend fun updateBookingStatus(
+        @Path("booking_id") bookingId: String,
+        @Body status: StatusBookingRequest
+    ): Response<StatusBookingRequest>
 
 
     // Thêm phòng mới _vanphuc:
@@ -156,6 +162,7 @@ interface APIService {
         @Part photos_room: List<MultipartBody.Part>,
         @Part video_room: List<MultipartBody.Part>
     ): Response<AddRoomResponse>
+
     @Multipart
     @POST("upload-file")
     suspend fun uploadFile(
@@ -193,12 +200,12 @@ interface APIService {
         @Part photos: List<MultipartBody.Part>?,
         @Part videos: List<MultipartBody.Part>?
     ): Response<ApiResponse>
+
     // LẤY THÔNG TIN NGƯỜI DÙNG
     @GET("staff/users/usermail/{email}")
     suspend fun getUserDetail(
         @Path("email") email: String
     ): Response<User>
-
 
 
     // API lấy danh sách các tòa nhà theo user_id
@@ -207,7 +214,7 @@ interface APIService {
 
     // API lấy danh sách phòng trong một tòa nhà theo building_id
     @GET("staff/posts/rooms")
-    suspend fun getRooms(@Query("building_id") buildingId: String):  Response<RoomsResponse>
+    suspend fun getRooms(@Query("building_id") buildingId: String): Response<RoomsResponse>
 
     // API đăng bài mới
     @Multipart
@@ -230,14 +237,17 @@ interface APIService {
         val status: Int,
         val data: T
     )
+
     ///tim keim post
     @GET("staff/posts/search")
     suspend fun searchPosts(
         @Query("query") query: String, // Từ khóa tìm kiếm
         @Query("user_id") userId: String? = null // ID người dùng (nếu có)
     ): Response<List<PostingList>>
+
     @DELETE("staff/posts/delete/{id}")
     suspend fun deletePost(@Path("id") postId: String): Response<Unit> // Giả sử API trả về `Unit` khi xóa thành công
+
     @GET("staff/posts/detail/{id}")
     suspend fun getPostDetail(@Path("id") postId: String): PostingDetail
 
@@ -256,20 +266,22 @@ interface APIService {
         @Part video: List<MultipartBody.Part>?, // Optional video
         @Part photo: List<MultipartBody.Part>?  // Optional photo
     ): Response<UpdatePostRequest>
+
     // HỢP ĐỒNG
     @GET("staff/contracts/contracts-by-building")
     suspend fun getContractsByBuilding(
         @Query("manage_id") manageId: String
     ): Response<List<Contract>>
+
     // CHI TIẾT HỢP ĐỒNG
     @GET("staff/contracts/contract-detail/{id}")
-    suspend fun getContractDetail(
-        @Path("id") contractId: String
-    ): Response<Contract>
-//GET ROOM BY BUILDING CHO HỢP ĐỒNG
-@GET("staff/contracts/buildings/{manage_id}")
-suspend fun getBuildings_contrac(@Path("manage_id") manageId: String): Response<BuildingsResponse>
- // ADD HỢP ĐỒNG
+    suspend fun getContractDetail1(@Path("id") contractId: String): Response<Contract>
+
+    //GET ROOM BY BUILDING CHO HỢP ĐỒNG
+    @GET("staff/contracts/buildings/{manage_id}")
+    suspend fun getBuildings_contrac(@Path("manage_id") manageId: String): Response<BuildingsResponse>
+
+    // ADD HỢP ĐỒNG
     @Multipart
     @POST("staff/contracts/add")
     suspend fun addContract(
@@ -283,6 +295,7 @@ suspend fun getBuildings_contrac(@Path("manage_id") manageId: String): Response<
         @Part("end_date") endDate: RequestBody,
         @Part("status") status: RequestBody,
     ): Response<ContractsResponse>
+
     //UPDATE HỢP ĐỒNG
     @PUT("staff/contracts/update/{id}")
     @Multipart
@@ -292,17 +305,20 @@ suspend fun getBuildings_contrac(@Path("manage_id") manageId: String): Response<
         @Part("content") content: RequestBody?,
         @Part photos: List<MultipartBody.Part>?
     ): Response<ContractsResponse>
+
     // Lấy danh sách ROOM theo building_id và status = 0
     @GET("staff/contracts/rooms/{building_id}")
     suspend fun getRooms_contrac(@Path("building_id") buildingId: String): Response<RoomsResponse>
-   //TÌM KIẾM HỌPƯ ĐỒNG
-   @GET("staff/contracts/search")
-   suspend fun searchContracts(
-       @Query("userName") userName: String? = null,
-       @Query("buildingRoom") buildingRoom: String? = null,
-       @Query("manageId") manageId: String? = null // Thêm manageId
-   ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
-   ///ADD POST USRT
+
+    //TÌM KIẾM HỌPƯ ĐỒNG
+    @GET("staff/contracts/search")
+    suspend fun searchContracts(
+        @Query("userName") userName: String? = null,
+        @Query("buildingRoom") buildingRoom: String? = null,
+        @Query("manageId") manageId: String? = null // Thêm manageId
+    ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
+
+    ///ADD POST USRT
     @Multipart
     @POST("add")
     suspend fun addPost_user(
@@ -323,7 +339,10 @@ suspend fun getBuildings_contrac(@Path("manage_id") manageId: String): Response<
 
     // thiên thực hiển sử lí phần hoá đơn với user
     @GET("get-invoices-by-status/{user_id}/{status}")
-    suspend fun getInvoicesByStatus(@Path("user_id") userId: String, @Path("status") status: String): Response<List<InvoiceResponse>>
+    suspend fun getInvoicesByStatus(
+        @Path("user_id") userId: String,
+        @Path("status") status: String
+    ): Response<List<InvoiceResponse>>
 
 
     @GET("contracts/{user_id}")
@@ -350,7 +369,6 @@ suspend fun getBuildings_contrac(@Path("manage_id") manageId: String): Response<
     suspend fun getBuildingFromRoom(
         @Path("roomId") roomId: String
     ): Response<Building>
-
 
 
 }

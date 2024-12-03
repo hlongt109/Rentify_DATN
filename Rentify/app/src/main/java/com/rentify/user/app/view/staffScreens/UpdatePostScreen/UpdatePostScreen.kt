@@ -247,9 +247,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         Text(
 
                             text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
                             fontSize = 16.sp,
 
                             )
@@ -355,7 +353,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 Column {
                     ComfortableLabel()
                     BuildingOptions(
-                        userId = "67362213c6d421d3027fb5a7",
+                        userId = "674f1c2975eb705d0ff112b6",
                         selectedBuilding = selectedBuilding, // Truyền giá trị ban đầu
                         onBuildingSelected = { selectedBuilding ->
                             viewModel.setSelectedBuilding(selectedBuilding) // Cập nhật tòa nhà đã chọn
@@ -427,7 +425,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         postId?.let {
                             viewModel.updatePost(
                                 postId = postId,
-                                userId = "673e064ef5b7bf786842bdbc",
+                                userId = "674f1c2975eb705d0ff112b6",
                                 buildingId = buildingId,
                                 roomId = selectedRoom1,
                                 title = title,
@@ -713,21 +711,6 @@ fun SelectMedia(
 ) {
     val selectedImages = remember { mutableStateListOf<Uri>() }
     val selectedVideos = remember { mutableStateListOf<Uri>() }
-//    val baseUrl = "http://192.168.2.106:3000/"
-//
-//// Chuyển đổi các đường dẫn ảnh và video từ detail thành Uri, thêm base URL vào trước mỗi đường dẫn
-//    val imagesFromDetail = detail.photos?.map { Uri.parse( baseUrl+it) } ?: listOf()
-//    val videosFromDetail = detail.videos?.map { Uri.parse(baseUrl+it) } ?: listOf()
-//
-//    // Gán giá trị ảnh và video từ detail vào selectedImages và selectedVideos
-//    if (selectedImages.isEmpty()) {
-//        selectedImages.addAll(imagesFromDetail)
-//    }
-//
-//    if (selectedVideos.isEmpty()) {
-//        selectedVideos.addAll(videosFromDetail)
-//    }
-    // Launcher chọn ảnh
     val launcherImage = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->

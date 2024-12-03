@@ -35,7 +35,6 @@ import coil.compose.rememberImagePainter
 import com.rentify.user.app.R
 import com.rentify.user.app.view.userScreens.cancelContract.components.HeaderSection
 import com.rentify.user.app.view.userScreens.contractScreen.components.ContractBody
-import com.rentify.user.app.view.userScreens.contractScreen.components.ContractHeading
 import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -70,7 +69,7 @@ fun ContractImageScreen(navController: NavHostController, contractId: String) {
             ) {
                 // Nếu có ảnh trong hợp đồng
                 items(contract.photos_contract!!) { photoUrl ->
-                    val imageUrl = "http://192.168.1.101:3000/$photoUrl" // Gắn "localhost" vào trước URL
+                    val imageUrl = "http://10.0.2.2:3000/$photoUrl" // Gắn "localhost" vào trước URL
 
                     Image(
                         painter = rememberImagePainter(imageUrl),

@@ -1,6 +1,6 @@
 package com.rentify.user.app.repository
 
-import com.rentify.user.app.model.Model.ContractResponse
+import ContractResponse
 import com.rentify.user.app.network.APIService
 import retrofit2.Response
 

@@ -47,9 +47,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -62,57 +60,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import com.rentify.user.app.R
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.prepareMultipartBody
-
-
 import com.rentify.user.app.view.userScreens.cancelContract.components.ContractInfoRow
 import com.rentify.user.app.view.userScreens.cancelContract.components.HeaderSection
-import com.rentify.user.app.view.userScreens.cancelContract.components.ViewContractButton
-import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
-import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
+import com.rentify.user.app.view.userScreens.contract.components.ViewContractButton
 import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.RequestBody
-import okio.Buffer
-import java.io.IOException
 
 @Composable
 fun ContractDetailScreen(navController: NavController,contractId: String) {
-//    val contractViewModel: ContractViewModel = viewModel()
-//    val contractDetail by contractViewModel.contractDetail.observeAsState()
-//
-//    // Lấy chi tiết hợp đồng
-//    LaunchedEffect(contractId) {
-//        contractViewModel.fetchContractDetail(contractId)
-//    }
-//
-//    contractDetail?.let { contract ->
-//        Column(modifier = Modifier.padding(16.dp)) {
-//            Text(text = "Contract ID: ${contract.building_id?.nameBuilding}", fontWeight = FontWeight.Bold)
-//            Text(text = "Loại hợp đồng: ${contract.duration}")
-//            Text(text = "Thời hạn ký kết: ${contract.startDate}")
-//            Text(text = "Thời hạn hết thúc: ${contract.endDate}")
-//            Text(text = "Thời gian ký kết: ${contract.startDate}")
-//            Text(text = "Tiền cọc: ${ contract.room_id?.price}")
-//            Text(text = "Tiền thuê: ${contract.room_id?.price}")
-//            Text(text = "Kỳ thanh toán: ${ contract.room_id?.price}")
-//            // Hiển thị danh sách người thuê
-//            contract.user_id?.forEach { user ->
-//                Text(text = "Tenant: ${user.name}, Email: ${user.email}")
-//            }
-//        }
-//    } ?: run {
-//        // Hiển thị thông báo khi không có dữ liệu hợp đồng
-//        Text(text = "Loading contract details...", modifier = Modifier.padding(16.dp))
-//    }
-
-
-        var context = LocalContext.current
+    var context = LocalContext.current
     val contractViewModel: ContractViewModel = viewModel()
     val contractDetail by contractViewModel.contractDetail.observeAsState()
     var showDialog by remember { mutableStateOf(false) }
@@ -458,68 +416,7 @@ fun EditContractDialog(
                     }
 
                 }
-//                Row(
-//
-//                    horizontalArrangement = Arrangement.End,
-//                    modifier = Modifier.fillMaxWidth()
-//                ) {
-//                    TextButton(onClick = onDismiss) {
-//                        Text("Hủy")
-//                    }
-//                    Spacer(modifier = Modifier.width(8.dp))
-//                    Button(onClick = {
-//                        if (isFieldEmpty(userId)) {
-//                            // Hiển thị thông báo lỗi nếu title trống
-//                            Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
-//                            return@Button        }
-//                        if (selectedPhotos.isEmpty()) {
-//                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-//                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
-//                            return@Button
-//                        }
-//
-//
-//                        if (isFieldEmpty(content)) {
-//                            // Hiển thị thông báo lỗi nếu content trống
-//                            Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
-//                            return@Button
-//                        }
-//                        val photoParts = selectedPhotos.mapNotNull { uri ->
-//                            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-//                            prepareMultipartBody(
-//                                context,
-//                                uri,
-//                                "photos_contract",
-//                                ".jpg",
-//                                mimeType
-//                            )
-//                        }
-//
-//                        contractId?.let {
-//                            contractViewModel.updateContract_STAFF(
-//                                contractId = contractId,
-//                                userId = userId,
-//                                content = content,
-//                                photos = photoParts
-//                            )
-//
-//                        }
-//                        onDismiss() // Đóng Dialog
-//                    }) {
-//                        Text("Lưu")
-//                    }
-//                }
             }
         }
-    }
-}
-
-fun getRequestBodyString(requestBody: RequestBody): String {
-    return try {
-        val buffer = Buffer()
-        requestBody.writeTo(buffer)
-        buffer.readUtf8()  // Trả về chuỗi UTF-8 từ RequestBody
-    } catch (e: IOException) {
-        "Error reading RequestBody: ${e.localizedMessage}"
     }
 }

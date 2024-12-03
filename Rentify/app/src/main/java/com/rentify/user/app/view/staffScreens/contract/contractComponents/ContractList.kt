@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.contract.contractComponents
 
+import Contract
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -49,7 +50,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.rentify.user.app.R
-import com.rentify.user.app.model.Contract
 import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 
@@ -60,14 +60,6 @@ fun ContractRoomListScreen(navController: NavController,manageId:String) {
     val context = LocalContext.current
     val searchQuery by viewModel.searchQuery
     val error by viewModel.error.observeAsState()
-//    LaunchedEffect(searchQuery, manageId) {
-//        if (searchQuery.isNotEmpty()) {
-//            viewModel.searchContracts(query = searchQuery, manageId = manageId)
-//            Log.e("log search id", "Searching with manageId: $manageId and query: $searchQuery")
-//        }  else {
-//            viewModel.fetchContractsByBuilding(manageId)
-//        }
-//    }
     LaunchedEffect(searchQuery) {
         if (searchQuery.isNotEmpty()) {
             Log.e("log search id", "Searching with manageId: $manageId and query: $searchQuery")
@@ -110,18 +102,6 @@ fun ContractRoomListScreen(navController: NavController,manageId:String) {
         }
     }
 }
-//    LazyColumn(
-//        verticalArrangement = Arrangement.spacedBy(8.dp),
-//        contentPadding = PaddingValues(10.dp)
-//    ) {
-//            items(contracts) { contract ->
-//                ContractCard(contract , onClick = {
-//
-//                    navController.navigate("contract_detail/${contract._id}")
-//                }, )
-//        }
-//    }
-//}
 
 @Composable
 fun ContractCard(contract: Contract ,onClick: () -> Unit) {
@@ -177,16 +157,4 @@ fun ContractCard(contract: Contract ,onClick: () -> Unit) {
             }
         }
     }
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp)
-//    ) {
-//        Column(modifier = Modifier.padding(16.dp)) {
-//            Text(text = "Building: ${contract.building_id?.nameBuilding ?: "Unknown"}")
-//           Text(text = "Room: ${contract.duration?: "Unknown"}")
-//           // Text(text = "Start Date: ${contract.start_date ?: "N/A"}")
-//          //  Text(text = "End Date: ${contract.end_date ?: "N/A"}")
-//        }
-//    }
 }

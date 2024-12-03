@@ -1,5 +1,7 @@
 package com.rentify.user.app.model
 
+import Contract
+
 data class Post1(
     val userId: String,         // ID của người dùng
     val title: String,          // Tiêu đề bài đăng

@@ -137,7 +137,7 @@ fun AddPostScreens(navController: NavHostController) {
         selectedVideos: List<Uri>
     ): Boolean {
         // Chuẩn bị dữ liệu `RequestBody`
-        val userId = "673e064ef5b7bf786842bdbc".toRequestBody("text/plain".toMediaTypeOrNull())
+        val userId = "674f20e4b81b214ff9bbcbea".toRequestBody("text/plain".toMediaTypeOrNull())
         val buildingId = viewModel.selectedBuilding.value?.toRequestBody("text/plain".toMediaTypeOrNull())
             ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
 
@@ -365,7 +365,7 @@ fun AddPostScreens(navController: NavHostController) {
                 BuildingLabel()
 
                 BuildingOptions(
-                    userId = "673e064ef5b7bf786842bdbc",
+                    userId = "674f1c2975eb705d0ff112b6",
                     selectedBuilding = viewModel.selectedBuilding.value,
                     onBuildingSelected = { buildingId ->
                         viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
@@ -391,18 +391,6 @@ fun AddPostScreens(navController: NavHostController) {
                         modifier = Modifier.padding(8.dp)
                     )
                 }
-
-                //673b57f7d24f9f5e94603b17
-//            ServiceOptions(
-//                selectedService = selectedService,
-//                onServiceSelected = { service ->
-//                    selectedService = if (selectedService.contains(service)) {
-//                        selectedService - service
-//                    } else {
-//                        selectedService + service
-//                    }
-//                }
-//            )
         }
 
         }
@@ -422,16 +410,16 @@ fun AddPostScreens(navController: NavHostController) {
                             Toast.makeText(context, "Tiêu đề không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button        }
 
-                        if (selectedImages.isEmpty()) {
-                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
-                       return@Button
-                        }
-                        if (selectedVideos.isEmpty()) {
-                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
-                     return@Button
-                        }
+//                        if (selectedImages.isEmpty()) {
+//                            // Hiển thị thông báo nếu không có ảnh nào được chọn
+//                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
+//                       return@Button
+//                        }
+//                        if (selectedVideos.isEmpty()) {
+//                            // Hiển thị thông báo nếu không có ảnh nào được chọn
+//                            Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
+//                     return@Button
+//                        }
 
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống

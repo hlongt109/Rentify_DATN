@@ -10,7 +10,6 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.rentify.user.app.model.Building
-import com.rentify.user.app.model.Contract
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.model.UpdatePostRequest
@@ -21,8 +20,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
-import retrofit2.HttpException
-import java.io.IOException
 class PostViewModel : ViewModel() {
     private val _posts = mutableStateOf<List<PostingList>>(emptyList())
     val posts: State<List<PostingList>> = _posts
@@ -211,13 +208,8 @@ fun deletePostWithFeedback(postId: String) {
         getRooms(buildingId) // Gọi API để lấy danh sách phòng cho tòa nhà đã chọn
     }
 
-
-    // hợp đòng user
-    // StateFlow để lưu danh sách hợp đồng
     private val _roomsFromContracts = MutableStateFlow<List<Room_post>>(emptyList())
     val roomsFromContracts: StateFlow<List<Room_post>> = _roomsFromContracts
-
-
 
     fun fetchRoomsFromContracts(userId: String) {
         viewModelScope.launch {

@@ -422,7 +422,7 @@ fun PostImageSection(images: List<String>) {
             ) { pageIndex ->
                 val image = images[pageIndex]
                 Image(
-                    painter = rememberImagePainter("http://192.168.2.106:3000/$image"),
+                    painter = rememberImagePainter("http://10.0.2.2:3000/$image"),
                     contentDescription = "Post Image",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -467,7 +467,7 @@ fun PostVideoSection(videos: List<String>) {
                     .height(300.dp)
             ) { pageIndex ->
                 val videoUrl = videos[pageIndex]
-                VideoPlayer(videoUrl = "http://192.168.2.106:3000/$videoUrl")
+                VideoPlayer(videoUrl = "http://10.0.2.2:3000/$videoUrl")
             }
 
             // Dấu chấm chỉ số video
@@ -512,10 +512,10 @@ fun PostMediaDialog(mediaList: List<String>, currentIndex: Int, onDismiss: () ->
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         if (media.endsWith(".mp4")) {
-                            VideoPlayer(videoUrl = "http://192.168.2.106:3000/$media")
+                            VideoPlayer(videoUrl = "http://10.0.2.2:3000/$media")
                         } else {
                             Image(
-                                painter = rememberImagePainter("http://192.168.2.106:3000/$media"),
+                                painter = rememberImagePainter("http://10.0.2.2:3000/$media"),
                                 contentDescription = "Post Image",
                                 modifier = Modifier.fillMaxWidth()
                             )

@@ -405,7 +405,7 @@ fun AddContractScreens(navController: NavHostController) {
                     BuildingLabel()
 
                     BuildingOptions(
-                        manageId = "673e064ef5b7bf786842bdbc",
+                        manageId = "674f1c2975eb705d0ff112b6",
                         selectedBuilding = selectedBuilding,
                         onBuildingSelected = { buildingId ->
                             selectedBuilding =buildingId // Cập nhật tòa nhà đã chọn
@@ -433,17 +433,6 @@ fun AddContractScreens(navController: NavHostController) {
                         )
                     }
                 }
-                //673b57f7d24f9f5e94603b17
-//            ServiceOptions(
-//                selectedService = selectedService,
-//                onServiceSelected = { service ->
-//                    selectedService = if (selectedService.contains(service)) {
-//                        selectedService - service
-//                    } else {
-//                        selectedService + service
-//                    }
-//                }
-//            )
             }
 
         }

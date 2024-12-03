@@ -71,7 +71,7 @@ fun ContractScreen(navController: NavHostController) {
                         onClickGoBack = { navController.popBackStack() },
                         contractViewModel = viewModel
                     )
-                    ContractRoomListScreen(navController,manageId="673e064ef5b7bf786842bdbc")
+                    ContractRoomListScreen(navController,manageId="674f1c2975eb705d0ff112b6")
                 }
             }
         }
