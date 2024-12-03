@@ -236,10 +236,10 @@ class MainActivity : ComponentActivity() {
                 UpdateRoomScreen(navController = navController, id = id, buildingId = buildingId)
             }
 
-            composable(ROUTER.RENTAL_POST.name) {
-                RentalPostScreen(navController = navController)
 
-            composable("RENTAL_POST") {
+
+
+            composable(ROUTER.RENTAL_POST.name) {
                 RentalPostScreen(navController = navController, title = null)
             }
 
@@ -338,9 +338,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-        }
+    
 
-enum class ROUTER {
+    enum class ROUTER {
         HOME,
         HOME_STAFF,
         SERVICE,
@@ -392,7 +392,7 @@ enum class ROUTER {
         //những màn hình thiên thêm
 
         AppointmentScreen,
-        ADDCONTRAC_STAFFm,
+        ADDCONTRAC_STAFF,
         ListSupportByRoom
     }
 }

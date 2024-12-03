@@ -1,5 +1,7 @@
 package com.rentify.user.app.network
 
+import Contract
+import ContractResponse
 import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
@@ -10,6 +12,13 @@ import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
+import com.rentify.user.app.model.Model.BookingRequest
+import com.rentify.user.app.model.Model.BookingResponse
+import com.rentify.user.app.model.Model.EmptyRoomResponse
+import com.rentify.user.app.model.Model.RoomDetailResponse
+import com.rentify.user.app.model.Model.RoomResponse
+import com.rentify.user.app.model.Model.StatusBookingRequest
+import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
@@ -19,7 +28,6 @@ import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.ServiceOfBuilding
 import com.rentify.user.app.model.SupportModel.SupportResponse
 import com.rentify.user.app.model.User
-import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.model.UserResponse
@@ -208,7 +216,10 @@ interface APIService {
 
     //hien thi lit su co
     @GET("staff/SOS/support/by-building/{building_id}/{status}")
-    suspend fun getListSupport(@Path("building_id") building_id: String, @Path("status") status: Int): Response<List<SupportResponse>>
+    suspend fun getListSupport(
+        @Path("building_id") building_id: String,
+        @Path("status") status: Int
+    ): Response<List<SupportResponse>>
 
     // hiển thị chi tiết sự cố theo phòng
     @GET("staff/SOS/supports/{support_id}")
@@ -222,9 +233,6 @@ interface APIService {
         @Path("id") id: String,
         @Body supportRequest: SupportResponse
     ): Response<SupportResponse>
-}
-        @Path("email") email: String
-    ): Response<User>
 
 
     // API lấy danh sách các tòa nhà theo user_id

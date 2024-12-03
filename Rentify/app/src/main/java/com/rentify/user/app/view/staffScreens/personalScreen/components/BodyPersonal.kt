@@ -51,7 +51,7 @@ fun BodyPersonal(navController: NavHostController) {
 
     // Gọi API để lấy thông tin người dùng khi composable được gọi
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailById("6727bee93361c4e22f074cd5")  // Gọi API với userId hợp lệ
+        viewModel.getUserDetailById("674efa9a06a2ca9e2b3ae2a4")  // Gọi API với userId hợp lệ
     }
 
     Column(

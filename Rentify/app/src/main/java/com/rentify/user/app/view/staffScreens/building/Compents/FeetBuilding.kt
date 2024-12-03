@@ -50,7 +50,7 @@ fun FeetBuilding(navController: NavController){
     val buildingWithRooms by viewModel.buildingWithRooms.observeAsState(emptyList())
     LaunchedEffect(Unit) {
         try {
-            viewModel.fetchBuildingsWithRooms("6727bee93361c4e22f074cd5")
+            viewModel.fetchBuildingsWithRooms("674f1c2975eb705d0ff112b6")
         } catch (e: Exception) {
             e.printStackTrace()
         }
