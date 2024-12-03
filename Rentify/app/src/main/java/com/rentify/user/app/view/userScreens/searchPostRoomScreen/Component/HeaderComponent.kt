@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 import com.rentify.user.app.ui.theme.colorUnTabBar
 
@@ -74,7 +75,8 @@ fun HeaderComponent(navController: NavController) {
 
             IconButton(
                 modifier = Modifier.width(100.dp),
-                onClick = { navController.navigate("ADDPOST?postType=seek")  }
+                onClick = { navController.navigate("${MainActivity.ROUTER.ADDPOST.name}?postType=seek") }
+
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.addr),

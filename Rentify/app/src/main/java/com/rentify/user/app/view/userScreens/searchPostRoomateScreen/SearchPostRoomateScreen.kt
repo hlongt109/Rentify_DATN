@@ -32,8 +32,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
+
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.CustomTabBar
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.HeaderComponent
+import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.PostListScreen
 
 
 @Composable
@@ -56,12 +58,8 @@ fun SearchPostRoomateScreen(navController: NavController) {
                 selectedTabIndex = index
             }
         )
+        PostListScreen(navController,userId = "671a29b84e350b2df4aee4ed")
 
-        when (selectedTabIndex) {
-            0 -> PendingPostsScreen(navController)
-            1 -> ActivePostsScreen(navController)
-            2 -> HiddenPostsScreen(navController)
-        }
     }
 }
 @Preview(showBackground = true, showSystemUi = true)
@@ -69,17 +67,4 @@ fun SearchPostRoomateScreen(navController: NavController) {
 fun GreetingLayoutSearchPostRoomateScreen() {
     SearchPostRoomateScreen(navController = rememberNavController())
 }
-@Composable
-fun PendingPostsScreen(navController: NavController) {
-    // Nội dung cho các bài đăng đang chờ duyệt
-}
 
-@Composable
-fun ActivePostsScreen(navController: NavController) {
-    // Nội dung cho các bài đăng đang hoạt động
-}
-
-@Composable
-fun HiddenPostsScreen(navController: NavController) {
-    // Nội dung cho các bài đăng đã bị ẩn
-}

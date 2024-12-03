@@ -60,7 +60,7 @@ fun ServiceLabel() {
         )
         Spacer(modifier = Modifier.width(3.dp))
         Text(
-            text = "Dịch vụ",
+            text = "Phòng",
             color = Color.Black,
             fontSize = 13.sp,
         )

@@ -86,12 +86,12 @@ fun BuildingOptions(
         crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
     ) {
         // Sử dụng dữ liệu tòa nhà từ ViewModel
-        buildings.forEach { building ->
+        buildings.forEach { buildings ->
             BuildingOption (
-                text = building.nameBuilding,
-                isSelected = selectedBuilding == building._id,
+                text = buildings.nameBuilding,
+                isSelected = selectedBuilding == buildings._id,
                 onClick = {
-                    onBuildingSelected(building._id)
+                    onBuildingSelected(buildings._id)
                 }
             )
         }

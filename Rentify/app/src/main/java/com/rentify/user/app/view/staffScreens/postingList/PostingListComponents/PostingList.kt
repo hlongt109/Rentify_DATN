@@ -40,7 +40,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.Post
+import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlin.math.roundToInt
@@ -48,7 +50,10 @@ data class PostingList(
     val _id: String,
     val title: String,  // Tương ứng với trường title trong API
     val price: String,  // Tương ứng với trường price trong API
-    val address: String // Tương ứng với trường address trong API
+    val address: String, // Tương ứng với trường address trong API
+    val status: String,
+    val building: Building?,
+    val room: Room_post?
 )
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -58,13 +63,16 @@ fun PostListScreen(navController: NavController, userId: String) {
     val context = LocalContext.current
     var isShowDialog by remember { mutableStateOf(false) }
     var postIdToDelete by remember { mutableStateOf<String?>(null) }
+    val searchQuery by viewModel.searchQuery
 
-
-    // Gọi API lấy danh sách bài đăng
-    LaunchedEffect(userId) {
-        viewModel.getPostingList(userId)
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.isNotEmpty()) {
+            Log.e("log search id", "Searching with manageId: $userId and query: $searchQuery")
+            viewModel.searchPosts(query = searchQuery, userId = userId)
+        } else {
+            viewModel.getPostingList(userId)
+        }
     }
-
     // Hiển thị dialog xác nhận xóa
     if (isShowDialog) {
         DialogCompose(
@@ -86,68 +94,80 @@ fun PostListScreen(navController: NavController, userId: String) {
         )
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        items(post, key = { it._id }) { post ->
-            // Quản lý trạng thái vuốt cho từng item
-            val swipeableState = rememberSwipeableState(0)
+    // Kiểm tra danh sách bài đăng
+    if (post.isEmpty() && searchQuery.isNotEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Không có hợp đồng nào.",
+                color = Color.Gray,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(post, key = { it._id }) { post ->
+                // Quản lý trạng thái vuốt cho từng item
+                val swipeableState = rememberSwipeableState(0)
+                val width = LocalDensity.current.run { 200.dp.toPx() }
+                val anchors = mapOf(0f to 0, -width * 0.3f to 1)
 
-            // Giới hạn 30% chiều rộng item
-            val width = LocalDensity.current.run { 200.dp.toPx() }
-            val anchors = mapOf(0f to 0, -width * 0.3f to 1) // 30% chiều rộng item sẽ là ngưỡng vuốt
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .swipeable(
-                        state = swipeableState,
-                        anchors = anchors,
-                        orientation = Orientation.Horizontal
-                    )
-            ) {
-                // Nền khi vuốt sang trái (hiển thị trước)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(90.dp)
-                        .padding(horizontal = 15.dp)
-                        .shadow(elevation = 4.dp, shape = RoundedCornerShape(10.dp))
-                        .clip(RoundedCornerShape(8.dp))
-
-                        .background(Color.Red),
-                    contentAlignment = Alignment.CenterEnd
+                        .swipeable(
+                            state = swipeableState,
+                            anchors = anchors,
+                            orientation = Orientation.Horizontal
+                        )
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        tint = Color.White,
+                    // Nền khi vuốt sang trái (hiển thị trước)
+                    Box(
                         modifier = Modifier
-                            .size(40.dp)
-                            .padding(end = 10.dp)
-                    )
-                }
-
-                // Card hiển thị nội dung chính (luôn nằm trên)
-                PostingListCard(
-                    postlist = post,
-                    onClick = {
-                        navController.navigate("post_detail/${post._id}")
-                    },
-                    modifier = Modifier.graphicsLayer {
-                        translationX = swipeableState.offset.value
+                            .fillMaxWidth()
+                            .height(90.dp)
+                            .padding(horizontal = 15.dp)
+                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.Red),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(end = 10.dp)
+                        )
                     }
-                )
 
-                // Khi vuốt qua ngưỡng xóa
-                LaunchedEffect(swipeableState.offset.value) {
-                    if (swipeableState.offset.value <= -width * 0.3f) {
-                        postIdToDelete = post._id
-                        isShowDialog = true
+                    // Card hiển thị nội dung chính (luôn nằm trên)
+                    PostingListCard(
+                        postlist = post,
+                        onClick = {
+                            navController.navigate("post_detail/${post._id}")
+                        },
+                        modifier = Modifier.graphicsLayer {
+                            translationX = swipeableState.offset.value
+                        }
+                    )
 
-                        swipeableState.snapTo(0)
+                    // Khi vuốt qua ngưỡng xóa
+                    LaunchedEffect(swipeableState.offset.value) {
+                        if (swipeableState.offset.value <= -width * 0.3f) {
+                            postIdToDelete = post._id
+                            isShowDialog = true
+
+                            swipeableState.snapTo(0)
+                        }
                     }
                 }
             }

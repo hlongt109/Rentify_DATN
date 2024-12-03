@@ -129,7 +129,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .height(screenHeight.dp / 1.2f)
+                        .height(screenHeight.dp / 1.3f)
                         .verticalScroll(scrollState)
                 ) {
 

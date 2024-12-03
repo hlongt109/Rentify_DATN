@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingListTopBar
@@ -55,8 +56,8 @@ fun PostingListScreen(navController: NavHostController) {
             ) {
                 // Gọi nội dung chính của màn hình
                 Column {
-                    PostingListTopBar(navController)
-                    PostListScreen(navController,userId = "67362213c6d421d3027fb5a7")
+                    PostingListTopBar(navController, viewModel = viewModel())
+                    PostListScreen(navController,userId = "673e064ef5b7bf786842bdbc")
                 }
             }
         }

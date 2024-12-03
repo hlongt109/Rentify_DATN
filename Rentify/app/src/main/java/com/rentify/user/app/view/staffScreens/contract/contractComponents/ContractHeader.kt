@@ -27,77 +27,59 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
+
 @Composable
 fun ContractTopBar(
-    onClickGoBack: () -> Unit
+    onClickGoBack: () -> Unit,
+    contractViewModel: ContractViewModel
 ) {
-    val searchQuery = remember { mutableStateOf(TextFieldValue("")) }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .padding(top = 10.dp)
-            .background(Color.White), // Màu nền
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
+    Column(modifier = Modifier.fillMaxWidth().background(Color.White)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onClickGoBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
-                    contentDescription = "Back"
+                    contentDescription = "Quay lại"
                 )
-
             }
-            ContractSearchBar()
-
+            ContractSearchBar(
+                searchText = contractViewModel.searchQuery.value,
+                onSearchTextChanged = { contractViewModel.onSearchQueryChange(it) }
+            )
         }
     }
 }
-@Composable
-fun ContractSearchBar() {
-    var searchText by remember { mutableStateOf("") }
 
+
+@Composable
+fun ContractSearchBar(
+    searchText: String,
+    onSearchTextChanged: (String) -> Unit
+) {
     TextField(
-        singleLine = true,
         value = searchText,
-        onValueChange = { searchText = it },
+        onValueChange = onSearchTextChanged,
+        singleLine = true,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
-                tint = Color.Gray,
-                contentDescription = "Nhập thông tin tìm kiếm"
+                contentDescription = "Tìm kiếm"
             )
         },
         trailingIcon = {
             if (searchText.isNotEmpty()) {
-                IconButton(onClick = { searchText = "" }) {
-                    Icon(
-                        imageVector = Icons.Filled.Clear,
-                        contentDescription = "Clear"
-                    )
+                IconButton(onClick = { onSearchTextChanged("") }) {
+                    Icon(imageVector = Icons.Filled.Clear, contentDescription = "Xóa")
                 }
             }
         },
-        placeholder  = {
-            Text(
-                text = "Nhập thông tin tìm kiếm...",
-                color = Color.Gray,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center
-            )
-        },
+        placeholder = { Text("Nhập thông tin tìm kiếm...") },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(end = 20.dp)
-            .padding(vertical =10.dp)
-            .clip(RoundedCornerShape(15.dp))
+            .padding(10.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFFF0F0F0))
     )
 }
-

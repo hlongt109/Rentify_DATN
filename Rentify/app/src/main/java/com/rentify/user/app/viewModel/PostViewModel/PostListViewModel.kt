@@ -10,14 +10,19 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.rentify.user.app.model.Building
+import com.rentify.user.app.model.Contract
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.network.APIService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
+import retrofit2.HttpException
+import java.io.IOException
 class PostViewModel : ViewModel() {
     private val _posts = mutableStateOf<List<PostingList>>(emptyList())
     val posts: State<List<PostingList>> = _posts
@@ -151,21 +156,22 @@ fun deletePostWithFeedback(postId: String) {
         }
     }
 }
-
     private val _buildings = mutableStateOf<List<Building>>(emptyList())
     val buildings: State<List<Building>> = _buildings
+
     // Biến lưu tòa nhà đã chọn (selected building)
     private val _selectedBuilding = mutableStateOf<String?>(null)
     val selectedBuilding: State<String?> = _selectedBuilding
 
     private val apiService: APIService = RetrofitClient.apiService // Kết nối Retrofit instance
 
+    // Lấy danh sách các tòa nhà
     fun getBuildings(userId: String) {
         viewModelScope.launch {
             try {
-                val response = apiService.getBuildings(userId) // Giả sử apiService là service gọi API
+                val response = apiService.getBuildings(userId)
                 if (response.isSuccessful) {
-                    val buildingsResponse = response.body() // BuildingsResponse
+                    val buildingsResponse = response.body()
                     _buildings.value = buildingsResponse?.data ?: emptyList()
                     Log.d("PostViewModel", "Buildings fetched: ${_buildings.value}")
                 } else {
@@ -175,20 +181,19 @@ fun deletePostWithFeedback(postId: String) {
                 Log.e("PostViewModel", "Exception: ${e.message}")
             }
         }
+    }
 
-}
+    // Lưu danh sách phòng
+    private val _rooms = MutableStateFlow<List<Room_post>>(emptyList())
+    val rooms: StateFlow<List<Room_post>> = _rooms
 
-private val _rooms = mutableStateOf<List<Room_post>>(emptyList())
-val rooms: State<List<Room_post>> = _rooms
-
-
-fun getRooms(buildingId: String) {
-    _selectedBuilding.value?.let { buildingId ->
+    // Lấy danh sách phòng theo buildingId
+    fun getRooms(buildingId: String) {
         viewModelScope.launch {
             try {
                 val response = apiService.getRooms(buildingId) // Gọi API để lấy phòng
                 if (response.isSuccessful) {
-                    val roomsResponse = response.body() // RoomsResponse
+                    val roomsResponse = response.body()
                     _rooms.value = roomsResponse?.data ?: emptyList()
                     Log.d("PostViewModel", "Rooms fetched: ${_rooms.value}")
                 } else {
@@ -199,10 +204,180 @@ fun getRooms(buildingId: String) {
             }
         }
     }
-}
 
-fun setSelectedBuilding(buildingId: String) {
-    _selectedBuilding.value = buildingId
-    getRooms(buildingId) // Khi chọn tòa nhà, gọi API để lấy danh sách phòng
-}
+    // Cập nhật tòa nhà đã chọn và lấy danh sách phòng cho tòa nhà đó
+    fun setSelectedBuilding(buildingId: String) {
+        _selectedBuilding.value = buildingId // Cập nhật tòa nhà đã chọn
+        getRooms(buildingId) // Gọi API để lấy danh sách phòng cho tòa nhà đã chọn
+    }
+
+
+    // hợp đòng user
+    // StateFlow để lưu danh sách hợp đồng
+    private val _roomsFromContracts = MutableStateFlow<List<Room_post>>(emptyList())
+    val roomsFromContracts: StateFlow<List<Room_post>> = _roomsFromContracts
+
+
+
+    fun fetchRoomsFromContracts(userId: String) {
+        viewModelScope.launch {
+            try {
+                // Gọi API lấy hợp đồng
+                val response = apiService.getContracts(userId)
+                if (response.isSuccessful) {
+                    val contracts = response.body()?.data ?: emptyList()
+
+                    // Lấy danh sách các phòng từ hợp đồng
+                    val rooms = contracts.mapNotNull { it.room_id }
+                    _roomsFromContracts.value = rooms
+             //       fetchBuildings(contracts)
+                } else {
+                    Log.e("PostViewModel", "Error fetching contracts: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+    private val _buildingss = MutableStateFlow<List<Building>>(emptyList())
+    val buildingss: StateFlow<List<Building>> = _buildingss
+
+    fun fetchBuildingForRoom(roomId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getBuildingFromRoom(roomId)
+                if (response.isSuccessful) {
+                    response.body()?.let { building ->
+                        _buildingss.value = listOf(building) // Cập nhật danh sách tòa nhà
+                        Log.d("PostViewModel", "Building fetched: $building")
+                    } ?: Log.e("PostViewModel", "Building is null")
+                } else {
+                    Log.e("PostViewModel", "Error fetching building: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "Error fetching building: ${e.message}")
+            }
+        }
+    }
+
+    fun updateSelectedBuilding(buildingId: String) {
+        _selectedBuilding.value = buildingId
+    }
+    //update user
+    fun updatePost_user(
+        postId: String,
+        userId: String?,
+        buildingId: String?,
+        roomId: String?,
+        title: String?,
+        content: String?,
+        status: String?,
+        postType: String?,
+        videoFile: List<MultipartBody.Part>?,
+        photoFile: List<MultipartBody.Part>?
+    ) {
+        viewModelScope.launch {
+            try {
+                // Chuẩn bị RequestBody cho từng tham số dạng chuỗi
+                val userIdBody = userId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val buildingIdBody = buildingId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val roomIdBody = roomId?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val titleBody = title?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val contentBody = content?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val statusBody = status?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val postTypeBody = postType?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+                // Gọi API để cập nhật bài viết
+                val response = RetrofitClient.apiService.updatePostuser(
+                    postId,
+                    userIdBody,
+                    buildingIdBody,
+                    roomIdBody,
+                    titleBody,
+                    contentBody,
+                    statusBody,
+                    postTypeBody,
+                    videoFile,
+                    photoFile
+                )
+
+                // Logging thông tin phản hồi để kiểm tra
+                Log.d("updatePost", "API response code: ${response.code()}")
+                Log.d("updatePost", "API response message: ${response.message()}")
+                Log.d("updatePost", "API response body: ${response.body()}")
+
+                // Kiểm tra kết quả trả về từ API
+                if (response.isSuccessful) {
+                    val updatedPost = response.body()
+                    if (updatedPost != null) {
+                        // Trả về kết quả thành công
+                        _updateBookingStatusResult.postValue(Result.success(updatedPost))
+                        Log.d("updatePost", "Update successful: $updatedPost")
+                    } else {
+                        _updateBookingStatusResult.postValue(Result.failure(Exception("Update failed")))
+                        Log.e("updatePost", "Update failed: Response body is null")
+                    }
+                } else {
+                    _updateBookingStatusResult.postValue(Result.failure(Exception("API Error: ${response.message()}")))
+                    Log.e("updatePost", "API Error: ${response.message()}")
+                }
+
+            } catch (e: Exception) {
+                // Nếu có lỗi trong quá trình gọi API, trả về thông báo lỗi
+                _errorMessage.postValue(e.message)
+                Log.e("updatePost", "Exception: ${e.message}", e)
+            }
+        }
+    }
+    val searchQuery = mutableStateOf("")
+
+    // LiveData để chứa kết quả tìm kiếm bài đăng
+
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> get() = _error
+
+    fun searchPosts(query: String, userId: String? = null) {
+        viewModelScope.launch {
+            try {
+                // Gọi API với tham số `query` và `userId`
+                val response = if (userId != null) {
+                    apiService.searchPosts(query, userId)
+                } else {
+                    apiService.searchPosts(query)
+                }
+
+                if (response.isSuccessful) {
+                    // Kiểm tra nếu body của phản hồi không null
+                    val data = response.body()
+                    if (!data.isNullOrEmpty()) {
+                        Log.d("API Response", "Query: $query, UserId: $userId, Data: $data")
+                        _posts.value = data // Gán danh sách bài đăng vào LiveData
+                    } else {
+                        Log.e("API Response Error", "Query: $query, UserId: $userId, No data found")
+                        _posts.value = emptyList()
+                        _error.postValue("Không tìm thấy bài đăng nào")
+                    }
+                } else {
+                    Log.e("API Response Error", "Query: $query, UserId: $userId, Code: ${response.code()}")
+                    _posts.value = emptyList()
+                    _error.postValue("Không tìm thấy bài đăng nào (Mã lỗi: ${response.code()})")
+                }
+            } catch (e: Exception) {
+                // Xử lý lỗi khác (ví dụ: lỗi mạng, lỗi parse JSON)
+                Log.e("API Error", "Lỗi khi tìm kiếm bài đăng: ${e.message}")
+                _error.postValue("Lỗi khi tìm kiếm bài đăng: ${e.message}")
+            }
+        }
+    }
+
+
+    /**
+     * Xử lý khi giá trị tìm kiếm thay đổi
+     */
+    fun onSearchQueryChange(newQuery: String) {
+        searchQuery.value = newQuery
+        if (newQuery.isNotEmpty()) {
+            searchPosts(newQuery) // Tự động tìm kiếm khi giá trị thay đổi
+        }
+    }
 }

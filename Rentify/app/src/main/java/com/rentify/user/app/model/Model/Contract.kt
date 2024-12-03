@@ -1,19 +1,23 @@
-package com.rentify.user.app.model.Model
-
 import com.google.gson.annotations.SerializedName
+import com.rentify.user.app.model.Building
+import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.model.User
 
 data class Contract(
     val _id: String,
-    val building_id: BuildingInfoOfContract,
-    val content: String,
-    val created_at: String,
-    val end_date: String,
     val manage_id: String,
-    val photos_contract: List<String>,
-    val room_id: RoomInfoOfContract,
+    val user_id: List<User>?, // Thông tin người dùng
+    val room_id: Room_post?, // Thông tin phòng
+    val building_id: Building?,
+    val photos_contract: List<String>?,
+    val content: String,
     val start_date: String,
+    val end_date: String,
     val status: Int,
-    val user_id: List<UserInfoOfContract>
+    val createdAt: String,
+    val duration: String,
+    val startDay: String,
+    val paymentCycle: String
 )
 
 data class ContractResponse(

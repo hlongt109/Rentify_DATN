@@ -111,3 +111,9 @@ data class UpdatePostRequest(
     val video: List<String>
 )
 
+
+
+data class ContractsResponse(
+    val status: Int,
+    val data: List<Contract>
+)

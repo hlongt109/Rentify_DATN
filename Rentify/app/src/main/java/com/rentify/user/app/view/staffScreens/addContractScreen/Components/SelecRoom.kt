@@ -1,30 +1,26 @@
-package com.rentify.user.app.view.userScreens.AddPostScreen.Components
+package com.rentify.user.app.view.staffScreens.addContractScreen.Components
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
 import androidx.compose.ui.Alignment
@@ -35,16 +31,24 @@ import androidx.compose.ui.res.painterResource
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.google.accompanist.flowlayout.FlowRow
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.TriangleShape
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
+import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 
 @Composable
-fun ServiceLabel() {
+fun RoomLabel() {
     Row(
         modifier = Modifier
             .border(
@@ -60,7 +64,7 @@ fun ServiceLabel() {
         )
         Spacer(modifier = Modifier.width(3.dp))
         Text(
-            text = "Dịch vụ",
+            text = "Phòng",
             color = Color.Black,
             fontSize = 13.sp,
         )
@@ -68,28 +72,32 @@ fun ServiceLabel() {
 }
 
 @Composable
-fun ServiceOptions(
-    selectedService: List<String>,
-    onServiceSelected: (String) -> Unit
+fun RoomOptions(
+    buildingId: String,
+    selectedRoom: String?,
+    onRoomSelected: (String) -> Unit
 ) {
+    val roomViewModel: ContractViewModel = viewModel()
+    val rooms by roomViewModel.rooms.observeAsState(emptyList())
+
+
+    // Gọi API lấy tòa nhà theo user_id
+    LaunchedEffect(buildingId) {
+        roomViewModel.fetchRooms(buildingId)
+    }
+
     FlowRow(
         modifier = Modifier.padding(5.dp),
         mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
         crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
     ) {
-        listOf(
-            "Điều hoà",
-            "Kệ bếp",
-            "Tủ lạnh",
-            "Bình nóng lạnh",
-            "Máy giặt",
-            "Bàn ghế"
-        ).forEach { service ->
-            ServiceOption(
-                text = service,
-                isSelected = selectedService.contains(service),
+        // Sử dụng dữ liệu tòa nhà từ ViewModel
+        rooms.forEach { rooms ->
+            RoomOption(
+                text = rooms.room_name,
+                isSelected = selectedRoom == rooms._id,
                 onClick = {
-                    onServiceSelected(service)
+                    onRoomSelected(rooms._id)
                 }
             )
         }
@@ -97,19 +105,19 @@ fun ServiceOptions(
 }
 
 @Composable
-fun ServiceOption(
+fun RoomOption(
     text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
             .border(
                 width = 1.dp,
                 color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
                 shape = RoundedCornerShape(9.dp)
             )
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
             .padding(0.dp)
     ) {
         Text(
@@ -146,4 +154,6 @@ fun ServiceOption(
         }
     }
 }
+
+
 

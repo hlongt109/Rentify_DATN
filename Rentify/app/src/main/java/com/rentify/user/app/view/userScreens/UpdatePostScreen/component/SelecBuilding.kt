@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.AddPostScreen.Components
+package com.rentify.user.app.view.userScreens.UpdatePostScreen.component
 
 import androidx.compose.foundation.background
 
@@ -8,38 +8,21 @@ import androidx.compose.foundation.layout.padding
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.IconButton
 
 
 import androidx.compose.ui.Alignment
@@ -48,28 +31,22 @@ import androidx.compose.ui.draw.shadow
 
 import androidx.compose.ui.res.painterResource
 
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 
 import androidx.compose.material3.Icon
 
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
-
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.google.accompanist.flowlayout.FlowRow
-
+import com.rentify.user.app.model.Building
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 
 
 @Composable
-fun ComfortableLabel() {
+fun BuildingLabel() {
     Row(
         modifier = Modifier
             .border(
@@ -85,49 +62,56 @@ fun ComfortableLabel() {
         )
         Spacer(modifier = Modifier.width(3.dp))
         Text(
-            text = "Tiện nghi",
+            text = "Tòa",
             color = Color.Black,
             fontSize = 13.sp,
         )
     }
 }
-
 @Composable
-fun ComfortableOptions(
-    selectedComfortable: List<String>,
-    onComfortableSelected: (String) -> Unit
+fun BuildingOptions(
+    roomId: String,
+    selectedBuilding: String?
 ) {
+    val buildingViewModel: PostViewModel = viewModel()
+    val buildings by buildingViewModel.buildingss.collectAsState(initial = emptyList())
+
+    LaunchedEffect(roomId) {
+        buildingViewModel.fetchBuildingForRoom(roomId)
+    }
+
     FlowRow(
         modifier = Modifier.padding(5.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+        mainAxisSpacing = 10.dp,
+        crossAxisSpacing = 10.dp
     ) {
-        listOf(
-            "Vệ sinh khép kín",
-            "Gác xép",
-            "Ra vào vân tay",
-            "Ban công",
-            "Nuôi pet",
-            "Không chung chủ"
-        ).forEach { option ->
-            ComfortableOption(
-                text = option,
-                isSelected = selectedComfortable.contains(option),
+        buildings.forEach { building ->
+            BuildingOption(
+                text = building.nameBuilding,
+                isSelected = building._id == selectedBuilding,
                 onClick = {
-                    onComfortableSelected(option)
+                    buildingViewModel.updateSelectedBuilding(building._id) // Cập nhật khi chọn tòa nhà
                 }
             )
         }
     }
 }
 
+
+
+
+
+
 @Composable
-fun ComfortableOption(
+fun BuildingOption(
     text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() })
             .shadow(3.dp, shape = RoundedCornerShape(9.dp))
             .border(
                 width = 1.dp,
@@ -137,7 +121,7 @@ fun ComfortableOption(
             .background(color = Color.White, shape = RoundedCornerShape(9.dp))
             .padding(0.dp)
     ) {
-        Text(
+        androidx.compose.material.Text(
             text = text,
             color = if (isSelected) Color(0xFF44acfe) else Color(0xFF000000),
             fontSize = 13.sp,
@@ -171,5 +155,6 @@ fun ComfortableOption(
         }
     }
 }
+
 
 
