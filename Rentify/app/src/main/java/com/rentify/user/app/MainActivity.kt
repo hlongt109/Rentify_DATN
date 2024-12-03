@@ -34,6 +34,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.ReportScreen.Components.ListSupportByRoom
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.UpdatePostScreen
 import com.rentify.user.app.view.staffScreens.addContractScreen.AddContractScreens
 import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
@@ -225,10 +226,18 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("buildingId")
                 ListRoomScreen(navController = navController, buildingId = buildingId)
             }
-            composable("UpdateRoomScreen/{id}") { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("id")
-                UpdateRoomScreen(navController = navController, id = id ?: "")
+            composable("ListSupportByRoom/{buildingId}") { backStackEntry ->
+                val buildingId = backStackEntry.arguments?.getString("buildingId")
+                ListSupportByRoom(navController = navController, buildingId = buildingId)
             }
+            composable("UpdateRoomScreen/{id}/{buildingId}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id") ?: ""
+                val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
+                UpdateRoomScreen(navController = navController, id = id, buildingId = buildingId)
+            }
+
+            composable(ROUTER.RENTAL_POST.name) {
+                RentalPostScreen(navController = navController)
 
             composable("RENTAL_POST") {
                 RentalPostScreen(navController = navController, title = null)
@@ -329,8 +338,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+        }
 
-    enum class ROUTER {
+enum class ROUTER {
         HOME,
         HOME_STAFF,
         SERVICE,
@@ -382,6 +392,8 @@ class MainActivity : ComponentActivity() {
         //những màn hình thiên thêm
 
         AppointmentScreen,
-        ADDCONTRAC_STAFF
+        ADDCONTRAC_STAFFm,
+        ListSupportByRoom
     }
 }
+

@@ -14,7 +14,7 @@ const Room = new Schema({
     size: { type: String, required: true },// vd: 40m2 nên sẽ để là String
     video_room: { type: Array },
     photos_room: { type: Array },
-    service:[{ // lấy danh sách dịch vụ của toà nhà click chọn các dịch phòng có
+    service:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Service",
     }],

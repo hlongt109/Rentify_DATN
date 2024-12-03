@@ -13,6 +13,7 @@ import com.google.gson.Gson
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.ServiceOfBuilding
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +29,7 @@ import java.io.IOException
 class RoomViewModel(private val context: Context) : ViewModel() {
     private val _roomNames = MutableLiveData<List<String>>()
     val roomNames: LiveData<List<String>> get() = _roomNames
+
     private val apiService = RetrofitService().ApiService
     private val _addRoomResponse = MutableLiveData<Response<AddRoomResponse>>()
     val addRoomResponse: LiveData<Response<AddRoomResponse>> get() = _addRoomResponse
@@ -47,6 +49,27 @@ class RoomViewModel(private val context: Context) : ViewModel() {
     val loading: LiveData<Boolean> get() = _loading
     private val _successMessage = MutableLiveData<String?>()
     val successMessage: LiveData<String?> get() = _successMessage
+
+    private val _services = MutableLiveData<List<ServiceOfBuilding>>()
+    val services: LiveData<List<ServiceOfBuilding>> get() = _services
+
+    fun fetchServiceOfBuilding(id: String){
+        viewModelScope.launch {
+            try {
+                val response = apiService.getServiceOfBuilding(id)
+                if(response.isSuccessful){
+                    _services.value = response.body()
+                }else{
+                    Log.e("API_ERROR", "Error fetching data: ${response.message()}")
+                    _error.value = "Failed to fetch buildings: ${response.message()}"
+                }
+            }catch (e: Exception){
+                Log.e("API_EXCEPTION", "Exception: ${e.message}", e)
+                _error.value = "An error occurred: ${e.message}"
+            }
+        }
+    }
+
     // API LẤY DANH SÁCH TÒA THEO MANAGERID
     fun fetchBuildingsWithRooms(manager_id: String) {
         viewModelScope.launch {
@@ -132,7 +155,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         service: Any,
         amenities: Any,
         limit_person: Int,
-        status: Int,
+        status: String,
         photoUris: List<Uri>,
         videoUris: List<Uri>
     ) {
@@ -279,11 +302,12 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         roomName: String,
         roomType: String,
         description: String,
-        price: Double,
+        price: String,
         size: String,
         service: Any,
         amenities: Any,
-        limit_person: Int,
+        limit_person: String,
+        status: String,
         photoUris: List<Uri>,
         videoUris: List<Uri>
     ) {
@@ -318,6 +342,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     "price" to createPartFromString(price.toString()),
                     "size" to createPartFromString(size),
                     "limit_person" to createPartFromString(limit_person.toString()),
+                    "status" to createPartFromString(status.toString()),
                     "service" to createPartFromString(parsedService),
                     "amenities" to createPartFromString(parsedAmenities)
                 )

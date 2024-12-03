@@ -1,16 +1,7 @@
 package com.rentify.user.app.network
 
-import Contract
-import ContractResponse
-import com.rentify.user.app.model.Model.BookingRequest
-import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.District
-import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.Province
-import com.rentify.user.app.model.Model.RoomDetailResponse
-import com.rentify.user.app.model.Model.RoomResponse
-import com.rentify.user.app.model.Model.StatusBookingRequest
-import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.Building
@@ -24,10 +15,14 @@ import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
+import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.ServiceOfBuilding
+import com.rentify.user.app.model.SupportModel.SupportResponse
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
@@ -145,7 +140,7 @@ interface APIService {
     ): Response<StatusBookingRequest>
 
 
-    // Thêm phòng mới _vanphuc:
+    // Thêm phòng mới _vanphuc:_vanphuc
     @Multipart
     @POST("staff/rooms/addRoom")
     suspend fun addRoom(
@@ -169,29 +164,29 @@ interface APIService {
         @Part file: MultipartBody.Part // Tệp file cần upload
     ): Response<ApiResponse>
 
-    //    get danh sách _vanphuc:
+    //    get danh sách _vanphuc:_vanphuc
     @GET("staff/rooms/buildings-by-manager/{manager_id}")
     suspend fun getBuildingsWithRooms(
         @Path("manager_id") manager_id: String
     ): Response<List<BuildingWithRooms>>
 
-    // Lấy tên danh sách phòng theo tòa nhà
+    // Lấy tên danh sách phòng theo tòa nhà_vanphuc
     @GET("staff/rooms/RoomsForBuilding/{building_id}")
     suspend fun getRoomsForBuilding(@Path("building_id") building_id: String): List<Room>
 
-    // hiển thị chi tiết phòng theo id tự động sinh ra trong mongodb
+    // hiển thị chi tiết phòng theo id tự động sinh ra trong mongodb_vanphuc
     @GET("staff/rooms/RoomDetail/{id}")
     suspend fun getRoomDetailById(
         @Path("id") id: String
     ): Response<Room>
 
-    // xóa phòng 👽:
+    // xóa phòng 👽:_vanphuc
     @DELETE("staff/rooms/DeleteRooms/{id}")
     suspend fun deleteRoom(
         @Path("id") id: String
     ): Response<ApiResponse>
 
-    // UPDATE PHÒNG
+    // UPDATE PHÒNG🍕_vanphuc
     @Multipart
     @PUT("staff/rooms/updateRoom/{id}")
     suspend fun updateRoom(
@@ -201,9 +196,33 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>?
     ): Response<ApiResponse>
 
-    // LẤY THÔNG TIN NGƯỜI DÙNG
-    @GET("staff/users/usermail/{email}")
+    // LẤY THÔNG TIN NGƯỜI DÙNG😬 _vanphuc
+    @GET("staff/users/getUser/{id}")
     suspend fun getUserDetail(
+        @Path("id") id: String
+    ): Response<UserResponse>
+
+    // lay dich vu cua toa _vanphuc
+    @GET("staff/rooms/building/{id}/services")
+    suspend fun getServiceOfBuilding(@Path("id") id: String): Response<List<ServiceOfBuilding>>
+
+    //hien thi lit su co
+    @GET("staff/SOS/support/by-building/{building_id}/{status}")
+    suspend fun getListSupport(@Path("building_id") building_id: String, @Path("status") status: Int): Response<List<SupportResponse>>
+
+    // hiển thị chi tiết sự cố theo phòng
+    @GET("staff/SOS/supports/{support_id}")
+    suspend fun getSupportDetail(
+        @Path("support_id") roomId: String
+    ): Response<SupportResponse>
+
+    // update
+    @PUT("staff/SOS/supports/{id}")
+    suspend fun updateSupport(
+        @Path("id") id: String,
+        @Body supportRequest: SupportResponse
+    ): Response<SupportResponse>
+}
         @Path("email") email: String
     ): Response<User>
 

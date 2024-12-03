@@ -1,7 +1,5 @@
 package com.rentify.user.app.model
 
-import android.os.Parcel
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
@@ -16,12 +14,17 @@ data class Room(
     val size: String,               // Kích thước phòng (ví dụ: "40m2")
     val video_room: List<String>,  // URL video của phòng (nếu có)
     val photos_room: List<String>, // Danh sách URL ảnh của phòng
-    val service: List<String> = listOf(), // Danh sách ID dịch vụ liên quan đến phòng
+    val service: List<ServiceOfRoom>, // Danh sách ID dịch vụ liên quan đến phòng
     val amenities: List<String> = listOf(),  // Tiện nghi của phòng
     val limit_person: Int,           // Giới hạn số người
     val status: Int,                // 0: Chưa cho thuê, 1: Đã cho thuê
     val createdAt: String? = null,  // Ngày tạo
     val updatedAt: String? = null   // Ngày cập nhật
+)
+
+data class ServiceOfRoom(
+    val _id: String,
+    val name: String
 )
 
 data class AddRoomResponse(
@@ -61,4 +64,9 @@ data class BuildingWithRooms(
     val rooms: List<Room>
 )
 
+// tao mot data class de hien thi du lieu tra ve
+data class ServiceOfBuilding(
+    @SerializedName("_id")val _id: String,
+    @SerializedName("name")val name: String,
+)
 

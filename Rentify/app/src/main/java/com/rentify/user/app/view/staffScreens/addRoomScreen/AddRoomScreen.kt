@@ -55,7 +55,6 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMed
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
-import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,6 +72,7 @@ fun AddRoomScreen(
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     var selectedService by remember { mutableStateOf(listOf<String>()) }
+
     val scrollState = rememberScrollState()
 
 
@@ -81,6 +81,7 @@ fun AddRoomScreen(
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
+    var Status by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>())}
     var selectedVideos by remember {mutableStateOf(listOf<Uri>())}
@@ -338,6 +339,40 @@ fun AddRoomScreen(
                         )
                     )
                 }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                ) {
+                    Text(text = "Trạng thái *", color = Color(0xFF7c7b7b), fontSize = 13.sp)
+                    TextField(
+                        value = Status,
+                        onValueChange = { Status = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(53.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFFcecece),
+                            unfocusedIndicatorColor = Color(0xFFcecece),
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFf7f7f7),
+                            focusedContainerColor = Color.White
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Nhập trạng thái",
+                                fontSize = 13.sp,
+                                color = Color(0xFF898888)
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 8.dp),
+                        textStyle = TextStyle(
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.cairo_regular))
+                        )
+                    )
+                }
 
 
                 // Tiện nghi
@@ -368,7 +403,9 @@ fun AddRoomScreen(
                             } else {
                                 selectedService + service
                             }
-                        })
+                        },
+                        buildingId = buildingId!!
+                    )
                 }
 
 
@@ -386,6 +423,7 @@ fun AddRoomScreen(
 
 
         // Nút thêm phòng
+        // Nút thêm phòng
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -400,12 +438,39 @@ fun AddRoomScreen(
                             // Validate input fields
                             if (postTitle.isBlank() || numberOfRoommates.isBlank() ||
                                 currentPeopleCount.isBlank() || area.isBlank() ||
-                                roomPrice.isBlank()
+                                roomPrice.isBlank() || Status.isBlank()
                             ) {
                                 errorMessage = "Vui lòng điền đầy đủ thông tin."
                                 return@Button
                             }
 
+                            // Kiểm tra giới hạn người
+                            val limitPerson = currentPeopleCount.toIntOrNull()
+                            if (limitPerson == null) {
+                                errorMessage = "Giới hạn người phải là số nguyên."
+                                return@Button
+                            }
+
+                            // Kiểm tra diện tích
+                            val roomArea = area.toDoubleOrNull()
+                            if (roomArea == null) {
+                                errorMessage = "Diện tích phải là số."
+                                return@Button
+                            }
+
+                            // Kiểm tra giá phòng
+                            val roomPriceValue = roomPrice.toDoubleOrNull()
+                            if (roomPriceValue == null) {
+                                errorMessage = "Giá phòng phải là số."
+                                return@Button
+                            }
+
+                            // Kiểm tra trạng thái
+                            val roomStatusValue = Status.toIntOrNull()
+                            if (roomStatusValue != 0 && roomStatusValue != 1) {
+                                errorMessage = "Trạng thái chỉ được nhập 0 hoặc 1."
+                                return@Button
+                            }
 
                             errorMessage = ""
                             buildingId?.let { id ->
@@ -414,18 +479,18 @@ fun AddRoomScreen(
                                     roomName = postTitle,
                                     roomType = selectedRoomTypes.joinToString(","),
                                     description = numberOfRoommates,
-                                    price = roomPrice.toDoubleOrNull() ?: 0.0,
+                                    price = roomPriceValue,
                                     size = area,
-                                    status = 1,
+                                    status = Status,
                                     videoUris = selectedVideos,
                                     photoUris = selectedImages,
-                                    service =selectedService,
+                                    service = selectedService,
                                     amenities = selectedComfortable,
-                                    limit_person = currentPeopleCount.toIntOrNull() ?: 3
+                                    limit_person = limitPerson
                                 )
-                                Log.d("TAG","dịch vụ : ${selectedService}")
-                                Log.d("TAG","tiện nghi  : ${selectedComfortable}")
-                                Log.d("TAG","NGười  : ${currentPeopleCount}")
+                                Log.d("TAG", "dịch vụ : ${selectedService}")
+                                Log.d("TAG", "tiện nghi  : ${selectedComfortable}")
+                                Log.d("TAG", "Người  : ${currentPeopleCount}")
                             }
                         }
                     },
@@ -455,7 +520,6 @@ fun AddRoomScreen(
                 }
             }
 
-
             // Loading overlay (optional)
             if (isLoading) {
                 Box(
@@ -469,5 +533,6 @@ fun AddRoomScreen(
                 }
             }
         }
+
     }
 }

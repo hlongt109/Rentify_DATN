@@ -25,7 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.R
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.flowlayout.FlowRow
+import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 
 @Composable
@@ -55,26 +60,27 @@ fun ServiceLabel() {
 @Composable
 fun ServiceOptions(
     selectedService: List<String>,
-    onServiceSelected: (String) -> Unit
+    onServiceSelected: (String) -> Unit,
+    roomViewModel: RoomViewModel = viewModel(),
+    buildingId: String
 ) {
+    val listServices by roomViewModel.services.observeAsState()
+
+    LaunchedEffect(buildingId) {
+        roomViewModel.fetchServiceOfBuilding(buildingId)
+    }
+
     FlowRow(
         modifier = Modifier.padding(5.dp),
         mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
         crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
     ) {
-        listOf(
-            "Điều hoà",
-            "Kệ bếp",
-            "Tủ lạnh",
-            "Bình nóng lạnh",
-            "Máy giặt",
-            "Bàn ghế"
-        ).forEach { service ->
+        listServices?.forEach { service ->
             ServiceOption(
-                text = service,
-                isSelected = selectedService.contains(service),
+                text = service.name,
+                isSelected = selectedService.contains(service._id),
                 onClick = {
-                    onServiceSelected(service)
+                    onServiceSelected(service._id)
                 }
             )
         }

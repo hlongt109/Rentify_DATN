@@ -68,7 +68,7 @@ enum class LocationLevel {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PostRoomScreen(navController: NavController) {
-    val list = FakeData().rooms
+//    val list = FakeData().rooms
     val listPost = FakeData().listPost
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -265,12 +265,12 @@ fun PostRoomScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        items(list) { item ->
-                            ItemTypeRoom(
-                                item,
-                                isSelected = item == selectedRoom,
-                                onClick = { selectedRoom = item })
-                        }
+//                        items(list) { item ->
+//                            ItemTypeRoom(
+//                                item,
+//                                isSelected = item == selectedRoom,
+//                                onClick = { selectedRoom = item })
+//                        }
                     }
 
                     Spacer(modifier = Modifier.padding(top = 15.dp))

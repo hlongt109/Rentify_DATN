@@ -113,21 +113,21 @@ const normalizePaths = (room) => {
   return room;
 };
 router.get('/RoomDetail/:id', async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid room ID.' });
-  }
-  try {
-    const room = await Room.findById(id).lean();
-    if (!room) {
-      return res.status(404).json({ error: 'Room not found.' });
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid room ID.' });
     }
-    const normalizedRoom = normalizePaths(room);
-    res.status(200).json(normalizedRoom);
-  } catch (error) {
-    console.error('Error fetching room details:', error.message);
-    res.status(500).json({ error: 'Failed to fetch room details. Please try again later.' });
-  }
+    try {
+        const room = await Room.findById(id).lean().populate("service", "name"); 
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found.' });
+        }
+        const normalizedRoom = normalizePaths(room);
+        res.status(200).json(normalizedRoom);
+    } catch (error) {
+        console.error('Error fetching room details:', error.message);
+        res.status(500).json({ error: 'Failed to fetch room details. Please try again later.' });
+    }
 });
 // _vanphuc :thêm phòng  theo tòa nhà  😶‍🌫️
 router.post(
@@ -285,37 +285,64 @@ router.put(
         : typeof service === "string"
           ? JSON.parse(service)
           : room.service;
-
-      // Cập nhật thông tin phòng
-      room.building_id = building_id || room.building_id;
-      room.room_name = room_name || room.room_name;
-      room.room_type = room_type || room.room_type;
-      room.description = description || room.description;
-      room.price = price || room.price;
-      room.size = size || room.size;
-      room.video_room = video_room;
-      room.photos_room = photos_room;
-      room.service = parsedService;
-      room.amenities = parsedAmenities;
-      room.limit_person = limit_person || room.limit_person;
-      room.status = status !== undefined ? status : room.status;
-      room.updated_at = new Date().toISOString();
-
-      // Lưu thông tin đã cập nhật
-      const updatedRoom = await room.save();
-
-      res.status(200).json({
-        message: "Cập nhật phòng thành công",
-        room: updatedRoom,
-      });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ message: "Lỗi khi cập nhật phòng", error: error.message });
+  
+        // Cập nhật thông tin phòng
+        room.building_id = building_id || room.building_id;
+        room.room_name = room_name || room.room_name;
+        room.room_type = room_type || room.room_type;
+        room.description = description || room.description;
+        room.price = price || room.price;
+        room.size = size || room.size;
+        room.video_room = video_room;
+        room.photos_room = photos_room;
+        room.service = parsedService;
+        room.amenities = parsedAmenities;
+        room.limit_person = limit_person || room.limit_person;
+        room.status = status !== undefined ? status : room.status;
+        room.updated_at = new Date().toISOString();
+  
+        // Lưu thông tin đã cập nhật
+        const updatedRoom = await room.save();
+  
+        res.status(200).json({
+          message: "Cập nhật phòng thành công",
+          room: updatedRoom,
+        });
+      } catch (error) {
+        console.error(error);
+        res
+          .status(500)
+          .json({ message: "Lỗi khi cập nhật phòng", error: error.message });
+      }
     }
+  );
+  
+  // API lấy danh sách dịch vụ của một tòa nhà cụ thể
+router.get('/building/:id/services', async (req, res) => {
+  const { id } = req.params;
+
+  // Kiểm tra ID là ObjectId hợp lệ
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid building ID.' });
   }
-);
+
+  try {
+      // Tìm tòa nhà theo ID và populate dịch vụ
+      const building = await Building.findById(id)
+          .populate('service', 'name');
+
+      // Nếu không tìm thấy tòa nhà
+      if (!building) {
+          return res.status(404).json({ error: 'Building not found.' });
+      }
+
+      // Trả về danh sách dịch vụ của tòa nhà
+      res.status(200).json(building.service);
+  } catch (error) {
+      console.error('Error fetching building services:', error.message);
+      res.status(500).json({ error: 'Failed to fetch building services. Please try again later.' });
+  }
+});
 
 
 // router.get("/get-room-buildingId/:buildingId", async (req, res) => {

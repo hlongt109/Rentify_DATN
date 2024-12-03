@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 
 data class User(
-    val _id: String,
     val username: String,
     val password: String,
     val email: String,
@@ -35,3 +34,23 @@ data class Landlord(
     @SerializedName("phoneNumber")val phoneNumber: String,
     @SerializedName("profile_picture_url")val profile_picture_url: String
 )
+
+// lay use de xu ly profile
+data class UserResponse(
+    @SerializedName("_id")val _id: String,
+    @SerializedName("username")val username: String,
+    @SerializedName("password")val password: String,
+    @SerializedName("email")val email: String,
+    @SerializedName("phoneNumber")val phoneNumber: String,
+    @SerializedName("role")val role: String, // vai trò (admin, user, nhan vien, . ..)
+    @SerializedName("name")val name: String,
+    @SerializedName("dob")val dob: String, // ngày sinh
+    @SerializedName("gender")val gender: String, // giới tính
+    @SerializedName("address")val address: String,
+    @SerializedName("profile_picture_url")val profile_picture_url: String,
+    @SerializedName("verified")val verified: Boolean,
+    @SerializedName("landlord_id")val landlord_id : String,
+    @SerializedName("created_at")val created_at: String,
+    @SerializedName("updated_at")val updated_at: String
+)
+
