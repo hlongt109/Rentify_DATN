@@ -245,7 +245,7 @@
 
     function goBack() { window.history.back(); }
     // 
-    // let userId = localStorage.getItem('user_id');
+    let landlord_id = localStorage.getItem('user_id');
     // console.log("userId :", userId)
     let buildings = [];
     let isMonthLoad = true;
@@ -259,7 +259,7 @@
     // ============ Building ===========
     const getListBuildings = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${userId}`);
+            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${landlord_id}`);
             const data = await res.json();
             if (res.ok) {
                 buildings = data.data;

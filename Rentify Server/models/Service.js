@@ -13,7 +13,7 @@ const Service = new Schema({
     name: { type: String},
     description: { type: String}, // mô tả
     price: { type: Number},
-    photos: { type: [String] },
+    photos: { type: [String] }, // lưu ảnh icon 
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
