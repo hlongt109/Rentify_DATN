@@ -17,44 +17,91 @@ class SupportViewModel : ViewModel() {
     val error: LiveData<String> = _error
 
     // LiveData for supports list
-    private val _supports = MutableLiveData<List<SupportResponse>?>()
-    val supports: MutableLiveData<List<SupportResponse>?> get() = _supports
+    private val _supports = MutableLiveData<SupportResponse>()
+    val supports: LiveData<SupportResponse> get() = _supports
 
     // LiveData for individual support detail
-    private val _supportDetail = MutableLiveData<SupportResponse>()
-    val supportDetail: LiveData<SupportResponse> get() = _supportDetail
+    private val _supportDetail = MutableLiveData<SupportResponse?>()
+    val supportDetail: MutableLiveData<SupportResponse?> get() = _supportDetail
+
+    private val _listSupport = MutableLiveData<List<SupportResponse?>>()
+    val listSupport: LiveData<List<SupportResponse?>> get() = _listSupport
 
     // LiveData for error messages
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _selectedSupport = MutableLiveData<SupportResponse?>()
+    val selectedSupport: LiveData<SupportResponse?> = _selectedSupport
+
+    fun fetchSupport(building_id: String, status: Int) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getListSupport(building_id, status)
+                if (response.isSuccessful && response.body() != null) {
+                    _listSupport.value = response.body()
+
+                } else {
+                    _errorMessage.postValue("Failed to load support: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching support: ${e.message}")
+            }
+        }
+    }
+
     fun fetchSupportDetail(roomId: String) {
         viewModelScope.launch {
             try {
-                // Make the API call to fetch support details
-                val response: Response<List<SupportResponse>> = apiService.getSupportDetail(roomId)
-
-                // Check if the response is successful
+                val response: Response<SupportResponse> = apiService.getSupportDetail(roomId)
                 if (response.isSuccessful) {
-                    val supportsList = response.body()
-
-                    if (supportsList.isNullOrEmpty()) {
-                        _errorMessage.postValue("No support details found for this room.")
-                    } else {
-                        // Post the support details (if available)
-                        _supports.postValue(supportsList)
-
-                        // Post the first support detail, or adjust based on your requirement
-                        _supportDetail.postValue(supportsList.first())
-                    }
+                    supportDetail.value = response.body()
                 } else {
-                    // Handle failure case (API response is not successful)
                     _errorMessage.postValue("Failed to load support details: ${response.message()}")
                 }
             } catch (e: Exception) {
-                // Handle network errors or exceptions (e.g., no internet connection)
                 _errorMessage.postValue("Error fetching support details: ${e.message}")
             }
         }
     }
+
+    // update thay đổi status từ 0 thành 1
+    fun updateSupportDetail(supportId: String, updatedSupport: SupportResponse, buildingId: String, status: Int) {
+        viewModelScope.launch {
+            try {
+                val response: Response<SupportResponse> = apiService.updateSupport(supportId, updatedSupport)
+                if (response.isSuccessful) {
+                    val updatedResponse = response.body()
+                    if (updatedResponse != null) {
+                        _supportDetail.postValue(updatedResponse)
+                        // Cập nhật danh sách hiện tại
+                        _listSupport.value = _listSupport.value?.map { support ->
+                            if (support?._id == supportId) {
+                                updatedSupport.copy(status = status)
+                            } else {
+                                support
+                            }
+                        }
+                    } else {
+                        _errorMessage.postValue("Update successful but no data returned from the server.")
+                    }
+                } else {
+                    _errorMessage.postValue("Failed to update support: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error updating support: ${e.message}")
+            }
+        }
+    }
+
+
+
+    fun setSelectedSupport(support: SupportResponse) {
+        _selectedSupport.postValue(support)
+    }
+
+    fun clearSelectedSupport() {
+        _selectedSupport.postValue(null)
+    }
+
 }

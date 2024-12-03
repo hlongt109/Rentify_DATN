@@ -136,11 +136,20 @@ interface APIService {
     @GET("staff/rooms/building/{id}/services")
     suspend fun getServiceOfBuilding(@Path("id") id: String): Response<List<ServiceOfBuilding>>
 
+    //hien thi lit su co
+    @GET("staff/SOS/support/by-building/{building_id}/{status}")
+    suspend fun getListSupport(@Path("building_id") building_id: String, @Path("status") status: Int): Response<List<SupportResponse>>
+
     // hiển thị chi tiết sự cố theo phòng
-    @GET("staff/SOS/supports/{room_id}")
+    @GET("staff/SOS/supports/{support_id}")
     suspend fun getSupportDetail(
-        @Path("room_id") roomId: String
-    ): Response<List<SupportResponse>>
+        @Path("support_id") roomId: String
+    ): Response<SupportResponse>
 
-
+    // update
+    @PUT("staff/SOS/supports/{id}")
+    suspend fun updateSupport(
+        @Path("id") id: String,
+        @Body supportRequest: SupportResponse
+    ): Response<SupportResponse>
 }
