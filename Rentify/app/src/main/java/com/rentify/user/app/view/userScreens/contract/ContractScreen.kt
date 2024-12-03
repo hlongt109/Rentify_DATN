@@ -22,10 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,10 +39,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.gson.Gson
 import com.rentify.user.app.R
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.userScreens.cancelContract.components.ContractInfoRow
 import com.rentify.user.app.view.userScreens.cancelContract.components.CustomButton
 import com.rentify.user.app.view.userScreens.contract.components.ContractTopBar
 import com.rentify.user.app.viewModel.ContractViewModel
+import com.rentify.user.app.viewModel.LoginViewModel
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -49,7 +56,16 @@ fun ContractScreen(
     navController: NavController,
     contractViewModel: ContractViewModel = viewModel()
 ) {
-    val userId = "67453db554300d0f1c2b16c8"
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+    var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
+
     val contractDetails by contractViewModel.contract.observeAsState()
 
     val imageUrls = contractDetails?.firstOrNull()?.let { details ->

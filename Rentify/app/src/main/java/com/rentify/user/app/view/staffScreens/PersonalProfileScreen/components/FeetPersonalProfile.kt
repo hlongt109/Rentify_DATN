@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -22,6 +23,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -35,9 +39,15 @@ fun FeetPersonalProfile(navController: NavHostController){
     val viewModel: UserViewModel = viewModel()
     val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
     val context = LocalContext.current
-
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailById("674efa9a06a2ca9e2b3ae2a4")  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserDetailById(userId)  // Lấy dữ liệu người dùng khi composable được gọi
     }
     Column {
             Row(
@@ -141,9 +151,15 @@ fun FeetPersonalProfile1(navController: NavHostController){
     val viewModel: UserViewModel = viewModel()
     val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
     val context = LocalContext.current
-
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailById("674f1c2975eb705d0ff112b6")  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserDetailById(userId)  // Lấy dữ liệu người dùng khi composable được gọi
     }
     Column {
         Row(

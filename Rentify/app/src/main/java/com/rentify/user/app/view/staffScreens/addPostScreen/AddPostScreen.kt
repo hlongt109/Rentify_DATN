@@ -56,12 +56,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingOptions
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomOptions
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.SelectMedia
+import com.rentify.user.app.viewModel.LoginViewModel
 
 
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -110,9 +113,16 @@ fun AddPostScreens(navController: NavHostController) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
 
     val viewModel: PostViewModel = viewModel()
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
     var title by remember { mutableStateOf("") }
      var content by remember { mutableStateOf("") }
@@ -137,7 +147,7 @@ fun AddPostScreens(navController: NavHostController) {
         selectedVideos: List<Uri>
     ): Boolean {
         // Chuẩn bị dữ liệu `RequestBody`
-        val userId = "674f20e4b81b214ff9bbcbea".toRequestBody("text/plain".toMediaTypeOrNull())
+        val userId = userId.toRequestBody("text/plain".toMediaTypeOrNull())
         val buildingId = viewModel.selectedBuilding.value?.toRequestBody("text/plain".toMediaTypeOrNull())
             ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
 

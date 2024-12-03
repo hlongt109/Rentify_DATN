@@ -36,6 +36,8 @@ import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.BookingRequest
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.ImageComponent
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutComfort
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutInterior
@@ -46,6 +48,7 @@ import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutS
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.baidangPreview
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.datLichXemPhong
 import com.rentify.user.app.viewModel.BookingViewModel
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomDetailViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -79,7 +82,15 @@ fun LayoutRoomdetails2(
 
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
-    val userId = "67453db554300d0f1c2b16c8"
+
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+    var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
 
     val imageUrls = roomDetail.value?.photos_room?.map { photoPath ->
         "http://10.0.2.2:3000/$photoPath"

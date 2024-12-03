@@ -33,6 +33,9 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -47,10 +50,19 @@ fun FeetBuilding(navController: NavController){
     val viewModel: RoomViewModel = viewModel(
         factory = RoomViewModel.RoomViewModeFactory(context)
     )
+
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+
     val buildingWithRooms by viewModel.buildingWithRooms.observeAsState(emptyList())
     LaunchedEffect(Unit) {
         try {
-            viewModel.fetchBuildingsWithRooms("674f1c2975eb705d0ff112b6")
+            viewModel.fetchBuildingsWithRooms(userId)
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -11,18 +11,23 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.contract.contractComponents.ContractRoomListScreen
 import com.rentify.user.app.view.contract.contractComponents.ContractTopBar
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingListTopBar
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 
@@ -37,6 +42,15 @@ fun ContractScreenPreview() {
 @Composable
 fun ContractScreen(navController: NavHostController) {
     val viewModel: ContractViewModel = viewModel()
+
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    var userId = loginViewModel.getUserData().userId
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -71,7 +85,7 @@ fun ContractScreen(navController: NavHostController) {
                         onClickGoBack = { navController.popBackStack() },
                         contractViewModel = viewModel
                     )
-                    ContractRoomListScreen(navController,manageId="674f1c2975eb705d0ff112b6")
+                    ContractRoomListScreen(navController,manageId=userId)
                 }
             }
         }

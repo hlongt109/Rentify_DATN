@@ -70,6 +70,8 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
 import com.rentify.user.app.view.staffScreens.addContractScreen.Components.BuildingOptions
 import com.rentify.user.app.view.staffScreens.addContractScreen.Components.RoomOptions
@@ -78,8 +80,7 @@ import com.rentify.user.app.view.staffScreens.addContractScreen.Components.Selec
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
 
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
-
-
+import com.rentify.user.app.viewModel.LoginViewModel
 
 
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -132,12 +133,19 @@ fun AddContractScreens(navController: NavHostController) {
     var endDate by remember { mutableStateOf("") }
 
     val viewModel: ContractViewModel = viewModel()
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
-    var userId by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var selectedBuilding by remember { mutableStateOf<String?>(null) }
     var selectedRoom by remember { mutableStateOf<String?>(null) }
+
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    var userId = loginViewModel.getUserData().userId
 
     fun logRequestBody(requestBody: RequestBody) {
         val buffer = Buffer()
