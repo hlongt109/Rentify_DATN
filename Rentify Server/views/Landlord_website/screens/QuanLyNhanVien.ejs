@@ -88,6 +88,84 @@
         .btn-role.user {
             background-color: #6f42c1;
         }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+
+            color: white;
+            border-radius: 10px 10px 0 0;
+            padding: 15px;
+        }
+
+        .modal-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            padding: 12px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .select2-container .select2-selection--single {
+            height: 38px;
+            font-size: 14px;
+            border-radius: 5px;
+            padding: 8px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        button[type="button"].btn-close {
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        button[type="button"].btn-close:hover {
+            color: #ff0000;
+        }
     </style>
 </head>
 
@@ -106,17 +184,17 @@
                 <!-- Modal: Đặt ngay trước thẻ đóng </body> -->
                 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel"
                     aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                                <h5 class="modal-title text-primary" id="addUserModalLabel">Thêm Người Dùng Mới</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form id="addUserForm">
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">Username</label>
+                                        <label for="username" class="form-label">Tên đăng nhập</label>
                                         <input type="text" class="form-control" id="username" required>
                                     </div>
                                     <div class="mb-3">
@@ -124,47 +202,48 @@
                                         <input type="email" class="form-control" id="email" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="password" class="form-label">Password</label>
+                                        <label for="password" class="form-label">Mật khẩu</label>
                                         <input type="password" class="form-control" id="password" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="role" class="form-label">Role</label>
+                                        <label for="role" class="form-label">Chức vụ</label>
                                         <select class="form-select" id="role" required>
-                                            <option value="staffs">Staffs</option>
-                                            <option value="ban">Ban</option>
+                                            <option value="staffs">Nhân viên</option>
+                                            <option value="ban">Bị cấm</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="phone" class="form-label">Phone Number</label>
+                                        <label for="phone" class="form-label">Số điện thoại</label>
                                         <input type="text" class="form-control" id="phone" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="name" class="form-label">Full Name</label>
+                                        <label for="name" class="form-label">Họ và tên</label>
                                         <input type="text" class="form-control" id="name" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="dob" class="form-label">Date of Birth</label>
+                                        <label for="dob" class="form-label">Ngày sinh</label>
                                         <input type="date" class="form-control" id="dob" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="gender" class="form-label">Gender</label>
+                                        <label for="gender" class="form-label">Giới tính</label>
                                         <select class="form-select" id="gender" required>
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                            <option value="other">Other</option>
+                                            <option value="male">Nam</option>
+                                            <option value="female">Nữ</option>
+                                            <option value="other">Khác</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="address" class="form-label">Address</label>
+                                        <label for="address" class="form-label">Địa chỉ</label>
                                         <input type="text" class="form-control" id="address" required>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary">Add</button>
+                                    <button type="submit" class="btn btn-primary w-100 mt-3">Thêm</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
+
 
 
 
