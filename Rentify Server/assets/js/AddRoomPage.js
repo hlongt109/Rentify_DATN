@@ -173,6 +173,7 @@ document.getElementById('addUpdateRoomForm').addEventListener('submit', async fu
     const roomType = document.getElementById('room_type').value;
     const description = document.getElementById('description').value;
     const price = document.getElementById('price').value;
+    const sale = document.getElementById('price-sale').value;
     const size = document.getElementById('size').value;
     const limitPerson = document.getElementById('limit_person').value;
     const status = document.getElementById('status').value;
@@ -197,6 +198,7 @@ document.getElementById('addUpdateRoomForm').addEventListener('submit', async fu
     formData.append('room_type', roomType);
     formData.append('description', description);
     formData.append('price', price);
+    formData.append('sale', sale);
     formData.append('size', size);
 
     // Thêm từng phần tử của amenities vào FormData
