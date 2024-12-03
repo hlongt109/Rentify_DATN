@@ -1,6 +1,5 @@
 package com.rentify.user.app.view.staffScreens.UpdateRoomScreen
 
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -49,11 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -69,12 +64,9 @@ import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.RoomTy
 import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceLabelUpdate
 import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceOptionsUpdate
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMedia
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -130,6 +122,7 @@ fun UpdateRoomScreen(
             viewModel.fetchRoomDetailById(id)
         }
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -544,12 +537,12 @@ fun UpdateRoomScreen(
                                         roomName = postTitle,
                                         roomType = selectedRoomTypes.firstOrNull() ?: "Default",
                                         description = mota,
-                                        price = roomPrice.toDoubleOrNull() ?: 0.0,
+                                        price = roomPrice,
                                         size = area,
                                         service = selectedService,
                                         amenities = selectedComfortable,
-                                        limit_person = numberOfRoommates.toIntOrNull() ?: 0,
-                                        status= Status,
+                                        limit_person = numberOfRoommates,
+                                        status = Status,
                                         photoUris = selectedImages,
                                         videoUris = selectedVideos
                                     )
@@ -570,7 +563,6 @@ fun UpdateRoomScreen(
                         )
                     }
                 } else {
-                    // Hiển thị trạng thái loading hoặc lỗi nếu không có thông tin
                     androidx.compose.material3.Text(text = "Loading room details...")
                 }
             }

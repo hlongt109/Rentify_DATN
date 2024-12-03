@@ -423,6 +423,7 @@ fun AddRoomScreen(
 
 
         // Nút thêm phòng
+        // Nút thêm phòng
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -437,12 +438,39 @@ fun AddRoomScreen(
                             // Validate input fields
                             if (postTitle.isBlank() || numberOfRoommates.isBlank() ||
                                 currentPeopleCount.isBlank() || area.isBlank() ||
-                                roomPrice.isBlank()
+                                roomPrice.isBlank() || Status.isBlank()
                             ) {
                                 errorMessage = "Vui lòng điền đầy đủ thông tin."
                                 return@Button
                             }
 
+                            // Kiểm tra giới hạn người
+                            val limitPerson = currentPeopleCount.toIntOrNull()
+                            if (limitPerson == null) {
+                                errorMessage = "Giới hạn người phải là số nguyên."
+                                return@Button
+                            }
+
+                            // Kiểm tra diện tích
+                            val roomArea = area.toDoubleOrNull()
+                            if (roomArea == null) {
+                                errorMessage = "Diện tích phải là số."
+                                return@Button
+                            }
+
+                            // Kiểm tra giá phòng
+                            val roomPriceValue = roomPrice.toDoubleOrNull()
+                            if (roomPriceValue == null) {
+                                errorMessage = "Giá phòng phải là số."
+                                return@Button
+                            }
+
+                            // Kiểm tra trạng thái
+                            val roomStatusValue = Status.toIntOrNull()
+                            if (roomStatusValue != 0 && roomStatusValue != 1) {
+                                errorMessage = "Trạng thái chỉ được nhập 0 hoặc 1."
+                                return@Button
+                            }
 
                             errorMessage = ""
                             buildingId?.let { id ->
@@ -451,18 +479,18 @@ fun AddRoomScreen(
                                     roomName = postTitle,
                                     roomType = selectedRoomTypes.joinToString(","),
                                     description = numberOfRoommates,
-                                    price = roomPrice.toDoubleOrNull() ?: 0.0,
+                                    price = roomPriceValue,
                                     size = area,
                                     status = Status,
                                     videoUris = selectedVideos,
                                     photoUris = selectedImages,
-                                    service =selectedService,
+                                    service = selectedService,
                                     amenities = selectedComfortable,
-                                    limit_person = currentPeopleCount.toIntOrNull() ?: 3
+                                    limit_person = limitPerson
                                 )
-                                Log.d("TAG","dịch vụ : ${selectedService}")
-                                Log.d("TAG","tiện nghi  : ${selectedComfortable}")
-                                Log.d("TAG","NGười  : ${currentPeopleCount}")
+                                Log.d("TAG", "dịch vụ : ${selectedService}")
+                                Log.d("TAG", "tiện nghi  : ${selectedComfortable}")
+                                Log.d("TAG", "Người  : ${currentPeopleCount}")
                             }
                         }
                     },
@@ -492,7 +520,6 @@ fun AddRoomScreen(
                 }
             }
 
-
             // Loading overlay (optional)
             if (isLoading) {
                 Box(
@@ -506,5 +533,6 @@ fun AddRoomScreen(
                 }
             }
         }
+
     }
 }

@@ -302,11 +302,11 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         roomName: String,
         roomType: String,
         description: String,
-        price: Double,
+        price: String,
         size: String,
         service: Any,
         amenities: Any,
-        limit_person: Int,
+        limit_person: String,
         status: String,
         photoUris: List<Uri>,
         videoUris: List<Uri>
