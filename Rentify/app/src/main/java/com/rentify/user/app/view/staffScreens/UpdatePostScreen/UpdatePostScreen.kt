@@ -84,9 +84,12 @@ import com.google.accompanist.flowlayout.FlowRow
 //import com.google.android.exoplayer2.MediaItem
 //import com.google.android.exoplayer2.ui.PlayerView
 import com.rentify.user.app.model.PostingDetail
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -152,6 +155,14 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     val buildingId = viewModel.selectedBuilding.value
 
     val postDetail by viewModel.postDetail.observeAsState()
+
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    var userId = loginViewModel.getUserData().userId
 
     LaunchedEffect(postId) {
         postId?.let {
@@ -353,7 +364,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 Column {
                     ComfortableLabel()
                     BuildingOptions(
-                        userId = "674f1c2975eb705d0ff112b6",
+                        userId = userId,
                         selectedBuilding = selectedBuilding, // Truyền giá trị ban đầu
                         onBuildingSelected = { selectedBuilding ->
                             viewModel.setSelectedBuilding(selectedBuilding) // Cập nhật tòa nhà đã chọn
@@ -425,7 +436,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         postId?.let {
                             viewModel.updatePost(
                                 postId = postId,
-                                userId = "674f1c2975eb705d0ff112b6",
+                                userId = userId,
                                 buildingId = buildingId,
                                 roomId = selectedRoom1,
                                 title = title,

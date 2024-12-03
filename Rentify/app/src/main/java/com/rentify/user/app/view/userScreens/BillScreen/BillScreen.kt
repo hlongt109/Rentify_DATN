@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,22 +35,34 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity.ROUTER
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.userScreens.BillScreen.Component.CustomTabBar
 import com.rentify.user.app.view.userScreens.contract.components.ContractTopBar
 import com.rentify.user.app.viewModel.InvoiceViewModel
+import com.rentify.user.app.viewModel.LoginViewModel
 
 @Composable
 fun BillScreen(
     navController: NavController,
     invoiceViewModel: InvoiceViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+    var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
     var selectedTabIndex by remember { mutableStateOf(0) }
+
     val tabs = listOf(
         "Chưa thanh toán" to "unpaid",
         "Đã thanh toán" to "paid"
     )
-    val userId = "67453db554300d0f1c2b16c8"
 
     Box(
         modifier = Modifier
