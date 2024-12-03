@@ -22,7 +22,7 @@ router.get('/staffs_mgr/list/:id', async (req, res) => {
             return res.render("Landlord_website/screens/QuanLyNhanVien.ejs", { data: [] });
         }
 
-        res.render("Landlord_website/screens/QuanLyNhanVien.ejs", { data }); // Truyền data tới EJS
+        res.json({ data });
     } catch (error) {
         console.error("Error fetching services:", error.message);
         res.status(500).render("Landlord_website/screens/QuanLyNhanVien", { data: [] });

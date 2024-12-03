@@ -182,44 +182,7 @@
                         <th>Act</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <% data.forEach((data, index)=> { %>
-                        <tr>
-                            <td>
-                                <%= index + 1 %>
-                            </td>
-                            <td>
-                                <%= data.username %>
-                            </td>
-                            <td>
-                                <%= data.email %>
-                            </td>
-                            <td>
-                                <%= data.phoneNumber %>
-                            </td>
-                            <td>
-                                <%= data.address %>
-                            </td>
-                            <td>
-                                <span class="btn-role <%= data.role.toLowerCase() %>">
-                                    <%= data.role %>
-                                </span>
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <!-- Nút sửa -->
-                                    <button class="btn btn-warning"
-                                        onclick="editUser('<%= data._id %>', '<%= data.role %>')">Sửa</button>
 
-                                </div>
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-danger"
-                                        onclick="confirmDelete('<%= data._id %>')">Xóa</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <% }) %>
-                </tbody>
                 <tbody id="user-table">
                     <!-- Dữ liệu sẽ được render động -->
                 </tbody>
@@ -229,6 +192,67 @@
         </div>
 
         <script>
+            // Lấy userId từ localStorage
+            const userId = localStorage.getItem('user_id');
+            console.log("User ID:", userId);  // Kiểm tra userId
+
+            // Lấy dữ liệu từ API
+            async function fetchAndDisplayUsers() {
+                const response = await fetch(`/api/staffs_mgr/list/${userId}`);
+                console.log("API Response:", response);  // Kiểm tra phản hồi từ API
+
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log("Data from API:", result);  // Kiểm tra dữ liệu nhận được từ API
+                    const users = result.data;
+
+                    // Render dữ liệu vào bảng
+                    renderTable(users);
+                } else {
+                    console.error("Lỗi khi lấy dữ liệu:", response.statusText);
+                }
+            }
+
+
+
+
+            // Hàm render dữ liệu lên bảng
+            function renderTable(users) {
+                const tableBody = document.getElementById('user-table');
+                tableBody.innerHTML = ''; // Xóa dữ liệu cũ trong bảng
+
+                // Nếu không có người dùng nào
+                if (users.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7">Không có dữ liệu</td></tr>';
+                    return;
+                }
+
+                // Duyệt qua dữ liệu người dùng và thêm vào bảng
+                users.forEach((user, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${user.username || 'Không có tên'}</td>
+            <td>${user.email || 'Không có email'}</td>
+            <td>${user.phoneNumber || 'Chưa có'}</td>
+            <td>${user.address || 'Chưa có'}</td>
+            <td><span class="btn-role ${user.role ? user.role.toLowerCase() : ''}">${user.role || 'Chưa có'}</span></td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="editUser('${user._id}', '${user.role}')">Edit</button>
+                    <button class="btn btn-danger" onclick="confirmDelete('${user._id}')">Delete</button>
+                </div>
+            </td>
+        `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                fetchAndDisplayUsers(); // Gọi hàm khi trang đã tải xong
+            });
+
 
             //them
             document.getElementById("btnAdd").addEventListener("click", () => {
@@ -244,6 +268,7 @@
                 const role = document.getElementById("role").value;
 
                 // Gửi thông tin tới server
+                let userId = localStorage.getItem('user_id');
                 const response = await fetch(`/api/staffs_mgr/add/${userId}`, {//api add
                     method: 'POST',
                     headers: {
@@ -331,38 +356,7 @@
 
 
 
-            //trang tuwj ddoong
-            const ROWS_PER_PAGE = 10;
 
-            function renderTable(users, currentPage) {
-                const tableBody = document.getElementById('user-table');
-                tableBody.innerHTML = '';
-
-                const start = (currentPage - 1) * ROWS_PER_PAGE;
-                const end = start + ROWS_PER_PAGE;
-                const paginatedUsers = users.slice(start, end);
-
-                paginatedUsers.forEach((user, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-    <td>${start + index + 1}</td>
-    <td>${user.username}</td>
-    <td>${user.email}</td>
-    <td>${user.phoneNumber}</td>
-    <td>${user.address}</td>
-    <td><span class="btn-role ${user.role.toLowerCase()}">${user.role}</span></td>
-    <td>
-        <div class="btn-group">
-            <a href="/apiadmin/product/delete/${user._id}"
-                onclick="return confirm('Bạn có chắc muốn xóa tài khoản này?')">
-                <button type="submit" class="btn btn-danger">Xóa</button>
-            </a>
-        </div>
-    </td>
-    `;
-                    tableBody.appendChild(row);
-                });
-            }
 
             function setupPagination(users) {
                 const pageCount = Math.ceil(users.length / ROWS_PER_PAGE);

@@ -25,7 +25,7 @@ router.get("/services_mgr/list/:id", async (req, res) => {
             return res.render("Landlord_website/screens/QuanLydichVu", { data: [] });
         }
 
-        res.render("Landlord_website/screens/QuanLydichVu", { data }); // Truyền data tới EJS
+        res.json({ data }); // Truyền data tới EJS
     } catch (error) {
         console.error("Error fetching services:", error.message);
         res.status(500).render("Landlord_website/screens/QuanLydichVu", { data: [] });
@@ -204,7 +204,7 @@ router.delete("/services1/:id", async (req, res) => {
 })
 
 // service list
-router.get("/get-services/:landlord_id", async (req, res) => { 
+router.get("/get-services/:landlord_id", async (req, res) => {
     try {
         const landlordId = req.params.landlord_id;
 
@@ -221,7 +221,7 @@ router.get("/get-services/:landlord_id", async (req, res) => {
         const objectId = new mongoose.Types.ObjectId(landlordId);
 
         // Tìm dịch vụ có liên quan đến landlord_id
-        const data = await Service.find({ landlord_id: objectId }); 
+        const data = await Service.find({ landlord_id: objectId });
 
         if (data && data.length > 0) {
             // Nếu có dữ liệu dịch vụ, trả về danh sách dịch vụ

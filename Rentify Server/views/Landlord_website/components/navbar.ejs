@@ -90,12 +90,12 @@
         </a>
       </li>
       <li>
-        <a id="service-link">
+        <a href="/landlord/services_mgr">
           <i class="fas fa-cogs"></i> <span>Quản lý dịch vụ</span>
         </a>
       </li>
       <li>
-        <a id="user-link">
+        <a href="/landlord/staffs_mgr">
           <i class="fas fa-user"></i> <span>Quản lý nhân viên</span>
         </a>
       </li>
@@ -131,13 +131,7 @@
 
   <script>
 
-    // list service theo ID cua account login 
-    let userId = localStorage.getItem('user_id');
-    document.getElementById('service-link').href = `/landlord/api/services_mgr/list/${userId}`;
-    //list user theo ID cuar landlord
-    document.getElementById('user-link').href = `/landlord/api/staffs_mgr/list/${userId}`;
-    //list support theo ID cuar landlord
-    // document.getElementById('support-link').href = `/landlord/api/support_mgr/list/${userId}`;
+
 
     // Lấy phần tử logout-link và logout-dialog
     const logoutLink = document.getElementById('logout-link');

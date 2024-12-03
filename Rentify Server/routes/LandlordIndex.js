@@ -24,22 +24,8 @@ router.get('/home', (req, res, next) => {
 });
 
 /////
-router.get('/api/services_mgr/list/:id', async (req, res) => {
-  const userId = req.params.id;
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: "Invalid landlord_id format" });
-  }
-
-  const landlordObjectId = new mongoose.Types.ObjectId(userId);
-  const data = await Service.find({ landlord_id: landlordObjectId });
-
-  if (data.length === 0) {
-    console.log("Không có dữ liệu");
-    return res.render("Landlord_website/screens/QuanLydichVu", { data: [] });
-  }
-
-  res.render('Landlord_website/screens/QuanLydichVu', { data }, (err, html) => {
+router.get('/services_mgr', async (req, res) => {
+  res.render('Landlord_website/screens/QuanLydichVu', (err, html) => {
     if (err) {
       return res.status(500).send(err);
     }
@@ -50,22 +36,8 @@ router.get('/api/services_mgr/list/:id', async (req, res) => {
   });
 });
 /////
-router.get('/api/staffs_mgr/list/:id', async (req, res) => {
-  const userId = req.params.id;
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: "Invalid landlord_id format" });
-  }
-
-  const landlordObjectId = new mongoose.Types.ObjectId(userId);
-  const data = await User.find({ landlord_id: landlordObjectId });
-
-  if (data.length === 0) {
-    console.log("Không có dữ liệu");
-    return res.render("Landlord_website/screens/QuanLyNhanVien", { data: [] });
-  }
-
-  res.render('Landlord_website/screens/QuanLyNhanVien', { data }, (err, html) => {
+router.get('/staffs_mgr', async (req, res) => {
+  res.render('Landlord_website/screens/QuanLyNhanVien', (err, html) => {
     if (err) {
       return res.status(500).send(err);
     }
@@ -77,7 +49,6 @@ router.get('/api/staffs_mgr/list/:id', async (req, res) => {
 });
 /////
 router.get('/support_mgr', async (req, res) => {
-
   res.render('Landlord_website/screens/Support/Support_Landlord', (err, html) => {
     if (err) {
       return res.status(500).send(err);
