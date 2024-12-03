@@ -117,29 +117,52 @@ class InvoiceStaffViewModel(
 
     fun getInvoiceList(staffId: String) {
         viewModelScope.launch {
-            _uiState.value = InvoiceUiState.Loading
+//           _isLoading.postValue(true)
             repository.getListInvoice(staffId).fold(
                 onSuccess = { response ->
                     // Kiểm tra và xử lý dữ liệu từ InvoiceData
                     if (response.status == 200 && response.data != null) {
                         _uiState.value = InvoiceUiState.Success(response.data)
-
-
                         // Phân loại hóa đơn dựa trên danh sách paid và unpaid
                         _paidInvoices.value = response.data.paid
                         _unpaidInvoices.value = response.data.unpaid
                     } else {
-                        _uiState.value =
-                            InvoiceUiState.Error(response.message ?: "Không có dữ liệu")
+                        Log.d("Error", "getInvoiceList: ${response.message}")
+                        _uiState.value = InvoiceUiState.Error(response.message ?: "Không có dữ liệu")
+                        _errorMessage.postValue(response.message)
                     }
                 },
                 onFailure = { exception ->
                     _uiState.value = InvoiceUiState.Error(exception.message ?: "Lỗi không xác định")
-//                    _uiState.value = InvoiceUiState.Error(exception.localizedMessage)
+                   _errorMessage.postValue(exception.message ?: "Lỗi không xác định")
                 }
             )
         }
     }
+
+//    fun getInvoiceList(staffId: String){
+//        _isLoading.postValue(true)
+//        viewModelScope.launch {
+//            try {
+//                val response = repository.getListInvoice(staffId)
+//                if(response.isSuccessful){
+//                    val responseBody = response.body()
+//                    if(responseBody != null){
+//                        val result = responseBody.data
+//                        _isLoading.postValue(false)
+//                        if(result != null){
+//                            _paidInvoices.value = result.paid
+//                            _unpaidInvoices.value = result.unpaid
+//                        }else{
+//                            _errorMessage.postValue(responseBody.message)
+//                        }
+//                    }
+//                }
+//            }catch (e: Exception){
+//                Log.d("ErrorInvoice", "getInvoiceList: $e")
+//            }
+//        }
+//    }
 
     fun addBill(
         userId: String,

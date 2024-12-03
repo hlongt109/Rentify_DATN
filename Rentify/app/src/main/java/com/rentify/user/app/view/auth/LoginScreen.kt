@@ -83,15 +83,23 @@ fun LoginScreenApp(navigator: NavController) {
     // Quan sát thông báo thành công
     val successMessage by loginViewModel.successMessage.observeAsState()
     val errorMessage by loginViewModel.errorMessage.observeAsState()
+    val isLoading by loginViewModel.isLoading.observeAsState()
+    val successRole by loginViewModel.successRole.observeAsState()
 
     // Hiển thị thông báo khi đăng nhập thành công
-    LaunchedEffect(successMessage) {
-        successMessage?.let {
+    LaunchedEffect(successRole) {
+        successRole?.let {
             // Xử lý chuyển màn khi đăng nhập thành công
                 role ->
             if (role == "user") {
+                successMessage?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
                 navigator.navigate(ROUTER.HOME.name)
             } else if (role == "staffs") {
+                successMessage?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
                 navigator.navigate(MainActivity.ROUTER.HOME_STAFF.name)
             }
         }
@@ -131,6 +139,7 @@ fun LoginScreenApp(navigator: NavController) {
                     onValueChange = { newText ->
                         username = newText
                         loginViewModel.clearEmailError()
+                        loginViewModel.clearError()
                     },
                     placeholder = "Email",
                     isFocused = remember { mutableStateOf(isFocusedEmail) },
@@ -145,6 +154,7 @@ fun LoginScreenApp(navigator: NavController) {
                     onValueChange = { newText ->
                         password = newText
                         loginViewModel.clearPasswordError()
+                        loginViewModel.clearError()
                     },
                     placeholder = "Password",
                     isFocused = remember { mutableStateOf(isFocusedPass) },
@@ -169,9 +179,6 @@ fun LoginScreenApp(navigator: NavController) {
                 Button(
                     onClick = {
                         loginViewModel.login(username, password)
-                        successMessage?.let {
-                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()

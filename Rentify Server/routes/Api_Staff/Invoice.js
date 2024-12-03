@@ -5,6 +5,7 @@ const Building = require("../../models/Building");
 const Room = require("../../models/Room");
 const User = require("../../models/User");
 const { route } = require("./Room");
+const { status } = require("express/lib/response");
 // Liệt kê tất cả hóa đơn
 router.get("/listInvoiceStaff/:staffId", async (req, res) => {
   try {
@@ -16,12 +17,17 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
     }
 
     // Lấy danh sách các tòa nhà mà nhân viên quản lý
-    const buildings = await Building.find({ staff_id: staffId }).select("_id");
+    const buildings = await Building.find({ manager_id: staffId }).select(
+      "_id"
+    );
 
     if (buildings.length === 0) {
       return res
-        .status(404)
-        .json({ message: "Không tìm thấy tòa nhà nào được quản lý" });
+        .status(400)
+        .json({
+          status: 400,
+          message: "Không tìm thấy tòa nhà nào được quản lý",
+        });
     }
 
     const buildingIds = buildings.map((building) => building._id);
@@ -33,7 +39,7 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
 
     if (rooms.length === 0) {
       return res
-        .status(404)
+        .status(400)
         .json({ message: "Không tìm thấy phòng nào trong tòa nhà" });
     }
 
@@ -56,7 +62,11 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
 
     // Kiểm tra nếu không có hóa đơn
     if (invoices.length === 0) {
-      return res.status(404).json({ message: "Không tìm thấy hóa đơn nào" });
+      return res.status(404).json({
+        status: 404,
+        message: "Không tìm thấy hóa đơn",
+        data: {},
+      });
     }
     // Chia hóa đơn thành 2 loại: đã thanh toán và chưa thanh toán
     const paidInvoices = invoices.filter(
@@ -94,11 +104,18 @@ router.post("/addBillStaff", async (req, res) => {
       amount,
       transaction_type,
       due_date,
-      payment_status
+      payment_status,
     } = req.body;
 
     // Kiểm tra các trường bắt buộc
-    if (!user_id || !room_id || !amount || !due_date || !transaction_type || !type_invoice) {
+    if (
+      !user_id ||
+      !room_id ||
+      !amount ||
+      !due_date ||
+      !transaction_type ||
+      !type_invoice
+    ) {
       return res.status(400).json({
         status: 400,
         message: "Vui lòng điền đầy đủ thông tin bắt buộc",
@@ -114,7 +131,11 @@ router.post("/addBillStaff", async (req, res) => {
     }
 
     // Kiểm tra type_invoice hợp lệ
-    if (!["rent", "electric", "water", "salary", "maintain"].includes(type_invoice)) {
+    if (
+      !["rent", "electric", "water", "salary", "maintain"].includes(
+        type_invoice
+      )
+    ) {
       return res.status(400).json({
         status: 400,
         message: "Loại hóa đơn không hợp lệ",
@@ -222,7 +243,7 @@ router.post("/addBillStaff", async (req, res) => {
 });
 
 //xan nhan hoa don da thanh toan
-router.put('/confirmPaidInvoice/:invoiceId', async (req, res) => {
+router.put("/confirmPaidInvoice/:invoiceId", async (req, res) => {
   try {
     const { invoiceId } = req.params;
     const { payment_status } = req.body;
@@ -231,15 +252,15 @@ router.put('/confirmPaidInvoice/:invoiceId', async (req, res) => {
     if (!invoiceId) {
       return res.status(400).json({
         status: 400,
-        message: "ID hóa đơn không được để trống"
+        message: "ID hóa đơn không được để trống",
       });
     }
 
     // Kiểm tra payment_status có hợp lệ không
-    if (!payment_status || !['paid', 'unpaid'].includes(payment_status)) {
+    if (!payment_status || !["paid", "unpaid"].includes(payment_status)) {
       return res.status(400).json({
         status: 400,
-        message: "Trạng thái thanh toán không hợp lệ"
+        message: "Trạng thái thanh toán không hợp lệ",
       });
     }
 
@@ -248,23 +269,25 @@ router.put('/confirmPaidInvoice/:invoiceId', async (req, res) => {
       invoiceId,
       {
         payment_status,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
       { new: true } // Trả về document sau khi cập nhật
-    ).populate({
-      path: 'room_id',
-      select: 'room_name price service limit_person',
-      populate: {
-        path: 'service',
-        select: 'name description price'
-      }
-    }).populate('user_id', 'name phoneNumber');
+    )
+      .populate({
+        path: "room_id",
+        select: "room_name price service limit_person",
+        populate: {
+          path: "service",
+          select: "name description price",
+        },
+      })
+      .populate("user_id", "name phoneNumber");
 
     // Kiểm tra nếu không tìm thấy hóa đơn
     if (!updatedInvoice) {
       return res.status(404).json({
         status: 404,
-        message: "Không tìm thấy hóa đơn"
+        message: "Không tìm thấy hóa đơn",
       });
     }
 
@@ -272,21 +295,20 @@ router.put('/confirmPaidInvoice/:invoiceId', async (req, res) => {
     return res.status(200).json({
       status: 200,
       message: "Cập nhật trạng thái hóa đơn thành công",
-      data: updatedInvoice
+      data: updatedInvoice,
     });
-
   } catch (error) {
-    console.error('Error updating invoice:', error);
+    console.error("Error updating invoice:", error);
     return res.status(500).json({
       status: 500,
       message: "Đã có lỗi xảy ra khi cập nhật hóa đơn",
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 // Cập nhật thông tin hóa đơn
-router.put('/updateInvoice/:invoiceId', async (req, res) => {
+router.put("/updateInvoice/:invoiceId", async (req, res) => {
   try {
     const { invoiceId } = req.params;
     const { description, amount, due_date } = req.body;
@@ -295,7 +317,7 @@ router.put('/updateInvoice/:invoiceId', async (req, res) => {
     if (!invoiceId) {
       return res.status(400).json({
         status: 400,
-        message: "ID hóa đơn không được để trống"
+        message: "ID hóa đơn không được để trống",
       });
     }
 
@@ -304,21 +326,21 @@ router.put('/updateInvoice/:invoiceId', async (req, res) => {
     if (!invoice) {
       return res.status(404).json({
         status: 404,
-        message: "Không tìm thấy hóa đơn"
+        message: "Không tìm thấy hóa đơn",
       });
     }
 
     // Kiểm tra nếu hóa đơn đã thanh toán
-    if (invoice.payment_status === 'paid') {
+    if (invoice.payment_status === "paid") {
       return res.status(400).json({
         status: 400,
-        message: "Không thể cập nhật hóa đơn đã thanh toán"
+        message: "Không thể cập nhật hóa đơn đã thanh toán",
       });
     }
 
     // Cập nhật thông tin hóa đơn
     const updateData = {
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (description) updateData.description = description;
@@ -330,31 +352,31 @@ router.put('/updateInvoice/:invoiceId', async (req, res) => {
       invoiceId,
       updateData,
       { new: true }
-    ).populate({
-      path: 'room_id',
-      select: 'room_name price service limit_person',
-      populate: {
-        path: 'service',
-        select: 'name description price'
-      }
-    }).populate('user_id', 'name phoneNumber');
+    )
+      .populate({
+        path: "room_id",
+        select: "room_name price service limit_person",
+        populate: {
+          path: "service",
+          select: "name description price",
+        },
+      })
+      .populate("user_id", "name phoneNumber");
 
     return res.status(200).json({
       status: 200,
       message: "Cập nhật hóa đơn thành công",
-      data: updatedInvoice
+      data: updatedInvoice,
     });
-
   } catch (error) {
-    console.error('Error updating invoice:', error);
+    console.error("Error updating invoice:", error);
     return res.status(500).json({
       status: 500,
       message: "Đã có lỗi xảy ra khi cập nhật hóa đơn",
-      error: error.message
+      error: error.message,
     });
   }
 });
-
 
 // Xem chi tiết hóa đơn theo ID
 router.get("/detail/:id", async (req, res) => {
@@ -389,7 +411,5 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-
 
 module.exports = router;

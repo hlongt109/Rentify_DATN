@@ -56,7 +56,10 @@ class LoginViewModel(
     //luu thong tin nguoi dung
     // Tạo một SharedPreferences wrapper để xử lý null safety
     private val preferences: SafeSharedPreferences = SafeSharedPreferences(context)
-
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+    private val _successRole = MutableLiveData<String>()
+    val successRole: LiveData<String> = _successRole
     init {
         Log.d("LoginViewModel", "Initializing ViewModel")
         Log.d("LoginViewModel", "Context: $context")
@@ -141,8 +144,9 @@ class LoginViewModel(
 
     fun login(email: String, password: String) {
         // Reset thông báo lỗi trước khi kiểm tra
-        _errorMessage.value = null
-
+        _errorMessage.postValue("")
+        _successMessage.postValue("")
+        _isLoading.postValue(true)
         if (email.isEmpty() || password.isEmpty()) {
             when {
                 email.isEmpty() -> _errorEmail.postValue("Vui lòng nhập email")
@@ -155,7 +159,7 @@ class LoginViewModel(
             try {
                 val response = userRepository.login(email, password)
 
-                // Log toàn bộ response để debug
+                // Log toàn bộ response để kiểm tra
                 Log.d("LoginDebug", "Response: $response")
                 Log.d("LoginDebug", "Response body: ${response.body()}")
 
@@ -164,39 +168,23 @@ class LoginViewModel(
                     if (responseBody != null) {
                         val result = responseBody.data
                         if (result != null) {
-                            // Log chi tiết thông tin user
-                            Log.d(
-                                "LoginDebug", """
-                                User Info:
-                                Email: ${result.email}
-                                Verified: ${result.verified}
-                                Role: ${result.role}
-                            """.trimIndent()
-                            )
-
-                            when {
-                                result.verified != true -> {
-                                    _errorMessage.postValue("Tài khoản chưa được xác minh. Vui lòng kiểm tra email để xác minh tài khoản của bạn.")
+                            if (result.verified != true) {
+                                _errorMessage.postValue("Tài khoản chưa được xác minh. Vui lòng kiểm tra email.")
+                            } else {
+                                // Đăng nhập thành công
+                                _isLoading.postValue(false)
+                                _userData.postValue(result)
+                                _isLoggedIn.postValue(true)
+                                saveUserData(result)
+                                saveUserDataToFirestore(result)
+                                result.role?.let {role ->
+                                    _successRole.postValue(role)
+                                    _successMessage.postValue("Đăng nhập thành công")
+                                } ?: run{
+                                    Log.e("LoginError", "Role is null")
+                                    _errorMessage.postValue("Không thể xác định vai trò người dùng")
                                 }
 
-                                result.email != email && result.password != password -> {
-                                    _errorMessage.postValue("Tài khoản hoặc mật khẩu không đúng.")
-                                }
-
-                                else -> {
-                                    // Đăng nhập thành công
-                                    _userData.postValue(result)
-                                    _isLoggedIn.postValue(true)
-                                    saveUserData(result)
-                                    saveUserDataToFirestore(result)
-                                    result.role?.let { role ->
-                                        _successMessage.postValue(role)
-                                        Log.d("LoginSuccess", "Role: $role")
-                                    } ?: run {
-                                        Log.e("LoginError", "Role is null")
-                                        _errorMessage.postValue("Không thể xác định vai trò người dùng")
-                                    }
-                                }
                             }
                         } else {
                             Log.e("LoginError", "Response data is null")
@@ -208,8 +196,12 @@ class LoginViewModel(
                     }
                 } else {
                     Log.e("LoginError", "Response not successful: ${response.code()}")
-                    // Kiểm tra nếu mã lỗi là tài khoản không tồn tại
-                    if (response.code() == 404) {
+                    val errorBody = response.errorBody()?.string() // Lấy nội dung lỗi từ server
+                    Log.e("LoginDebug", "Error body: $errorBody")
+
+                    if (response.code() == 400) {
+                        _errorMessage.postValue("Tài khoản hoặc mật khẩu không đúng.")
+                    } else if (response.code() == 404) {
                         _errorMessage.postValue("Tài khoản không tồn tại.")
                     } else {
                         _errorMessage.postValue("Đăng nhập thất bại. Mã lỗi: ${response.code()}")
@@ -222,7 +214,7 @@ class LoginViewModel(
         }
     }
 
-    fun saveUserDataToFirestore(user: LoginResponse){
+    fun saveUserDataToFirestore(user: LoginResponse) {
         val database = FirebaseDatabase.getInstance()
         val userRef = database.getReference("users")
         //tao map tu user
@@ -251,6 +243,10 @@ class LoginViewModel(
 
     fun clearPasswordError() {
         _errorPass.value = null
+    }
+
+    fun clearError(){
+        _errorMessage.value = null
     }
 
     private fun saveUserData(userData: LoginResponse) {

@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,7 +43,9 @@ fun UnPaidStaffScreen(
     staffId: String
 ) {
     val unpaidInvoices by viewModel.unpaidInvoices.collectAsState()
+    val error by viewModel.errorMessage.observeAsState("") // Nhận thông báo lỗi
     val uiState by viewModel.uiState.collectAsState()
+    val isLoading by viewModel.isLoading.observeAsState()
     LaunchedEffect(Unit) {
         viewModel.getInvoiceList(staffId)
     }
@@ -61,6 +64,51 @@ fun UnPaidStaffScreen(
             modifier = Modifier
                 .fillMaxSize(),
         ) {
+
+//            if (isLoading == true) {
+//                CircularProgressIndicator(
+//                    modifier = Modifier.align(Alignment.Center)
+//                )
+//            } else {
+//                if (unpaidInvoices.isEmpty()) {
+//                    Text(
+//                        text = "Không có hóa đơn chưa thanh toán",
+//                        modifier = Modifier.align(Alignment.Center),
+//                        style = MaterialTheme.typography.bodyLarge
+//                    )
+//                } else if (unpaidInvoices.isNotEmpty()) {
+//                    LazyColumn(
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//                            .padding(bottom = 80.dp)
+//                    ) {
+//                        items(unpaidInvoices) { invoice ->
+//                            ItemUnPaidStaff(
+//                                invoice = invoice,
+//                                navController = navController,
+//                                isExpanded = expandedItems.contains(invoice._id),
+//                                onToggleExpand = {
+//                                    if (expandedItems.contains(invoice._id)) {
+//                                        expandedItems.remove(invoice._id)
+//                                    } else {
+//                                        expandedItems.add(invoice._id)
+//                                    }
+//                                },
+//                                viewModel = viewModel,
+//                                staffId = staffId
+//                            )
+//                        }
+//                    }
+//                } else {
+//                    error?.let {
+//                        Text(
+//                            text = it,
+//                            modifier = Modifier.align(Alignment.Center),
+//                            color = Color.Red
+//                        )
+//                    }
+//                }
+//            }
 
             when (uiState) {
                 is InvoiceUiState.Loading -> {
@@ -105,11 +153,11 @@ fun UnPaidStaffScreen(
                 }
 
                 is InvoiceUiState.Error -> {
-                    Text(
-                        text = "Lỗi lấy dữ liệu",
-                        modifier = Modifier.align(Alignment.Center),
-                        color = Color.Red
-                    )
+                        Text(
+                            text = "Không thể tải hóa đơn vui lòng thử lại sau" ,
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.Red
+                        )
                 }
             }
 

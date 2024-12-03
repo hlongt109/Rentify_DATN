@@ -3,6 +3,7 @@ package com.rentify.user.app.repository.StaffRepository.InvoiceRepository
 
 import com.rentify.user.app.network.ApiStaff.ApiServiceStaff
 import com.rentify.user.app.network.ApiStaff.RetrofitStaffService
+import retrofit2.Response
 
 
 class InvoiceRepository(
@@ -23,6 +24,9 @@ class InvoiceRepository(
             Result.failure(e)
         }
     }
+//    suspend fun getListInvoice(staffId: String): Response<InvoiceResponse>{
+//        return api.listInvoiceStaff(staffId)
+//    }
 
 
     suspend fun addBillStaff(invoice: InvoiceAdd): Result<InvoiceResponse>{

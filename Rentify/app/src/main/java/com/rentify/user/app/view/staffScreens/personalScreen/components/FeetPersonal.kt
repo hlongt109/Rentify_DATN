@@ -14,21 +14,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.viewModel.LoginViewModel
 
 
 // _vanphuc : phần chân
@@ -40,6 +52,40 @@ fun FeetPersonalPreview(){
 }
 @Composable
 fun FeetPersonal(navController: NavHostController){
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModel.LoginViewModelFactory(userRepository, context)
+    )
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Xác nhận đăng xuất") },
+            text = { Text("Bạn có chắc chắn muốn đăng xuất không?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        // Xử lý logic đăng xuất ở đây
+                        // Ví dụ: viewModel.logout() hoặc gọi hàm logout
+                        loginViewModel.logout()
+                        navController.navigate(MainActivity.ROUTER.SPLASH.name)
+                        showLogoutDialog = false
+                    }
+                ) {
+                    Text("Đăng xuất", color = Color.Red, fontSize = 14.sp)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showLogoutDialog = false }
+                ) {
+                    Text("Hủy", color = Color.Gray, fontSize = 14.sp)
+                }
+            }
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -236,7 +282,7 @@ fun FeetPersonal(navController: NavHostController){
                             shape = RoundedCornerShape(12.dp)
                         )
                         .clickable {
-                            navController.navigate("LOGIN") //ConTract
+                            showLogoutDialog = true
                         }
                 ) {
                     Image(

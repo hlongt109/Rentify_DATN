@@ -92,7 +92,7 @@ fun PaidStaffScreen(
 
                 is InvoiceUiState.Error -> {
                     Text(
-                        text = "Lỗi lấy dữ liệu",
+                        text = "Không thể tải hóa đơn vui lòng thử lại sau",
                         modifier = Modifier.align(Alignment.Center),
                         color = Color.Red
                     )
