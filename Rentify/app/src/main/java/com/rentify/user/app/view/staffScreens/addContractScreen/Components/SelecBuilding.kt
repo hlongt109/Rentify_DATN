@@ -37,11 +37,13 @@ import androidx.compose.material3.Icon
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.TriangleShape
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
+import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 
 @Composable
@@ -69,17 +71,18 @@ fun BuildingLabel() {
 }
 @Composable
 fun BuildingOptions(
-    userId: String,
+    manageId: String,
     selectedBuilding: String?,
     onBuildingSelected: (String) -> Unit
 ) {
-    val buildingViewModel: PostViewModel = viewModel()
-   val buildings by buildingViewModel.buildings
+    val buildingViewModel: ContractViewModel = viewModel()
+   val buildings by buildingViewModel.buildings.observeAsState(emptyList())
 
     // Gọi API lấy tòa nhà theo user_id
-    LaunchedEffect(userId) {
-        buildingViewModel.getBuildings(userId)
+    LaunchedEffect(manageId) {
+        buildingViewModel.fetchBuildings(manageId)
     }
+
 
     FlowRow(
         modifier = Modifier.padding(5.dp),

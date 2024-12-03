@@ -2,6 +2,7 @@ package com.rentify.user.app.model
 
 
 data class User(
+    val _id: String,
     val username: String,
     val password: String,
     val email: String,

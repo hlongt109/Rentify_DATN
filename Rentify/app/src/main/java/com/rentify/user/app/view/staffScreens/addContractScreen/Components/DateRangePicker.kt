@@ -1,6 +1,9 @@
 import android.app.DatePickerDialog
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
@@ -9,7 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.rentify.user.app.R
 import io.ktor.websocket.Frame
 import java.util.Calendar
 
@@ -31,7 +38,8 @@ fun DatePickerField(
     val datePickerDialog = DatePickerDialog(
         context,
         { _, selectedYear, selectedMonth, selectedDayOfMonth ->
-            val formattedDate = String.format("%02d/%02d/%d", selectedDayOfMonth, selectedMonth + 1, selectedYear)
+            val formattedDate = String.format("%d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDayOfMonth)
+
             onDateSelected(formattedDate)
             year.value = selectedYear
             month.value = selectedMonth
@@ -51,11 +59,20 @@ fun DatePickerField(
             .fillMaxWidth()
             .clickable { datePickerDialog.show() }, // Hiển thị DatePicker khi click
         trailingIcon = {
-            Icon(
-                imageVector = Icons.Default.CalendarToday,
-                contentDescription = "Select Date",
-                modifier = Modifier.clickable { datePickerDialog.show() }
+            Image(
+                painter = painterResource(id = R.drawable.date),
+                contentDescription = null,
+                contentScale = ContentScale.Inside,
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable { datePickerDialog.show()  }
+
             )
+//            Icon(
+//                imageVector = Icons.Default.CalendarToday,
+//                contentDescription = "Select Date",
+//                modifier = Modifier.clickable { datePickerDialog.show() }
+//            )
         }
     )
 }

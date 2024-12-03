@@ -36,6 +36,7 @@ import com.rentify.user.app.R
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.TriangleShape
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
+import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 
 @Composable
@@ -75,12 +77,13 @@ fun RoomOptions(
     selectedRoom: String?,
     onRoomSelected: (String) -> Unit
 ) {
-    val roomViewModel: PostViewModel = viewModel()
-    val rooms by roomViewModel.rooms.collectAsState(initial = emptyList())
+    val roomViewModel: ContractViewModel = viewModel()
+    val rooms by roomViewModel.rooms.observeAsState(emptyList())
+
 
     // Gọi API lấy tòa nhà theo user_id
     LaunchedEffect(buildingId) {
-        roomViewModel.getRooms(buildingId)
+        roomViewModel.fetchRooms(buildingId)
     }
 
     FlowRow(

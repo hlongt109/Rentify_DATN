@@ -137,7 +137,7 @@ fun AddPostScreens(navController: NavHostController) {
         selectedVideos: List<Uri>
     ): Boolean {
         // Chuẩn bị dữ liệu `RequestBody`
-        val userId = "67362213c6d421d3027fb5a7".toRequestBody("text/plain".toMediaTypeOrNull())
+        val userId = "673e064ef5b7bf786842bdbc".toRequestBody("text/plain".toMediaTypeOrNull())
         val buildingId = viewModel.selectedBuilding.value?.toRequestBody("text/plain".toMediaTypeOrNull())
             ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
 
@@ -179,8 +179,8 @@ fun AddPostScreens(navController: NavHostController) {
                 content = content,
                 postType = postType,
                 status = status,
-                videos = photoPart,
-                photos = videoPart
+                videos = videoPart,
+                photos =photoPart
             )
             if (response.isSuccessful) {
                 Log.d("AddPost", "Dư liệu vừa thêm xong: ${response.body()}")
@@ -365,7 +365,7 @@ fun AddPostScreens(navController: NavHostController) {
                 BuildingLabel()
 
                 BuildingOptions(
-                    userId = "67362213c6d421d3027fb5a7",
+                    userId = "673e064ef5b7bf786842bdbc",
                     selectedBuilding = viewModel.selectedBuilding.value,
                     onBuildingSelected = { buildingId ->
                         viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
@@ -376,15 +376,22 @@ fun AddPostScreens(navController: NavHostController) {
             Spacer(modifier = Modifier.height(10.dp))
             Column {
             RoomLabel()
-                viewModel.selectedBuilding.value?.let {
-                    RoomOptions (
-                        buildingId = it,
+                viewModel.selectedBuilding.value?.let { buildingId ->
+                    RoomOptions(
+                        buildingId = buildingId,
                         selectedRoom = selectedRoom,
                         onRoomSelected = { roomId ->
                             selectedRoom = roomId
                         }
                     )
+                } ?: run {
+                    Text(
+                        text = "Vui lòng chọn tòa nhà trước",
+                        color = Color.Red,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
+
                 //673b57f7d24f9f5e94603b17
 //            ServiceOptions(
 //                selectedService = selectedService,

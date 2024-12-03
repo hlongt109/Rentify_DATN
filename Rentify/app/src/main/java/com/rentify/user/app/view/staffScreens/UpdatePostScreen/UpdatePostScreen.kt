@@ -364,7 +364,6 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         }
                     )
                 }
-                // dịch vụ
                 Spacer(modifier = Modifier.height(10.dp))
                 Column {
                     ServiceLabel()
@@ -428,7 +427,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         postId?.let {
                             viewModel.updatePost(
                                 postId = postId,
-                                userId = "67362213c6d421d3027fb5a7",
+                                userId = "673e064ef5b7bf786842bdbc",
                                 buildingId = buildingId,
                                 roomId = selectedRoom1,
                                 title = title,

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity
@@ -22,6 +23,7 @@ import com.rentify.user.app.view.contract.contractComponents.ContractRoomListScr
 import com.rentify.user.app.view.contract.contractComponents.ContractTopBar
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingListTopBar
+import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 
 import kotlin.contracts.contract
@@ -34,10 +36,11 @@ fun ContractScreenPreview() {
 
 @Composable
 fun ContractScreen(navController: NavHostController) {
+    val viewModel: ContractViewModel = viewModel()
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {     navController.navigate(MainActivity.ROUTER.ADDCONTRAC_STAFF.name) },
+                onClick = {     navController.navigate("ADDCONTRAC_STAFF")  },
                 containerColor = Color(0xFF2196F3),
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier.padding(bottom = 30.dp).padding(end = 20.dp)
@@ -65,9 +68,10 @@ fun ContractScreen(navController: NavHostController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ContractTopBar(
-                        onClickGoBack = {navController.popBackStack()}
+                        onClickGoBack = { navController.popBackStack() },
+                        contractViewModel = viewModel
                     )
-                    ContractRoomListScreen(navController,manageId="671a29b84e350b2df4aee4ed")
+                    ContractRoomListScreen(navController,manageId="673e064ef5b7bf786842bdbc")
                 }
             }
         }

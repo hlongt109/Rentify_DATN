@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Contract(
     val _id: String,
+    val manage_id: String,
     val user_id: List<User>?, // Thông tin người dùng
   val room_id: Room_post?, // Thông tin phòng
     val building_id: Building?,
