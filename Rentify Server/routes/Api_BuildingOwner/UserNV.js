@@ -33,7 +33,7 @@ router.post("/staffs_mgr/add/:id", async (req, res) => {
     try {
         const userId = req.params.id;
         // Kiểm tra dữ liệu đầu vào (req.body)
-        const { username, email, password, role } = req.body;
+        const { username, email, password, role, name, phoneNumber, dob, gender, address } = req.body;
         if (!username || !email || !password || !role) {
             return res.status(400).json({ message: "Thiếu dữ liệu cần thiết!" });
         }
@@ -45,6 +45,11 @@ router.post("/staffs_mgr/add/:id", async (req, res) => {
             password,
             role,
             landlord_id: userId,  // Gán id người dùng chủ sở hữu
+            name,
+            phoneNumber,
+            dob,
+            gender,
+            address,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         });
