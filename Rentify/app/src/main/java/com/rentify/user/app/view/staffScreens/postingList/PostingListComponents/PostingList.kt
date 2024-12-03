@@ -40,7 +40,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.Post
+import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlin.math.roundToInt
@@ -49,7 +51,9 @@ data class PostingList(
     val title: String,  // Tương ứng với trường title trong API
     val price: String,  // Tương ứng với trường price trong API
     val address: String, // Tương ứng với trường address trong API
-    val status: String
+    val status: String,
+    val building: Building?,
+    val room: Room_post?
 )
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -59,13 +63,16 @@ fun PostListScreen(navController: NavController, userId: String) {
     val context = LocalContext.current
     var isShowDialog by remember { mutableStateOf(false) }
     var postIdToDelete by remember { mutableStateOf<String?>(null) }
+    val searchQuery by viewModel.searchQuery
 
-
-    // Gọi API lấy danh sách bài đăng
-    LaunchedEffect(userId) {
-        viewModel.getPostingList(userId)
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.isNotEmpty()) {
+            Log.e("log search id", "Searching with manageId: $userId and query: $searchQuery")
+            viewModel.searchPosts(query = searchQuery, userId = userId)
+        } else {
+            viewModel.getPostingList(userId)
+        }
     }
-
     // Hiển thị dialog xác nhận xóa
     if (isShowDialog) {
         DialogCompose(
@@ -88,7 +95,7 @@ fun PostListScreen(navController: NavController, userId: String) {
     }
 
     // Kiểm tra danh sách bài đăng
-    if (post.isEmpty()) {
+    if (post.isEmpty() && searchQuery.isNotEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

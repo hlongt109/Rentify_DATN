@@ -27,23 +27,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity
+import com.rentify.user.app.model.Post
 import com.rentify.user.app.view.contract.contractComponents.ContractSearchBar
+import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import org.checkerframework.checker.units.qual.m
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun PostingListTopBar(navController: NavHostController) {
-    val searchQuery = remember { mutableStateOf(TextFieldValue("")) }
+fun PostingListTopBar(navController: NavHostController, viewModel: PostViewModel) {
+    val searchQuery by viewModel.searchQuery // Lấy trạng thái tìm kiếm từ ViewModel
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
             .padding(top = 10.dp)
-            .background(Color.White), // Màu nền
+            .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -51,34 +55,37 @@ fun PostingListTopBar(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(onClick = { navController.navigate("HOME_STAFF")}) {
+            IconButton(onClick = { navController.navigate("HOME_STAFF") }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
                     contentDescription = "Back"
                 )
-
             }
-            PostingListSearchBar()
+            PostingListSearchBar(
+                searchQuery = searchQuery,
+                onSearchQueryChange = { query ->
+                    viewModel.onSearchQueryChange(query) // Cập nhật trạng thái tìm kiếm khi thay đổi
+                }
+            )
             IconButton(onClick = { /* Xử lý sự kiện khi nhấn nút sort */ }) {
                 Icon(
-
                     imageVector = Icons.Default.Sort,
                     contentDescription = "Sort"
                 )
-
             }
-
         }
     }
 }
-@Composable
-fun PostingListSearchBar() {
-    var searchText by remember { mutableStateOf("") }
 
+@Composable
+fun PostingListSearchBar(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit
+) {
     TextField(
         singleLine = true,
-        value = searchText,
-        onValueChange = { searchText = it },
+        value = searchQuery,
+        onValueChange = onSearchQueryChange, // Gọi callback khi giá trị thay đổi
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
@@ -87,8 +94,8 @@ fun PostingListSearchBar() {
             )
         },
         trailingIcon = {
-            if (searchText.isNotEmpty()) {
-                IconButton(onClick = { searchText = "" }) {
+            if (searchQuery.isNotEmpty()) {
+                IconButton(onClick = { onSearchQueryChange("") }) {
                     Icon(
                         imageVector = Icons.Filled.Clear,
                         contentDescription = "Clear"
@@ -96,7 +103,7 @@ fun PostingListSearchBar() {
                 }
             }
         },
-        placeholder  = {
+        placeholder = {
             Text(
                 text = "Nhập thông tin tìm kiếm...",
                 color = Color.Gray,
@@ -109,4 +116,3 @@ fun PostingListSearchBar() {
             .clip(RoundedCornerShape(15.dp))
     )
 }
-

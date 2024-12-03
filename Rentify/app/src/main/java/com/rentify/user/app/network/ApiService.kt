@@ -9,6 +9,7 @@ import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Contract
 import com.rentify.user.app.model.ContractsResponse
+import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
@@ -167,16 +168,22 @@ interface APIService {
 
     @GET("staff/posts/list/{user_id}")
     suspend fun getPosts(@Path("user_id") userId: String): ApiResponsee<List<PostingList>>
-
+    data class ApiResponsee<T>(
+        val status: Int,
+        val data: T
+    )
+    ///tim keim post
+    @GET("staff/posts/search")
+    suspend fun searchPosts(
+        @Query("query") query: String, // Từ khóa tìm kiếm
+        @Query("user_id") userId: String? = null // ID người dùng (nếu có)
+    ): Response<List<PostingList>>
     @DELETE("staff/posts/delete/{id}")
     suspend fun deletePost(@Path("id") postId: String): Response<Unit> // Giả sử API trả về `Unit` khi xóa thành công
     @GET("staff/posts/detail/{id}")
     suspend fun getPostDetail(@Path("id") postId: String): PostingDetail
 
-    data class ApiResponsee<T>(
-        val status: Int,
-        val data: T
-    )
+
     @Multipart
     @PUT("staff/posts/update/{id}")
     suspend fun updatePostUser(
@@ -251,6 +258,7 @@ suspend fun getBuildings_contrac(@Path("manage_id") manageId: String): Response<
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
+
 
     @GET("contracts/{user_id}")
     suspend fun getContracts(

@@ -329,4 +329,55 @@ fun deletePostWithFeedback(postId: String) {
             }
         }
     }
+    val searchQuery = mutableStateOf("")
+
+    // LiveData để chứa kết quả tìm kiếm bài đăng
+
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> get() = _error
+
+    fun searchPosts(query: String, userId: String? = null) {
+        viewModelScope.launch {
+            try {
+                // Gọi API với tham số `query` và `userId`
+                val response = if (userId != null) {
+                    apiService.searchPosts(query, userId)
+                } else {
+                    apiService.searchPosts(query)
+                }
+
+                if (response.isSuccessful) {
+                    // Kiểm tra nếu body của phản hồi không null
+                    val data = response.body()
+                    if (!data.isNullOrEmpty()) {
+                        Log.d("API Response", "Query: $query, UserId: $userId, Data: $data")
+                        _posts.value = data // Gán danh sách bài đăng vào LiveData
+                    } else {
+                        Log.e("API Response Error", "Query: $query, UserId: $userId, No data found")
+                        _posts.value = emptyList()
+                        _error.postValue("Không tìm thấy bài đăng nào")
+                    }
+                } else {
+                    Log.e("API Response Error", "Query: $query, UserId: $userId, Code: ${response.code()}")
+                    _posts.value = emptyList()
+                    _error.postValue("Không tìm thấy bài đăng nào (Mã lỗi: ${response.code()})")
+                }
+            } catch (e: Exception) {
+                // Xử lý lỗi khác (ví dụ: lỗi mạng, lỗi parse JSON)
+                Log.e("API Error", "Lỗi khi tìm kiếm bài đăng: ${e.message}")
+                _error.postValue("Lỗi khi tìm kiếm bài đăng: ${e.message}")
+            }
+        }
+    }
+
+
+    /**
+     * Xử lý khi giá trị tìm kiếm thay đổi
+     */
+    fun onSearchQueryChange(newQuery: String) {
+        searchQuery.value = newQuery
+        if (newQuery.isNotEmpty()) {
+            searchPosts(newQuery) // Tự động tìm kiếm khi giá trị thay đổi
+        }
+    }
 }
