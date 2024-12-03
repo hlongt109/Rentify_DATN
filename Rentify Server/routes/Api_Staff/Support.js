@@ -3,41 +3,60 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Support = require('../../models/Support')
 
-// hiển thị chi tiết theo room_id :
-router.get('/supports/:room_id', async (req, res) => {
+router.get('/support/by-building/:building_id/:status', async (req, res) => {
     try {
-        const { room_id } = req.params;
+        const { building_id, status } = req.params;
+        const supports = await Support.find({ building_id, status }).populate('building_id', 'nameBuilding').populate('room_id', 'room_name');
 
-        // Validate room_id format
-        if (!mongoose.Types.ObjectId.isValid(room_id)) {
-            return res.status(400).json({ message: 'Invalid room_id' });
-        }
-
-        // Find all support entries for the given room_id and populate related fields
-        const supports = await Support.find({ room_id })
-            .populate('user_id', 'name email') // Populate user details
-            .populate('building_id', 'name address') // Populate building details
-            .select('-__v') // Exclude the version key (__v)
-            .lean(); // Use lean to return plain JavaScript objects instead of Mongoose documents
-
-        // If no support tickets are found, return a 404 response
         if (supports.length === 0) {
-            return res.status(404).json({ message: 'No support tickets found for this room_id' });
+            return res.status(404).json({ message: 'No support tickets found for this building_id and status' });
         }
 
-        // Format the response to have the proper ObjectId structure
         const formattedSupports = supports.map(support => ({
+            ...support._doc,
+            _id: support._id.toString(),
+            user_id: support.user_id ? { ...support.user_id._doc, _id: support.user_id._id.toString() } : null,
+            building_id: support.building_id ? { ...support.building_id._doc, _id: support.building_id._id.toString() } : null,
+            room_id: support.room_id ? { ...support.room_id._doc, _id: support.room_id._id.toString() } : null,
+        }));
+
+        res.status(200).json(formattedSupports);
+    } catch (error) {
+        console.error('Error fetching supports by building_id and status:', error);
+        res.status(500).json({ message: 'Internal server error', error });
+    }
+});
+// hiển thị chi tiết theo room_id :
+router.get('/supports/:support_id', async (req, res) => {
+    try {
+        const { support_id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(support_id)) {
+            return res.status(400).json({ message: 'Invalid support_id' });
+        }
+        const support = await Support.findById(support_id)
+            .populate('user_id', 'name email')
+            .populate('building_id', 'name address')
+            .populate('room_id', 'room_name')
+            .select('-__v')
+            .lean();
+
+        if (!support) {
+            return res.status(404).json({ message: 'Support ticket not found' });
+        }
+
+        const formattedSupport = {
             ...support,
             _id: support._id.toString(),
             user_id: support.user_id ? { ...support.user_id, _id: support.user_id._id.toString() } : null,
             building_id: support.building_id ? { ...support.building_id, _id: support.building_id._id.toString() } : null,
-            room_id: support.room_id.toString(),
-        }));
+            room_id: typeof support.room_id === 'object'
+                ? { ...support.room_id, _id: support.room_id._id.toString() }
+                : { _id: support.room_id.toString(), room_name: 'Unknown' },
+        };
 
-        // Return the formatted support tickets
-        res.status(200).json(formattedSupports);
+        res.status(200).json(formattedSupport);
     } catch (error) {
-        console.error('Error fetching supports by room_id:', error);
+        console.error('Error fetching support by support_id:', error);
         res.status(500).json({ message: 'Internal server error', error });
     }
 });
