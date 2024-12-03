@@ -61,7 +61,7 @@ interface APIService {
     suspend fun LoginUser(@Body loginRequest: LoginRequest): Response<ApiResponse>
 
     //phong bao to 123456789
-    @POST("register")
+    @POST("register-user")
     suspend fun registerUser(@Body request: RegisterRequest): Response<ApiResponse>
 
     //getLocation
