@@ -101,8 +101,6 @@
         }
 
         .modal-header {
-
-            color: white;
             border-radius: 10px 10px 0 0;
             padding: 15px;
         }
@@ -399,11 +397,8 @@
                         phoneNumber,
                     })
                 });
-
-                // Reset form và đóng modal
                 const data = await response.json();
                 if (response.ok) {
-                    // Hiển thị thông báo thành công và đóng modal
                     alert("User added successfully!");
                     e.target.reset();
                     const addUserModal = bootstrap.Modal.getInstance(document.getElementById("addUserModal"));
