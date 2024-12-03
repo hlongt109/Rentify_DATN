@@ -36,7 +36,6 @@ fun ContractTopBar(
     onClickGoBack: () -> Unit,
     contractViewModel: ContractViewModel
 ) {
-
     Column(modifier = Modifier.fillMaxWidth().background(Color.White)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onClickGoBack) {
@@ -52,6 +51,7 @@ fun ContractTopBar(
         }
     }
 }
+
 
 @Composable
 fun ContractSearchBar(

@@ -146,29 +146,34 @@ class ContractViewModel : ViewModel() {
                     Log.e("updateContract", "API Error: ${response.message()}")
                     _error.value = "Lỗi API: ${response.message()}"
                 }
-
             } catch (e: Exception) {
                 Log.e("updateContract", "Exception: ${e.message}", e)
                 _error.value = "Đã xảy ra lỗi: ${e.message}"
             }
         }
     }
-    // Danh sách hợp đồng kết quả tìm kiếm
+    val searchQuery = mutableStateOf("")
 
-
-
-    // Query tìm kiếm hiện tại
-    var searchQuery = mutableStateOf("")
-
-
-
-    fun searchContracts(query: String) {
+    fun searchContracts(query: String, manageId: String? = null) {
         viewModelScope.launch {
             try {
-                val result = if (query.contains("/")) {
-                    RetrofitClient.apiService.searchContracts(buildingRoom = query)
-                } else {
-                    RetrofitClient.apiService.searchContracts(userName = query)
+                val result = when {
+                    manageId != null -> {
+                        // Nếu có manageId, kết hợp query và manageId
+                        RetrofitClient.apiService.searchContracts(
+                            userName = if (!query.contains("/")) query else null,
+                            buildingRoom = if (query.contains("/")) query else null,
+                            manageId = manageId
+                        )
+                    }
+                    query.contains("/") -> {
+                        // Nếu query theo định dạng buildingRoom
+                        RetrofitClient.apiService.searchContracts(buildingRoom = query)
+                    }
+                    else -> {
+                        // Nếu tìm kiếm theo userName
+                        RetrofitClient.apiService.searchContracts(userName = query)
+                    }
                 }
                 _contracts.postValue(result)
             } catch (e: Exception) {
@@ -178,9 +183,14 @@ class ContractViewModel : ViewModel() {
     }
 
 
+    // Hàm xử lý khi giá trị tìm kiếm thay đổi
     fun onSearchQueryChange(newQuery: String) {
         searchQuery.value = newQuery
-        searchContracts(newQuery) // Tự động phát hiện kiểu tìm kiếm dựa vào input
-    }
+        if (newQuery.isNotEmpty()) {
 
+            searchContracts(newQuery) // Gọi tìm kiếm ngay khi có query
+        }
+    }
 }
+
+

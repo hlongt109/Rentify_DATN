@@ -60,13 +60,23 @@ fun ContractRoomListScreen(navController: NavController,manageId:String) {
     val context = LocalContext.current
     val searchQuery by viewModel.searchQuery
     val error by viewModel.error.observeAsState()
+//    LaunchedEffect(searchQuery, manageId) {
+//        if (searchQuery.isNotEmpty()) {
+//            viewModel.searchContracts(query = searchQuery, manageId = manageId)
+//            Log.e("log search id", "Searching with manageId: $manageId and query: $searchQuery")
+//        }  else {
+//            viewModel.fetchContractsByBuilding(manageId)
+//        }
+//    }
     LaunchedEffect(searchQuery) {
         if (searchQuery.isNotEmpty()) {
-            viewModel.searchContracts(searchQuery)
+            Log.e("log search id", "Searching with manageId: $manageId and query: $searchQuery")
+            viewModel.searchContracts(query = searchQuery, manageId = manageId)
         } else {
             viewModel.fetchContractsByBuilding(manageId)
         }
     }
+
     if (contracts.isEmpty() && searchQuery.isNotEmpty()) {
         Column(
             modifier = Modifier.fillMaxSize(),
