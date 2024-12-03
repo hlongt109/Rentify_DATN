@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.chatScreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -21,41 +24,67 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.userScreens.chatScreen.Component.MessageItem
+import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.UserViewmodel.ChatViewModel
+import com.rentify.user.app.viewModel.UserViewmodel.Message
 
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun TinnhanScreenPreview() {
-    TinnhanScreen(navController = rememberNavController())
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TinnhanScreen(navController: NavHostController) {
-    val messages = remember { mutableStateListOf<String>() }
+fun TinnhanScreen(
+    navController: NavHostController,
+    receiverId: String,
+    name: String
+) {
+    val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModel.ChatViewModelFactory())
+    val messages = remember { mutableStateListOf<Message>() }
+//    val  receiverId: String, // ID người nhận
+//    senderId: String   // ID người gửi
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val senderId = loginViewModel.getUserData().userId
 
+    // Tạo chatId duy nhất cho cuộc trò chuyện
+    val chatId = generateChatId(senderId, receiverId)
+    //
+    DisposableEffect(chatId) {
+        val messageListener: (Message) -> Unit = { message ->
+            // Ensure thread-safe addition to the list
+            messages.add(message)
+        }
+        chatViewModel.listenForMessages(chatId, messageListener)
+        onDispose {}
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .imePadding()
     ) {
-
-
         // Header
-        Column (
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(100.dp)
                 .background(color = Color(0xff84d8ff))
-        ){
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -80,7 +109,7 @@ fun TinnhanScreen(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Nguyễn Thiên Thiên",
+                    text = name,
                     modifier = Modifier.padding(12.dp),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
@@ -90,19 +119,21 @@ fun TinnhanScreen(navController: NavHostController) {
 
         // Scrollable message area
         val scrollState = rememberScrollState()
+        LaunchedEffect(messages.size) {
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f) // Chiếm không gian còn lại
-                .background(color = Color(0xfff7f7f7))
+                .background(color = Color.White)
+                .weight(1f)
+                .padding(16.dp)
                 .verticalScroll(scrollState)
         ) {
             messages.forEach { message ->
-                Text(
-                    text = message,
-                    modifier = Modifier.padding(8.dp), // Thêm padding để dễ đọc hơn
-                    color = Color.Black
-                )
+                Log.d("Message", "TinnhanScreen: ${message.content}")
+                Log.d("MessageSenderId", "Message from: ${message.sender}, Content: ${message.content}")
+                MessageItem(message = message, isSentByCurrentUser = message.sender == senderId)
             }
         }
 
@@ -155,8 +186,12 @@ fun TinnhanScreen(navController: NavHostController) {
                                     .size(24.dp)
                                     .clickable {
                                         if (sentText.text.isNotEmpty()) {
-                                            messages.add(sentText.text) // Thêm tin nhắn vào danh sách
-                                            sentText = TextFieldValue("") // Xóa nội dung TextField
+                                            chatViewModel.sendMessage(
+                                                chatId = chatId,
+                                                senderId = senderId,
+                                                messageContent = sentText.text
+                                            )
+                                            sentText = TextFieldValue("")
                                         }
                                     }
                             )
@@ -179,5 +214,13 @@ fun TinnhanScreen(navController: NavHostController) {
             )
         }
         Spacer(modifier = Modifier.height(50.dp))
+    }
+}
+
+fun generateChatId(userId1: String, userId2: String): String {
+    return if (userId1 < userId2) {
+        "${userId1}_$userId2"
+    } else {
+        "${userId2}_$userId1"
     }
 }

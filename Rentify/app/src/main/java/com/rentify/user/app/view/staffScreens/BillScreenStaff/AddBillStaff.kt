@@ -117,6 +117,8 @@ fun AddBillStaff(navController: NavController) {
     )
     var isExpanded by remember { mutableStateOf(false) }
     var isExpandedRoom by remember { mutableStateOf(false) }
+    var isExpandedRoomNull by remember { mutableStateOf(false) }
+    var isExpandedBuildingNull by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         buildingStaffViewModel.getBuildingList(staffId)
     }
@@ -181,6 +183,7 @@ fun AddBillStaff(navController: NavController) {
     //ngay
     var showDatePicker by remember { mutableStateOf(false) }
     var dateBill by remember { mutableStateOf("") }
+    var dateBillText by remember { mutableStateOf("")}
     val calendar = Calendar.getInstance()
     //
     var isFocusBuilding by remember { mutableStateOf(false) }
@@ -190,6 +193,10 @@ fun AddBillStaff(navController: NavController) {
     //
     var totalBill = totalAmount + priceRoom + totalElec + totalWater
     var amountBill = CheckUnit.formattedPrice(totalBill.toFloat())
+
+    //
+    var describe by remember { mutableStateOf("") }
+    var isFocusDescribe by remember { mutableStateOf(false) }
 
     val uiState = invoiceViewModel.uiState.collectAsState()
     val isLoading = invoiceViewModel.isLoading.observeAsState(false)
@@ -202,6 +209,7 @@ fun AddBillStaff(navController: NavController) {
     val errorElec by invoiceViewModel.elecErrorMessage.observeAsState()
     val oldWater by invoiceViewModel.oldWaterErrorMessage.observeAsState()
     val oldElec by invoiceViewModel.oldElecErrorMessage.observeAsState()
+    val describeError by invoiceViewModel.describeErrorMessage.observeAsState()
 
     val successMessage by invoiceViewModel.successMessage.observeAsState()
     var showToast by remember { mutableStateOf(false) }
@@ -249,6 +257,9 @@ fun AddBillStaff(navController: NavController) {
                     room = ""
                     priceRoom = 0.0
                     formattedPriceRoom = ""
+                },
+                onExpandedBuildingNull = {
+                    isExpandedBuildingNull = it
                 }
             )
             errorBuilding?.let { ShowReport.ShowError(message = it) }
@@ -266,10 +277,15 @@ fun AddBillStaff(navController: NavController) {
                 isIcon = Icons.Filled.KeyboardArrowDown,
                 listRoom = listRoom,
                 enable = false,
-                onExpandedRoom = { isExpandedRoom = it },
+                onExpandedRoom = {
+                    isExpandedRoom = it
+                },
                 onRoomSelected = { selectedRoom ->
                     priceRoom = selectedRoom.price.toDouble()
                     formattedPriceRoom = CheckUnit.formattedPrice(selectedRoom.price.toFloat())
+                },
+                onExpandedRoomNull = {
+                    isExpandedRoomNull = it
                 }
             )
             errorRoom?.let { ShowReport.ShowError(message = it) }
@@ -486,11 +502,25 @@ fun AddBillStaff(navController: NavController) {
                 }
             }
 
-            // ngay chot
-            Spacer(modifier = Modifier.padding(top = 20.dp))
+            //mo ta
             TextFiledComponent(
-                value = dateBill,
+                value = describe,
                 onValueChange = { newText ->
+                    describe = newText
+                    invoiceViewModel.clearDescribeError()
+                },
+                placeHolder = "Mô tả hóa đơn",
+                isFocused = remember { mutableStateOf(isFocusDescribe) },
+                isShowIcon = false,
+                enable = true
+            )
+            describeError?.let { ShowReport.ShowError(message = it) }
+
+            // ngay chot
+            TextFiledComponent(
+                value = dateBillText,
+                onValueChange = { newText ->
+                    dateBillText = newText
                     dateBill = newText
                     invoiceViewModel.clearDateError()
                 },
@@ -552,6 +582,7 @@ fun AddBillStaff(navController: NavController) {
                             invoiceViewModel.addBill(
                                 userId = staffId,
                                 roomId = selectedRoom._id,
+                                buildingId = selectedBuildingId,
                                 consumeElec = consumeElec,
                                 totalElec = totalElec,
                                 consumeWater = consumeWater,
@@ -567,7 +598,8 @@ fun AddBillStaff(navController: NavController) {
                                 buildingName = building,
                                 roomName = room,
                                 oldElec = oldElecNumber,
-                                oldWater = oldWaterNumber
+                                oldWater = oldWaterNumber,
+                                describe = describe
                             )
                             successMessage?.let {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -624,7 +656,8 @@ fun AddBillStaff(navController: NavController) {
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             calendar.timeInMillis = millis
-                            dateBill = CheckUnit.formatDay(calendar.time)
+                            dateBillText = CheckUnit.formatDay(calendar.time)
+                            dateBill = CheckUnit.formatDay_2(calendar.time)
                         }
                         showDatePicker = false
                     }

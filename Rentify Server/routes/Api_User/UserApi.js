@@ -67,7 +67,7 @@ router.post("/login-user", async (req, res) => {
         return res.status(400).send("Tài khoản của bạn chưa được xác minh");
       }
     } else {
-      return res.status(400).send("Tài khoản không tồn tại");
+      return res.status(404).send("Tài khoản không tồn tại");
     }
   } catch (error) {
     console.error(error);
@@ -107,7 +107,6 @@ router.post("/register-user", async (req, res) => {
     const hashPassword = await bcrypt.hash(data.password, 10);
     user = Account({
       email: data.email,
-      username: data.username,
       password: hashPassword,
       name: data.name,
     });

@@ -3,12 +3,14 @@ package com.rentify.user.app.network.ApiStaff
 import com.rentify.user.app.repository.StaffRepository.BuildingRepository.BuildingStaffResponse
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.InvoiceAdd
+import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.InvoiceConfirmPaid
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.InvoiceResponse
 import com.rentify.user.app.repository.StaffRepository.RoomRepository.RoomResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiServiceStaff{
@@ -27,4 +29,9 @@ interface ApiServiceStaff{
     @POST("invoices/addBillStaff")
     suspend fun addInvoice(@Body invoice: InvoiceAdd): Response<InvoiceResponse>
 
+    //update trang thai thanh toan
+    @PUT("invoices/confirmPaidInvoice/{invoiceId}")
+    suspend fun confirmPaidInvoice(
+        @Path("invoiceId") invoiceId: String,
+        @Body status: InvoiceConfirmPaid): Response<InvoiceResponse>
 }

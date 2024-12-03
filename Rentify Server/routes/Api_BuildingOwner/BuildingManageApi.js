@@ -70,15 +70,15 @@ router.delete('/buildings/:id', async (req, res) => {
 // các api thiên viết
 router.post('/add-building', async (req, res) => {
     try {
-        const { 
-            landlord_id, 
-            manager_id, 
-            service, 
+        const {
+            landlord_id,
+            manager_id,
+            service,
             serviceFees, // Thêm phí dịch vụ
-            nameBuilding, 
-            address, 
-            description, 
-            number_of_floors 
+            nameBuilding,
+            address,
+            description,
+            number_of_floors
         } = req.body;
 
         // Kiểm tra các trường bắt buộc
@@ -132,14 +132,14 @@ router.post('/add-building', async (req, res) => {
 
 router.put('/buildings/:id', async (req, res) => {
     const { id } = req.params;
-    const { 
-        address, 
-        description, 
-        number_of_floors, 
-        nameBuilding, 
-        service, 
+    const {
+        address,
+        description,
+        number_of_floors,
+        nameBuilding,
+        service,
         serviceFees, // Thêm phí dịch vụ
-        manager_id 
+        manager_id
     } = req.body;
 
     // Validate ID là ObjectId hợp lệ

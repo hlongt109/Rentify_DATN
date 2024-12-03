@@ -29,7 +29,7 @@ const PostManage = require("./Api_BuildingOwner/PostManageApi");
 const PaymentManage = require("./Api_BuildingOwner/PaymentManageApi");
 const ContractManage = require("./Api_BuildingOwner/ContractManageApi");
 const BuildingManage = require("./Api_BuildingOwner/BuildingManageApi");
-const QuanLy = require('./Api_BuildingOwner/UserNV');
+const QuanLy = require("./Api_BuildingOwner/UserNV");
 // user
 const roomApi = require("./Api_User/roomApi");
 const invoiceApi = require("./Api_User/invoiceApi");

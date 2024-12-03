@@ -14,13 +14,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -30,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -37,6 +41,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rentify.user.app.repository.StaffRepository.BuildingRepository.Building
@@ -63,11 +68,15 @@ fun TextFiledComponent(
     onExpandedChange: ((Boolean) -> Unit)? = null,
     onExpandedRoom: ((Boolean) -> Unit)? = null,
     onBuildingSelected: ((String) -> Unit)? = null,
-    onRoomSelected: ((Room) -> Unit)? = null
+    onRoomSelected: ((Room) -> Unit)? = null,
+    onExpandedRoomNull: ((Boolean) -> Unit)? = null,
+    onExpandedBuildingNull: ((Boolean) -> Unit)? = null
 ) {
     var showIcon = remember { mutableStateOf(false) }
     var isExpanded by remember { mutableStateOf(false) }
     var isExpandedRoom by remember { mutableStateOf(false) }
+    var isExpandedRoomNull by remember { mutableStateOf(false) }
+    var isExpandedBuildingNull by remember { mutableStateOf(false) }
 
     Column {
         Text(
@@ -110,11 +119,18 @@ fun TextFiledComponent(
                 .clickable {
                     // Xử lý click cho cả trường hợp chọn ngày và chọn building/room
                     onClick?.invoke()
-                    if (listBuilding != null || listRoom != null) {
+                    if (listBuilding != null) {
                         isExpanded = !isExpanded
-                        isExpandedRoom = !isExpandedRoom
                         onExpandedChange?.invoke(isExpanded)
+                    } else if (listRoom != null) {
+                        isExpandedRoom = !isExpandedRoom
                         onExpandedRoom?.invoke(isExpandedRoom)
+                    }else if(listRoom == null){
+                        isExpandedRoomNull = !isExpandedRoomNull
+                        onExpandedRoomNull?.invoke(isExpandedRoomNull)
+                    }else if(listBuilding == null){
+                        isExpandedBuildingNull = !isExpandedBuildingNull
+                        onExpandedBuildingNull?.invoke(isExpandedBuildingNull)
                     }
                 },
             colors = TextFieldDefaults.textFieldColors(
@@ -183,8 +199,18 @@ fun TextFiledComponent(
             exit = fadeOut() + shrinkVertically()
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                // Hiển thị các item theo tháng khi mở rộng
-                if (listRoom != null) {
+                if (listRoom.isNullOrEmpty()) {
+                    // Hiển thị thông báo nếu không có phòng
+                    Text(
+                        text = "Không có phòng hoặc phòng đã có hóa đơn",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    // Hiển thị danh sách phòng
                     listRoom.forEachIndexed { index, room ->
                         ItemBuildingAndRoom(
                             icon = building_icon,
@@ -202,6 +228,5 @@ fun TextFiledComponent(
                 }
             }
         }
-
     }
 }

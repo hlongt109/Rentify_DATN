@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.auth
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -81,16 +82,25 @@ fun LoginScreenApp(navigator: NavController) {
     val errorPass by loginViewModel.errorPass.observeAsState()
     // Quan sát thông báo thành công
     val successMessage by loginViewModel.successMessage.observeAsState()
+    val errorMessage by loginViewModel.errorMessage.observeAsState()
+    val isLoading by loginViewModel.isLoading.observeAsState()
+    val successRole by loginViewModel.successRole.observeAsState()
 
     // Hiển thị thông báo khi đăng nhập thành công
-    LaunchedEffect(successMessage) {
-        successMessage?.let {
+    LaunchedEffect(successRole) {
+        successRole?.let {
             // Xử lý chuyển màn khi đăng nhập thành công
                 role ->
             if (role == "user") {
-                navigator.navigate("${ROUTER.HOME.name}/${username}")
+                successMessage?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
+                navigator.navigate(ROUTER.HOME.name)
             } else if (role == "staffs") {
-                navigator.navigate("${MainActivity.ROUTER.HOME_STAFF.name}/${username}")
+                successMessage?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
+                navigator.navigate(MainActivity.ROUTER.HOME_STAFF.name)
             }
         }
     }
@@ -129,6 +139,7 @@ fun LoginScreenApp(navigator: NavController) {
                     onValueChange = { newText ->
                         username = newText
                         loginViewModel.clearEmailError()
+                        loginViewModel.clearError()
                     },
                     placeholder = "Email",
                     isFocused = remember { mutableStateOf(isFocusedEmail) },
@@ -143,6 +154,7 @@ fun LoginScreenApp(navigator: NavController) {
                     onValueChange = { newText ->
                         password = newText
                         loginViewModel.clearPasswordError()
+                        loginViewModel.clearError()
                     },
                     placeholder = "Password",
                     isFocused = remember { mutableStateOf(isFocusedPass) },
@@ -150,7 +162,9 @@ fun LoginScreenApp(navigator: NavController) {
                 )
                 //loi cho password
                 errorPass?.let { ShowReport.ShowError(message = it) }
+                errorMessage?.let { ShowReport.ShowError(message = it) }
                 //quen mat khau
+                //
 
                 Text(
                     text = "Quên mật khẩu ?",
@@ -202,5 +216,3 @@ fun LoginScreenPreview() {
     val navController = rememberNavController()
     LoginScreenApp(navController)
 }
-//phongnd122004@gmail.com
-//Phong1204

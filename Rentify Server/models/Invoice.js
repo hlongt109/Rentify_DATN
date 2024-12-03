@@ -5,7 +5,7 @@ const Invoice = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  building_id: { // cho hóa đơn phí dv, lương, bảo trì
+  building_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Building",
   },
@@ -13,21 +13,27 @@ const Invoice = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Room",
   },
-  description: [{
-    service_name: { type: String }, // tên dịch vụ (ví dụ: điện, nước)
-    quantity: { type: Number }, // số lượng sử dụng (ví dụ: số kWh, m3 nước)
-    price_per_unit: { type: Number }, // giá mỗi đơn vị
-    total: { type: Number } // tổng chi phí cho dịch vụ đó
-  }],
+  description: [
+    {
+      service_name: { type: String }, // tên dịch vụ (ví dụ: điện, nước)
+      quantity: { type: Number }, // số lượng sử dụng (ví dụ: số kWh, m3 nước)
+      price_per_unit: { type: Number }, // giá mỗi đơn vị
+      total: { type: Number }, // tổng chi phí cho dịch vụ đó
+    },
+  ],
   describe: { type: String },
-  amount: { type: Number }, // số tien
-  transaction_type: { type: String, enum: ['income', 'expense'], require: true },
-  type_invoice: { type: String, enum: ["rent", "electric", "water", "salary", "maintain"] },
+  type_invoice: {
+    type: String,
+    enum: ["rent", "electric", "water", "salary", "maintain"],
+  },
+  amount: { type: Number, require: true }, // số tien
+  transaction_type: {
+    type: String,
+    enum: ["income", "expense"],
+    require: true,
+  },
   due_date: { type: String }, // hạn chót
-  payment_status: { type: String, enum: ["paid", "unpaid"], default: "unpaid" },
-  payment_image: { type: String },
+  payment_status: { type: String, enum: ["paid", "unpaid"] },
   created_at: { type: String },
 });
 module.exports = mongoose.model("Invoice", Invoice);
-
-

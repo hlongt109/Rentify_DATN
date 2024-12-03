@@ -2,6 +2,7 @@ package com.rentify.user.app.viewModel.StaffViewModel
 
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -100,8 +101,6 @@ class InvoiceStaffViewModel(
     val roomErorMessage: LiveData<String?> = _roomErrorMessage
 
 
-
-
     private val _buildingErrorMessage = MutableLiveData<String?>()
     val buildingErrorMessage: LiveData<String?> = _buildingErrorMessage
 
@@ -109,40 +108,67 @@ class InvoiceStaffViewModel(
     private val _dateErrorMessage = MutableLiveData<String?>()
     val dateErrorMessage: LiveData<String?> = _dateErrorMessage
 
+    private val _describeErrorMessage = MutableLiveData<String?>()
+    val describeErrorMessage: LiveData<String?> = _describeErrorMessage
 
     private val _roomsWithoutInvoice = MutableStateFlow<List<Room>>(emptyList())
     val roomsWithoutInvoice: StateFlow<List<Room>> = _roomsWithoutInvoice.asStateFlow()
 
 
-
-
     fun getInvoiceList(staffId: String) {
         viewModelScope.launch {
-            _uiState.value = InvoiceUiState.Loading
+//           _isLoading.postValue(true)
             repository.getListInvoice(staffId).fold(
                 onSuccess = { response ->
                     // Kiểm tra và xử lý dữ liệu từ InvoiceData
                     if (response.status == 200 && response.data != null) {
                         _uiState.value = InvoiceUiState.Success(response.data)
-
-
                         // Phân loại hóa đơn dựa trên danh sách paid và unpaid
                         _paidInvoices.value = response.data.paid
                         _unpaidInvoices.value = response.data.unpaid
                     } else {
-                        _uiState.value =
-                            InvoiceUiState.Error(response.message ?: "Không có dữ liệu")
+                        Log.d("Error", "getInvoiceList: ${response.message}")
+                        _uiState.value = InvoiceUiState.Error(response.message ?: "Không có dữ liệu")
+                        _errorMessage.postValue(response.message)
                     }
                 },
                 onFailure = { exception ->
                     _uiState.value = InvoiceUiState.Error(exception.message ?: "Lỗi không xác định")
+                   _errorMessage.postValue(exception.message ?: "Lỗi không xác định")
                 }
             )
         }
     }
+
+//    fun getInvoiceList(staffId: String){
+//        _isLoading.postValue(true)
+//        viewModelScope.launch {
+//            try {
+//                val response = repository.getListInvoice(staffId)
+//                if(response.isSuccessful){
+//                    val responseBody = response.body()
+//                    if(responseBody != null){
+//                        val result = responseBody.data
+//                        _isLoading.postValue(false)
+//                        if(result != null){
+//                            _paidInvoices.value = result.paid
+//                            _unpaidInvoices.value = result.unpaid
+//                        }else{
+//                            _errorMessage.postValue(responseBody.message)
+//                        }
+//                    }
+//                }
+//            }catch (e: Exception){
+//                Log.d("ErrorInvoice", "getInvoiceList: $e")
+//            }
+//        }
+//    }
+
     fun addBill(
         userId: String,
         roomId: String,
+        buildingId: String,
+        describe: String,
         consumeElec: Int,
         totalElec: Double,
         consumeWater: Int,
@@ -164,7 +190,7 @@ class InvoiceStaffViewModel(
             _isLoading.postValue(true)
             try {
                 // Kiểm tra giá trị hợp lệ
-                if (dueDate.isEmpty() || buildingName.isEmpty() || roomName.isEmpty() || water == null || elec == null || oldWater == null || oldElec == null) {
+                if (dueDate.isEmpty() || buildingName.isEmpty() || roomName.isEmpty() || water == null || elec == null || oldWater == null || oldElec == null || describe.isEmpty()) {
                     when {
                         buildingName.isEmpty() -> {
                             _buildingErrorMessage.postValue("Tòa nhà không được để trống")
@@ -172,6 +198,11 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+                        describe.isEmpty() -> {
+                            _describeErrorMessage.postValue("Mô tả không được để trống")
+                            _isLoading.postValue(false)
+                            return@launch
+                        }
 
                         roomName.isEmpty() -> {
                             _roomErrorMessage.postValue("Phòng không được để trống")
@@ -228,20 +259,16 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
-
                         oldElec < 0 -> {
                             _oldElecErrorMessage.postValue("Số điện không được âm")
                             _isLoading.postValue(false)
                             return@launch
                         }
 
-
                         water < oldWater -> {
                             _waterErrorMessage.postValue("Số nước không được giảm")
                             _isLoading.postValue(false)
                             return@launch
-
-
                         }
 
 
@@ -251,6 +278,21 @@ class InvoiceStaffViewModel(
                             return@launch
                         }
 
+                        !water.isNumber() -> {
+                            _waterErrorMessage.postValue("Số nước phải là số hợp lệ")
+                        }
+
+                        !elec.isNumber() -> {
+                            _elecErrorMessage.postValue("Số điện phải là số hợp lệ")
+                        }
+
+                        !oldWater.isNumber() -> {
+                            _oldWaterErrorMessage.postValue("Số nước phải là số hợp lệ")
+                        }
+
+                        !oldElec.isNumber() -> {
+                            _oldElecErrorMessage.postValue("Số điện phải là số hợp lệ")
+                        }
 
                         dueDate.isEmpty() -> {
                             _dateErrorMessage.postValue("Vui lòng nhập hạn thanh toán")
@@ -308,8 +350,11 @@ class InvoiceStaffViewModel(
                     due_date = dueDate,
                     description = descriptions,
                     payment_status = "unpaid",
-                    transaction_type = "expense",
-                    created_at = ""
+                    transaction_type = "income",
+                    created_at = "",
+                    building_id = buildingId,
+                    describe = describe,
+                    type_invoice = "rent"
                 )
 
 
@@ -321,6 +366,7 @@ class InvoiceStaffViewModel(
                             _uiState.value = InvoiceUiState.Success(response.data)
                             _addBillResult.value = Result.success(response)
                             _successMessage.value = "Thêm hóa đơn thành công"
+                            getInvoiceList(staffId = userId)
                             clearAll()
                         }
                         _isLoading.postValue(false)
@@ -339,6 +385,38 @@ class InvoiceStaffViewModel(
         }
     }
 
+    fun confirmPaidInvoice(invoiceId: String, staffId: String) {
+        viewModelScope.launch {
+            _uiState.value = InvoiceUiState.Loading
+            _isLoading.postValue(true)
+
+            repository.confirmPaidStaff(invoiceId).fold(
+                onSuccess = { response ->
+                    if (response.status == 200 && response.data != null) {
+                        _uiState.value = InvoiceUiState.Success(response.data)
+                        _successMessage.postValue("Đã xác nhận thành công")
+                        getInvoiceList(staffId)
+                        // Log trạng thái mới
+//                        Log.d("InvoiceUpdate", "Cập nhật thành công: ${response.data.paid}")
+                    } else {
+                        _uiState.value = InvoiceUiState.Error("Cập nhật thất bại")
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.value = InvoiceUiState.Error(error.message ?: "Đã xảy ra lỗi")
+                }
+            )
+            _isLoading.postValue(false)
+        }
+    }
+
+    fun Any?.isNumber(): Boolean {
+        return when (this) {
+            is Int, is Float, is Double, is Long -> true
+            is String -> this.toDoubleOrNull() != null
+            else -> false
+        }
+    }
 
     fun clearAll() {
         clearDateError()
@@ -348,8 +426,12 @@ class InvoiceStaffViewModel(
         clearOldElecError()
         clearOldWaterError()
         clearRoomError()
+        clearDescribeError()
     }
 
+    fun clearDescribeError() {
+        _describeErrorMessage.value = null
+    }
 
     fun clearDateError() {
         _dateErrorMessage.value = null
@@ -384,8 +466,6 @@ class InvoiceStaffViewModel(
     fun clearOldElecError() {
         _oldElecErrorMessage.value = null
     }
-
-
 
 
     class InvoiceStaffViewModelFactory(

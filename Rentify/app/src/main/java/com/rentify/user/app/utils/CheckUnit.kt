@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.Currency
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 object CheckUnit {
      fun isValidEmail(email: String): Boolean {
@@ -38,6 +39,17 @@ object CheckUnit {
     fun formatDay(date: Date): String{
         val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Chỉ định định dạng năm
         return format.format(date)
+    }
+    fun formatDay_2(date: Date): String {
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        format.timeZone = TimeZone.getTimeZone("UTC") // Đảm bảo đúng định dạng ISO 8601
+        return format.format(date)
+    }
+
+    fun formatTimeMessage(timestamp: Long): String{
+        val date = Date(timestamp)
+        val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+        return formatter.format(date)
     }
 
     fun parseDate(dateString: String): Date {

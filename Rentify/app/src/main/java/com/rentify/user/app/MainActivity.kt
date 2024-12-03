@@ -169,8 +169,16 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.TogeTher.name) {
                 TogetherScreen(navController = navController)
             }
-            composable(ROUTER.TINNHAN.name) {
-                TinnhanScreen(navController = navController)
+            composable(
+                "TINNHAN/{userId}/{userName}",
+                arguments = listOf(
+                    navArgument("userId"){type = NavType.StringType},
+                    navArgument("userName"){type = NavType.StringType}
+                )
+            ) {backStackEntry ->
+                val receiverId = backStackEntry.arguments?.getString("userId") ?: ""
+                val receiverName = backStackEntry.arguments?.getString("userName") ?: ""
+                TinnhanScreen(navController = navController, receiverId, name = receiverName)
             }
 
             composable("PaymentConfirmation/{amount}") { backStackEntry ->

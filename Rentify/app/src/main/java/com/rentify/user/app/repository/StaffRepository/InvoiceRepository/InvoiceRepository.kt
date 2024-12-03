@@ -3,6 +3,7 @@ package com.rentify.user.app.repository.StaffRepository.InvoiceRepository
 
 import com.rentify.user.app.network.ApiStaff.ApiServiceStaff
 import com.rentify.user.app.network.ApiStaff.RetrofitStaffService
+import retrofit2.Response
 
 
 class InvoiceRepository(
@@ -23,6 +24,9 @@ class InvoiceRepository(
             Result.failure(e)
         }
     }
+//    suspend fun getListInvoice(staffId: String): Response<InvoiceResponse>{
+//        return api.listInvoiceStaff(staffId)
+//    }
 
 
     suspend fun addBillStaff(invoice: InvoiceAdd): Result<InvoiceResponse>{
@@ -32,6 +36,22 @@ class InvoiceRepository(
                 response.body()?.let { invoiceResponse ->
                     Result.success(invoiceResponse)
                 } ?: Result.failure(Exception("Response body is null"))
+            }else{
+                Result.failure(Exception("Error: ${response.code()}"))
+            }
+        }catch(e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun confirmPaidStaff(invoiceId: String): Result<InvoiceResponse>{
+        return try {
+            val statusUpdate = InvoiceConfirmPaid(payment_status = "paid")
+            val response = api.confirmPaidInvoice(invoiceId, statusUpdate)
+            if(response.isSuccessful){
+                response.body()?.let { invoiceResponse ->
+                    Result.success((invoiceResponse))
+                }?: Result.failure(Exception("Response body is null"))
             }else{
                 Result.failure(Exception("Error: ${response.code()}"))
             }

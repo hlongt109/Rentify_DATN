@@ -25,20 +25,24 @@ data class InvoiceData(
     val unpaid: List<Invoice>
 )
 
+data class InvoiceConfirmPaid(
+    val payment_status: String
+)
 
 data class InvoiceAdd(
     val _id: String,
     val user_id: String,
+    val building_id: String,
     val room_id: String,
     val description: List<Description>,
+    val describe: String,
+    val type_invoice: String = "rent",
     val amount: Double,
     val transaction_type: String = "expense",
     val due_date: String,
     val payment_status: String = "unpaid",
     val created_at: String,
-//    val detail_invoice: List<DetailInvoice>
 )
-
 
 data class Invoice(
     val _id: String,
