@@ -14,7 +14,6 @@
             max-width: 100%;
         }
 
-
         .table thead {
             background-color: #f9f9f9;
             text-align: left;
@@ -62,17 +61,16 @@
 
 <body>
 
-
     <h2 class="text-center" style="color: rgb(0, 0, 0);">Danh sách dịch vụ</h2>
 
     <div class="container-fluid mb-4">
-
         <!-- add new -->
         <div class="container my-3">
             <button id="btnAdd" class="btn btn-success btn-lg">
                 <i class="bi bi-plus-circle"></i> Add New Service
             </button>
         </div>
+
         <!-- Modal Thêm Dịch vụ -->
         <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -108,7 +106,6 @@
                 </div>
             </div>
         </div>
-
 
         <!-- Modal: Sửa dịch vụ -->
         <div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel"
@@ -150,7 +147,6 @@
             </div>
         </div>
 
-
         <div class="table table-striped">
             <table class="table table-striped">
                 <thead>
@@ -162,50 +158,14 @@
                         <th>Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <% if (data && data.length> 0) { %>
-                        <% data.forEach((item,index)=> { %>
-                            <tr>
-                                <td>
-                                    <%= index + 1 %>
-                                </td>
-                                <td>
-                                    <%= item.name || "Chưa có tên" %>
-                                </td>
-                                <td>
-                                    <%= item.description || "Không có mô tả" %>
-                                </td>
-                                <td>
-                                    <%= item.price || "Không có giá" %>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-primary btn-sm" data-show-list='<%- JSON.stringify(item) %>'
-                                        onclick="openDetailModal(this)">
-                                        Xem chi tiết
-                                    </button>
-                                    <button class="btn btn-warning btn-sm"
-                                        onclick="editService('<%= item._id %>', '<%= item.name %>', '<%= item.description %>', '<%= item.price %>')">
-                                        Sửa
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= item._id %>')">
-                                        Xóa
-                                    </button>
-                                </td>
-                            </tr>
-                            <% }) %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="4" class="text-center">Không có dịch vụ nào được tìm thấy.</td>
-                                    </tr>
-                                    <% } %>
+                <tbody id="serviceTableBody">
+                    <!-- Dữ liệu sẽ được hiển thị ở đây -->
                 </tbody>
             </table>
         </div>
 
-
-
-
     </div>
+
     <!-- Modal for displaying details -->
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -225,174 +185,200 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // const service = [];
-        // let userId = localStorage.getItem('user_id');
-        
+        async function loadServices() {
+            try {
+                let userId = localStorage.getItem('user_id');
+                const response = await fetch(`/api/services_mgr/list/${userId}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch services');
+                }
+
+                const data = await response.json();
+                const services = data.data;
+
+                const tbody = document.getElementById("serviceTableBody");
+                tbody.innerHTML = '';
+
+                services.forEach((service, index) => {
+                    const tr = document.createElement("tr");
+
+                    tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${service.name}</td>
+                    <td>${service.description}</td>
+                    <td>${service.price}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="openDetailModal('${service._id}')">Xem chi tiết</button>
+                        <button class="btn btn-warning btn-sm" onclick="editService('${service._id}', '${service.name.replace(/'/g, "\\'")}', '${service.description.replace(/'/g, "\\'")}', '${service.price}')">Sửa</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteService('${service._id}')">Xóa</button>
+                    </td>
+                `;
+
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error loading services:', error);
+            }
+        }
+
+        function openDetailModal(serviceId) {
+            fetch(`/api/services_mgr/detail/${serviceId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Service not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Kiểm tra xem data có tồn tại và chứa thông tin dịch vụ hay không
+                    console.log('API response:', data);  // In ra phản hồi API để kiểm tra
+
+                    if (!data || !data.data) {
+                        throw new Error('Invalid service data');
+                    }
+
+                    const service = data.data;
+                    const modalContent = document.getElementById('modalContent');
+
+                    // Kiểm tra và xử lý phần ảnh dịch vụ
+                    if (service.photos && Array.isArray(service.photos) && service.photos.length > 0) {
+                        modalContent.innerHTML = `
+                    <h5>Ảnh dịch vụ:</h5>
+                    <div id="serviceImages">
+                        ${service.photos.map(photo =>
+                            `<img src="/public/uploads/${photo}" class="img-fluid" style="max-width: 100%; height: auto; margin-bottom: 10px;">`
+                        ).join('')}
+                    </div>
+                `;
+                    } else {
+                        modalContent.innerHTML = '<p>No images available for this service.</p>';
+                    }
+
+                    // Mở modal chi tiết
+                    new bootstrap.Modal(document.getElementById('detailModal')).show();
+                })
+                .catch(err => {
+                    console.error('Error fetching details:', err);
+                    const modalContent = document.getElementById('modalContent');
+                    modalContent.innerHTML = `<p>Error: ${err.message}</p>`;
+                    new bootstrap.Modal(document.getElementById('detailModal')).show();
+                });
+        }
+
+
+        // Hàm hiển thị modal sửa dịch vụ với thông tin hiện tại của dịch vụ
+        function editService(id, name, description, price, photos) {
+            try {
+                document.getElementById('editServiceId').value = id;
+                document.getElementById('editName').value = name;
+                document.getElementById('editDescription').value = description;
+                document.getElementById('editPrice').value = price;
+
+                // Mở modal sửa dịch vụ
+                new bootstrap.Modal(document.getElementById('editServiceModal')).show();
+            } catch (error) {
+                console.error('Lỗi khi phân tích chuỗi JSON:', error);
+            }
+        }
+
+
+
+        // Xử lý submit form sửa dịch vụ
+        document.getElementById('editServiceForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('id', document.getElementById('editServiceId').value);
+            formData.append('name', document.getElementById('editName').value);
+            formData.append('description', document.getElementById('editDescription').value);
+            formData.append('price', document.getElementById('editPrice').value);
+
+            const photos = document.getElementById('editPhotos').files;
+            for (let i = 0; i < photos.length; i++) {
+                formData.append('photos', photos[i]);
+            }
+
+            // Kiểm tra dữ liệu formData
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+
+            let serviceId = document.getElementById('editServiceId').value;
+            const response = await fetch(`/api/services_mgr/update/${serviceId}`, {
+                method: 'PUT',
+                body: formData
+            });
+
+
+            if (response.ok) {
+                alert('Dịch vụ đã được cập nhật thành công!');
+                const editServiceModal = bootstrap.Modal.getInstance(document.getElementById('editServiceModal'));
+                editServiceModal.hide();
+                loadServices();
+            } else {
+                alert('Không thể cập nhật dịch vụ!');
+            }
+        });
+
+
+
+
+
+
+        function deleteService(serviceId) {
+            if (confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) {
+                fetch(`/api/services_mgr/delete/${serviceId}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        //loadServices();
+                        window.location.reload();
+                    })
+                    .catch(error => console.error('Error deleting service:', error));
+            }
+        }
+
+
+        // add
         document.getElementById("btnAdd").addEventListener("click", function () {
             // Mở modal thêm dịch vụ
             const addUserModal = new bootstrap.Modal(document.getElementById("addUserModal"));
-            addUserModal.show();
-        });
-        document.getElementById("addUserForm").addEventListener("submit", async (e) => {
-            e.preventDefault(); // Ngăn form reload trang
-
-            // Lấy dữ liệu từ form
-            const name = document.getElementById("name").value;
-            const description = document.getElementById("description").value;
-            const price = document.getElementById("price").value;
-            const photos = document.getElementById("photos").files;
-
-            // Tạo FormData để xử lý file upload
-            const formData = new FormData();
-            formData.append("name", name);
-            formData.append("description", description);
-            formData.append("price", price);
-
-            // Duyệt qua các tệp ảnh được chọn và thêm vào formData
-            for (const file of photos) {
-                formData.append("photos", file);
-            }
-           
-            try {
-                // Gửi dữ liệu tới API
-                const response = await fetch(`/api/services/add/${userId}`, {
-                    method: "POST",
-                    body: formData, // Gửi dữ liệu dạng multipart/form-data
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    alert("Thêm dịch vụ thành công!");
-                    const addUserModal = bootstrap.Modal.getInstance(document.getElementById("addUserModal"));
-                    addUserModal.hide(); // Đóng modal
-                    e.target.reset(); // Xóa dữ liệu trong form
-                    window.location.reload(); // Làm mới trang
-                } else {
-                    alert(`Thêm dịch vụ thất bại: ${result.message}`);
-                }
-            } catch (error) {
-                console.error("Lỗi khi thêm dịch vụ:", error);
-                alert("Đã xảy ra lỗi khi thêm dịch vụ.");
-            }
+            addUserModal.show();  // Sử dụng show() để mở modal
         });
 
-
-
-
-        //xem chi tiet
-        function openDetailModal(button) {
-            const showList = JSON.parse(button.getAttribute('data-show-list'));
-
-            const modalContent = document.getElementById('modalContent');
-            modalContent.innerHTML = ''; // Xóa nội dung cũ
-
-            // Hiện ảnh
-            if (showList.photos && showList.photos.length > 0) {
-                const photoSection = document.createElement('div');
-                photoSection.innerHTML = '<h3>Ảnh</h3>';
-                showList.photos.forEach(photo => {
-                    const img = document.createElement('img');
-                    img.src = `/public/uploads/${photo}`;
-                    img.alt = 'Ảnh';
-                    img.className = 'img-fluid mb-2'; // Thêm class để responsive
-                    photoSection.appendChild(img);
-                });
-                modalContent.appendChild(photoSection);
-            }
-            const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
-            detailModal.show();
-        }
-        //sua
-        // Chức năng mở modal sửa dịch vụ
-        function editService(serviceId, currentName, currentDescription, currentPrice, currentPhotos = []) {//, currentPhotos
-            document.getElementById("editServiceId").value = serviceId;
-            document.getElementById("editName").value = currentName;
-            document.getElementById("editDescription").value = currentDescription;
-            document.getElementById("editPrice").value = currentPrice;
-
-            // Hiển thị ảnh hiện tại (nếu có)
-            const editPhotoPreview = document.getElementById("editPhotoPreview");
-            editPhotoPreview.innerHTML = ''; // Xóa ảnh cũ nếu có
-
-            currentPhotos.forEach(photos => {
-                const img = document.createElement("img");
-                img.src = `/public/uploads/${photos}`;
-                img.alt = "Ảnh hiện tại";
-                img.className = "img-fluid img-thumbnail me-2";
-                img.style.width = "100px";
-                editPhotoPreview.appendChild(img);
-            });
-
-            const editServiceModal = new bootstrap.Modal(document.getElementById("editServiceModal"));
-            editServiceModal.show();
-        }
-
-        // Xử lý khi nhấn nút "Lưu thay đổi" trong modal sửa
-        document.getElementById("editServiceForm").addEventListener("submit", async (e) => {
+        document.getElementById('addUserForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const serviceId = document.getElementById("editServiceId").value;
-            const name = document.getElementById("editName").value;
-            const description = document.getElementById("editDescription").value;
-            const price = document.getElementById("editPrice").value;
-            const photosInput = document.getElementById("editPhotos");
-            if (!photosInput) {
-                console.error("Không tìm thấy phần tử với ID 'editPhotos'.");
-                return;
-            }
-            const photos = photosInput.files;
-
             const formData = new FormData();
-            formData.append('name', name);
-            formData.append('description', description);
-            formData.append('price', price);
-
-            // Duyệt qua các ảnh mới và thêm vào FormData
-            for (const file of photos) {
-                formData.append("photos", file);
+            formData.append('name', document.getElementById('name').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('price', document.getElementById('price').value)
+                ;
+            const photos = document.getElementById('photos').files;
+            for (let i = 0; i < photos.length; i++) {
+                formData.append('photos', photos[i]);
             }
 
-            // Gửi yêu cầu PUT tới API mà không cần Content-Type trong header
-            const response = await fetch(`/api/services_mgr/update/${serviceId}`, {
-                method: 'PUT',
-                body: formData,
+            let userId = localStorage.getItem('user_id');
+            const response = await fetch(`/api/services/add/${userId}`, {
+                method: 'POST',
+                body: formData
             });
 
-            const data = await response.json();
             if (response.ok) {
-                alert("Cập nhật dịch vụ thành công!");
-                const editServiceModal = bootstrap.Modal.getInstance(document.getElementById("editServiceModal"));
-                editServiceModal.hide();
+                alert('Dịch vụ đã được thêm thành công!');
+                //loadServices();
                 window.location.reload();
             } else {
-                alert(`Lỗi: ${data.message}`);
+                alert('Không thể thêm dịch vụ!');
             }
         });
 
-        //xoa
-        function confirmDelete(id) {
-            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                fetch(`/api/services1/${id}`, {
-                    method: 'DELETE'
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Xóa không thành công');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        alert(data.message || 'Xóa thành công');
-                        window.location.reload(); // Quay lại trang danh sách bài đăng
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        alert('Đã xảy ra lỗi khi xóa');
-                    });
-            }
-        }
-
+        // Load Services when the page loads
+        loadServices();
     </script>
+
 </body>
 
 </html>

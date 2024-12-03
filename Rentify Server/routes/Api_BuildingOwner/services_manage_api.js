@@ -34,21 +34,37 @@ router.get("/services_mgr/list/:id", async (req, res) => {
 
 
 // details
-router.get("/api/services/:id", async (req, res) => {
+router.get("/services_mgr/detail/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const result = await Service.findById(id);
+
         if (!result) {
             return res.status(404).json({
                 status: 404,
                 messenger: 'Service not found'
             });
         }
-        res.status(200).send(result)
+
+        // Kiểm tra và xử lý ảnh (nếu có)
+        const serviceData = {
+            _id: result._id,
+            name: result.name,
+            description: result.description,
+            price: result.price,
+            photos: result.photos || [], // Nếu không có ảnh, trả về mảng rỗng
+        };
+
+        res.status(200).json({
+            status: 200,
+            data: serviceData // Trả về dữ liệu dưới dạng "data"
+        });
+
     } catch (error) {
         handleServerError(res, error);
     }
-})
+});
+
 // search
 router.get("/api/services", async (req, res) => {
     try {
@@ -180,7 +196,7 @@ router.put("/services_mgr/update/:id", uploadFile.array('photos', 10), async (re
 
 
 // delete 
-router.delete("/services1/:id", async (req, res) => {
+router.delete("/services_mgr/delete/:id", async (req, res) => {
     try {
         const { id } = req.params
         const result = await Service.findByIdAndDelete(id);
