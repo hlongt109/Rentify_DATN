@@ -22,12 +22,10 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
     );
 
     if (buildings.length === 0) {
-      return res
-        .status(400)
-        .json({
-          status: 400,
-          message: "Không tìm thấy tòa nhà nào được quản lý",
-        });
+      return res.status(400).json({
+        status: 400,
+        message: "Không tìm thấy tòa nhà nào được quản lý",
+      });
     }
 
     const buildingIds = buildings.map((building) => building._id);
@@ -64,7 +62,7 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
     if (invoices.length === 0) {
       return res.status(404).json({
         status: 404,
-        message: "Không tìm thấy hóa đơn",
+        message: "Không có hóa đơn",
         data: {},
       });
     }
