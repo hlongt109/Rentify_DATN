@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router();
+// model
+const User = require("../../models/User");
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-// model
-const User = require("../../models/User");
+
+
 
 // send email service
 const transporter = require("../../config/common/mailer")
@@ -122,31 +124,48 @@ router.post("/login", async (req, res) => {
 router.get("/rentify/login", async (req, res) => {
     res.render('Auth/Login');
 })
+
 router.post("/rentify/login", async (req, res) => {
     try {
         const { username, password } = req.body;
+        console.log("Received login request with username:", username); // Kiểm tra username nhận được từ client
+
         if (!username || !password) {
             return res.status(400).json({ message: 'Thiếu username hoặc password' });
         }
+
         // Tìm người dùng trong cơ sở dữ liệu
-        const user = await User.findOne({ username: username, password: password });
+        const user = await User.findOne({ username: username.toLowerCase() });
+        console.log("Tìm kiếm người dùng với tên đăng nhập:", username);
+
+        console.log("User found in DB:", user);  // Kiểm tra xem người dùng có tồn tại trong cơ sở dữ liệu không
+
         if (!user) {
             return res.status(401).json({ message: 'Tài khoản không tồn tại' });
         }
-        if (user.role === 'ban') {
-            return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
+
+        // So sánh mật khẩu
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log("Password valid:", isPasswordValid);  // Kiểm tra xem mật khẩu có đúng không
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Tên đăng nhập hoặc mật khẩu không đúng' });
         }
 
+        // Tạo JWT token nếu mật khẩu đúng
         const token = jwt.sign({ landlord_id: user.landlord_id }, 'hoan', { expiresIn: '1h' });
-        console.log("login: ", req.body);
 
-
-        // Trả về accessToken, refreshToken và thông tin người dùng
         return res.json({
-            token
+            token,
+            data: {
+                _id: user._id,
+                username: user.username,
+                role: user.role,
+                landlord_id: user.landlord_id,
+            }
         });
     } catch (error) {
-        console.error(error, " Password: " + req.body.password);
+        console.error("Error in login:", error);
         return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
     }
 });

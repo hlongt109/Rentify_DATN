@@ -337,20 +337,20 @@
                 users.forEach((user, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${user.name || 'Không có tên'}</td>
-            <td>${user.email || 'Không có email'}</td>
-            <td>${user.phoneNumber || 'Chưa có số điện thoại'}</td>
-            <td>${user.address || 'Chưa có đại chỉ'}</td>
-            
-            <td><span class="btn-role ${user.role ? user.role.toLowerCase() : ''}">${user.role || 'Chưa có'}</span></td>
-            <td>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="editUser('${user._id}', '${user.role}')">Edit</button>
-                    <button class="btn btn-danger" onclick="confirmDelete('${user._id}')">Delete</button>
-                </div>
-            </td>
-        `;
+                        <td>${index + 1}</td>
+                        <td>${user.name || 'Không có tên'}</td>
+                        <td>${user.email || 'Không có email'}</td>
+                        <td>${user.phoneNumber || 'Chưa có số điện thoại'}</td>
+                        <td>${user.address || 'Chưa có địa chỉ'}</td>
+                        
+                        <td><span class="btn-role ${user.role ? user.role.toLowerCase() : ''}">${user.role || 'Chưa có'}</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" onclick="editUser('${user._id}', '${user.role}')">Edit</button>
+                                <button class="btn btn-danger" onclick="confirmDelete('${user._id}')">Delete</button>
+                            </div>
+                        </td>
+                    `;
                     tableBody.appendChild(row);
                 });
             }
