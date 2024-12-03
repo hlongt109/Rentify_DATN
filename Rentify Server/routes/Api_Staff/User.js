@@ -29,13 +29,13 @@ router.get('/getUser/:id', async (req, res) => {
         // Tìm người dùng theo _id
         const user = await User.findById(id);
 
-//         // Kiểm tra nếu người dùng không tồn tại
-//         if (!user) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'Không tìm thấy người dùng'
-//             });
-//         }
+        // Kiểm tra nếu người dùng không tồn tại
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy người dùng'
+            });
+        }
 
         // Trả về thông tin chi tiết người dùng
         res.status(200).json(user);

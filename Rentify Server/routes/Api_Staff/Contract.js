@@ -1,43 +1,330 @@
 const express = require('express');
 const router = express.Router();
 const Contract = require("../../models/Contract");
+var Building = require('../../models/Building')
+const moment = require('moment');
+const mongoose = require("mongoose");
+const upload = require('../../config/common/upload'); // Đường dẫn tới file upload.js
+const Room = require('../../models/Room')
+const User = require('../../models/User')
+router.get("/contracts-by-building", async (req, res) => {
+    const { manage_id } = req.query;
 
-// Lấy danh sách tất cả hợp đồng 
-router.get('/list', async (req, res) => {
+    if (!manage_id) {
+        return res.status(400).json({ message: "manage_id is required" });
+    }
+
     try {
-        const contracts = await Contract.find(); // Lấy tất cả hợp đồng từ DB
-        res.json(contracts);
+        // Tìm các tòa nhà mà manage_id quản lý
+        const managedBuildings = await Building.find({ manager_id: manage_id }).select("_id");
+
+        if (!managedBuildings || managedBuildings.length === 0) {
+            return res.status(404).json({ message: "No buildings found for this manager" });
+        }
+
+        // Lấy danh sách building_id từ các tòa nhà được quản lý
+        const buildingIds = managedBuildings.map((building) => building._id);
+
+        // Lấy danh sách hợp đồng theo building_id
+        const contracts = await Contract.find({ building_id: { $in: buildingIds } })
+            .populate("building_id", "nameBuilding") // Thêm thông tin tòa nhà
+            .populate("room_id", "room_name") // Thêm thông tin phòng
+            .populate("user_id", "name email") // Thêm thông tin người thuê
+            .sort({ created_at: -1 }); // Sắp xếp theo ngày tạo giảm dần
+
+        // Thêm thông tin khoảng thời gian (số tháng)
+        const contractsWithDuration = contracts.map(contract => {
+            const startDate = moment(contract.start_date, "YYYY-MM-DD");
+            const endDate = moment(contract.end_date, "YYYY-MM-DD");
+            const durationMonths = endDate.diff(startDate, "months"); // Tính số tháng làm tròn
+
+            return {
+                ...contract.toObject(),
+                duration: durationMonths + " tháng" // Không có phần thập phân
+            };
+        });
+
+        res.json(contractsWithDuration);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Error fetching contracts:", error);
+        res.status(500).json({ message: "Error fetching contracts", error: error.message });
     }
 });
 
-// Tìm kiếm hợp đồng 
-router.get('/search', async (req, res) => {
-    const { user_id, room_id } = req.query;
+// API lấy chi tiết hợp đồng theo contract_id
+router.get("/contract-detail/:id", async (req, res) => {
+    const { id } = req.params;
 
     try {
-        const query = {};
-        if (user_id) query.user_id = user_id;
-        if (room_id) query.room_id = room_id;
+        // Tìm hợp đồng theo ID
+        const contract = await Contract.findById(id)
+            .populate("building_id", "nameBuilding")  // Thêm thông tin tòa nhà
+            .populate("room_id", "room_name price")        // Thêm thông tin phòng
+            .populate("user_id", "name email");      // Thêm thông tin người thuê
 
-        const contracts = await Contract.find(query);
-        res.json(contracts);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// Xem chi tiết hợp đồng theo ID http://localhost:3000/api/staff/contracts/detail/
-router.get('/detail/:id', async (req, res) => {
-    try {
-        const contract = await Contract.findById(req.params.id);
         if (!contract) {
             return res.status(404).json({ message: "Contract not found" });
         }
-        res.json(contract);
+        // Tính duration (khoảng thời gian hợp đồng)
+        const startDate = moment(contract.start_date); // Dùng moment để xử lý ngày
+        const endDate = moment(contract.end_date);
+        const duration = endDate.diff(startDate, 'months'); // Tính số tháng giữa start_date và end_date
+
+        // Tính kỳ thanh toán (ví dụ: "01 - 05 hàng tháng")
+        const startDay = moment(contract.start_date).format('DD'); // Ngày bắt đầu (dd)
+        const paymentCycle = `${startDay}`;
+
+        // Trả về thông tin hợp đồng với duration và payment cycle
+        const contractDetails = {
+            ...contract.toObject(), // Chuyển contract sang object để dễ dàng thao tác
+            duration,              // Thêm thông tin duration vào hợp đồng
+            paymentCycle          // Thêm thông tin kỳ thanh toán vào hợp đồng
+        };
+
+        res.json(contractDetails);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Error fetching contract details:", error);
+        res.status(500).json({ message: "Error fetching contract details", error: error.message });
+    }
+});
+
+
+
+// API: Lấy danh sách tòa theo manage_id
+router.get("/buildings/:manager_id", async (req, res) => {
+    try {
+        const { manager_id } = req.params;
+
+        // Kiểm tra nếu manage_id không hợp lệ
+        if (!mongoose.Types.ObjectId.isValid(manager_id)) {
+            return res.status(400).json({
+                status: 400,
+                message: "manage_id không hợp lệ.",
+            });
+        }
+
+        // Tìm các tòa nhà theo manage_id
+        const buildings = await Building.find({ manager_id })
+        // .select("_id name location") // Chỉ chọn các trường cần thiết
+        // .populate("manage_id", "name email") // Populate thông tin quản lý
+        // .lean(); // Chuyển đổi sang Object JS thuần
+
+        // Nếu không có tòa nhà nào, trả về thông báo lỗi
+        if (!buildings || buildings.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "Không tìm thấy tòa nhà nào cho manage_id này.",
+            });
+        }
+
+        // Trả về danh sách tòa nhà
+        res.status(200).json({
+            status: 200,
+            data: buildings,
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách tòa nhà:", error.message);
+        res.status(500).json({
+            status: 500,
+            message: "Lỗi khi lấy danh sách tòa nhà.",
+            error: error.message,
+        });
+    }
+});
+
+
+router.get("/rooms/:building_id", async (req, res) => {
+    try {
+        const { building_id } = req.params;
+
+        // Tìm các phòng theo building_id và status = 0
+        const rooms = await Room.find({ building_id, status: 0 });
+
+        res.status(200).json({
+            status: 200,
+            data: rooms,
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách phòng:", error.message);
+        res.status(500).json({
+            status: 500,
+            message: "Lỗi khi lấy danh sách phòng.",
+            error: error.message,
+        });
+    }
+});
+
+// API thêm hợp đồng
+router.post('/add', upload.fields([{ name: 'photos_contract' }]), async (req, res) => {
+    try {
+        // Lấy dữ liệu hợp đồng từ body request
+        const {
+            manage_id,
+            building_id,
+            room_id,
+            user_id,
+            photos_contract,
+            content,
+            start_date,
+            end_date,
+            status,
+            created_at
+        } = req.body;
+
+        // Kiểm tra nếu tất cả các trường dữ liệu bắt buộc đã được cung cấp
+        if (!manage_id || !building_id || !room_id || !user_id || !start_date || !end_date) {
+            return res.status(400).json({ message: 'Thiếu thông tin bắt buộc để tạo hợp đồng' });
+        }
+        const userIds = user_id.split(',').map(id => new mongoose.Types.ObjectId(id.trim()));
+
+        // Tạo hợp đồng mới
+        const newContract = new Contract({
+            manage_id: new mongoose.Types.ObjectId(req.body.manage_id),
+            building_id: building_id ? new mongoose.Types.ObjectId(building_id) : null, // Kiểm tra nếu có building_id
+            room_id: room_id ? new mongoose.Types.ObjectId(room_id) : null, // Kiểm tra nếu có room_id
+            user_id: userIds,
+            photos_contract: req.files['photos_contract'] ? req.files['photos_contract'].map(file => file.path.replace('public/', '')) : [],
+            content,
+            start_date,
+            end_date,
+            status,
+            created_at: new Date().toISOString(),
+        });
+
+        // Lưu hợp đồng vào cơ sở dữ liệu
+        await newContract.save();
+        const updatedRoom = await Room.findByIdAndUpdate(
+            room_id, // ID của phòng
+            { status: 1 }, // Cập nhật trạng thái phòng thành 1
+            { new: true } // Trả về phòng sau khi được cập nhật
+        );
+
+        if (!updatedRoom) {
+            return res.status(400).json({ message: 'Không tìm thấy phòng để cập nhật trạng thái.' });
+        }
+        // Trả về phản hồi thành công
+        res.status(201).json({
+            message: 'Hợp đồng đã được tạo thành công',
+            contract: newContract,
+        });
+
+    } catch (error) {
+        console.error("Lỗi khi tạo hợp đồng:", error.message);
+        res.status(500).json({
+            message: 'Lỗi khi tạo hợp đồng',
+            error: error.message,
+        });
+    }
+});
+
+
+router.put("/update/:id", upload.fields([{ name: "photos_contract" }]), async (req, res) => {
+    try {
+        const { id } = req.params; // Lấy contract_id từ params
+        const { user_id, content } = req.body; // Lấy dữ liệu từ body request
+
+        // Kiểm tra xem hợp đồng tồn tại không
+        const contract = await Contract.findById(id);
+        if (!contract) {
+            return res.status(404).json({ message: "Contract not found" });
+        }
+
+        // Cập nhật user_id nếu có
+        if (user_id) {
+            const userIds = user_id.split(",").map((id) => new mongoose.Types.ObjectId(id.trim()));
+            contract.user_id = userIds;
+        }
+
+        // Cập nhật photos_contract nếu có file upload
+        if (req.files["photos_contract"]) {
+            const photoPaths = req.files["photos_contract"].map((file) => file.path.replace("public/", ""));
+            contract.photos_contract = photoPaths;
+        }
+
+        // Cập nhật content nếu có
+        if (content) {
+            contract.content = content;
+        }
+
+        // Lưu thay đổi vào database
+        await contract.save();
+
+        // Phản hồi thành công
+        res.status(200).json({
+            message: "Contract updated successfully",
+            contract,
+        });
+    } catch (error) {
+        console.error("Error updating contract:", error.message);
+        res.status(500).json({
+            message: "Error updating contract",
+            error: error.message,
+        });
+    }
+});
+router.get('/search', async (req, res) => {
+    try {
+        const { userName, buildingRoom, manageId } = req.query; // Thêm manageId vào query
+
+        // Kiểm tra nếu không có manageId, trả về lỗi
+        if (!manageId) {
+            return res.status(400).json({ message: 'manageId là bắt buộc' });
+        }
+
+        let filters = { manage_id: manageId }; // Bắt buộc có manageId trong filters
+
+        // Tìm theo tên người dùng (userName)
+        if (userName) {
+            const users = await User.find({ name: new RegExp(userName, "i") });
+            if (users.length > 0) {
+                filters['user_id'] = { $in: users.map(user => user._id) };
+            } else {
+                return res.status(200).json([]); // Không có kết quả
+            }
+        }
+
+        // Tìm theo buildingRoom
+        if (buildingRoom) {
+            const [nameBuilding, room_name] = buildingRoom.split("/").map(item => item.trim());
+            const building = await Building.findOne({ nameBuilding: new RegExp(nameBuilding, "i") });
+            const room = await Room.findOne({ room_name: new RegExp(room_name, "i") });
+
+            if (building && room) {
+                filters['building_id'] = building._id;
+                filters['room_id'] = room._id;
+            } else {
+                return res.status(200).json([]); // Không có kết quả
+            }
+        }
+
+        // Nếu không có điều kiện tìm kiếm
+        if (Object.keys(filters).length === 0) {
+            return res.status(200).json([]); // Không có kết quả
+        }
+
+        // Truy vấn danh sách hợp đồng
+        const contracts = await Contract.find(filters)
+            .populate("user_id", "name")
+            .populate("building_id", "nameBuilding")
+            .populate("room_id", "room_name")
+            .lean();
+
+        // Tính duration
+        const contractsWithDuration = contracts.map(contract => {
+            const startDate = moment(contract.start_date);
+            const endDate = moment(contract.end_date);
+            const duration = endDate.diff(startDate, 'months');
+
+            return {
+                ...contract,
+                duration: `${duration} tháng`,
+            };
+        });
+
+        res.status(200).json(contractsWithDuration);
+    } catch (error) {
+        console.error("Error fetching contracts:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 

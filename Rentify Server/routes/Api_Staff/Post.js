@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Post = require("../../models/Post");
 const upload = require('../../config/common/upload'); // Đường dẫn tới file upload.js
-var building = require('../../models/Building')
+var Building = require('../../models/Building')
 const Room = require('../../models/Room')
 // Lấy danh sách bài viết
 router.get("/list", async (req, res) => {
@@ -72,24 +72,42 @@ router.get("/list/:user_id", async (req, res) => {
 // API lấy danh sách các tòa nhà theo user_id
 router.get('/buildings', async (req, res) => {
     try {
-        const { user_id } = req.query; // Lấy user_id từ query params
-
-        if (!user_id) {
-            return res.status(400).json({ message: "user_id không hợp lệ" });
+        const { manager_id } = req.query; // Sử dụng req.query thay vì req.params
+// Kiểm tra nếu manager_id không hợp lệ
+        if (!manager_id || !mongoose.Types.ObjectId.isValid(manager_id)) {
+            return res.status(400).json({
+                status: 400,
+                message: "manager_id không hợp lệ.",
+            });
         }
 
-        // Tìm tất cả các tòa nhà mà người dùng quản lý (giả sử có quan hệ giữa User và Building)
-        const buildings = await building.find({ user_id: user_id });
+        // Tìm các tòa nhà theo manager_id
+        const buildings = await Building.find({ manager_id })
+           
 
-        if (!buildings.length) {
-            return res.status(404).json({ message: "Không tìm thấy tòa nhà" });
+        // Nếu không có tòa nhà nào, trả về thông báo lỗi
+        if (!buildings || buildings.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "Không tìm thấy tòa nhà nào cho manager_id này.",
+            });
         }
 
-        res.status(200).json({ status: 200, data: buildings });
+        // Trả về danh sách tòa nhà
+        res.status(200).json({
+            status: 200,
+            data: buildings,
+        });
     } catch (error) {
-        res.status(500).json({ message: "Lỗi khi lấy tòa nhà", error: error.message });
+        console.error("Lỗi khi lấy danh sách tòa nhà:", error.message);
+        res.status(500).json({
+            status: 500,
+            message: "Lỗi khi lấy danh sách tòa nhà.",
+            error: error.message,
+        });
     }
 });
+
 // API lấy danh sách phòng trong một tòa nhà theo building_id
 router.get('/rooms', async (req, res) => {
     try {
@@ -132,7 +150,7 @@ router.post('/add',  upload.fields([{ name: 'video' }, { name: 'photo' }]), asyn
             post_type,
             status: status || 0, // Mặc định là `0`
            video: req.files['video'] ? req.files['video'].map(file => file.path.replace('public/', '')) : [],
-            photo: req.files['photo'] ? req.files['photo'].map(file => file.path.replace('public/', '')) : [],
+photo: req.files['photo'] ? req.files['photo'].map(file => file.path.replace('public/', '')) : [],
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
         });
@@ -207,7 +225,7 @@ router.get('/detail/:id', async (req, res) => {
 // Cập nhật bài viết theo ID
 router.put('/update/:id', upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
     try {
-        const { id } = req.params;
+const { id } = req.params;
         const { user_id, building_id, room_id, title, content, status, post_type } = req.body;
 
         // Kiểm tra ID có hợp lệ hay không
@@ -264,32 +282,95 @@ router.delete("/delete/:id", async (req, res) => {
     }
 });
 
-// Tìm kiếm bài viết theo từ khóa
+// router.get('/search', async (req, res) => {
+//     try {
+//         const { query, user_id } = req.query; // Lấy từ khóa tìm kiếm và user_id từ query string
+
+//         if (!query) {
+//             return res.status(400).json({ message: 'Từ khóa tìm kiếm không được cung cấp' });
+//         }
+
+//         // Tạo bộ lọc tìm kiếm
+//         let filter = {
+//             title: { $regex: query, $options: 'i' }, // Tìm kiếm trong trường title
+//         };
+
+//         // Nếu có user_id, thêm vào bộ lọc để tìm kiếm theo user_id
+//         if (user_id) {
+//             filter.user_id = user_id;
+//         }
+
+//         // Tìm kiếm bài đăng với các bộ lọc
+//         const posts = await Post.find(filter)
+//             .populate('user_id', 'name') // Trả về thông tin người đăng, chỉ lấy tên
+//             .populate('building_id', 'nameBuilding') // Trả về thông tin tòa nhà, chỉ lấy tên
+//             .populate('room_id', 'room_name') // Trả về thông tin phòng, chỉ lấy tên
+
+//         if (posts.length === 0) {
+//             return res.status(404).json({ message: 'Không tìm thấy bài đăng nào' });
+//         }
+
+//         // Trả kết quả tìm kiếm
+//         res.status(200).json(posts);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Lỗi server', error: error.message });
+//     }
+// });
 router.get('/search', async (req, res) => {
     try {
-        const { query } = req.query; // Lấy từ khóa tìm kiếm từ query string
+        const { query, user_id } = req.query; // Lấy từ khóa tìm kiếm và user_id từ query string
 
+        // Kiểm tra nếu không có user_id hoặc query, trả về lỗi
+        if (!user_id) {
+            return res.status(400).json({ message: 'User ID không được cung cấp' });
+        }
         if (!query) {
             return res.status(400).json({ message: 'Từ khóa tìm kiếm không được cung cấp' });
         }
 
-        // Tìm kiếm bài đăng theo tiêu đề hoặc nội dung
-        const posts = await Post.find({
-            $or: [
-                { title: { $regex: query, $options: 'i' } },
-                { content: { $regex: query, $options: 'i' } }
-            ]
-        });
+        // Tạo bộ lọc tìm kiếm
+        let filter = {
+            title: { $regex: query, $options: 'i' }, // Tìm kiếm trong trường title
+            user_id: user_id // Bắt buộc phải có user_id
+        };
+
+        // Tìm kiếm bài đăng với các bộ lọc
+        const posts = await Post.find(filter)
+            .populate("user_id", "name email") // Lấy thông tin người dùng
+            .populate("building_id", "address") // Lấy địa chỉ tòa nhà
+            .populate("room_id", "price") // Lấy giá phòng
 
         if (posts.length === 0) {
             return res.status(404).json({ message: 'Không tìm thấy bài đăng nào' });
         }
 
-        res.status(200).json(posts);
+        const formattedPosts = posts.map(post => ({
+            _id: post._id,
+            title: post.title,
+            content: post.content,
+            status: post.status,
+            video: post.video,
+            photo: post.photo,
+            post_type: post.post_type,
+            created_at: post.created_at,
+            updated_at: post.updated_at,
+            price: post.room_id ? post.room_id.price : null, // Giá phòng từ Room
+            address: post.building_id ? post.building_id.address : null, // Địa chỉ từ Building
+            user: post.user_id ? {
+                name: post.user_id.name,
+                email: post.user_id.email
+            } : null
+        }));
+
+        // Trả kết quả tìm kiếm
+        res.status(200).json(formattedPosts);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi server', error: error.message });
+res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 });
+
+
 
 module.exports = router;
