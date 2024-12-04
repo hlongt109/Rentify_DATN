@@ -181,13 +181,19 @@ class MainActivity : ComponentActivity() {
                 TinnhanScreen(navController = navController, receiverId, name = receiverName)
             }
 
-            composable("PaymentConfirmation/{amount}") { backStackEntry ->
+            composable("PaymentConfirmation/{amount}/{building_id}/{_id}/{room_id}") { backStackEntry ->
                 val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
-                PaymentConfirmationScreen(amount = amount, navController = navController)
+                val buildingId = backStackEntry.arguments?.getString("building_id") ?: ""
+                val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
+                val roomId = backStackEntry.arguments?.getString("room_id") ?: ""
+                PaymentConfirmationScreen(invoiceId = invoiceId ,amount = amount, buildingId = buildingId, roomId = roomId, navController = navController)
             }
 
-            composable(ROUTER.Payments.name) {
-                PaymentScreen(navController = navController)
+            composable("Payments/{amount}/{buildingId}/{_id}") { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
+                val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
+                val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
+                PaymentScreen( invoiceId = invoiceId ,amount = amount, buildingId = buildingId, navController = navController)
             }
 
             composable(ROUTER.ConTract.name) {

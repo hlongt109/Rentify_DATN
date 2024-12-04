@@ -12,12 +12,15 @@ import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
+import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
+import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.model.Model.StatusBookingRequest
+import com.rentify.user.app.model.Model.UpdateInvoiceStatus
 import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostResponse
@@ -30,6 +33,7 @@ import com.rentify.user.app.model.SupportModel.SupportResponse
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.model.SupportModel.CreateReportResponse
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
@@ -396,6 +400,32 @@ interface APIService {
     suspend fun getBuildingFromRoom(
         @Path("roomId") roomId: String
     ): Response<Building>
+
+    @GET("landlord/{building_id}")
+    suspend fun getQRLandlordOrStaffs(
+        @Path("building_id") buildingId: String
+    ): Response<LandlordOrStaffs>
+
+    // thực hien dua anh chuyen khoan cua nguoi dung vao hoa don
+    @Multipart
+    @PUT("update-payment-image/{id}")
+    suspend fun updatePaymentImage(
+        @Path("id") invoiceId: String,
+        @Part image: MultipartBody.Part
+    ): Response<InvoiceOfUpdate>
+
+    // thuc hien khi chon thanh toan bang tien mat
+    @Multipart
+    @POST("create-report")
+    suspend fun createReport(
+        @Part("user_id") userId: RequestBody,
+        @Part("room_id") roomId: RequestBody,
+        @Part("building_id") buildingId: RequestBody,
+        @Part("title_support") titleSupport: RequestBody,
+        @Part("content_support") contentSupport: RequestBody,
+        @Part("status") status: RequestBody,
+        @Part images: List<MultipartBody.Part>
+    ): Response<CreateReportResponse>
 
 
 }

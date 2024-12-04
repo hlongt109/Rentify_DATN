@@ -125,7 +125,7 @@ fun InvoiceTopBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         androidx.compose.material.IconButton(
-            onClick = { navController.popBackStack() }
+            onClick = { navController.navigate("HOME") }
         ) {
             androidx.compose.material.Icon(
                 imageVector = Icons.Filled.ArrowBackIosNew,

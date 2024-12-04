@@ -44,13 +44,12 @@ import com.rentify.user.app.R
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentConfirmationBody(
-    navController: NavHostController,
-    isChecked: Boolean,  // Nhận isChecked từ parent
-    onCheckedChange: (Boolean) -> Unit,  // Nhận onCheckedChange từ parent
-    onPaymentMethodSelected: (Boolean) -> Unit // Nhận onPaymentMethodSelected từ parent
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    isBankTransferSelected: Boolean,
+    isCashSelected: Boolean,
+    onPaymentMethodSelected: (Boolean, Boolean) -> Unit
 ) {
-    var isBankTransferSelected by remember { mutableStateOf(false) }
-    var isCashSelected by remember { mutableStateOf(false) }
 
     Column {
         Row {
@@ -75,9 +74,7 @@ fun PaymentConfirmationBody(
                     .height(80.dp)
                     .background(color = Color.White)
                     .clickable {
-                        onPaymentMethodSelected(true)  // Gọi callback khi được chọn
-                        isBankTransferSelected = true
-                        isCashSelected = false
+                        onPaymentMethodSelected(true, false)
                     }
             ) {
                 Image(
@@ -129,9 +126,7 @@ fun PaymentConfirmationBody(
                     .height(80.dp)
                     .background(color = Color.White)
                     .clickable {
-                        onPaymentMethodSelected(true)  // Gọi callback khi được chọn
-                        isBankTransferSelected = false
-                        isCashSelected = true
+                        onPaymentMethodSelected(false, true)
                     }
             ) {
                 Image(

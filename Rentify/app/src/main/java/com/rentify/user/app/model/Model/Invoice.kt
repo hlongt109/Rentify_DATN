@@ -46,7 +46,24 @@ data class InvoiceResponse(
     @SerializedName("room_id")val room_id: RoomOfInvoice,
     @SerializedName("transaction_type")val transaction_type: String,
     @SerializedName("type_invoice")val type_invoice: String,
-    @SerializedName("user_id")val user_id: String
+    @SerializedName("user_id")val user_id: String,
+    @SerializedName("image_paymentofuser")val image_paymentofuser: String
+)
+
+data class InvoiceOfUpdate(
+    @SerializedName("_id")val _id: String,
+    @SerializedName("amount")val amount: Int,
+    @SerializedName("building_id")val building_id: String,
+    @SerializedName("created_at")val created_at: String,
+    @SerializedName("describe")val describe: String,
+    @SerializedName("description")val description: List<DescriptionOfInvoice>,
+    @SerializedName("due_date")val due_date: String,
+    @SerializedName("payment_status")val payment_status: String,
+    @SerializedName("room_id")val room_id: String,
+    @SerializedName("transaction_type")val transaction_type: String,
+    @SerializedName("type_invoice")val type_invoice: String,
+    @SerializedName("user_id")val user_id: String,
+    @SerializedName("image_paymentofuser")val image_paymentofuser: String
 )
 
 data class DescriptionOfInvoice(
@@ -62,4 +79,9 @@ data class RoomOfInvoice(
     @SerializedName("price")val price: Int,
     @SerializedName("room_name")val room_name: String,
     @SerializedName("room_type")val room_type: String
+)
+
+data class UpdateInvoiceStatus(
+    val message: String,
+    val invoice: InvoiceResponse
 )

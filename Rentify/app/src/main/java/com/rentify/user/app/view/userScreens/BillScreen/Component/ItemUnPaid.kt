@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.BillScreen.Component
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -49,16 +50,21 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.rentify.user.app.R
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2
 import com.rentify.user.app.utils.CheckUnit
+import com.rentify.user.app.view.userScreens.paymentscreen.components.LoadingAsyncImage
 
 @Composable
 fun ItemUnPaid(
@@ -198,15 +204,32 @@ fun ItemUnPaid(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            if(item.image_paymentofuser != null && item.image_paymentofuser != ""){
+                                val imageUrls = "http://10.0.2.2:3000/${item.image_paymentofuser.replace("\\", "/")}"
+                                AsyncImage(
+                                    model = imageUrls,
+                                    contentDescription = "",
+                                    placeholder = painterResource(R.drawable.error), // Ảnh placeholder
+                                    error = painterResource(R.drawable.error), // Ảnh lỗi
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                            }
 
                             if (item.payment_status == "unpaid") {
                                 Button(
-                                    onClick = { navController.navigate("PaymentConfirmation/${item.amount}") },
+                                    onClick = { navController.navigate("PaymentConfirmation/${item.amount}/${item.building_id}/${item._id}/${item.room_id._id}") },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(50.dp)
-                                        .border(width = 1.dp, color = Color.Red, shape = RoundedCornerShape(8.dp)),
+                                        .border(
+                                            width = 1.dp,
+                                            color = Color.Red,
+                                            shape = RoundedCornerShape(8.dp)
+                                        ),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color.White
                                     ),
@@ -220,6 +243,8 @@ fun ItemUnPaid(
                                     )
                                 }
                             }
+
+
                         }
                     }
                 }

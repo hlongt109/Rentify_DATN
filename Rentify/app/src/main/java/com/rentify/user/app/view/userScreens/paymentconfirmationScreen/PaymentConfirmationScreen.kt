@@ -39,27 +39,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.utils.CheckUnit
 import com.rentify.user.app.view.userScreens.paymentconfirmationScreen.components.PaymentConfirmationBody
 import com.rentify.user.app.view.userScreens.paymentconfirmationScreen.components.PaymentConfirmationHeading
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutComfort
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutInterior
+import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.QRViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PaymentConfirmationScreenPreview() {
     PaymentConfirmationScreen(
+        "",
         amount = 5000000,
+        "",
+        "",
         navController = rememberNavController()
     )
 }
@@ -67,12 +76,28 @@ fun PaymentConfirmationScreenPreview() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentConfirmationScreen(
+    invoiceId: String,
     amount: Int,
-    navController: NavHostController
+    buildingId : String,
+    roomId : String,
+    navController: NavHostController,
+    qrViewModel: QRViewModel = viewModel()
 ) {
+
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+
     val formatPrice = CheckUnit.formattedPrice(amount.toFloat())
     var isChecked by remember { mutableStateOf(false) }
     var isPaymentMethodSelected by remember { mutableStateOf(false) }
+    var isBankTransferSelected by remember { mutableStateOf(false) }
+    var isCashSelected by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -90,10 +115,15 @@ fun PaymentConfirmationScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             PaymentConfirmationBody(
-                navController = navController,
                 isChecked = isChecked,
                 onCheckedChange = { isChecked = it },
-                onPaymentMethodSelected = { isPaymentMethodSelected = it }
+                isBankTransferSelected = isBankTransferSelected,
+                isCashSelected = isCashSelected,
+                onPaymentMethodSelected = { bankTransfer, cash ->
+                    isBankTransferSelected = bankTransfer
+                    isCashSelected = cash
+                    isPaymentMethodSelected = true
+                }
             )
         }
 
@@ -125,7 +155,30 @@ fun PaymentConfirmationScreen(
             Button(
                 onClick = {
                     if (isChecked && isPaymentMethodSelected) {
-                        navController.navigate("Payments")
+                        if (isBankTransferSelected) {
+                            // Điều hướng tới màn hình chuyển khoản
+                            navController.navigate("Payments/${amount}/${buildingId}/${invoiceId}")
+                        } else if (isCashSelected) {
+                            // Gọi addSupport() khi thanh toán bằng tiền mặt
+                            qrViewModel.addSupport(
+                                userId = userId,
+                                roomId = roomId,
+                                buildingId = buildingId,
+                                titleSupport = "Hỗ trợ thanh toán",
+                                contentSupport = "Hoá đơn này phòng của tôi muốn được thanh toán bằng tiền mặt",
+                                status = "1",
+                                imageFiles = listOf()
+                            )
+                            Toast.makeText(
+                                context,
+                                "Đã ghi nhận thanh toán bằng tiền mặt. Cảm ơn bạn!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            navController.navigate("Invoice_screen") {
+                                popUpTo("Invoice_screen") { inclusive = true }
+                            }
+
+                        }
                     } else {
                         Toast.makeText(
                             navController.context,

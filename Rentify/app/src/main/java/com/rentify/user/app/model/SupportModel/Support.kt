@@ -28,3 +28,8 @@ data class BuildingOfSupport(
     @SerializedName("_id")val _id: String,
     val nameBuilding: String
 )
+
+data class CreateReportResponse(
+    val message: String,
+    val support: Any
+)

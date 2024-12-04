@@ -54,3 +54,34 @@ data class UserResponse(
     @SerializedName("updated_at")val updated_at: String
 )
 
+// thien thuc hien lay QR landlord va chu toa
+
+data class LandlordOrStaffs(
+    val landlord: LandlordResponse,
+    val manager: LandlordResponse
+)
+
+data class LandlordResponse(
+    val _id: String,
+    val address: String,
+    val bankAccount: BankAccount,
+    val created_at: String,
+    val dob: String,
+    val email: String,
+    val gender: String,
+    val name: String,
+    val password: String,
+    val phoneNumber: String,
+    val profile_picture_url: String,
+    val role: String,
+    val updated_at: String,
+    val username: String,
+    val verified: Boolean
+)
+
+data class BankAccount(
+    val bank_name: String,
+    val bank_number: Int,
+    val qr_bank: List<String>,
+    val username: String
+)
