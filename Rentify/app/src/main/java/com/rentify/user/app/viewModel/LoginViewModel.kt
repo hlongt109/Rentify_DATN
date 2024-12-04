@@ -203,7 +203,9 @@ class LoginViewModel(
                         _errorMessage.postValue("Tài khoản hoặc mật khẩu không đúng.")
                     } else if (response.code() == 404) {
                         _errorMessage.postValue("Tài khoản không tồn tại.")
-                    } else {
+                    } else if(response.code() == 401){
+                        _errorMessage.postValue("Tài khoản chưa được xác minh. Vui lòng kiểm tra email.")
+                    }else {
                         _errorMessage.postValue("Đăng nhập thất bại. Mã lỗi: ${response.code()}")
                     }
                 }

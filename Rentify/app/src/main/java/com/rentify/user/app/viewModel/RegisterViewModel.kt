@@ -14,12 +14,17 @@ import com.rentify.user.app.utils.CheckUnit
 import kotlinx.coroutines.launch
 class RegisterViewModel(private val userRepository: RegisterRepository) : ViewModel() {
 
+    private val _errorName = MutableLiveData<String?>()
+    val errorName: LiveData<String?> = _errorName
+
     private val _errorEmail = MutableLiveData<String?>()
     val errorEmail: LiveData<String?> = _errorEmail
 
     private val _errorPass = MutableLiveData<String?>()
     val errorPass: LiveData<String?> = _errorPass
 
+    private val _errorPhone = MutableLiveData<String?>()
+    val errorPhone: LiveData<String?> = _errorPhone
     // LiveData cho sự kiện đăng ký thành công
     private val _successMessage = MutableLiveData<String>()
     val successMessage: LiveData<String> = _successMessage
@@ -27,14 +32,15 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    fun register(username: String, email: String, password: String, repassword: String) {
+    fun register(username: String, email: String, password: String, repassword: String, phoneNumber: String) {
         // Reset thông báo lỗi trước khi kiểm tra
         _errorMessage.value = null
 
         if (username.isEmpty() || email.isEmpty() || password.isEmpty() || repassword.isEmpty()) {
             when {
-                username.isEmpty() -> _errorEmail.postValue("Vui lòng nhập tên người dùng")
+                username.isEmpty() -> _errorName.postValue("Vui lòng nhập tên của bạn")
                 email.isEmpty() -> _errorEmail.postValue("Vui lòng nhập email")
+                phoneNumber.isEmpty() -> _errorPhone.postValue("Vui lòng nhập số điện thoại")
                 !CheckUnit.isValidEmail(email) -> _errorEmail.postValue("Email không hợp lệ")
                 password.isEmpty() -> _errorPass.postValue("Vui lòng nhập mật khẩu")
                 password != repassword -> _errorPass.postValue("Mật khẩu và mật khẩu nhập lại không khớp")
@@ -44,7 +50,7 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
 
         viewModelScope.launch {
             try {
-                val response = userRepository.registerUser(username, email, password)
+                val response = userRepository.registerUser(username, email, password, phoneNumber)
 
                 // Log toàn bộ response để debug
                 Log.d("RegisterDebug", "Response: $response")
@@ -56,7 +62,7 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
                         val result = responseBody.data
                         if (result != null) {
                             Log.d("RegisterSuccess", "Username: ${result.name}, Role: ${result.role}")
-                            _successMessage.postValue("Đăng ký thành công cho vai trò: ${result.role}")
+                            _successMessage.postValue("Đăng ký thành công. Hãy xác nhận tài khoản email của bạn")
                         } else {
                             Log.e("RegisterError", "Response data is null")
                             _errorMessage.postValue("Không thể lấy thông tin người dùng")

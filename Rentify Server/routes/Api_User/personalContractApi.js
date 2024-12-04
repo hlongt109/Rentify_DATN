@@ -128,4 +128,39 @@ router.get("/contract-detail/:user_id", async (req, res) => {
   }
 });
 
+// API kiểm tra hợp đồng của người dùng
+router.get('/check-contract/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Tìm hợp đồng của user với status = 1 (đang có hiệu lực)
+    const contract = await Contract.findOne({
+      user_id: userId,
+      status: 0 // Chỉ lấy hợp đồng đang có hiệu lực
+    });
+
+    // Kiểm tra nếu không tìm thấy hợp đồng
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: 'Người dùng không có hợp đồng hoặc hợp đồng đã hết hiệu lực'
+      });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Người dùng có hợp đồng còn hiệu lực',
+      data: [{
+        contract
+      }]
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Lỗi server: ' + error.message
+    });
+  }
+});
+
 module.exports = router;

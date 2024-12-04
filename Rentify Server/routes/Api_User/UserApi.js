@@ -64,7 +64,7 @@ router.post("/login-user", async (req, res) => {
           return res.status(400).send("Mật khẩu không khớp");
         }
       } else {
-        return res.status(400).send("Tài khoản của bạn chưa được xác minh");
+        return res.status(401).send("Tài khoản của bạn chưa được xác minh");
       }
     } else {
       return res.status(404).send("Tài khoản không tồn tại");
@@ -109,13 +109,12 @@ router.post("/register-user", async (req, res) => {
       email: data.email,
       password: hashPassword,
       name: data.name,
+      phoneNumber: data.phoneNumber
     });
 
     const result = await user.save();
     console.log(result);
     await verifiedEmail(user.email, url + user._id);
-    console.log(verifiedEmail(user.email, url + user._id));
-
     res.status(200).send({
       message: "Register success",
       user: result,

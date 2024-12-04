@@ -6,7 +6,8 @@ import java.lang.Error
 data class RegisterRequest(
     val username: String,
     var email: String,
-    var password: String
+    var password: String,
+    val phoneNumber: String
 )
 data class LoginResponse(
     val _id: String,
