@@ -203,28 +203,32 @@
             <h3 id="invoiceFormTitle" style="margin-bottom: 20px;">Tạo hóa đơn</h3>
 
             <!-- Select Building -->
-            <div>
-                <label style="width: 150px;" for="buildingSelect">Tòa nhà:</label>
-                <select class="form-select form-select-lg mb-3 px-2" id="buildingSelect" onchange="onBuildingChange()">
-                    <!-- Options will be dynamically populated -->
-                </select>
+            <div class="row align-items-center mb-2">
+                <!-- Select Building -->
+                <div class="col-md-4">
+                    <label style="width: 150px;" for="buildingSelect" class="form-label">Tòa nhà:</label>
+                    <select class="form-select form-select-lg mb-3 px-2" id="buildingSelect" onchange="onBuildingChange()">
+                        <!-- Options will be dynamically populated -->
+                    </select>
+                </div>
+
+                <!-- Select Room -->
+                <div class="col-md-4">
+                    <label style="width: 80px;"  for="roomSelect" class="form-label">Phòng:</label>
+                    <select class="form-select form-select-lg mb-3 px-2" id="roomSelect">
+                        <!-- Options will be dynamically populated -->
+                    </select>
+                </div>
+
+                <!-- Select Month -->
+                <div class="col-md-4">
+                    <label style="width: 80px;" for="monthSelect" class="form-label">Tháng:</label>
+                    <select class="form-select form-select-lg mb-3 px-2" id="monthSelect">
+                        <!-- Các tháng từ 1-12 sẽ được tạo động -->
+                    </select>
+                </div>
             </div>
 
-            <!-- Select Room -->
-            <div style="margin-top: 10px;">
-                <label style="width: 150px;" for="roomSelect">Phòng:</label>
-                <select class="form-select form-select-lg mb-3 px-2" id="roomSelect">
-                    <!-- Options will be dynamically populated -->
-                </select>
-            </div>
-
-            <!-- Select Month -->
-            <div style="margin-top: 10px;">
-                <label style="width: 150px;" for="monthSelect">Tháng:</label>
-                <select class="form-select form-select-lg mb-3 px-2" id="monthSelect">
-                    <!-- Các tháng từ 1-12 sẽ được tạo động -->
-                </select>
-            </div>
 
             <!-- Input Rows -->
             <div style="margin-top: 10px;">
@@ -243,6 +247,15 @@
                 <label style="width: 150px;">Giá nước (VNĐ/số):</label>
                 <input class="input_style border px-2" type="number" id="waterPrice" placeholder="Nhập giá nước"
                     oninput="calculateTotal()" readonly>
+            </div>
+            <!-- fee other -->
+            <div style="margin-top: 10px;">
+                <label style="width: 150px;">Phí Internet:</label>
+                <input class="input_style border px-2" style="margin-right: 50px;" type="number" id="wifiPrice"
+                    placeholder="Nhập phí wifi" oninput="calculateTotal()" readonly>
+                <label style="width: 150px;">Phí dịch vụ chung:</label>
+                <input class="input_style border px-2" type="number" id="otherPrice"
+                    placeholder="Nhập giá dịch vụ chung" oninput="calculateTotal()" readonly>
             </div>
 
             <div style="margin-top: 10px; display: none" id="service-fee-other">
@@ -291,6 +304,7 @@
     let buildings = [];
     let isMonthLoad = true;
     let selectedBuildingId;
+    let buildingIdForm;
     let currentDate = new Date();
     let selectedYear = currentDate.getFullYear();
     let selectedMonth = currentDate.getMonth() + 1;
@@ -580,54 +594,78 @@
         console.log("open dialog add");
         populateBuildings();
         populateMonthDropdown();
-        setDataServiceFee()
+        // setDataServiceFee()
         document.getElementById('invoiceDialog').style.display = 'flex';
     }
 
     async function setDataServiceFee() {
-        console.log("load load")
-        const service_fee = await fetchBuildingServiceFees(selectedBuildingId);
+        console.log("load load");
+        try {
+            // Gọi API
+            const response = await axios.get(`/api/building/${buildingIdForm}/service-fees`);
 
-        const electricService = service_fee.find(service => service.name === "Điện");
-        document.getElementById('electricPrice').value = electricService ? electricService.price : "";
+            // Dữ liệu JSON đã được parse tự động bởi axios
+            const service_fee = response.data;
 
-        const waterService = service_fee.find(service => service.name === "Nước");
-        document.getElementById('waterPrice').value = waterService ? waterService.price : "";
+            // Kiểm tra nếu dữ liệu là mảng
+            if (Array.isArray(service_fee)) {
+                const electricService = service_fee.find(service => service.name === "Điện");
+                electricService.innerHTML = ""
+                document.getElementById('electricPrice').value = electricService ? electricService.price : 0;
 
-        // Lọc các dịch vụ khác
-        const otherServices = service_fee.filter(service => service.name !== "Điện" && service.name !== "Nước");
+                const waterService = service_fee.find(service => service.name === "Nước");
+                waterService.innerHTML = ""
+                document.getElementById('waterPrice').value = waterService ? waterService.price : 0;
 
-        // Xóa nội dung cũ của div "service-fee-other"
-        const serviceFeeContainer = document.getElementById('service-fee-other');
-        serviceFeeContainer.innerHTML = ""; // Xóa nội dung cũ
+                const wifiPrice = service_fee.find(s => s.name === "Wifi");
+                document.getElementById("wifiPrice").value = wifiPrice ? wifiPrice.price : 0
 
-        // Thêm các dịch vụ khác vào div
-        otherServices.forEach(service => {
-            const serviceDiv = document.createElement('div');
-            serviceDiv.style.marginTop = "10px";
+                const otherPrice = service_fee.find(s => s.name === "Dịch vụ chung")
+                document.getElementById("otherPrice").value = otherPrice ? otherPrice.price : 0
 
-            // Label cho tên dịch vụ
-            const serviceLabel = document.createElement('label');
-            serviceLabel.style.width = "155px";
-            serviceLabel.textContent = `${service.name}:`;
-            serviceDiv.appendChild(serviceLabel);
 
-            // Input cho giá dịch vụ
-            const serviceInput = document.createElement('input');
-            serviceInput.type = "number";
-            serviceInput.value = service.price;
-            serviceInput.className = "input_style border px-2";
-            serviceInput.style.marginRight = "50px";
-            serviceInput.readOnly = true; // Giá chỉ đọc
-            serviceDiv.appendChild(serviceInput);
 
-            // Thêm div con vào container
-            serviceFeeContainer.appendChild(serviceDiv);
-        });
+                // Lọc các dịch vụ khác
+                // const otherServices = service_fee.filter(service => service.name !== "Điện" && service.name !== "Nước");
 
-        // Hiển thị div nếu có dịch vụ khác
-        serviceFeeContainer.style.display = otherServices.length > 0 ? 'block' : 'none';
+                // // Xóa nội dung cũ của div "service-fee-other"
+                // const serviceFeeContainer = document.getElementById('service-fee-other');
+                // serviceFeeContainer.innerHTML = ""; // Xóa nội dung cũ
+
+                // // Thêm các dịch vụ khác vào div
+                // otherServices.forEach(service => {
+                //     const serviceDiv = document.createElement('div');
+                //     serviceDiv.style.marginTop = "10px";
+
+                //     // Label cho tên dịch vụ
+                //     const serviceLabel = document.createElement('label');
+                //     serviceLabel.style.width = "155px";
+                //     serviceLabel.textContent = `${service.name}:`;
+                //     serviceDiv.appendChild(serviceLabel);
+
+                //     // Input cho giá dịch vụ
+                //     const serviceInput = document.createElement('input');
+                //     serviceInput.type = "number";
+                //     serviceInput.value = service.price;
+                //     serviceInput.className = "input_style border px-2";
+                //     serviceInput.style.marginRight = "50px";
+                //     serviceInput.readOnly = true; // Giá chỉ đọc
+                //     serviceDiv.appendChild(serviceInput);
+
+                //     // Thêm div con vào container
+                //     serviceFeeContainer.appendChild(serviceDiv);
+                // });
+
+                // Hiển thị div nếu có dịch vụ khác
+                serviceFeeContainer.style.display = otherServices.length > 0 ? 'block' : 'none';
+            } else {
+                console.error('Dữ liệu không phải là mảng:', service_fee);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy phí dịch vụ của tòa nhà:', error);
+        }
     }
+
 
     // Đóng dialog
     function closeInvoiceDialog() {
@@ -664,10 +702,12 @@
     async function onBuildingChange() {
         const buildingId = document.getElementById('buildingSelect').value;
         const selectedBuilding = buildings.find(building => building._id === buildingId);
+        buildingIdForm = buildingId;
         if (selectedBuilding) {
             staffId = selectedBuilding.manager_id; // Gán manager_id của tòa nhà cho staffId
             console.log("Staff ID set to:", staffId);
         }
+        setDataServiceFee()
         await getRooms(buildingId);  // Lấy danh sách phòng từ API
 
         const roomSelect = document.getElementById('roomSelect');
@@ -681,7 +721,7 @@
         const roomSelect = document.getElementById('roomSelect');
         const selectedRoomPrice = roomSelect.options[roomSelect.selectedIndex].dataset.price;
         document.getElementById('roomPrice').value = selectedRoomPrice;
-        setDataServiceFee()
+        
         calculateTotal();  // Tính lại tổng tiền
     }
 
@@ -692,14 +732,12 @@
         const waterUnits = Number(document.getElementById('waterUnits').value) || 0;
         const waterPrice = Number(document.getElementById('waterPrice').value) || 0;
         const roomPrice = Number(document.getElementById('roomPrice').value) || 0;
+        const wifiPrice = Number(document.getElementById('wifiPrice').value) || 0;
+        const otherPrice = Number(document.getElementById('otherPrice').value) || 0;
 
-        let total = (electricUnits * electricPrice) + (waterUnits * waterPrice) + roomPrice;
+        console.log(waterPrice, otherPrice)
 
-        // Tính tổng cho các dịch vụ khác
-        const otherServiceInputs = document.querySelectorAll('#service-fee-other input');
-        otherServiceInputs.forEach(input => {
-            total += Number(input.value) || 0; // Lấy giá trị của input và cộng vào tổng
-        });
+        let total = (electricUnits * electricPrice) + (waterUnits * waterPrice) + wifiPrice + otherPrice + roomPrice;
 
         // Hiển thị tổng tiền
         document.getElementById('totalAmount').textContent = total.toLocaleString('vi-VN');
@@ -719,6 +757,8 @@
         const waterPrice = Number(document.getElementById('waterPrice').value) || 0;
         const paymentStatus = document.querySelector('input[name="paymentStatus"]:checked').value;
         const roomPrice = Number(document.getElementById('roomPrice').value) || 0;
+        const wifiPrice = Number(document.getElementById('wifiPrice').value) || 0;
+        const otherPrice = Number(document.getElementById('otherPrice').value) || 0;
         const totalAmount = (electricUnits * electricPrice) + (waterUnits * waterPrice) + roomPrice;
 
         const description = [
@@ -739,6 +779,18 @@
                 quantity: 1, // Thuê phòng là 1 đơn vị
                 price_per_unit: roomPrice,
                 total: roomPrice
+            },
+            {
+                service_name: "Wifi",
+                quantity: 1,
+                price_per_unit: wifiPrice,
+                total: wifiPrice
+            },
+            {
+                service_name: "Other",
+                quantity: 1,
+                price_per_unit: otherPrice,
+                total: otherPrice
             }
         ];
 
@@ -798,6 +850,8 @@
                 document.getElementById('waterUnits').value = "";
                 document.getElementById('waterPrice').value = "";
                 document.getElementById('roomPrice').value = "";
+                document.getElementById('wifiPrice').value = "";
+                document.getElementById('otherPrice').value = "";
                 document.getElementById('totalAmount').textContent = "0";
                 if (isMonthLoad) {
                     getInvoices(buildingId, selectedMonth, selectedYear, selectPaymentStatus);
@@ -832,7 +886,7 @@
             populateBuildings();
             populateMonthDropdown();
 
-            const service_fee = await fetchBuildingServiceFees(selectedBuildingId)
+            // const service_fee = get
 
             const response = await fetch(`http://localhost:3000/api/invoice_mgr/${invoiceId}`);
             if (!response.ok) {
@@ -847,7 +901,7 @@
             document.getElementById('invoiceFormButton').innerText = 'Cập nhật';
 
             // Tìm giá trị cho các dịch vụ: điện, nước, phòng
-            let electricUnits = 0, electricPrice = 0, waterUnits = 0, waterPrice = 0, roomPrice = 0;
+            let electricUnits = 0, electricPrice = 0, waterUnits = 0, waterPrice = 0, roomPrice = 0, wifiPrice = 0; otherPrice = 0;
             invoice.description.forEach(item => {
                 if (item.service_name === "Điện") {
                     electricUnits = item.quantity;
@@ -859,6 +913,12 @@
                 }
                 if (item.service_name === "Thuê phòng") {
                     roomPrice = item.price_per_unit;
+                }
+                if (item.service_name === "Wifi") {
+                    wifiPrice = item.price_per_unit
+                }
+                if (item.service_name === "Other") {
+                    otherPrice = item.price_per_unit
                 }
             });
 
@@ -872,6 +932,8 @@
             document.getElementById('waterUnits').value = waterUnits || '';
             document.getElementById('waterPrice').value = waterPrice || '';
             document.getElementById('roomPrice').value = roomPrice || '';
+            document.getElementById('wifiPrice').value = wifiPrice || 0;
+            document.getElementById('otherPrice').value = otherPrice || 0;
             document.querySelector(`input[name="paymentStatus"][value="${invoice.payment_status}"]`).checked = true;
             const dueDate = new Date(invoice.created_at);
             const month = dueDate.getMonth() + 1;
@@ -888,20 +950,6 @@
             console.error("Lỗi khi mở form cập nhật:", error);
         }
     }
-
-    const fetchBuildingServiceFees = async (buildingId) => {
-        try {
-            const response = await axios.get(`/api/building/${buildingId}/service-fees`);
-            if (Array.isArray(response.data)) {
-                return response.data;
-            } else {
-                console.error('Dữ liệu không phải là mảng:', response.data);
-            }
-        } catch (error) {
-            console.error('Lỗi khi lấy phí dịch vụ của tòa nhà:', error);
-            return [];
-        }
-    };
 
     async function deleteInvoice(invoiceId) {
         if (confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) {
@@ -948,6 +996,8 @@
         const waterPrice = Number(document.getElementById('waterPrice').value) || 0;
         const paymentStatus = document.querySelector('input[name="paymentStatus"]:checked').value;
         const roomPrice = Number(document.getElementById('roomPrice').value) || 0;
+        const wifiPrice = Number(document.getElementById('wifiPrice').value) || 0;
+        const otherPrice = Number(document.getElementById('otherPrice').value) || 0;
 
         if (!buildingId) {
             alert("Vui lòng chọn tòa nhà.");
@@ -981,6 +1031,14 @@
 
         if (waterPrice < 1 || isNaN(waterPrice)) {
             alert("Đơn giá nước phải là một số hợp lệ.");
+            return false;
+        }
+        if (wifiPrice < 1 || isNaN(waterPrice)) {
+            alert("Phí Internet phải là một số hợp lệ.");
+            return false;
+        }
+        if (otherPrice < 1 || isNaN(waterPrice)) {
+            alert("Phí dịch vụ chung phải là một số hợp lệ.");
             return false;
         }
         if (paymentStatus === "") {

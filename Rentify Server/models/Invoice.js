@@ -20,7 +20,7 @@ const Invoice = new Schema({
         total: { type: Number } // tổng chi phí cho dịch vụ đó
     }],
     describe: {type: String},
-    type_invoice: {type: String, enum: ["rent","electric", "water", "salary", "maintain"]},
+    type_invoice: {type: String, enum: ["rent","electric", "water", "internet", "salary", "maintain"]},
     amount: { type: Number, require: true }, // số tien
     transaction_type: { type: String, enum: ['income', 'expense'], require: true },
     due_date: { type: String }, // hạn chót

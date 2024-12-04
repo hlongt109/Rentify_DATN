@@ -328,7 +328,7 @@
                         <ul>
                             ${incomeDetails.map(detail => `
                                 <li>
-                                    <span class="title">• ${detail.service_name} :</span><br>
+                                    <span class="title">• ${detail.service_name === "Other" ? 'Dịch vụ chung' : detail.service_name === "Wifi" ? 'Internet' : detail.service_name } :</span><br>
                                     <span class="amount" style="padding-left: 30px">‣ ${detail.total.toLocaleString()} VND</span>
                                 </li>
                             `).join('')}

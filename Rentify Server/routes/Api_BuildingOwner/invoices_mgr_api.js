@@ -158,7 +158,7 @@ router.get("/buildings_mgr/:buildingId/invoices_type", async (req, res) => {
             return res.status(400).json({ message: 'Type invoice trống' });
         }
 
-        const validTypes = ['water', 'electric', 'salary', 'maintain'];
+        const validTypes = ['water', 'electric', 'salary','internet', 'maintain'];
         if (!validTypes.includes(typeInvoice)) {
             return res.status(400).json({ message: `Loại hóa đơn không hợp lệ. Chỉ chấp nhận: ${validTypes.join(', ')}` });
         }
@@ -189,6 +189,9 @@ router.get("/buildings_mgr/:buildingId/invoices_type", async (req, res) => {
         }
         if (typeInvoice === 'electric') {
             invoices.filter(invoice => invoice.type_invoice === 'electric');
+        }
+        if(typeInvoice === 'internet'){
+            invoices.filter(invoice => invoice.type_invoice === 'internet');
         }
         if (typeInvoice === 'salary') {
             invoices.filter(invoice => invoice.type_invoice === 'salary');
@@ -235,7 +238,7 @@ router.get("/buildings_mgr/:buildingId/invoices_type/year", async (req, res) => 
             return res.status(400).json({ message: 'Type invoice trống' });
         }
 
-        const validTypes = ['water', 'electric', 'salary', 'maintain'];
+        const validTypes = ['water', 'electric', 'salary','internet', 'maintain'];
         if (!validTypes.includes(typeInvoice)) {
             return res.status(400).json({ message: `Loại hóa đơn không hợp lệ. Chỉ chấp nhận: ${validTypes.join(', ')}` });
         }
@@ -266,6 +269,9 @@ router.get("/buildings_mgr/:buildingId/invoices_type/year", async (req, res) => 
         }
         if (typeInvoice === 'electric') {
             invoices.filter(invoice => invoice.type_invoice === 'electric');
+        }
+        if(typeInvoice === 'internet'){
+            invoices.filter(invoice => invoice.type_invoice === 'internet');
         }
         if (typeInvoice === 'salary') {
             invoices.filter(invoice => invoice.type_invoice === 'salary');
