@@ -49,6 +49,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
@@ -195,6 +196,9 @@ class MainActivity : ComponentActivity() {
             }
             composable(ROUTER.Search_room.name) {
                 PostRoomScreen(navController = navController)
+            }
+            composable(ROUTER.Search_roommate.name) {
+                SearchRoommateScreen(navController = navController)
             }
             composable(ROUTER.Filter_room.name) {
                 FilterScreen(navController = navController)
@@ -396,7 +400,7 @@ class MainActivity : ComponentActivity() {
         POSTING_STAFF,
         REPORT_STAFF,
         ADDPOST_staff,
-
+        Search_roommate,
         //những màn hình thiên thêm
 
         AppointmentScreen,

@@ -20,7 +20,9 @@ import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.model.Model.StatusBookingRequest
 import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.Post
+import com.rentify.user.app.model.PostListResponse
 import com.rentify.user.app.model.PostResponse
+
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
@@ -359,7 +361,11 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
-
+// bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
+@GET("list/type/{post_type}")
+suspend fun getPostsByType(
+    @Path("post_type") postType: String
+): Response<PostListResponse>  // Phản hồi kiểu PostListResponse
     // thiên thực hiện sử lý phần hợp đồng
     @GET("contract-detail/{user_id}")
     suspend fun getContractDetail(@Path("user_id") userId: String): Response<List<ContractResponse>>
