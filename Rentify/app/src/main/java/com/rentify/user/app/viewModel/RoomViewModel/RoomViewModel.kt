@@ -70,7 +70,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         }
     }
 
-    // API LẤY DANH SÁCH TÒA THEO MANAGERID
+    // API LẤY DANH SÁCH TÒA NHÀ THEO MANAGERID
     fun fetchBuildingsWithRooms(manager_id: String) {
         viewModelScope.launch {
             try {

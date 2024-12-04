@@ -47,6 +47,7 @@ import com.rentify.user.app.view.staffScreens.contract.contractComponents.Contra
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
+import com.rentify.user.app.view.userScreens.QuanLiDichVu.QuanLiDichVu
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
@@ -130,6 +131,9 @@ class MainActivity : ComponentActivity() {
             }
             composable(ROUTER.CATEGORYPOST.name) {
                 CategoryPostScreen(navController)
+            }
+            composable(ROUTER.QuanLiDichVuUser.name) {
+                QuanLiDichVu(navController)
             }
             composable(ROUTER.SEARCHPOSTROOMATE.name) {
                 SearchPostRoomateScreen(navController = navController)
@@ -396,9 +400,8 @@ class MainActivity : ComponentActivity() {
         POSTING_STAFF,
         REPORT_STAFF,
         ADDPOST_staff,
-
+        QuanLiDichVuUser,
         //những màn hình thiên thêm
-
         AppointmentScreen,
         ADDCONTRAC_STAFF,
         ListSupportByRoom

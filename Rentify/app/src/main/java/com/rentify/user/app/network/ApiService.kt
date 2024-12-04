@@ -2,6 +2,7 @@ package com.rentify.user.app.network
 
 import Contract
 import ContractResponse
+import android.telecom.Call
 import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
@@ -12,6 +13,7 @@ import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
+import com.rentify.user.app.model.ListServiceResponse
 import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
@@ -398,4 +400,6 @@ interface APIService {
     ): Response<Building>
 
 
+    @GET("staff/rooms/Listservices")
+    suspend fun getServiceList(): Response<List<ListServiceResponse>>
 }

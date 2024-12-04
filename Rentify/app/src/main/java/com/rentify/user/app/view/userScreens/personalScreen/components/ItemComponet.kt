@@ -106,7 +106,7 @@ fun LayoutItems(navController: NavHostController) {
                 CustomRow(
                     imageId = R.drawable.qldonhang,
                     text = "Quản lý dịch vụ",
-                    onClick = { navController.navigate("CATEGORYPOST") }
+                    onClick = { navController.navigate("QuanLiDichVuUser") }
                 )
                 CustomRow(
                     imageId = R.drawable.lich,
