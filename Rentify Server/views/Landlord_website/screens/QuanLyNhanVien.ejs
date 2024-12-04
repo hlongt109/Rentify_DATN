@@ -169,11 +169,19 @@
 
 <body>
     <div class="content-wrapper">
-        <h2>Quản lý người dùng</h2>
-        <!-- add new -->
-        <div class="container my-3">
-            <button id="btnAdd" class="btn btn-success btn-lg">
-                <i class="bi bi-plus-circle"></i> Add New User
+        <div class="d-flex align-items-center justify-content-between mb-4 position-relative mx-3"
+            style="height: 100px;">
+            <!-- Back button -->
+            <div></div>
+
+            <!-- Centered title -->
+            <div class="mx-auto text-center">
+                <h1 class="text-primary mb-1">Quản lý nhân viên</h1>
+            </div>
+
+            <!-- Add button -->
+            <button class="btn btn-primary border" style="font-weight: 600;" id="btnAdd">
+                Thêm nhân viên
             </button>
         </div>
         <div class="container-fluid my-4">
@@ -344,10 +352,12 @@
                         <td>${user.address || 'Chưa có địa chỉ'}</td>
                         
                         <td><span class="btn-role ${user.role ? user.role.toLowerCase() : ''}">${user.role || 'Chưa có'}</span></td>
+                        
+
                         <td>
-                            <div class="btn-group">
-                                <button class="btn btn-primary" onclick="editUser('${user._id}', '${user.role}')">Edit</button>
-                                <button class="btn btn-danger" onclick="confirmDelete('${user._id}')">Delete</button>
+                            <div class="d-flex justify-content-between w-100">
+                                <button class="btn btn-warning btn-sm mr-2" style="width: 50%;" onclick="editUser('${user._id}', '${user.role}')">Sửa</button>
+                                <button class="btn btn-danger btn-sm" style="width: 50%" onclick="confirmDelete('${user._id}')">Xóa</button>
                             </div>
                         </td>
                     `;

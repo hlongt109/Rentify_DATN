@@ -121,15 +121,32 @@
 
 <body>
 
-    <h2 class="text-center" style="color: rgb(0, 0, 0);">Danh sách dịch vụ</h2>
+    <!-- Header -->
+
+    <div class="d-flex align-items-center justify-content-between mb-4 position-relative mx-3" style="height: 100px;">
+        <!-- Back button -->
+        <div></div>
+
+        <!-- Centered title -->
+        <div class="mx-auto text-center">
+            <h1 class="text-primary mb-1">Quản lý nội thất</h1>
+        </div>
+
+        <!-- Add button -->
+        <button class="btn btn-primary border" style="font-weight: 600;" id="btnAdd">
+            Thêm nội thất
+        </button>
+    </div>
+
+    <!-- <h2 class="text-center" style="color: rgb(0, 0, 0);">Danh sách dịch vụ</h2> -->
 
     <div class="container-fluid mb-4">
         <!-- add new -->
-        <div class="container my-3">
+        <!-- <div class="container my-3">
             <button id="btnAdd" class="btn btn-success btn-lg">
                 <i class="bi bi-plus-circle"></i> Add New Service
             </button>
-        </div>
+        </div> -->
 
         <!-- Modal Thêm Dịch vụ -->
         <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
@@ -242,10 +259,10 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>STT</th>
-                        <th>Dịch vụ</th>
-                        <th>Mô tả</th>
-                        <th>Hành động</th>
+                        <th style="width: 10%;">STT</th>
+                        <th style="width: 30%;">Dịch vụ</th>
+                        <th style="width: 40%;">Mô tả</th>
+                        <th style="width: 30%;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody id="serviceTableBody">
@@ -299,9 +316,11 @@
                     <td>${service.description}</td>
                 
                      <td>
-                        <button class="btn btn-info btn-sm" onclick="openDetailModal('${service._id}')">Xem chi tiết</button>
-                        <button class="btn btn-warning btn-sm" onclick="editService('${service._id}', '${service.name.replace(/'/g, "\\'")}', '${service.description.replace(/'/g, "\\'")}', '${service.photos}')">Sửa</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteService('${service._id}')">Xóa</button>
+                        <div class="d-flex justify-content-between w-100">
+                            <button class="btn btn-info btn-sm" style="width: 33%" onclick="openDetailModal('${service._id}')">Xem chi tiết</button>
+                            <button class="btn btn-warning btn-sm mx-2" style="width: 33%" onclick="editService('${service._id}', '${service.name.replace(/'/g, "\\'")}', '${service.description.replace(/'/g, "\\'")}', '${service.photos}')">Sửa</button>
+                            <button class="btn btn-danger btn-sm" style="width: 33%" onclick="deleteService('${service._id}')">Xóa</button>
+                        </div>
                     </td>
                 `;
 

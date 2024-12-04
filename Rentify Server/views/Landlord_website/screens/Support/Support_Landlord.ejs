@@ -152,12 +152,28 @@
             align-items: flex-start;
             /* Đảm bảo các phần tử căn chỉnh ở đầu cột */
         }
+
+        .form-select.form-select-lg {
+            height: 33px;
+            border-color: lightgray;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
 <body>
     <div class="content-wrapper">
-        <h2>Quản lý các yêu cầu hỗ trợ</h2>
+        <div class="d-flex align-items-center justify-content-between mb-4 position-relative mx-3" style="height: 100px;">
+            <!-- Back button -->
+            <div></div>
+    
+            <!-- Centered title -->
+            <div class="mx-auto text-center">
+                <h1 class="text-primary mb-1">Quản lý các yêu cầu hỗ trợ</h1>
+            </div>
+    
+            <div></div>
+        </div>
         <!-- Modal for displaying details -->
         <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -219,9 +235,9 @@
 
 
         <div class="container-fluid my-4">
-            <div class="d-flex align-items-center">
-                <label for="roomFilter" class="me-3 fw-bold text-primary">Lọc phòng:</label>
-                <select class="form-select w-auto shadow-sm" id="roomFilter" style="min-width: 200px;">
+            <div class="d-flex align-items-cente">
+                <label for="roomFilter" class="mr-2 fw-bold">Lọc phòng</label>
+                <select class="form-select form-select-lg px-2" id="roomFilter" style="min-width: 200px;">
                     <option value="">Tất cả</option>
                     <option value="supported">Đã hỗ trợ</option>
                     <!-- Các phòng sẽ được thêm động từ server -->
