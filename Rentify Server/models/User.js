@@ -21,11 +21,11 @@ const User = new Schema({
   created_at: { type: String },
   updated_at: { type: String },
   // cái này chỉ dùng cho nhân viên và chủ toà
-  bankAccount: [{
+  bankAccount: {
     bank_name: { type: String }, 
     bank_number: { type: Number },
-    qr_bank: { type: Number }, 
-    username: { type: Number } 
-  }]
+    qr_bank: { type: Array }, 
+    username: { type: String } 
+  }
 });
 module.exports = mongoose.model("User", User);

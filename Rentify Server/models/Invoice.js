@@ -1,3 +1,4 @@
+const { type } = require("express/lib/response");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Invoice = new Schema({
@@ -34,6 +35,7 @@ const Invoice = new Schema({
   },
   due_date: { type: String }, // hạn chót
   payment_status: { type: String, enum: ["paid", "unpaid"] },
+  image_paymentofuser: {type: String},
   created_at: { type: String },
 });
 module.exports = mongoose.model("Invoice", Invoice);

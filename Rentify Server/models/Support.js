@@ -13,7 +13,6 @@ const Support = new Schema({
     building_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Building",
-        required: true
     },
     title_support: { type: String, require: true },//kien nghi / khieu nai
     content_support: { type: String, require: true },

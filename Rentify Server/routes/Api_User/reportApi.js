@@ -7,11 +7,7 @@ const router = express.Router();
 // thực hiện đăng ký báo cáo hỗ trợ
 router.post('/create-report', uploadFile.array('image', 5), async (req, res) => {
     try {
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ message: 'No files uploaded' });
-        }
-
-        const { user_id, room_id, title_support, content_support, status } = req.body;
+        const { user_id, room_id, title_support, content_support, status, building_id } = req.body;
         const images = req.files.map(file => file.path);
 
         const newSupport = new Support({
@@ -21,6 +17,7 @@ router.post('/create-report', uploadFile.array('image', 5), async (req, res) => 
             content_support,
             image: images,
             status,
+            building_id,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         });
