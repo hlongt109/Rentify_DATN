@@ -6,7 +6,7 @@ const handleServerError = require("../../utils/errorHandle");
 const uploadFile = require("../../config/common/upload");
 
 //
-router.get('/service/adm/:admin_id', async(req, res) => {
+router.get('/service_adm/:admin_id', async(req, res) => {
     try {
         const { admin_id } = req.params;
         if (!admin_id) {
@@ -24,7 +24,7 @@ router.get('/service/adm/:admin_id', async(req, res) => {
     }
 })
 
-router.post("/service/adm", uploadFile.fields([{name: 'images', maxCount: 5}]) , async(req, res) => {
+router.post("/service_adm", uploadFile.fields([{name: 'images', maxCount: 5}]) , async(req, res) => {
     try {
         const data = req.body;
         const files = req.files;
@@ -53,7 +53,7 @@ router.post("/service/adm", uploadFile.fields([{name: 'images', maxCount: 5}]) ,
     }
 })
 
-router.put("/service/adm/:id", uploadFile.fields([{name: 'images', maxCount: 5}]) ,async(req, res) => {
+router.put("/service_adm/:id", uploadFile.fields([{name: 'images', maxCount: 5}]) ,async(req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;
@@ -69,7 +69,7 @@ router.put("/service/adm/:id", uploadFile.fields([{name: 'images', maxCount: 5}]
         if (files && files.images) {
             images = files.images ? files.images.map(file => `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`) : [];
         }else{
-            images = post.photo
+            images = service.photos
         }
 
         service.admin_id = service.admin_id;
@@ -91,7 +91,7 @@ router.put("/service/adm/:id", uploadFile.fields([{name: 'images', maxCount: 5}]
     }
 })
 
-router.delete("/service/adm/:id", async(req, res) => {
+router.delete("/service_adm/:id", async(req, res) => {
     try {
         const { id } = req.params
         const result = await Service.findByIdAndDelete(id);
@@ -105,7 +105,7 @@ router.delete("/service/adm/:id", async(req, res) => {
     }
 })
 
-router.get("/service/adm/:id", async(req, res) => {
+router.get("/service_details/:id", async(req, res) => {
     try {
         const { id } = req.params
         const result = await Service.findById(id);
@@ -119,4 +119,3 @@ router.get("/service/adm/:id", async(req, res) => {
 })
 
 module.exports = router;
-

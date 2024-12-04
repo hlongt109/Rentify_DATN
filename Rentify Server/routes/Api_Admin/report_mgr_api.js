@@ -120,4 +120,3 @@ router.put("/report/:id", async (req, res) => {
 })
 
 module.exports = router;
-
