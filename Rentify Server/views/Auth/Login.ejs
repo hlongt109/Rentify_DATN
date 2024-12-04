@@ -128,6 +128,8 @@
                 });
 
                 const data = await response.json();
+                console.log("Dữ liệu trả về từ server:", data);
+
 
                 if (response.ok) {
                     const token = data.token;
@@ -179,26 +181,7 @@
         function clickToRegister() {
             window.location.href = '/api/rentify/register'
         }
-        // async function fetchData(link) {
-        //     const token = localStorage.getItem('token');
-        //     if (!token) {
-        //         alert('Không có token, hãy kiểm tra đăng nhập.');
-        //         return;
-        //     }
 
-        //     const response = await fetch(`${link}`, {
-        //         headers: {
-        //             'Authorization': `Bearer ${token}`
-        //         }
-        //     });
-
-        //     if (response.ok) {
-        //         const htmlContent = await response.text();
-        //         document.querySelector("body").innerHTML = htmlContent;
-        //     } else {
-        //         alert('Lỗi khi kiểm tra dữ liệu');
-        //     }
-        // }
         document.getElementById('loginForm').addEventListener('submit', login);
 
     </script>

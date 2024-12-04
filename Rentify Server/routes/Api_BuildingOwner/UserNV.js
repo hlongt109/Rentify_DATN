@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const User = require('../../models/User');
 const { decode } = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
 
 
 router.get('/staffs_mgr/list/:id', async (req, res) => {
@@ -37,12 +38,12 @@ router.post("/staffs_mgr/add/:id", async (req, res) => {
         if (!username || !email || !password || !role) {
             return res.status(400).json({ message: "Thiếu dữ liệu cần thiết!" });
         }
-
+        const hashPassword = await bcrypt.hash(password, 10);
         // Tạo mới tài khoản
         const newUser = new User({
             username,
             email,
-            password,
+            password: hashPassword,
             role,
             landlord_id: userId,  // Gán id người dùng chủ sở hữu
             name,
