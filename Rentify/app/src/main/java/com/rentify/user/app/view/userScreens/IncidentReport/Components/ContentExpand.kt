@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.IncidentReport.Components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,11 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.rentify.user.app.repository.SupportRepository.Support
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.building_icon
 import com.rentify.user.app.ui.theme.colorInput_2
+import com.rentify.user.app.utils.localUrl
 
 @Composable
 fun ContentExpand(
@@ -48,13 +52,13 @@ fun ContentExpand(
         ) {
             Text(
                 text = "Tiêu đề:",
-                fontSize = 14.sp,
+                fontSize = 15.sp,
                 color = ColorBlack,
                 fontWeight = FontWeight.Medium
             )
             Text(
                 text = item.title_support,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 color = ColorBlack,
                 fontWeight = FontWeight.Light,
                 modifier = Modifier.padding(start = 8.dp)
@@ -64,13 +68,13 @@ fun ContentExpand(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Nội dung:",
-                fontSize = 13.sp,
+                fontSize = 15.sp,
                 color = ColorBlack,
                 fontWeight = FontWeight.Medium
             )
             Text(
                 text = item.content_support,
-                fontSize = 12.sp,
+                fontSize = 13.sp,
                 color = ColorBlack,
                 fontWeight = FontWeight.Light,
                 modifier = Modifier.padding(start = 8.dp)
@@ -78,24 +82,21 @@ fun ContentExpand(
         }
         // Hiển thị các hình ảnh
         Spacer(modifier = Modifier.padding(top = 10.dp))
-        Column(
-
-        ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Ảnh: ",
-                fontSize = 13.sp,
+                fontSize = 15.sp,
                 color = ColorBlack,
                 fontWeight = FontWeight.Medium
             )
             Spacer(modifier = Modifier.padding(top = 15.dp))
             LazyRow {
                 items(listImage){image ->
-                    Image(
-                        painter = rememberImagePainter(data = image),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                    Log.d("UrlImage", "ContentExpand: ${localUrl+image}")
+                    AsyncImage(
+                        model = localUrl+image,
+                        contentDescription = "Image support",
+                        modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp))
                     )
                 }
             }

@@ -60,13 +60,11 @@ class SupportViewModel(
 //    private val _roomContract = MutableStateFlow<ContractRoomData>()
 //    val listRoomContract: StateFlow<List<ContractRoomData>> = _listRoomContract.asStateFlow()
 
-    //phan loai danh sach hop dong
+    //phan loai danh sach sự cố
     private val _processed = MutableStateFlow<List<Support>>(emptyList())
     val processed: StateFlow<List<Support>> = _processed.asStateFlow()
     private val _unprocessed = MutableStateFlow<List<Support>>(emptyList())
     val unprocessed: StateFlow<List<Support>> = _unprocessed.asStateFlow()
-
-    //con hieu luc
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -76,6 +74,13 @@ class SupportViewModel(
 
     private val _successMessage = MutableLiveData<String?>()
     val successMessage: LiveData<String?> = _successMessage
+    //loi
+    private val _errorRoom = MutableLiveData<String?>()
+    val errorRoom: LiveData<String?> = _errorRoom
+    private val _errorTitle = MutableLiveData<String?>()
+    val errorTitle: LiveData<String?> = _errorTitle
+    private val _errorContent = MutableLiveData<String?>()
+    val errorContent: LiveData<String?> = _errorContent
 
     fun getListSupport(userId: String) {
         viewModelScope.launch {
@@ -169,16 +174,30 @@ class SupportViewModel(
         status: Int,
         imagePaths: List<String?>
     ) {
+
+        if (roomId.isBlank()) {
+            _errorRoom.postValue("Vui lòng chọn phòng.")
+            return
+        }
+        if (titleSupport.isBlank()) {
+            _errorTitle.postValue("Vui lòng nhập tiêu đề sự cố.")
+            return
+        }
+        if (contentSupport.isBlank()) {
+            _errorContent.postValue("Vui lòng nhập mô tả sự cố.")
+            return
+        }
+
         viewModelScope.launch {
             _isLoading.postValue(true) // Hiển thị trạng thái loading
             val result = repository.createReport(
                 userId, roomId, buildingId, titleSupport, contentSupport, status, imagePaths
             )
             Log.d("AddSupport", "createSupportReport: $result")
-            _isLoading.postValue(false) // Ẩn trạng thái loading
+            // Ẩn trạng thái loading
             result.onSuccess { response ->
                 // Cập nhật thông báo thành công
-
+                _isLoading.postValue(false)
                 _successMessage.postValue("Tạo báo cáo thành công:")
                 getListSupport(userId) // Lấy danh sách mới sau khi thêm
             }.onFailure { error ->
@@ -188,6 +207,15 @@ class SupportViewModel(
         }
     }
 
+    fun clearErrorRoom(){
+        _errorRoom.value = null
+    }
+    fun clearErrorTitle(){
+        _errorTitle.value = null
+    }
+    fun clearErrorContent(){
+        _errorContent.value = null
+    }
 
     class SupportViewModelFactory(
         private val repository: SupportRepository,

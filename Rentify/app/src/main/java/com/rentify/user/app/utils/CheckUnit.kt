@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.compose.ui.platform.LocalConfiguration
 import com.google.gson.Gson
@@ -24,80 +25,45 @@ object CheckUnit {
 
     fun Uri.toFilePath(context: Context): String? {
         return try {
-            when (scheme) {
-                "content" -> {
-                    // Content URI handling (e.g., from Gallery)
-                    val projection = arrayOf(MediaStore.Images.Media.DATA)
-                    context.contentResolver.query(this, projection, null, null, null)?.use { cursor ->
-                        if (cursor.moveToFirst()) {
-                            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                            val path = cursor.getString(columnIndex)
-                            Log.d("UriConversion", "Content URI path: $path")
-                            return path
+            val cursor = context.contentResolver.query(this, null, null, null, null)
+            cursor?.use {
+                val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (it.moveToFirst() && index != -1) {
+                    val fileName = it.getString(index)
+                    val tempFile = File(context.cacheDir, fileName)
+                    context.contentResolver.openInputStream(this)?.use { inputStream ->
+                        tempFile.outputStream().use { outputStream ->
+                            inputStream.copyTo(outputStream)
                         }
                     }
-                    Log.w("UriConversion", "Unable to resolve content URI")
-                    null
-                }
-                "file" -> {
-                    // Direct file URI
-                    Log.d("UriConversion", "File URI path: $path")
-                    path
-                }
-                else -> {
-                    // Alternative method for complex URIs (Google Drive, other apps)
-                    val tempFile = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
-                    try {
-                        context.contentResolver.openInputStream(this)?.use { inputStream ->
-                            tempFile.outputStream().use { outputStream ->
-                                inputStream.copyTo(outputStream)
-                            }
-                        }
-                        Log.d("UriConversion", "Copied URI to temp file: ${tempFile.absolutePath}")
-                        tempFile.absolutePath
-                    } catch (e: Exception) {
-                        Log.e("UriConversion", "Error copying URI to temp file", e)
-                        null
-                    }
+                    return tempFile.absolutePath
                 }
             }
+            null
         } catch (e: Exception) {
-            Log.e("UriConversion", "Comprehensive URI conversion error", e)
+            Log.e("UriToFilePath", "Error converting URI to file path", e)
             null
         }
     }
 
 
-    fun getRealPathFromUri(context: Context, uri: Uri): String? {
-        val isDocumentUri = DocumentsContract.isDocumentUri(context, uri)
+    fun getPathFromDocumentUri(context: Context, uri: Uri): String? {
+        if (DocumentsContract.isDocumentUri(context, uri)) {
+            val docId = DocumentsContract.getDocumentId(uri)
+            val split = docId.split(":")
+            val type = split[0]
+            val relativePath = split.getOrNull(1) ?: return null
 
-        return when {
-            isDocumentUri -> {
-                val documentId = DocumentsContract.getDocumentId(uri)
-                val split = documentId.split(":")
-                val type = split[0]
+            val externalStorageVolumes = context.getExternalFilesDirs(null)
+            val primaryVolume = externalStorageVolumes.firstOrNull()?.absolutePath ?: return null
 
-                if (type.equals("primary", ignoreCase = true)) {
-                    return "${Environment.getExternalStorageDirectory()}/${split[1]}"
-                }
-                null
-            }
-            uri.scheme.equals("content", ignoreCase = true) -> {
-                val projection = arrayOf(MediaStore.Images.Media.DATA)
-                context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
-                    val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                    if (cursor.moveToFirst()) {
-                        return cursor.getString(columnIndex)
-                    }
-                }
-                null
-            }
-            uri.scheme.equals("file", ignoreCase = true) -> {
-                uri.path
-            }
-            else -> null
+            return if (type.equals("primary", ignoreCase = true)) {
+                "$primaryVolume/$relativePath"
+            } else null
         }
+        return null
     }
+
 
 
     fun isValidEmail(email: String): Boolean {

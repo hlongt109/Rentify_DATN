@@ -55,7 +55,7 @@ import com.rentify.user.app.view.userScreens.BillScreen.Component.ItemPaidExpand
 import com.rentify.user.app.viewModel.UserViewmodel.SupportViewModel
 
 @Composable
-fun ItemIncident(list: List<Support>, room: Room) {
+fun ItemIncident(support: Support, room: Room) {
 //    support: Support,room: Room
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -63,6 +63,7 @@ fun ItemIncident(list: List<Support>, room: Room) {
     Box (
         modifier = Modifier
             .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp)
             .padding(vertical = 8.dp)
     ){
         Card(
@@ -144,12 +145,10 @@ fun ItemIncident(list: List<Support>, room: Room) {
                 exit = fadeOut() + shrinkVertically()
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    list.forEach {support ->
                         ContentExpand(
                             item = support,
                             listImage = support.image
                         )
-                    }
                 }
             }
         }

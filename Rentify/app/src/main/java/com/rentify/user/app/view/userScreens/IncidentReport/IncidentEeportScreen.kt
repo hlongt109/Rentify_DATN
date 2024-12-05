@@ -203,7 +203,7 @@ fun Requesting(
                             .padding(bottom = 80.dp)
                     ) {
                         items(unProcessed) { item ->
-                            ItemIncident(unProcessed, item.room_id)
+                            ItemIncident(item, item.room_id)
                         }
                     }
                 }
@@ -280,7 +280,7 @@ fun Completed(
                             .padding(bottom = 80.dp)
                     ) {
                         items(process) { item ->
-                            ItemIncident(process, item.room_id)
+                            ItemIncident(item, item.room_id)
                         }
                     }
                 }

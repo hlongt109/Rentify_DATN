@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
@@ -64,6 +65,7 @@ import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -75,6 +77,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -89,6 +92,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.SupportRepository.ContractRoom
@@ -97,6 +101,7 @@ import com.rentify.user.app.repository.SupportRepository.SupportRepository
 import com.rentify.user.app.ui.theme.building_icon
 import com.rentify.user.app.utils.CheckUnit.toFilePath
 import com.rentify.user.app.utils.Component.getLoginViewModel
+import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.userScreens.IncidentReport.Components.ContentExpand
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.Components.HeaderComponent
 import com.rentify.user.app.viewModel.UserViewmodel.RoomSupportUiState
@@ -136,16 +141,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
     var roomNumber by remember { mutableStateOf("Chọn phòng") }
     var roomId by remember { mutableStateOf("") }
     var buildingId by remember { mutableStateOf("") }
-    Log.d("RoomId", "AddIncidentReportScreen: $roomId")
-    Log.d("BuildingId", "AddIncidentReportScreen: $buildingId")
-    Log.d("Title", "AddIncidentReportScreen: $incident")
-    Log.d("Content", "AddIncidentReportScreen: $incidentdescription")
     var selectedImages by rememberSaveable { mutableStateOf(listOf<Uri>()) }
-    val imagePaths = selectedImages
-        .mapNotNull { uri -> uri.toFilePath(context) }
-        .filter { path -> File(path).exists() }
-    val imageParam = imagePaths.takeIf { it.isNotEmpty() }
-    Log.d("CheckImage", "AddIncidentReportScreen: $imageParam")
     val launcherImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
@@ -162,8 +158,18 @@ fun AddIncidentReportScreen(navController: NavHostController) {
         }
     )
 
+    selectedImages.forEach { uri ->
+        val path = uri.toFilePath(context)
+        Log.d("ImagePathCheck", "URI: $uri -> Path: $path")
+    }
+    val imagePaths = selectedImages.mapNotNull { uri -> uri.toFilePath(context) }
+    Log.d("CheckImage", "AddIncidentReportScreen: $imagePaths")
+
 //    var selectedRoom by remember { mutableStateOf<ContractRoomData?>(null) }
 //    Log.d("AddIncidentReportScreen", "Selected Room: ${selectedRoom?.room?.room_number}")
+    val errorRoom by supportViewModel.errorRoom.observeAsState()
+    val errorTitle by supportViewModel.errorTitle.observeAsState()
+    val errorContent by supportViewModel.errorContent.observeAsState()
 
     LaunchedEffect(userId) {
         supportViewModel.getInfoRoom(userId)
@@ -175,8 +181,6 @@ fun AddIncidentReportScreen(navController: NavHostController) {
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -279,11 +283,15 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                         roomId = item.room.room_id
                                         roomNumber = item.room.room_number
                                         expanded = false
+                                        supportViewModel.clearErrorRoom()
                                     }
                                 )
                             }
                         }
                     }
+                }
+                errorRoom?.let {
+                    ShowReport.ShowError(message = it)
                 }
 ///2
                 Spacer(modifier = Modifier.height(20.dp))
@@ -329,8 +337,11 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 )
                         }
                         TextField(
-                            value = incidentdescription,
-                            onValueChange = { incidentdescription = it },
+                            value = incident,
+                            onValueChange = {
+                                incident = it
+                                supportViewModel.clearErrorTitle()
+                            },
                             modifier = Modifier
                                 .fillMaxWidth(),
                             colors = TextFieldDefaults.colors(
@@ -355,7 +366,9 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 fontFamily = FontFamily(Font(R.font.cairo_regular))
                             )
                         )
-
+                    }
+                    errorTitle?.let {
+                        ShowReport.ShowError(message = it)
                     }
                     // mô tả sự cố
                     Column(
@@ -384,8 +397,11 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 )
                         }
                         TextField(
-                            value = incident,
-                            onValueChange = { incident = it },
+                            value = incidentdescription,
+                            onValueChange = {
+                                incidentdescription = it
+                                supportViewModel.clearErrorContent()
+                            },
                             modifier = Modifier
                                 .fillMaxWidth(),
 
@@ -412,7 +428,11 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                             )
                         )
                     }
+                    errorContent?.let {
+                        ShowReport.ShowError(message = it)
+                    }
 //ảnh
+                    Spacer(modifier = Modifier.padding(top = 10.dp))
                     Text(
                         text = "Ảnh sự cố",
                         //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
@@ -430,6 +450,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                         ) {
                             Row(
                                 modifier = Modifier
+                                    .size(100.dp)
                                     //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                                     .background(color = Color(0xFFffffff))
 
@@ -461,6 +482,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                     },
 
                                 verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
                             ) {
 
                                 Row(
@@ -479,20 +501,50 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 modifier = Modifier.padding(10.dp),
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
+//
                                 items(selectedImages) { uri ->
-                                    AsyncImage(
-                                        model = uri,
-                                        contentDescription = "Selected Image",
+                                    Box(
                                         modifier = Modifier
-                                            .size(80.dp)
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .border(
-                                                2.dp,
-                                                Color.Gray,
-                                                RoundedCornerShape(8.dp)
-                                            ),
-                                        contentScale = ContentScale.Crop
-                                    )
+                                            .size(100.dp)
+                                    ) {
+                                        AsyncImage(
+                                            model = uri,
+                                            contentDescription = "Selected Image",
+                                            modifier = Modifier
+                                                .size(100.dp)
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .border(
+                                                    2.dp,
+                                                    Color.Gray,
+                                                    RoundedCornerShape(8.dp)
+                                                ),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .size(20.dp)
+                                                .align(Alignment.TopEnd)
+                                                .background(
+                                                    Color.Red,
+                                                    shape = RoundedCornerShape(30.dp)
+                                                )
+                                        ) {
+                                            IconButton(
+                                                modifier = Modifier.fillMaxSize(),
+                                                onClick = {
+                                                    selectedImages =
+                                                        selectedImages.filter { it != uri }
+                                                },
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Close,
+                                                    contentDescription = "Remove Image",
+                                                    modifier = Modifier.size(16.dp),
+                                                    tint = Color.White
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -507,7 +559,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 buildingId,
                                 titleSupport = incident,
                                 contentSupport = incidentdescription,
-                                imagePaths = imageParam ?: listOf(),
+                                imagePaths = imagePaths,
                                 status = 1,
                             )
                         },

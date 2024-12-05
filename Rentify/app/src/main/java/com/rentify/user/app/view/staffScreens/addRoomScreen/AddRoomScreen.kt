@@ -209,8 +209,6 @@ fun AddRoomScreen(
                         )
                     )
                 }
-
-
                 // Loại phòng
                 Column {
                     RoomTypeLabel()
