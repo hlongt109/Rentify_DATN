@@ -402,4 +402,10 @@ interface APIService {
 
     @GET("staff/rooms/Listservices")
     suspend fun getServiceList(): Response<List<ListServiceResponse>>
+
+    @PUT("staff/users/addUserInfo/{id}")
+    suspend fun updateUserInfo(
+        @Path("id") userId: String,
+        @Body userDetails: Map<String, String>
+    ): Response<UserResponse>
 }

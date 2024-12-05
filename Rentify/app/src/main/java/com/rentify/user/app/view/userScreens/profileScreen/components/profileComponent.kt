@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,9 +66,10 @@ fun ProfileComponent(navController: NavHostController) {
                 Text(
                     text = "Hồ sơ cá nhân",
                     fontSize = 25.sp,
-                    color = Color(0xff122457),
+                    color = Color.Black,
                     fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily.Serif
                 )
             }
         }

@@ -247,7 +247,7 @@ fun FeetPersonalProfile1(navController: NavHostController){
                     .padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            Text(text = "${userDetail?.password}",
+            Text(text = "********",
                 modifier = Modifier
                     .padding(end = 20.dp),
                 fontSize = 15.sp
