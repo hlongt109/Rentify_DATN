@@ -81,11 +81,11 @@ fun PaymentScreen(
 
                 PaymentContent(
                     invoiceId = invoiceId,
-                    accountName = bankAccountToShow.username,
-                    accountNumber = bankAccountToShow.bank_number.toString(),
-                    amount = amount,
+                    accountName = bankAccountToShow.username ?: "",
+                    accountNumber = bankAccountToShow.bank_number.toString() ?: "",
+                    amount = amount ?: 0,
                     qrImageUrl = (imageUrls ?: "").toString(),
-                    nameBank = bankAccountToShow.bank_name,
+                    nameBank = bankAccountToShow.bank_name ?: "",
                     navController = navController
                 )
             } else {

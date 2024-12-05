@@ -413,7 +413,7 @@ fun AddContractScreens(navController: NavHostController) {
                     BuildingLabel()
 
                     BuildingOptions(
-                        manageId = "674f1c2975eb705d0ff112b6",
+                        manageId = userId,
                         selectedBuilding = selectedBuilding,
                         onBuildingSelected = { buildingId ->
                             selectedBuilding =buildingId // Cập nhật tòa nhà đã chọn
