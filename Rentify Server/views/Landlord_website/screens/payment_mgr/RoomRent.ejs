@@ -759,7 +759,7 @@
         const roomPrice = Number(document.getElementById('roomPrice').value) || 0;
         const wifiPrice = Number(document.getElementById('wifiPrice').value) || 0;
         const otherPrice = Number(document.getElementById('otherPrice').value) || 0;
-        const totalAmount = (electricUnits * electricPrice) + (waterUnits * waterPrice) + roomPrice;
+        const totalAmount = (electricUnits * electricPrice) + (waterUnits * waterPrice) + wifiPrice + otherPrice + roomPrice;
 
         const description = [
             {

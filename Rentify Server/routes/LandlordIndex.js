@@ -138,7 +138,7 @@ router.get('/post_mgr', (req, res, next) => {
 //statistic
 
 router.get('/statistic_mrg', (req, res, next) => {
-  res.render('Landlord_website/screens/Statistic', (err, html) => {
+  res.render('Landlord_website/screens/Schedules', (err, html) => {
     if (err) {
       return res.status(500).send(err)
     }

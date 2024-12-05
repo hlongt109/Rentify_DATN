@@ -57,13 +57,30 @@
       background-color: #ccc;
       color: black;
     }
+
+    .navbar ul li.active a i {
+      background: linear-gradient(45deg, #FFD700, #FFFFFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .navbar ul li a i {
+      color: #ffffff;
+      transition: color 0.3s ease;
+      /* Thêm hiệu ứng chuyển đổi mềm mại */
+    }
+
+    .navbar ul li:not(.active) a:hover i {
+      color: #ccc;
+      /* Hover chỉ áp dụng cho các mục không active */
+    }
   </style>
 </head>
 
 <body>
   <nav class="navbar">
     <ul>
-      <li>
+      <li class="active"> 
         <a href="/landlord/home">
           <i class="fas fa-home"></i> <span>Trang chủ</span> <!-- Giữ nguyên -->
         </a>
@@ -85,13 +102,18 @@
         </a>
       </li>
       <li>
+        <a href="/landlord/statistic_mrg">
+          <i class="fa-regular fa-clock"></i> <span>Quản lý lịch hẹn</span> <!-- Giữ nguyên -->
+        </a>
+      </li>
+      <li>
         <a href="/landlord/post_mgr">
           <i class="fas fa-thumbtack"></i> <span>Quản lý bài đăng</span> <!-- Thay đổi: biểu tượng ghim bài -->
         </a>
       </li>
       <li>
         <a href="/landlord/services_mgr">
-          <i class="fas fa-cogs"></i> <span>Quản lý nội thất</span>
+          <i class="fa-solid fa-couch"></i> <span>Quản lý nội thất</span>
         </a>
       </li>
       <li>
@@ -99,11 +121,7 @@
           <i class="fas fa-user"></i> <span>Quản lý nhân viên</span>
         </a>
       </li>
-      <li>
-        <a href="/landlord/statistic_mrg">
-          <i class="fas fa-chart-bar"></i> <span>Thống kê</span> <!-- Giữ nguyên -->
-        </a>
-      </li>
+
       <li>
         <!-- <a href="/api/supports_mgr"> -->
         <a href="/landlord/support_mgr">
@@ -130,9 +148,6 @@
   </div>
 
   <script>
-
-
-
     // Lấy phần tử logout-link và logout-dialog
     const logoutLink = document.getElementById('logout-link');
     const logoutDialog = document.getElementById('logout-dialog');
@@ -162,6 +177,31 @@
     cancelLogout.addEventListener('click', () => {
       logoutDialog.style.display = 'none'; // Ẩn hộp thoại
     });
+
+    // ===============================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuItems = document.querySelectorAll('.navbar ul li');
+      const currentPath = window.location.pathname;
+
+      let isActiveSet = false;
+
+      menuItems.forEach(item => {
+        const link = item.querySelector('a');
+        if (link.getAttribute('href') === currentPath) {
+          item.classList.add('active'); // Đặt active cho li
+          isActiveSet = true; // Đánh dấu rằng active đã được thiết lập
+        } else {
+          item.classList.remove('active'); // Loại bỏ active nếu không khớp
+        }
+      });
+
+      // Nếu không có mục nào khớp, đặt menu đầu tiên là active
+      if (!isActiveSet && menuItems.length > 0) {
+        menuItems[0].classList.add('active');
+      }
+    });
+
   </script>
 </body>
 
