@@ -33,6 +33,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,6 +48,7 @@ import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.userScreens.QuanLiDichVu.Components.PhanDauQuanLiDichVu
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
+import java.text.DecimalFormat
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -67,18 +70,23 @@ fun QuanLiDichVu(navController: NavHostController) {
         factory = RoomViewModel.RoomViewModeFactory(context)
     )
     val buildingWithRooms by roomViewModel.buildingWithRooms.observeAsState(emptyList())
+    val decimalFormat = DecimalFormat("#,###,###")
 
     LaunchedEffect(Unit) {
         roomViewModel.fetchBuildingsWithRooms(userId)
     }
 
-    // Map tên dịch vụ với tài nguyên ảnh
     val serviceIconMap = mapOf(
-        "Điện" to R.drawable.service,
-        "Nước" to R.drawable.khepkin,
-        "Wifi" to R.drawable.ad,
-        "Dịch vụ chung" to R.drawable.dien,
-        "sadsda" to R.drawable.add
+        "Điện" to R.drawable.electronic,
+        "Nước" to R.drawable.water,
+        "Wifi" to R.drawable.wifif,
+        "Dịch vụ chung" to R.drawable.home,
+        "Gửi xe" to R.drawable.motorbike,
+        "Máy giặt" to R.drawable.maygiat,
+        "Thang máy" to R.drawable.elevator,
+        "Tủ lạnh" to R.drawable.tulanh,
+        "Bảo trì" to R.drawable.baotri,
+        "Bảo vệ" to R.drawable.baove
     )
 
     Column {
@@ -86,104 +94,101 @@ fun QuanLiDichVu(navController: NavHostController) {
 
         // Lặp qua từng BuildingWithRooms
         buildingWithRooms.forEach { building ->
-            var expanded by remember { mutableStateOf(false) }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .clickable { expanded = !expanded },
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color.LightGray)
-            ) {
-                Column {
-                    Row(
+            building.serviceFees.forEach { serviceFee ->
+                var expanded by remember { mutableStateOf(false) }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clickable { expanded = !expanded },
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, Color.LightGray)
+                ) {
+                    Column(
                         modifier = Modifier
+                            .padding(16.dp)
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Ảnh bên trái
-                        Image(
-                            painter = painterResource(id = R.drawable.property),
-                            contentDescription = "Icon Building",
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        // Văn bản
-                        Text(
-                            text = "Dịch vụ tòa nhà ${building.nameBuilding} của bạn",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Black,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        // Biểu tượng mũi tên (nếu mở rộng thì dùng biểu tượng 'down', nếu không thì 'baseline_navigate_next_24')
-                        if (expanded) {
-                            Image(
-                                painter = painterResource(id = R.drawable.down),
-                                contentDescription = "Navigate Down Icon",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
-                            Image(
-                                painter = painterResource(id = R.drawable.baseline_navigate_next_24),
-                                contentDescription = "Navigate Icon",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-
-                    // Khi mở rộng, hiển thị phần dịch vụ
-                    AnimatedVisibility(visible = expanded) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
-                                .background(color = Color.White)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            building.serviceFees.forEach { serviceFee ->
+                            // Biểu tượng dịch vụ
+                            val serviceIcon = serviceIconMap[serviceFee.name] ?: R.drawable.error
+                            Image(
+                                painter = rememberImagePainter(data = serviceIcon),
+                                contentDescription = "Icon for ${serviceFee.name}",
+                                modifier = Modifier.size(35.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            // Tên dịch vụ
+                            Text(
+                                text = serviceFee.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.Black,
+                                modifier = Modifier.weight(1f),
+                                fontFamily = FontFamily.Serif
+                            )
+
+                            // Biểu tượng mũi tên
+                            if (expanded) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.down),
+                                    contentDescription = "Navigate Down Icon",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            } else {
+                                Image(
+                                    painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                                    contentDescription = "Navigate Icon",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+
+                        // Hiển thị giá khi mở rộng
+                        AnimatedVisibility(visible = expanded) {
+                            Column {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(vertical = 8.dp)
-                                        .background(Color(0xFFF5F5F5)) // Nền nhẹ cho mỗi phần dịch vụ
                                 ) {
-                                    val serviceIcon = serviceIconMap[serviceFee.name] ?: R.drawable.error
-                                    Image(
-                                        painter = rememberImagePainter(data = serviceIcon),
-                                        contentDescription = "Icon for ${serviceFee.name}",
-                                        modifier = Modifier.size(30.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-
                                     Text(
-                                        text = serviceFee.name,
+                                        text = "Giá Tiền : ",
                                         style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Black,
                                         modifier = Modifier
-                                            .align(Alignment.CenterVertically)
-                                            .weight(1f) // Nâng dịch vụ lên chiếm không gian còn lại
+                                            .padding(top = 8.dp)
+                                            .weight(1f) // Đẩy về phía trái
                                     )
-
                                     Text(
-                                        text = "Giá: ${serviceFee.price} VND",
+                                        text = "${decimalFormat.format(serviceFee.price)} VND",
                                         style = MaterialTheme.typography.bodySmall,
-                                        modifier = Modifier.align(Alignment.CenterVertically)
+                                        color = Color.Black,
+                                        modifier = Modifier
+                                            .padding(top = 8.dp)
+                                            .weight(1f), // Đẩy về phía phải
+                                        textAlign = TextAlign.End // Căn lề phải
                                     )
                                 }
+
+                                Spacer(modifier = Modifier.height(1.dp)
+                                    .fillMaxWidth()
+                                    .background(color = Color(0xFFd9d9d9))
+                                    .padding(start = 10.dp, end = 10.dp)
+                                )
                             }
                         }
                     }
                 }
             }
-
         }
     }
 }
+
 
 
 
