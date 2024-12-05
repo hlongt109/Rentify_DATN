@@ -3,11 +3,11 @@ const router = express.Router();
 const Invoice = require('../../models/Invoice')
 const Upload = require('../../config/common/upload')
 
-// Lấy hoá đơn theo trạng thái payment_status và user_id
-router.get('/get-invoices-by-status/:user_id/:status', async (req, res) => {
+// Lấy hoá đơn theo room_id và trạng thái payment_status
+router.get('/get-invoices-by-room-and-status/:room_id/:status', async (req, res) => {
     try {
         const invoices = await Invoice.find({ 
-            user_id: req.params.user_id,
+            room_id: req.params.room_id,
             payment_status: req.params.status 
         }).populate({
             path: 'room_id',
@@ -30,7 +30,7 @@ router.get('/get-detail-invoice/:id', async (req, res) => {
         res.status(200).json(data);
     } catch (err) {
         res.status(400).json({
-            message: error.message
+            message: err.message
         })
     }
 });
