@@ -129,10 +129,10 @@ fun MessengerComponent(
         }
 
 //        van phuc
-        LazyColumn {
-            items(users.value){user ->
-                UserItem(user, navController)
-            }
-        }
+//        LazyColumn {
+//            items(users.value){user ->
+//                UserItem(user, navController)
+//            }
+//        }
     }
 }

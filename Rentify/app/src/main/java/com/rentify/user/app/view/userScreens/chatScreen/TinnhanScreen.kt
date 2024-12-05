@@ -60,7 +60,7 @@ fun TinnhanScreen(
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val senderId = loginViewModel.getUserData().userId
-
+    Log.d("CheckThongTin", "TinnhanScreen: $receiverId, $name")
     // Tạo chatId duy nhất cho cuộc trò chuyện
     val chatId = generateChatId(senderId, receiverId)
     //

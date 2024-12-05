@@ -32,6 +32,10 @@ import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.model.UserResponse
+import com.rentify.user.app.repository.ForgotRepository.ForgotRequest
+import com.rentify.user.app.repository.ForgotRepository.ForgotResponse
+import com.rentify.user.app.repository.ForgotRepository.MailConfirmForgot
+import com.rentify.user.app.repository.ForgotRepository.ResetPassword
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
@@ -423,4 +427,15 @@ interface APIService {
     //check co hợp đồng hay không
     @GET("check-contract/{userId}")
     suspend fun checkContract(@Path("userId") userId: String): Response<com.rentify.user.app.repository.SupportRepository.ContractResponse>
+
+    //quen mat khau
+    //gui mail xac nhan
+    @POST("forgot-password")
+    suspend fun postMailForgot(@Body forgotRequest: ForgotRequest): Response<ForgotResponse>
+    //xac nhan ma
+    @POST("confirm-code")
+    suspend fun confirmCode(@Body confirmCode: MailConfirmForgot): Response<ForgotResponse>
+    @PUT("reset-password")
+    suspend fun resetPassword(@Body resetPassword: ResetPassword): Response<ForgotResponse>
+
 }

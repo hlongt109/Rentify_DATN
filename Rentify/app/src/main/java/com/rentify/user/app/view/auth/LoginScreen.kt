@@ -31,6 +31,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -166,14 +167,21 @@ fun LoginScreenApp(navigator: NavController) {
                 //quen mat khau
                 //
 
-                Text(
-                    text = "Quên mật khẩu ?",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = colorText,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Box (modifier = Modifier
+                    .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                    ){
+                    Text(
+                        text = "Quên mật khẩu ?",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = colorText,
+                        modifier = Modifier
+                            .clickable {
+                                navigator.navigate(MainActivity.ROUTER.PREFORGOT.name)
+                            }
+                    )
+                }
                 //button dang nhap
                 Spacer(modifier = Modifier.padding(top = 50.dp))
                 Button(

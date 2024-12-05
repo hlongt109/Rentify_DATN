@@ -90,6 +90,10 @@ fun LayoutRoomdetails2(
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
+
+    val staffId = userDetail.value?._id ?:""
+    val staffName = userDetail.value?.name?:""
+
     var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
 
     val imageUrls = roomDetail.value?.photos_room?.map { photoPath ->
@@ -148,7 +152,9 @@ fun LayoutRoomdetails2(
             roomDetail.value?.let { detail ->
                 val userName = userDetail.value?.name ?: ""
                 val phoneNumber = userDetail.value?.phoneNumber ?: ""
+                val staffId = userDetail.value?._id ?: ""
                 datLichXemPhong(
+                    staffId = staffId,
                     userName = userName,  // Thay thế bằng giá trị thích hợp
                     phoneNumber = phoneNumber,  // Thay thế bằng giá trị thích hợp
                     staffName = when {
@@ -255,6 +261,7 @@ fun LayoutRoomdetails2(
                 Spacer(modifier = Modifier.padding(5.dp))
                 landlordDetail.value?.totalRooms?.let {
                     LayoutRoom(
+                        landlordId = landlordDetail.value?.landlord?._id ?: "",
                         landlordName = landlordDetail.value?.landlord?.name ?: "khong ac dinh",
                         totalRooms = it,
                         listEmptyRoom = emptyRoom.value ?: emptyList(),
@@ -278,7 +285,7 @@ fun LayoutRoomdetails2(
                 Spacer(modifier = Modifier.padding(5.dp))
                 LayoutInterior(listAmenities = roomDetail.value?.service ?: emptyList())
                 Spacer(modifier = Modifier.padding(5.dp))
-                baidangPreview(navController)
+                baidangPreview(navController, staffId, staffName)
             }
         }
     }

@@ -16,6 +16,7 @@ import androidx.navigation.navArgument
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
+import com.rentify.user.app.view.auth.components.PreForgotPass
 import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
@@ -100,9 +101,6 @@ class MainActivity : ComponentActivity() {
             }
             composable(ROUTER.RESGITER.name) {
                 RegisterScreen(navController = navController)
-            }
-            composable(ROUTER.FORGOTPASS.name) {
-                ForgotPasswordScreen(navController = navController)
             }
             composable(ROUTER.HOME.name) {
                 AppNavigation(navController)
@@ -344,6 +342,21 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.AppointmentScreen.name) {
                 AppointmentScreen(navController = navController)
             }
+
+            //phong forgot
+            composable(ROUTER.PREFORGOT.name){
+                PreForgotPass(navController)
+            }
+            composable(
+                ROUTER.FORGOTPASS.name+"/{email}",
+                arguments = listOf(
+                    navArgument("email"){type = NavType.StringType}
+                )
+            ){backStackEntry ->
+                val email = backStackEntry.arguments?.getString("email") ?: ""
+                ForgotPasswordScreen(navController, email)
+            }
+
         }
     }
     
@@ -360,7 +373,6 @@ class MainActivity : ComponentActivity() {
         SPLASH,
         RESGITER,
         LOGIN,
-        FORGOTPASS,
         PROFILE,
         LAUDRY,
         LAUDRYDETAIL,
@@ -401,7 +413,11 @@ class MainActivity : ComponentActivity() {
 
         AppointmentScreen,
         ADDCONTRAC_STAFF,
-        ListSupportByRoom
+        ListSupportByRoom,
+
+        //phong forgot
+        PREFORGOT,
+        FORGOTPASS,
     }
 }
 
