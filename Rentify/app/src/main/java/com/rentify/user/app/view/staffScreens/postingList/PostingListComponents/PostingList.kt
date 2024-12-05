@@ -64,7 +64,7 @@ fun PostListScreen(navController: NavController, userId: String) {
     var isShowDialog by remember { mutableStateOf(false) }
     var postIdToDelete by remember { mutableStateOf<String?>(null) }
     val searchQuery by viewModel.searchQuery
-
+    val isLoading by viewModel.isLoading.collectAsState()
     LaunchedEffect(searchQuery) {
         if (searchQuery.isNotEmpty()) {
             Log.e("log search id", "Searching with manageId: $userId and query: $searchQuery")
@@ -73,6 +73,7 @@ fun PostListScreen(navController: NavController, userId: String) {
             viewModel.getPostingList(userId)
         }
     }
+
     // Hiển thị dialog xác nhận xóa
     if (isShowDialog) {
         DialogCompose(
@@ -93,7 +94,16 @@ fun PostListScreen(navController: NavController, userId: String) {
             mess = "Bạn có chắc chắn muốn xóa bài đăng này?"
         )
     }
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
 
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Color.Blue)
+        }
+    } else {
     // Kiểm tra danh sách bài đăng
     if (post.isEmpty() && searchQuery.isNotEmpty()) {
         Box(
@@ -101,7 +111,7 @@ fun PostListScreen(navController: NavController, userId: String) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Không có hợp đồng nào.",
+                text = "Không có bài đăng nào.",
                 color = Color.Gray,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
@@ -172,7 +182,7 @@ fun PostListScreen(navController: NavController, userId: String) {
                 }
             }
         }
-    }
+    }}
 }
 
 @Composable

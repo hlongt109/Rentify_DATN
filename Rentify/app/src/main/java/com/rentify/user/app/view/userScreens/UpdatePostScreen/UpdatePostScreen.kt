@@ -153,7 +153,7 @@ fun UpdatePostUserScreen(navController: NavHostController,postId: String) {
 
     val buildingId = viewModel.selectedBuilding.value
 
-    val postDetail by viewModel.postDetail.observeAsState()
+    val postDetail = viewModel.postDetail.value
 
     LaunchedEffect(postId) {
         postId?.let {

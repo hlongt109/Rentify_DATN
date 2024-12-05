@@ -168,7 +168,6 @@ fun AddContractScreens(navController: NavHostController) {
         context: Context,
         apiService: APIService,
         selectedImages: List<Uri>,
-
     ): Boolean {
         // Chuẩn bị dữ liệu `RequestBody`
         val userId = userId.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -215,14 +214,14 @@ fun AddContractScreens(navController: NavHostController) {
                 photosContract  = photoPart
             )
             if (response.isSuccessful) {
-                Log.d("AddPost", "Dư liệu vừa thêm xong: ${response.body()}")
+                Log.d("AddContrac", "Dư liệu vừa thêm xong: ${response.body()}")
                 true
             } else {
-                Log.e("AddPost", "Error: ${response.errorBody()?.string()}")
+                Log.e("AddContrac", "Error: ${response.errorBody()?.string()}")
                 false
             }
         } catch (e: Exception) {
-            Log.e("AddPost", "Exception: ${e.message}")
+            Log.e("AddContrac", "Exception: ${e.message}")
             false
         }
     }
@@ -322,7 +321,7 @@ fun AddContractScreens(navController: NavHostController) {
                         ),
                         placeholder = {
                             Text(
-                                text = "Nhập userId",
+                                text = "userId1, userId2,...",
                                 fontSize = 13.sp,
                                 color = Color(0xFF898888),
                                 fontFamily = FontFamily(Font(R.font.cairo_regular))
@@ -367,8 +366,7 @@ fun AddContractScreens(navController: NavHostController) {
                         value = content,
                         onValueChange = { content = it },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(53.dp),
+                            .fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color(0xFFcecece),
                             unfocusedIndicatorColor = Color(0xFFcecece),

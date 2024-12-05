@@ -340,10 +340,15 @@ interface APIService {
     suspend fun getRooms_contrac(@Path("building_id") buildingId: String): Response<RoomsResponse>
 
     //TÌM KIẾM HỌPƯ ĐỒNG
+//    @GET("staff/contracts/search")
+//    suspend fun searchContracts(
+//        @Query("userName") userName: String? = null,
+//        @Query("buildingRoom") buildingRoom: String? = null,
+//        @Query("manageId") manageId: String? = null // Thêm manageId
+//    ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
     @GET("staff/contracts/search")
     suspend fun searchContracts(
-        @Query("userName") userName: String? = null,
-        @Query("buildingRoom") buildingRoom: String? = null,
+        @Query("keyword") keyword: String? =null,
         @Query("manageId") manageId: String? = null // Thêm manageId
     ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
 

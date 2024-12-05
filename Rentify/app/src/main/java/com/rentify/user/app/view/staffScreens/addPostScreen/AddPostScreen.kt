@@ -288,8 +288,7 @@ fun AddPostScreens(navController: NavHostController) {
                     value = title,
                     onValueChange = { title = it },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
+                        .fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
@@ -346,8 +345,7 @@ fun AddPostScreens(navController: NavHostController) {
                     value = content,
                     onValueChange = { content = it },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
+                        .fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),

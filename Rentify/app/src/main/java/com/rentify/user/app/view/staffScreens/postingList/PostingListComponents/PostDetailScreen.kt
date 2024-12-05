@@ -81,18 +81,16 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
+ //   val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
 
     // Chạy khi màn hình được hiển thị lại hoặc khi postId thay đổi
-    LaunchedEffect(postId, isPostUpdated.value) {
-        Log.d("detail", "RequestBody check: ")
+    LaunchedEffect(postId) {
         viewModel.getPostDetail(postId)
-
-        isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
+       // isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
     }
 
     postDetail?.let { detail ->
-        Log.d("detail", "RequestBody check:${detail} ")
+        Log.d("detail", "RequestBody check màn detail:${detail} ")
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -388,7 +386,19 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             }
         }
     } ?: run {
-        Text("Đang tải chi tiết bài đăng...")
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White), // Màu nền nếu cần
+            contentAlignment = Alignment.Center // Căn giữa nội dung
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp), // Kích thước loading
+                color = Color(0xFF5DADFF), // Màu sắc hiệu ứng
+                strokeWidth = 4.dp // Độ dày của đường loading
+            )
+        }
+
     }
 }
 @Preview(showBackground = true)

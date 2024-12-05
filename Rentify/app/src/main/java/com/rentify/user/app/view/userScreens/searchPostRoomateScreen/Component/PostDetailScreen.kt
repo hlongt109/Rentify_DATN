@@ -85,7 +85,7 @@ import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PostDetailUserScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
-    val postDetail by viewModel.postDetail.observeAsState()
+    val postDetail = viewModel.postDetail.value
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
