@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.BillScreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,13 +41,15 @@ import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.userScreens.BillScreen.Component.CustomTabBar
 import com.rentify.user.app.view.userScreens.contract.components.ContractTopBar
+import com.rentify.user.app.viewModel.ContractViewModel
 import com.rentify.user.app.viewModel.InvoiceViewModel
 import com.rentify.user.app.viewModel.LoginViewModel
 
 @Composable
 fun BillScreen(
     navController: NavController,
-    invoiceViewModel: InvoiceViewModel = viewModel()
+    invoiceViewModel: InvoiceViewModel = viewModel(),
+    contractViewModel: ContractViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val apiService = RetrofitService()
@@ -56,7 +59,20 @@ fun BillScreen(
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
-    var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
+    ////////////////////////////////////////////////////////////////////////////////////////
+    val contractDetails by contractViewModel.contract.observeAsState()
+
+    LaunchedEffect(userId) {
+        contractViewModel.getContractDetails(userId)
+    }
+
+    val roomId = contractDetails?.let { detailsList ->
+        detailsList.firstOrNull()?.let { details ->
+            details.room_id._id
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////
+    var searchText by remember { mutableStateOf("") }
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     val tabs = listOf(
@@ -89,18 +105,26 @@ fun BillScreen(
 
                 // Truyền `status` vào các hàm
                 when (tabs[selectedTabIndex].second) {
-                    "unpaid" -> UnPaidScreen(
-                        navController = navController,
-                        userId = userId,
-                        invoiceViewModel = invoiceViewModel,
-                        status = "unpaid"
-                    )
-                    "paid" -> PaidScreen(
-                        userId = userId,
-                        invoiceViewModel = invoiceViewModel,
-                        status = "paid",
-                        navController
-                    )
+                    "unpaid" -> {
+                        if (roomId != null) {
+                            UnPaidScreen(
+                                navController = navController,
+                                roomId = roomId,
+                                invoiceViewModel = invoiceViewModel,
+                                status = "unpaid"
+                            )
+                        }
+                    }
+                    "paid" -> {
+                        if (roomId != null) {
+                            PaidScreen(
+                                roomId = roomId,
+                                invoiceViewModel = invoiceViewModel,
+                                status = "paid",
+                                navController
+                            )
+                        }
+                    }
                 }
             }
         }

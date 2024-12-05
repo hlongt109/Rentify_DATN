@@ -26,14 +26,14 @@ import java.util.Calendar
 
 @Composable
 fun PaidScreen(
-    userId: String,
+    roomId: String,
     invoiceViewModel: InvoiceViewModel,
     status: String,
     navController: NavController
 ){
     val listInvoices by invoiceViewModel.listInvoice.observeAsState(emptyList())
-    LaunchedEffect(userId, status) {
-        invoiceViewModel.fetchListInvoice(userId, status)
+    LaunchedEffect(roomId, status) {
+        invoiceViewModel.fetchListInvoice(roomId, status)
     }
 
     Box(

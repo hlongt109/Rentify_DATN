@@ -22,13 +22,13 @@ import com.rentify.user.app.viewModel.InvoiceViewModel
 @Composable
 fun UnPaidScreen(
     navController: NavController,
-    userId: String,
+    roomId: String,
     invoiceViewModel: InvoiceViewModel,
     status: String
 ) {
     val listInvoices by invoiceViewModel.listInvoice.observeAsState(emptyList())
-    LaunchedEffect(userId, status) {
-        invoiceViewModel.fetchListInvoice(userId, status)
+    LaunchedEffect(roomId, status) {
+        invoiceViewModel.fetchListInvoice(roomId, status)
     }
 
     Box(

@@ -369,9 +369,9 @@ interface APIService {
     suspend fun getContractDetail(@Path("user_id") userId: String): Response<List<ContractResponse>>
 
     // thiên thực hiển sử lí phần hoá đơn với user
-    @GET("get-invoices-by-status/{user_id}/{status}")
+    @GET("get-invoices-by-room-and-status/{room_id}/{status}")
     suspend fun getInvoicesByStatus(
-        @Path("user_id") userId: String,
+        @Path("room_id") userId: String,
         @Path("status") status: String
     ): Response<List<InvoiceResponse>>
 
