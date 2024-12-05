@@ -24,7 +24,7 @@ router.post('/add-booking', async (req, res) => {
       room_id,
       manager_id,
       check_in_date,
-      status: 0 // Đang xử lý
+      status: 1 // Đang xử lý
     });
 
     // Lưu booking vào cơ sở dữ liệu
