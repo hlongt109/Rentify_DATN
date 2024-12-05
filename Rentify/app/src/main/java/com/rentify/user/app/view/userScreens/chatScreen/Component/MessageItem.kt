@@ -55,6 +55,7 @@ fun MessageItem(message: Message, isSentByCurrentUser: Boolean) {
         }
         Box(
             modifier = Modifier
+                .fillMaxWidth(0.45f)
                 .background(
                     color = backgroundColor,
                     shape = RoundedCornerShape(12.dp)

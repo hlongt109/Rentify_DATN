@@ -113,7 +113,7 @@ fun ItemIncident(list: List<Support>, room: Room) {
                     )
 
                     Text(
-                        text = "Phòng: ${room.room_number}",
+                        text = "Phòng: ${room.room_name}",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 10.dp)

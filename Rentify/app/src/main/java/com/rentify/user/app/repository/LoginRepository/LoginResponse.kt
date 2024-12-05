@@ -4,10 +4,11 @@ import com.google.gson.annotations.SerializedName
 import java.lang.Error
 
 data class RegisterRequest(
-    val username: String,
+    val name: String,
     var email: String,
     var password: String,
-    val phoneNumber: String
+    val phoneNumber: String,
+    val username: String,
 )
 data class LoginResponse(
     val _id: String,
@@ -28,6 +29,6 @@ data class LoginResponse(
 data class ApiResponse(
     @SerializedName("status") val status: Int,
     @SerializedName("message") val message: String,
-    @SerializedName("data") val data: LoginResponse,
+    @SerializedName("data") val user: LoginResponse,
     @SerializedName("fileUrl") val fileUrl: String?
 )

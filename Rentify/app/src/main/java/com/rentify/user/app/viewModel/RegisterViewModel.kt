@@ -32,13 +32,16 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    fun register(username: String, email: String, password: String, repassword: String, phoneNumber: String) {
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    fun register(name: String, email: String, password: String, repassword: String, phoneNumber: String) {
         // Reset thông báo lỗi trước khi kiểm tra
         _errorMessage.value = null
 
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty() || repassword.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || repassword.isEmpty()) {
             when {
-                username.isEmpty() -> _errorName.postValue("Vui lòng nhập tên của bạn")
+                name.isEmpty() -> _errorName.postValue("Vui lòng nhập tên của bạn")
                 email.isEmpty() -> _errorEmail.postValue("Vui lòng nhập email")
                 phoneNumber.isEmpty() -> _errorPhone.postValue("Vui lòng nhập số điện thoại")
                 !CheckUnit.isValidEmail(email) -> _errorEmail.postValue("Email không hợp lệ")
@@ -49,8 +52,9 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
         }
 
         viewModelScope.launch {
+            _isLoading.postValue(true)
             try {
-                val response = userRepository.registerUser(username, email, password, phoneNumber)
+                val response = userRepository.registerUser(name, email, password, phoneNumber)
 
                 // Log toàn bộ response để debug
                 Log.d("RegisterDebug", "Response: $response")
@@ -59,12 +63,13 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        val result = responseBody.data
+                        val result = responseBody.user
                         if (result != null) {
                             Log.d("RegisterSuccess", "Username: ${result.name}, Role: ${result.role}")
                             _successMessage.postValue("Đăng ký thành công. Hãy xác nhận tài khoản email của bạn")
                         } else {
                             Log.e("RegisterError", "Response data is null")
+                            _isLoading.postValue(false)
                             _errorMessage.postValue("Không thể lấy thông tin người dùng")
                         }
                     } else {

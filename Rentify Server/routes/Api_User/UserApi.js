@@ -109,7 +109,8 @@ router.post("/register-user", async (req, res) => {
       email: data.email,
       password: hashPassword,
       name: data.name,
-      phoneNumber: data.phoneNumber
+      username: data.name,
+      phoneNumber: data.phoneNumber,
     });
 
     const result = await user.save();
@@ -117,7 +118,7 @@ router.post("/register-user", async (req, res) => {
     await verifiedEmail(user.email, url + user._id);
     res.status(200).send({
       message: "Register success",
-      user: result,
+      data: result,
     });
   } catch (error) {
     console.error("Registration failed:", error);

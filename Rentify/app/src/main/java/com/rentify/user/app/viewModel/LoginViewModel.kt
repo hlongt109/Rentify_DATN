@@ -166,7 +166,7 @@ class LoginViewModel(
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        val result = responseBody.data
+                        val result = responseBody.user
                         if (result != null) {
                             if (result.verified != true) {
                                 _errorMessage.postValue("Tài khoản chưa được xác minh. Vui lòng kiểm tra email.")
@@ -188,7 +188,7 @@ class LoginViewModel(
                             }
                         } else {
                             Log.e("LoginError", "Response data is null")
-                            _errorMessage.postValue("Không thể lấy thông tin người dùng")
+                            _errorMessage.postValue("Không thể lấy thông tin đăng nhập")
                         }
                     } else {
                         Log.e("LoginError", "Response body is null")

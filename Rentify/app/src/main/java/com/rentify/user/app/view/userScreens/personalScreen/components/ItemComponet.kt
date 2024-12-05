@@ -175,7 +175,7 @@ fun LayoutItems(navController: NavHostController) {
                             if (isContractValid) {
                                 // Nếu hợp đồng còn hiệu lực, điều hướng đến màn báo cáo sự cố
                                 navController.navigate("INCIDENTREPORT")
-                            } else {
+                            } else if(isContractValid == null){
                                 // Nếu không có hợp đồng hoặc hợp đồng đã hết hạn, hiển thị thông báo lỗi
                                 showContractErrorDialog.value = true
                             }

@@ -44,7 +44,7 @@ data class User(
 
 data class Room(
     val _id: String,
-    val room_number: String
+    val room_name: String
 )
 
 data class Building(

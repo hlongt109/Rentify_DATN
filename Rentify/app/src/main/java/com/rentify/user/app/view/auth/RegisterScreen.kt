@@ -92,6 +92,8 @@ fun RegisterScreen(navController: NavHostController) {
     val errorName by registerViewModel.errorName.observeAsState()
     //
     val successMessage by registerViewModel.successMessage.observeAsState()
+    val isLoading by registerViewModel.isLoading.observeAsState()
+
     LaunchedEffect(successMessage) {
         successMessage?.let {
             navController.navigate(ROUTER.LOGIN.name)

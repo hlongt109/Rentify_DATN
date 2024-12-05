@@ -132,8 +132,8 @@ fun TinnhanScreen(
         ) {
             messages.forEach { message ->
                 Log.d("Message", "TinnhanScreen: ${message.content}")
-                Log.d("MessageSenderId", "Message from: ${message.sender}, Content: ${message.content}")
-                MessageItem(message = message, isSentByCurrentUser = message.sender == senderId)
+                Log.d("MessageSenderId", "Message from: ${message.senderId}, Content: ${message.content}")
+                MessageItem(message = message, isSentByCurrentUser = message.senderId == senderId)
             }
         }
 

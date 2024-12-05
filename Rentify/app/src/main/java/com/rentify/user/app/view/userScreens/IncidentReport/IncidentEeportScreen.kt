@@ -105,7 +105,11 @@ fun IncidentReportScreen(navController: NavController) {
                     viewModel = supportViewModel
                 )
 
-                1 -> Completed(navController)
+                1 -> Completed(
+                    navController,
+                    userId,
+                    viewModel = supportViewModel
+                )
             }
         }
 
@@ -179,7 +183,7 @@ fun Requesting(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxSize()
-                    ){
+                    ) {
                         Image(
                             painter = painterResource(error_image),
                             contentDescription = null,
@@ -210,7 +214,7 @@ fun Requesting(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxSize()
-                ){
+                ) {
 
                     Image(
                         painter = painterResource(error_image),
@@ -232,8 +236,80 @@ fun Requesting(
 }
 
 @Composable
-fun Completed(navController: NavController) {
-    // Nội dung cho các bài đăng đang hoạt động
+fun Completed(
+    navController: NavController,
+    userId: String,
+    viewModel: SupportViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val process by viewModel.processed.collectAsState()
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (uiState) {
+            is SupportUiState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            is SupportUiState.Success -> {
+                if (process.isEmpty()) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Image(
+                            painter = painterResource(error_image),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(100.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
+                        Text(
+                            text = "Không có báo cáo cần hỗ trợ",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 80.dp)
+                    ) {
+                        items(process) { item ->
+                            ItemIncident(process, item.room_id)
+                        }
+                    }
+                }
+            }
+
+            is SupportUiState.Error -> {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+
+                    Image(
+                        painter = painterResource(error_image),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+
+                    Text(
+                        text = (uiState as SupportUiState.Error).message,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+
+        }
+    }
 }
 
 

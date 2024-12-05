@@ -6,6 +6,8 @@ import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.File
 
 class SupportRepository(private val apiService: APIService = RetrofitService().ApiService) {
@@ -17,7 +19,15 @@ class SupportRepository(private val apiService: APIService = RetrofitService().A
                     Result.success(it)
                 } ?: Result.failure(Exception("Response body is null"))
             } else {
-                Result.failure(Exception("Error: ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val message = errorBody?.let {
+                    try {
+                        JSONObject(it).getString("message") // Lấy giá trị trường "message"
+                    } catch (e: JSONException) {
+                        "Lỗi không xác định" // Trường hợp không parse được JSON
+                    }
+                } ?: "Lỗi không xác định"
+                Result.failure(Exception(message))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -33,7 +43,15 @@ class SupportRepository(private val apiService: APIService = RetrofitService().A
                     Result.success(it)
                 } ?: Result.failure(Exception("Response body is null"))
             } else {
-                Result.failure(Exception("Error: ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val message = errorBody?.let {
+                    try {
+                        JSONObject(it).getString("message") // Lấy giá trị trường "message"
+                    } catch (e: JSONException) {
+                        "Lỗi không xác định" // Trường hợp không parse được JSON
+                    }
+                } ?: "Lỗi không xác định"
+                Result.failure(Exception(message))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -48,7 +66,15 @@ class SupportRepository(private val apiService: APIService = RetrofitService().A
                     Result.success(it)
                 } ?: Result.failure(Exception("Response body is null"))
             } else {
-                Result.failure(Exception("Error: ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val message = errorBody?.let {
+                    try {
+                        JSONObject(it).getString("message") // Lấy giá trị trường "message"
+                    } catch (e: JSONException) {
+                        "Lỗi không xác định" // Trường hợp không parse được JSON
+                    }
+                } ?: "Lỗi không xác định"
+                Result.failure(Exception(message))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -94,7 +120,15 @@ class SupportRepository(private val apiService: APIService = RetrofitService().A
             if (response.isSuccessful) {
                 Result.success(response.body()!!)
             } else {
-                Result.failure(Exception("Error: ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val message = errorBody?.let {
+                    try {
+                        JSONObject(it).getString("message") // Lấy giá trị trường "message"
+                    } catch (e: JSONException) {
+                        "Lỗi không xác định" // Trường hợp không parse được JSON
+                    }
+                } ?: "Lỗi không xác định"
+                Result.failure(Exception(message))
             }
         } catch (e: Exception) {
             Result.failure(e)

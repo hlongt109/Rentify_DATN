@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 data class Message(
-    val sender: String = "",
+    val senderId: String = "",
     val receiverId: String = "",
     val content: String = "",
     val timestamp: Long = 0,
