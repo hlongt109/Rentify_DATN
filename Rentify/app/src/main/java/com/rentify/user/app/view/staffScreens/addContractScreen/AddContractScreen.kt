@@ -122,11 +122,16 @@ fun prepareMultipartBody(
         null
     }
 }
+fun isValidUserIdArray(userId: List<String>, requiredLength: Int): Boolean {
+    // Kiểm tra nếu tất cả các phần tử đều đạt độ dài yêu cầu
+    return userId.all { it.length == requiredLength }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddContractScreens(navController: NavHostController) {
     var selectedImages by remember { mutableStateOf(emptyList<Uri>()) }
-
+    var isLoading by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     var startDate by remember { mutableStateOf("") }
@@ -135,6 +140,7 @@ fun AddContractScreens(navController: NavHostController) {
     val viewModel: ContractViewModel = viewModel()
     val scrollState = rememberScrollState()
     var content by remember { mutableStateOf("") }
+    var userId by remember { mutableStateOf("") }
     var selectedBuilding by remember { mutableStateOf<String?>(null) }
     var selectedRoom by remember { mutableStateOf<String?>(null) }
 
@@ -145,7 +151,7 @@ fun AddContractScreens(navController: NavHostController) {
         LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
-    var userId = loginViewModel.getUserData().userId
+    var manage_Id = loginViewModel.getUserData().userId
 
     fun logRequestBody(requestBody: RequestBody) {
         val buffer = Buffer()
@@ -168,7 +174,7 @@ fun AddContractScreens(navController: NavHostController) {
         val userId = userId.toRequestBody("text/plain".toMediaTypeOrNull())
         val buildingId = selectedBuilding?.toRequestBody("text/plain".toMediaTypeOrNull())
             ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
-        val manageId = "673e064ef5b7bf786842bdbc".toRequestBody("text/plain".toMediaTypeOrNull())
+        val manageId = manage_Id.toRequestBody("text/plain".toMediaTypeOrNull())
         val roomId  = selectedRoom?.toRequestBody("text/plain".toMediaTypeOrNull())
         val content = content.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val status = "0".toRequestBody("multipart/form-data".toMediaTypeOrNull())
@@ -413,7 +419,7 @@ fun AddContractScreens(navController: NavHostController) {
                     BuildingLabel()
 
                     BuildingOptions(
-                        manageId = "674f1c2975eb705d0ff112b6",
+                        manageId = manage_Id,
                         selectedBuilding = selectedBuilding,
                         onBuildingSelected = { buildingId ->
                             selectedBuilding =buildingId // Cập nhật tòa nhà đã chọn
@@ -462,29 +468,38 @@ fun AddContractScreens(navController: NavHostController) {
 
                         if (selectedImages.isEmpty()) {
                             // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Ảnh không thể để trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
-
-
+                        if (selectedBuilding.isNullOrEmpty()) {
+                            Toast.makeText(context, "Vui lòng chọn tòa", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (selectedRoom.isNullOrEmpty()) {
+                            Toast.makeText(context, "Vui lòng chọn phòng", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
+                        isLoading = true
                         CoroutineScope(Dispatchers.Main).launch {
                             val apiService = RetrofitClient.apiService
                             val isSuccessful = withContext(Dispatchers.IO) {
+                                isLoading = false // Ẩn loading khi hoàn tất
                                 addContract(context, apiService, selectedImages)
+
                             }
 
                             if (isSuccessful) {
+                                Toast.makeText(context, "Tạo hợp đồng thành công!", Toast.LENGTH_SHORT).show()
                                 // Chuyển màn khi bài đăng được tạo thành công
                                 navController.navigate("CONTRACT_STAFF")
                             } else {
                                 // Hiển thị thông báo lỗi nếu tạo bài thất bại
-
-                                Toast.makeText(context, "Failed to create contract", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Tạo hợp đồng thất bại. Vui lòng thử lại.", Toast.LENGTH_SHORT).show()
                             }
                         }
 

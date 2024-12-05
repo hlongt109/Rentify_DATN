@@ -365,14 +365,7 @@ fun EditContractDialog(
                             if (isFieldEmpty(userId)) {
                             // Hiển thị thông báo lỗi nếu title trống
                             Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
-                            return@Button        }
-                        if (selectedPhotos.isEmpty()) {
-                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-
-
+                            return@Button }
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()

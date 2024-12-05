@@ -58,6 +58,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemPost
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemTypeRoom
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.LocationComponent
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.PostListRoomateScreen
 
 import kotlinx.coroutines.launch
 
@@ -294,14 +295,7 @@ fun PostRoomScreen(navController: NavController) {
                     Divider(color = colorInput, thickness = 1.dp)
                     Spacer(modifier = Modifier.padding(top = 10.dp))
 
-//                    LazyColumn(
-//                        modifier = Modifier.fillMaxSize(),
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//                        items(listPost) { item ->
-//                            ItemPost(item)
-//                        }
-//                    }
+                    PostListRoomateScreen( navController, postType = "rent" )
                 }
             }
         }

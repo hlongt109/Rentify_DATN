@@ -49,6 +49,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.SeachRoomateDetailScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
@@ -288,6 +289,12 @@ class MainActivity : ComponentActivity() {
                 val postId = backStackEntry.arguments?.getString("postId")
                 if (postId != null) {
                     PostDetailScreen(navController = navController, postId = postId)
+                }
+            }
+            composable("SearchRoomate_detail/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    SeachRoomateDetailScreen(navController = navController, postId = postId)
                 }
             }
             composable("post_user_detail/{postId}") { backStackEntry ->

@@ -3,6 +3,7 @@ package com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateC
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,7 +70,9 @@ fun PostListRoomateScreen(navController: NavController, postType: String) {
             items(posts) { post ->
                 // Sử dụng PostResponse để truyền vào ItemPost
                 Log.d("UI posts", posts.toString())
-                ItemPost(post = post)
+                ItemPost(post = post, onClick = {
+                    navController.navigate("SearchRoomate_detail/${post._id}")
+                },)
             }
         }
     }
@@ -77,7 +80,7 @@ fun PostListRoomateScreen(navController: NavController, postType: String) {
 
 
 @Composable
-fun ItemPost(post: PostResponse) {
+fun ItemPost(post: PostResponse  , onClick: () -> Unit,) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val maxWidth = screenWidth * 0.57f // Giới hạn 80% chiều rộng màn hình
     Box(
@@ -96,6 +99,7 @@ fun ItemPost(post: PostResponse) {
                     shape = RoundedCornerShape(10.dp),
                     spotColor = Color.Black
                 )
+                .clickable { onClick() }
                 .align(Alignment.Center),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(
@@ -161,7 +165,9 @@ fun ItemPost(post: PostResponse) {
                         text = "Khu vực : ${post.address}",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color(0xff9D9D9D)
+                        color = Color(0xff9D9D9D),
+                                maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

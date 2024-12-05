@@ -239,7 +239,7 @@ interface APIService {
 
     // API lấy danh sách các tòa nhà theo user_id
     @GET("staff/posts/buildings")
-    suspend fun getBuildings(@Query("user_id") userId: String): Response<BuildingsResponse>
+    suspend fun getBuildings(@Query("manager_id") userId: String): Response<BuildingsResponse>
 
     // API lấy danh sách phòng trong một tòa nhà theo building_id
     @GET("staff/posts/rooms")
