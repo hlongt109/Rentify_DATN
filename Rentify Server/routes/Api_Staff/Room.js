@@ -341,4 +341,26 @@ router.get('/building/:id/services', async (req, res) => {
   }
 });
 
+router.get('/RoomsForBuilding/:building_id', async (req, res) => {
+  try {
+      // Lấy building_id từ tham số URL
+      const { building_id } = req.params;
+
+      // Tìm tất cả phòng trong tòa nhà đó
+      const rooms = await Room.find({ building_id }).select('room_name room_type price status');
+
+      // Kiểm tra nếu không có phòng nào
+      if (!rooms || rooms.length === 0) {
+          // Nếu không có phòng, trả về danh sách rỗng
+          return res.json([]);
+      }
+
+      // Trả về kết quả là danh sách các phòng với các trường được chọn
+      return res.status(200).json(rooms);
+  } catch (error) {
+      // Nếu có lỗi xảy ra
+      return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 module.exports = router
