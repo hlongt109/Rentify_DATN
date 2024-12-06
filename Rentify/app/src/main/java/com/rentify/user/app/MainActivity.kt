@@ -20,6 +20,7 @@ import com.rentify.user.app.view.auth.components.PreForgotPass
 import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.navigator.BottomNavigation
 import com.rentify.user.app.view.navigator.ROUTER
 import com.rentify.user.app.view.staffScreens.ListRommScreen.ListRoomScreen
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
@@ -378,6 +379,10 @@ class MainActivity : ComponentActivity() {
                 ForgotPasswordScreen(navController, email)
             }
 
+            composable(ROUTER.BottomTest.name){
+                BottomNavigation(navController)
+            }
+
         }
     }
     
@@ -437,7 +442,8 @@ class MainActivity : ComponentActivity() {
         ADDCONTRAC_STAFF,
         ListSupportByRoom,
         QuanLiDichVuUser,
-        PREFORGOT
+        PREFORGOT,
+        BottomTest,
     }
 }
 

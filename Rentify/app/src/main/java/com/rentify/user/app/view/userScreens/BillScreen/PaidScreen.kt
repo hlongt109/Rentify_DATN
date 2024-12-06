@@ -80,7 +80,7 @@ fun PaidScreen(
                 }
             }
 
-            listInvoices.isEmpty() && isLoading -> {
+            listInvoices.isEmpty() -> {
                 // Hiển thị thông báo không có dữ liệu
                 Column(
                     modifier = Modifier
@@ -92,7 +92,7 @@ fun PaidScreen(
                     Image(
                         painter = painterResource(id = R.drawable.chinhsach),
                         contentDescription = "No Data",
-                        modifier = Modifier.size(250.dp)
+                        modifier = Modifier.size(100.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(

@@ -152,6 +152,7 @@ dependencies {
     implementation("io.coil-kt:coil-gif:2.4.0")
 
     //thuc hien zalopay
+    implementation ("com.github.0xRahad:RioBottomNavigation:1.0.2")
 
     // Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")

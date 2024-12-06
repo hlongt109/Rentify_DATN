@@ -182,6 +182,7 @@ fun LayoutRoomdetails2(
                             val bookingRequest = BookingRequest(
                                 user_id = userId,
                                 room_id = roomIds!!,
+                                building_id = buildingId!!,
                                 manager_id = when {
                                     true -> detail.building_id.manager_id._id
                                     true -> detail.building_id.landlord_id._id

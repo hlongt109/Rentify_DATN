@@ -163,9 +163,9 @@ fun LayoutRoomdetails(
         sheetContent = {
             roomDetail.value?.let { detail ->
                 val userId = userDetail.value?._id?:""
-                Log.d("Check_2", "LayoutRoomdetails: $userId")
                 val userName = userDetail.value?.name ?: ""
                 val phoneNumber = userDetail.value?.phoneNumber ?: ""
+
                 datLichXemPhong(
                     staffId = userId,
                     userName = userName,  // Thay thế bằng giá trị thích hợp
@@ -195,6 +195,7 @@ fun LayoutRoomdetails(
                             val bookingRequest = BookingRequest(
                                 user_id = userId,
                                 room_id = roomIds!!,
+                                building_id = buildingId!!,
                                 manager_id = when {
                                     true -> detail.building_id.manager_id._id
                                     true -> detail.building_id.landlord_id._id
