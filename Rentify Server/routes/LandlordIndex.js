@@ -22,7 +22,18 @@ router.get('/home', (req, res, next) => {
     });
   });
 });
-
+//
+router.get('/statistic_mrg', async (req, res) => {
+  res.render('Landlord_website/screens/Booking/BookingList', (err, html) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.render('Landlord_website/LandlordIndex', {
+      title: 'Quản lý dịch vụ',
+      body: html
+    });
+  });
+});
 /////
 router.get('/services_mgr', async (req, res) => {
   res.render('Landlord_website/screens/QuanLydichVu', (err, html) => {

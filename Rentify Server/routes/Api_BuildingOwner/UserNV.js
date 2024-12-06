@@ -132,5 +132,31 @@ router.delete("/delete_mgr/delete/:id", async (req, res) => {
         res.status(500).json({ message: "Đã có lỗi xảy ra", error });
     }
 });
+//lay ten nguoi dung de booking
+router.get("/booking/name", async (req, res) => {
+    const userId = req.query.userId; // Lấy userId từ query string
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'ID người dùng không hợp lệ.' });
+    }
+
+    try {
+        // Tìm người dùng theo userId
+        const user = await User.findById(userId); // Lấy trường 'name' từ User
+
+        if (!user) {
+            return res.status(404).json({ message: 'Người dùng không tìm thấy' });
+        }
+
+        res.json({
+            status: 200,
+            message: 'Lấy tên người dùng thành công',
+            data: user.name // Trả về tên người dùng
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu từ API:', error);
+        res.status(500).json({ message: 'Lỗi server' });
+    }
+});
 
 module.exports = router;
