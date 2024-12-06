@@ -2,6 +2,8 @@ package com.rentify.user.app.viewModel.UserViewmodel
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -36,34 +38,64 @@ data class chatUser(
 
 class ChatViewModel() : ViewModel() {
     private val database = FirebaseDatabase.getInstance()
-
+    private val _chatList = MutableLiveData<MutableList<String>>()
+    val chatList: LiveData<MutableList<String>> = _chatList
     //lay danh sach user
-    fun getListUser(onUsersLoaded: (List<chatUser>) -> Unit, loginViewModel: LoginViewModel) {
-        val userRef = database.getReference("users")
-        val currentUserId = loginViewModel.getUserData().userId
-        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val users = mutableListOf<chatUser>()
-                for (userSnapshot in snapshot.children) {
-                    val user = userSnapshot.getValue(chatUser::class.java)
-                    user?.let {
-                        Log.d("ChatViewModel", "Current User ID: $currentUserId")
-                        if (it.id != currentUserId) {
-                            users.add(it)
+
+    fun getChatList(userId: String) {
+        // Truy cập vào thư mục chats
+        database.getReference("chats")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val chatUsers = mutableSetOf<String>() // Dùng Set để tránh trùng lặp
+                    for (chatSnapshot in dataSnapshot.children) {
+                        // Mỗi chatId là key của một cuộc trò chuyện
+                        val chatId = chatSnapshot.key ?: continue
+
+                        // Kiểm tra xem senderId có phải là userId không
+                        // Kiểm tra tất cả các tin nhắn trong cuộc trò chuyện này
+                        val messagesSnapshot = chatSnapshot.child("messages")
+                        for (messageSnapshot in messagesSnapshot.children) {
+                            val senderId = messageSnapshot.child("senderId").getValue(String::class.java)
+
+                            if (senderId == userId) {
+                                // Nếu senderId là userId, tìm người nhận
+                                val participants = chatId.split("_") // Giả sử chatId có định dạng senderId_receiverId
+                                val otherUserId = participants.first { it != userId }
+                                chatUsers.add(otherUserId)
+                            }
                         }
                     }
-                }
-                onUsersLoaded(users)
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-        })
+                    // Log danh sách ID người mà người dùng đã nhắn tin
+                    Log.d("CheckList", "onDataChange: $chatUsers")
+
+                    // Xử lý danh sách chat users (ID của người đã nhắn tin)
+                    handleChatList(mutableListOf<String>().apply { addAll(chatUsers) })
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e("ChatViewModel", "Error getting chat list: ${databaseError.message}")
+                }
+            })
+    }
+
+
+    private fun handleChatList(chatList: MutableList<String>) {
+        // Ví dụ lưu danh sách chat IDs vào một biến LiveData
+        _chatList.value = chatList
+    }
+
+    fun addChatRelation(senderId: String, receiverId: String): String {
+        // Ví dụ logic tạo chatId
+        return if (senderId < receiverId) "$senderId" + "_" + "$receiverId" else "$receiverId" + "_" + "$senderId"
     }
 
     //gui tin nhan
-    fun sendMessage(chatId: String, senderId: String, messageContent: String) {
+    fun sendMessage(
+        chatId: String,
+        senderId: String,
+        messageContent: String) {
         val database = FirebaseDatabase.getInstance()
         val messageRef = database.getReference("chats/$chatId/messages")
 
@@ -84,38 +116,33 @@ class ChatViewModel() : ViewModel() {
                 Log.e("Chat", "Failed to send message", exception)
             }
     }
-
-    //tai tin nhan
     fun listenForMessages(chatId: String, onMessageReceived: (Message) -> Unit) {
-        val database = FirebaseDatabase.getInstance()
-        val messageRef = database.getReference("chats/$chatId/messages")
-        messageRef.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val message = snapshot.getValue(Message::class.java)
-                message?.let {
-                    GlobalScope.launch(Dispatchers.Main) {
-                        onMessageReceived(it)
-                    }
+        database.getReference("chats/$chatId/messages")
+            .addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    val message = snapshot.getValue(Message::class.java)
+                    message?.let { onMessageReceived(it) }
                 }
-            }
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
 
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
-            }
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    TODO("Not yet implemented")
+                }
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("Chat", "Failed to listen for messages", error.toException())
-            }
-        })
+                // Implement các callback khác nếu cần
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("ChatViewModel", "Error loading messages: ${error.message}")
+                }
+            })
     }
+
 
     class ChatViewModelFactory() :
         ViewModelProvider.Factory {

@@ -10,4 +10,7 @@ class LoginRepository(private val apiService: RetrofitService){
         return apiService.ApiService.LoginUser(loginRequest)
     }
 
+    suspend fun getInfoUser(userId: String): Response<ApiResponse>{
+        return apiService.ApiService.getInfoUser(userId)
+    }
 }

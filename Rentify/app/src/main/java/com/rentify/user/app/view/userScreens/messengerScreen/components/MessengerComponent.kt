@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -64,11 +66,24 @@ fun MessengerComponent(
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val currentUserId = loginViewModel.getUserData().userId
     Log.d("MessageComponent", "Current User ID: $currentUserId")
-    val users = remember { mutableStateOf<List<chatUser>>(emptyList()) }
+    val usersList = remember { mutableStateOf<List<chatUser>>(emptyList()) }
+    val chatList by viewModel.chatList.observeAsState(emptyList())
+//    LaunchedEffect(Unit) {
+//        viewModel.getListUser({ usersList ->
+//            users.value = usersList.filter { it.id != currentUserId }
+//        }, loginViewModel)
+//    }
     LaunchedEffect(Unit) {
-        viewModel.getListUser({ usersList ->
-            users.value = usersList.filter { it.id != currentUserId }
-        }, loginViewModel)
+        viewModel.getChatList(
+            userId = currentUserId,
+//            onUsersLoaded = { users ->
+//                // Xử lý danh sách users đã nhắn tin
+//                usersList.value = users.filter { it.id != currentUserId }
+//                Log.d("TinnhanScreen", "Users: ${usersList.value}")
+//            },
+//            loginViewModel = loginViewModel,
+//            database = FirebaseDatabase.getInstance()
+        )
     }
     Column {
         Box(
@@ -129,10 +144,10 @@ fun MessengerComponent(
         }
 
 //        van phuc
-//        LazyColumn {
-//            items(users.value){user ->
-//                UserItem(user, navController)
-//            }
-//        }
+        LazyColumn {
+            items(chatList){user ->
+                UserItem(user, navController)
+            }
+        }
     }
 }

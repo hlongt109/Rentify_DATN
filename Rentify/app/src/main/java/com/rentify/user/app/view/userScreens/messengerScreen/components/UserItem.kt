@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.messengerScreen.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,15 +27,36 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.rentify.user.app.R
+import com.rentify.user.app.utils.localUrl
+import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.RoomDetailViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.chatUser
 
 @Composable
 fun UserItem(
-    user: chatUser,
-    navController: NavHostController
+    userId: String,
+    navController: NavHostController,
+    viewModel: LoginViewModel = viewModel()
 ){
+    val userData = viewModel.userData.observeAsState()
+    Log.d("CheckData", "UserItem: $userData")
+    var staffId = ""
+    var name = ""
+    var avatar = ""
+    userData.value.let {
+        staffId = it?._id?:""
+        name = it?.name?:""
+        avatar = it?.profilePictureUrl?:""
+    }
+
+    LaunchedEffect(userId) {
+        viewModel.getInfoUser(userId)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,11 +76,18 @@ fun UserItem(
                     shape = RoundedCornerShape(12.dp)
                 )
                 .clickable {
-                    navController.navigate("TINNHAN/${user.id}/${user.name}")
+                    navController.navigate("TINNHAN/${staffId}/${name}")
                 }
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ad),
+                painter = rememberImagePainter(
+                    data = localUrl+avatar,
+                    builder = {
+                        crossfade(true)
+                        fallback(R.drawable.default_avatar)
+                        error(R.drawable.default_avatar)
+                    }
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(70.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
@@ -68,12 +99,14 @@ fun UserItem(
                     .padding(horizontal = 10.dp)
                     .weight(1f)
             ) {
-                Text(
-                    text = user.name,
-                    fontSize = 16.sp, // Font size giảm một chút
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold
-                )
+                userData.value?.name?.let {
+                    Text(
+                        text = it,
+                        fontSize = 16.sp, // Font size giảm một chút
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 //            Text(
 //                text = "Người cho thuê",

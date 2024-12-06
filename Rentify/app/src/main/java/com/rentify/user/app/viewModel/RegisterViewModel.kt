@@ -63,7 +63,7 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        val result = responseBody.user
+                        val result = responseBody.data
                         if (result != null) {
                             Log.d("RegisterSuccess", "Username: ${result.name}, Role: ${result.role}")
                             _successMessage.postValue("Đăng ký thành công. Hãy xác nhận tài khoản email của bạn")

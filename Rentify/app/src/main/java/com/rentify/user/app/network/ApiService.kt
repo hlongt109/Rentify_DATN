@@ -437,5 +437,7 @@ interface APIService {
     suspend fun confirmCode(@Body confirmCode: MailConfirmForgot): Response<ForgotResponse>
     @PUT("reset-password")
     suspend fun resetPassword(@Body resetPassword: ResetPassword): Response<ForgotResponse>
-
+    //lay thong tin nguoi dung
+    @GET("get-user-infor/{userId}")
+    suspend fun getInfoUser(@Path("userId") userId: String): Response<ApiResponse>
 }

@@ -141,7 +141,6 @@ class LoginViewModel(
         }
     }
 
-
     fun login(email: String, password: String) {
         // Reset thông báo lỗi trước khi kiểm tra
         _errorMessage.postValue("")
@@ -166,7 +165,7 @@ class LoginViewModel(
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        val result = responseBody.user
+                        val result = responseBody.data
                         if (result != null) {
                             if (result.verified != true) {
                                 _errorMessage.postValue("Tài khoản chưa được xác minh. Vui lòng kiểm tra email.")
@@ -176,7 +175,7 @@ class LoginViewModel(
                                 _userData.postValue(result)
                                 _isLoggedIn.postValue(true)
                                 saveUserData(result)
-                                saveUserDataToFirestore(result)
+//                                saveUserDataToFirestore(result)
                                 result.role?.let {role ->
                                     _successRole.postValue(role)
                                     _successMessage.postValue("Đăng nhập thành công")
@@ -310,6 +309,21 @@ class LoginViewModel(
         val profilePictureUrl: String,
     )
 
+    fun getInfoUser(userId: String){
+        viewModelScope.launch {
+            val response = userRepository.getInfoUser(userId)
+            if(response.isSuccessful){
+                val responseBody = response.body()
+                if(responseBody != null){
+                    val result = responseBody.data
+                    Log.d("CheckResult", "getInfoUser: ${responseBody.data}")
+                    if(result!= null){
+                        _userData.value = responseBody.data
+                    }
+                }
+            }
+        }
+    }
 
     class LoginViewModelFactory(
         private val userRepository: LoginRepository,
