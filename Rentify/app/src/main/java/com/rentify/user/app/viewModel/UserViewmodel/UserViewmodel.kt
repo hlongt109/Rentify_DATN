@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rentify.user.app.model.BankAccount
+import com.rentify.user.app.model.Model.Bank
 import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.network.RetrofitService
@@ -20,6 +22,8 @@ class UserViewModel : ViewModel() {
     val updateSuccess: LiveData<Boolean> = _updateSuccess
     private val _serviceFees = MutableLiveData<List<ServiceFeesItem>?>()
     val serviceFees: LiveData<List<ServiceFeesItem>?> = _serviceFees
+    private val _bankAccount = MutableLiveData<Bank?>()  // Cập nhật thành đối tượng Bank
+    val bankAccount: LiveData<Bank?> = _bankAccount
     // Hàm lấy thông tin người dùng theo _id (MongoDB _id)
     fun getUserDetailById(userId: String) {
         viewModelScope.launch {
@@ -64,7 +68,6 @@ class UserViewModel : ViewModel() {
             }
         }
     }
-    // viết tiếp
     fun getServiceFeesByUser(userId: String) {
         viewModelScope.launch {
             try {
@@ -77,6 +80,28 @@ class UserViewModel : ViewModel() {
                     Log.e("UserViewModel", "Error response: ${response.message()}")
                 }
             } catch (e: Exception) {
+                _error.postValue("Lỗi: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+    fun getBankAccountByUser(userId: String) {
+        viewModelScope.launch {
+            try {
+                // Gọi API để lấy thông tin tài khoản ngân hàng
+                val response = apiService.getBankAccount(userId)
+
+                if (response.isSuccessful && response.body() != null) {
+                    // Nếu thành công, cập nhật LiveData với đối tượng Bank
+                    _bankAccount.postValue(response.body())
+                    Log.d("UserViewModel", "Bank account: ${response.body()}")
+                } else {
+                    // Nếu API trả về lỗi, cập nhật LiveData lỗi
+                    _error.postValue("Không thể lấy thông tin tài khoản ngân hàng: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                // Nếu có lỗi xảy ra, cập nhật LiveData với thông báo lỗi
                 _error.postValue("Lỗi: ${e.message}")
                 Log.e("UserViewModel", "Exception: ${e.message}")
             }

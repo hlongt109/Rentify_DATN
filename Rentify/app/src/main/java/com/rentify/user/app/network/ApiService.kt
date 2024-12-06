@@ -7,6 +7,7 @@ import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
+import com.rentify.user.app.model.BankAccount
 import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
@@ -15,6 +16,7 @@ import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
 import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.ListServiceResponse
+import com.rentify.user.app.model.Model.Bank
 import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
@@ -512,4 +514,10 @@ interface APIService {
     suspend fun getServiceFeesByUser(
         @Path("userId") userId: String
     ): Response<List<ServiceFeesItem>>
+
+    @GET("staff/users/getBankAccount/{userId}")
+    suspend fun getBankAccount(
+        @Path("userId") userId: String
+    ): Response<Bank>
+
 }
