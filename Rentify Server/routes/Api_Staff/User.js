@@ -123,4 +123,41 @@ router.get('/serviceFeesUser/:userId', async (req, res) => {
   }
 });
 
+// API to fetch bank account details by userId _vanphuc
+router.get('/getBankAccount/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find the user by ID and select only the bankAccount field
+    const user = await User.findById(userId).select('bankAccount');
+
+    // If the user is not found
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng',
+      });
+    }
+
+    // Check if the bankAccount field exists
+    if (!user.bankAccount) {
+      return res.status(404).json({
+        success: false,
+        message: 'Người dùng này không có thông tin tài khoản ngân hàng',
+      });
+    }
+
+    // Directly return the bankAccount details
+    res.status(200).json(user.bankAccount);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Đã xảy ra lỗi khi lấy thông tin tài khoản ngân hàng',
+      error: error.message,
+    });
+  }
+});
+
+
 module.exports = router;
