@@ -25,6 +25,7 @@ import com.rentify.user.app.network.ApiStaff.RetrofitStaffService
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.InvoiceRepository
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.PaidStaffScreen
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.UnPaidStaffScreen
@@ -41,13 +42,7 @@ fun BillScreenStaff(navController: NavController) {
     val tabs = listOf("Chưa thanh toán", "Đã thanh toán")
 
     val context = LocalContext.current
-    val apiService = RetrofitService()
-    val userRepository = LoginRepository(apiService)
-    val factory = remember(context) {
-        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
-    }
-    val loginViewModel: LoginViewModel = viewModel(factory = factory)
-
+    val loginViewModel = getLoginViewModel(context)
     val invoiceService = RetrofitStaffService
     val invoiceRepository = InvoiceRepository(invoiceService.ApiService)
     val invoiceStaffViewModel: InvoiceStaffViewModel = viewModel(

@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.roomdetailScreen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -100,6 +101,13 @@ fun LayoutRoomdetails(
     val userId = loginViewModel.getUserData().userId
     var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
 
+    var staffId by remember { mutableStateOf("") }
+    var staffName by remember { mutableStateOf("") }
+    landlordDetail.value.let {
+         staffId = it?.landlord?._id?:""
+         staffName = it?.landlord?.name?:""
+    }
+
     val imageUrls = roomDetail.value?.photos_room?.map { photoPath ->
         "http://10.0.2.2:3000/$photoPath"
     } ?: emptyList()
@@ -154,9 +162,12 @@ fun LayoutRoomdetails(
         sheetState = bottomSheetState,
         sheetContent = {
             roomDetail.value?.let { detail ->
+                val userId = userDetail.value?._id?:""
+                Log.d("Check_2", "LayoutRoomdetails: $userId")
                 val userName = userDetail.value?.name ?: ""
                 val phoneNumber = userDetail.value?.phoneNumber ?: ""
                 datLichXemPhong(
+                    staffId = userId,
                     userName = userName,  // Thay thế bằng giá trị thích hợp
                     phoneNumber = phoneNumber,  // Thay thế bằng giá trị thích hợp
                     staffName = when {
@@ -263,6 +274,7 @@ fun LayoutRoomdetails(
                 Spacer(modifier = Modifier.padding(5.dp))
                 landlordDetail.value?.totalRooms?.let {
                     LayoutRoom(
+                        landlordId = landlordDetail.value?.landlord?._id ?: "",
                         landlordName = landlordDetail.value?.landlord?.name ?: "khong ac dinh",
                         totalRooms = it,
                         listEmptyRoom = emptyRoom.value ?: emptyList(),
@@ -286,7 +298,7 @@ fun LayoutRoomdetails(
                 Spacer(modifier = Modifier.padding(5.dp))
                 LayoutInterior(listAmenities = roomDetail.value?.service ?: emptyList())
                 Spacer(modifier = Modifier.padding(5.dp))
-                baidangPreview(navController)
+                baidangPreview(navController, staffId, staffName)
             }
         }
     }

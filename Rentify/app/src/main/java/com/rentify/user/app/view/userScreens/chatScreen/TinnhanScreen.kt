@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -35,6 +36,7 @@ import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.utils.CheckUnit
 import com.rentify.user.app.view.userScreens.chatScreen.Component.MessageItem
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.ChatViewModel
@@ -60,16 +62,16 @@ fun TinnhanScreen(
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val senderId = loginViewModel.getUserData().userId
-
+    Log.d("CheckThongTin", "TinnhanScreen: $receiverId, $name")
     // Tạo chatId duy nhất cho cuộc trò chuyện
-    val chatId = generateChatId(senderId, receiverId)
+    val chatId = chatViewModel.addChatRelation(senderId, receiverId)
     //
     DisposableEffect(chatId) {
         val messageListener: (Message) -> Unit = { message ->
             // Ensure thread-safe addition to the list
             messages.add(message)
         }
-        chatViewModel.listenForMessages(chatId, messageListener)
+        chatViewModel.listenForMessages(chatId.toString(), messageListener)
         onDispose {}
     }
     Column(
@@ -130,10 +132,47 @@ fun TinnhanScreen(
                 .padding(16.dp)
                 .verticalScroll(scrollState)
         ) {
-            messages.forEach { message ->
+            var lastMessageTime: Long? = null // Thời gian của tin nhắn trước đó
+            messages.forEachIndexed { index, message ->
+                val currentMessageTime = message.timestamp
                 Log.d("Message", "TinnhanScreen: ${message.content}")
-                Log.d("MessageSenderId", "Message from: ${message.sender}, Content: ${message.content}")
-                MessageItem(message = message, isSentByCurrentUser = message.sender == senderId)
+                Log.d(
+                    "MessageSenderId",
+                    "Message from: ${message.senderId}, Content: ${message.content}"
+                )
+
+                // Nếu thời gian giữa tin nhắn hiện tại và tin nhắn trước đó lớn hơn 1 tiếng
+                if (lastMessageTime != null && (currentMessageTime - lastMessageTime!!) > 24 * 60 * 60 * 1000) {
+                    // Hiển thị ngày nếu thời gian giữa các tin nhắn hơn 1 ngày
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Divider(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .fillMaxWidth(0.4f),
+                            color = Color.Gray,
+                            thickness = 1.dp,
+                        )
+                        Text(
+                            text = CheckUnit.formatTimeMessage(message.timestamp),
+                            color = Color.Gray,
+                            fontSize = 12.sp,
+//                        modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Divider(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .fillMaxWidth(0.4f),
+                            color = Color.Gray,
+                            thickness = 1.dp
+                        )
+                    }
+                }
+                MessageItem(message = message, isSentByCurrentUser = message.senderId == senderId)
+                lastMessageTime = currentMessageTime
             }
         }
 
@@ -187,7 +226,7 @@ fun TinnhanScreen(
                                     .clickable {
                                         if (sentText.text.isNotEmpty()) {
                                             chatViewModel.sendMessage(
-                                                chatId = chatId,
+                                                chatId = chatId.toString(),
                                                 senderId = senderId,
                                                 messageContent = sentText.text
                                             )

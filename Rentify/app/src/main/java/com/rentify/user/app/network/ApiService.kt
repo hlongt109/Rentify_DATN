@@ -30,15 +30,24 @@ import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.ServiceOfBuilding
 import com.rentify.user.app.model.SupportModel.SupportResponse
+
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.model.SupportModel.CreateReportResponse
 import com.rentify.user.app.model.UserResponse
+import com.rentify.user.app.repository.ForgotRepository.ForgotRequest
+import com.rentify.user.app.repository.ForgotRepository.ForgotResponse
+import com.rentify.user.app.repository.ForgotRepository.MailConfirmForgot
+import com.rentify.user.app.repository.ForgotRepository.ResetPassword
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
+import com.rentify.user.app.repository.SupportRepository.APISupportResponse
+import com.rentify.user.app.repository.SupportRepository.AddSupport
+import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
+import com.rentify.user.app.repository.SupportRepository.CreateSupportResponse
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -432,5 +441,38 @@ interface APIService {
         @Part images: List<MultipartBody.Part>
     ): Response<CreateReportResponse>
 
+    //bao cao su co
+    @GET("getSupportsByUserId/{userId}")
+    suspend fun getSupportsByUserId(@Path("userId") userId: String): Response<APISupportResponse>
+    //them
+    @Multipart
+    @POST("create-report")
+    suspend fun createSupportReport(
+        @Part("user_id") userId: RequestBody,
+        @Part("room_id") roomId: RequestBody,
+        @Part("building_id") buildingId: RequestBody,
+        @Part("title_support") titleSupport: RequestBody,
+        @Part("content_support") contentSupport: RequestBody,
+        @Part("status") status: RequestBody,
+        @Part images: List<MultipartBody.Part>
+    ): Response<AddSupport>
+    //lay thong tin phong trong hop dong theo userId
+    @GET("get-room-by-contract/{userId}")
+    suspend fun getRoomByContract(@Path("userId") userId: String): Response<ContractRoomResponse>
+    //check co hợp đồng hay không
+    @GET("check-contract/{userId}")
+    suspend fun checkContract(@Path("userId") userId: String): Response<com.rentify.user.app.repository.SupportRepository.ContractResponse>
 
+    //quen mat khau
+    //gui mail xac nhan
+    @POST("forgot-password")
+    suspend fun postMailForgot(@Body forgotRequest: ForgotRequest): Response<ForgotResponse>
+    //xac nhan ma
+    @POST("confirm-code")
+    suspend fun confirmCode(@Body confirmCode: MailConfirmForgot): Response<ForgotResponse>
+    @PUT("reset-password")
+    suspend fun resetPassword(@Body resetPassword: ResetPassword): Response<ForgotResponse>
+    //lay thong tin nguoi dung
+    @GET("get-user-infor/{userId}")
+    suspend fun getInfoUser(@Path("userId") userId: String): Response<ApiResponse>
 }

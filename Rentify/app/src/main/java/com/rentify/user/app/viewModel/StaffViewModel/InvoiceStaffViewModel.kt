@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.math.log
 
 
 sealed class InvoiceUiState {
@@ -133,6 +134,7 @@ class InvoiceStaffViewModel(
                     }
                 },
                 onFailure = { exception ->
+                    Log.d("Ex", "getInvoiceList: ${exception.message}")
                     _uiState.value = InvoiceUiState.Error(exception.message ?: "Lỗi không xác định")
                    _errorMessage.postValue(exception.message ?: "Lỗi không xác định")
                 }

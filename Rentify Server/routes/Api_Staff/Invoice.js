@@ -22,7 +22,7 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
     );
 
     if (buildings.length === 0) {
-      return res.status(400).json({
+      return res.status(401).json({
         status: 400,
         message: "Không tìm thấy tòa nhà nào được quản lý",
       });
@@ -37,7 +37,7 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
 
     if (rooms.length === 0) {
       return res
-        .status(400)
+        .status(402)
         .json({ message: "Không tìm thấy phòng nào trong tòa nhà" });
     }
 

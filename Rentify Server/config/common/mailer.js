@@ -31,5 +31,27 @@ const verifiedEmail = async (email, link) => {
     console.log("email send failed", error);
   }
 };
+
+const forgotEmail = async (email, randomNumber) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "nguyenduyphong12122004@gmail.com",
+        pass: "eqak iayr ubby rrgf",
+      },
+    });
+    //sendEmail
+    await transporter.sendMail({
+      to: email,
+      subject: 'Yêu cầu đặt lại mật khẩu',
+      html: `<p>Mã xác nhận của bạn là: <strong>${randomNumber}</strong></p>
+                 <p>Vui lòng nhập mã xác nhận để tiếp tục đặt lại mật khẩu.</p>`
+    });
+    console.log("email send successfuly");
+  } catch (error) {
+    console.log("email send failed", error);
+  }
+}
 // module.exports = transporter;
-module.exports = { transporter, verifiedEmail };
+module.exports = { transporter, verifiedEmail, forgotEmail };

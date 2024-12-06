@@ -1,8 +1,16 @@
 package com.rentify.user.app.utils
 
+import android.content.Context
+import android.net.Uri
+import android.os.Environment
+import android.provider.DocumentsContract
+import android.provider.MediaStore
+import android.provider.OpenableColumns
+import android.util.Log
 import androidx.compose.ui.platform.LocalConfiguration
 import com.google.gson.Gson
 import com.rentify.user.app.model.Service
+import java.io.File
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.text.DecimalFormat
@@ -14,7 +22,51 @@ import java.util.Locale
 import java.util.TimeZone
 
 object CheckUnit {
-     fun isValidEmail(email: String): Boolean {
+
+    fun Uri.toFilePath(context: Context): String? {
+        return try {
+            val cursor = context.contentResolver.query(this, null, null, null, null)
+            cursor?.use {
+                val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (it.moveToFirst() && index != -1) {
+                    val fileName = it.getString(index)
+                    val tempFile = File(context.cacheDir, fileName)
+                    context.contentResolver.openInputStream(this)?.use { inputStream ->
+                        tempFile.outputStream().use { outputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
+                    }
+                    return tempFile.absolutePath
+                }
+            }
+            null
+        } catch (e: Exception) {
+            Log.e("UriToFilePath", "Error converting URI to file path", e)
+            null
+        }
+    }
+
+
+    fun getPathFromDocumentUri(context: Context, uri: Uri): String? {
+        if (DocumentsContract.isDocumentUri(context, uri)) {
+            val docId = DocumentsContract.getDocumentId(uri)
+            val split = docId.split(":")
+            val type = split[0]
+            val relativePath = split.getOrNull(1) ?: return null
+
+            val externalStorageVolumes = context.getExternalFilesDirs(null)
+            val primaryVolume = externalStorageVolumes.firstOrNull()?.absolutePath ?: return null
+
+            return if (type.equals("primary", ignoreCase = true)) {
+                "$primaryVolume/$relativePath"
+            } else null
+        }
+        return null
+    }
+
+
+
+    fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
         return email.matches(emailRegex.toRegex())
     }

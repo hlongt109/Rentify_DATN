@@ -1,6 +1,20 @@
 package com.rentify.user.app.view.userScreens.addIncidentReportScreen
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,7 +35,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
@@ -48,28 +65,53 @@ import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.SupportRepository.ContractRoom
+import com.rentify.user.app.repository.SupportRepository.ContractRoomData
+import com.rentify.user.app.repository.SupportRepository.SupportRepository
+import com.rentify.user.app.ui.theme.building_icon
+import com.rentify.user.app.utils.CheckUnit.toFilePath
+import com.rentify.user.app.utils.Component.getLoginViewModel
+import com.rentify.user.app.utils.ShowReport
+import com.rentify.user.app.view.userScreens.IncidentReport.Components.ContentExpand
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.Components.HeaderComponent
+import com.rentify.user.app.viewModel.UserViewmodel.RoomSupportUiState
+import com.rentify.user.app.viewModel.UserViewmodel.SupportViewModel
 
 
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,8 +124,56 @@ fun AddIncidentReportScreen(navController: NavHostController) {
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-
     var incident by remember { mutableStateOf("") }
+
+    val supportService = RetrofitService()
+    val supportRepository = SupportRepository(supportService.ApiService)
+    val supportViewModel: SupportViewModel = viewModel(
+        factory = SupportViewModel.SupportViewModelFactory(supportRepository)
+    )
+    val context = LocalContext.current
+    val loginViewModel = getLoginViewModel(context)
+    val userId = loginViewModel.getUserData().userId
+
+    val roomUiState by supportViewModel.roomUiState.collectAsState()
+    val listRoom by supportViewModel.listRoom.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+    var roomNumber by remember { mutableStateOf("Chọn phòng") }
+    var roomId by remember { mutableStateOf("") }
+    var buildingId by remember { mutableStateOf("") }
+    var selectedImages by rememberSaveable { mutableStateOf(listOf<Uri>()) }
+    val launcherImage = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenMultipleDocuments(),
+        onResult = { uris ->
+            uris?.let {
+                val remainingSpace = 10 - selectedImages.size
+                if (remainingSpace > 0) {
+                    selectedImages = selectedImages + uris
+                    Log.d("ImageUploadSelect", "Selected image URI: $uris")
+                }
+                if (it.size > remainingSpace) {
+                    Toast.makeText(context, "Giới hạn tối đa 10 ảnh.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    )
+
+    selectedImages.forEach { uri ->
+        val path = uri.toFilePath(context)
+        Log.d("ImagePathCheck", "URI: $uri -> Path: $path")
+    }
+    val imagePaths = selectedImages.mapNotNull { uri -> uri.toFilePath(context) }
+    Log.d("CheckImage", "AddIncidentReportScreen: $imagePaths")
+
+//    var selectedRoom by remember { mutableStateOf<ContractRoomData?>(null) }
+//    Log.d("AddIncidentReportScreen", "Selected Room: ${selectedRoom?.room?.room_number}")
+    val errorRoom by supportViewModel.errorRoom.observeAsState()
+    val errorTitle by supportViewModel.errorTitle.observeAsState()
+    val errorContent by supportViewModel.errorContent.observeAsState()
+
+    LaunchedEffect(userId) {
+        supportViewModel.getInfoRoom(userId)
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -91,8 +181,6 @@ fun AddIncidentReportScreen(navController: NavHostController) {
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -106,61 +194,104 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                     .padding(15.dp)
             ) {
 // chọn phòg
-                Row(
-                    modifier = Modifier
-                        .height(80.dp)
-                        .fillMaxWidth()
-                        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                        .background(color = Color(0xFFffffff))
-                        .border(
-                            width = 0.dp,
-                            color = Color(0xFFEEEEEE),
-                            shape = RoundedCornerShape(10.dp)
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        expanded = !expanded
+                    }
+                    .border(
+                        width = 0.dp,
+                        color = Color(0xFFEEEEEE),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                    .animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessHigh
                         )
-                        .padding(15.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Row {
-                            Text(
-                                text = "Chọn phòng",
-                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                                color = Color(0xff7f7f7f),
-                                // fontWeight = FontWeight(700),
-                                fontSize = 16.sp,
+                    )) {
+                    Row(
+                        modifier = Modifier
+                            .height(80.dp)
+                            .fillMaxWidth()
+                            .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                            .background(color = Color(0xFFffffff))
+                            .border(
+                                width = 0.dp,
+                                color = Color(0xFFEEEEEE),
+                                shape = RoundedCornerShape(10.dp)
                             )
+                            .padding(15.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(
+                        ) {
+                            Row {
+                                Text(
+                                    text = "Chọn phòng",
+                                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                    color = Color(0xff7f7f7f),
+                                    // fontWeight = FontWeight(700),
+                                    fontSize = 16.sp,
+                                )
+                                Text(
+
+                                    text = " *",
+                                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                    color = Color(0xffff1a1a),
+                                    // fontWeight = FontWeight(700),
+                                    fontSize = 16.sp,
+
+                                    )
+                            }
+
+                            Spacer(modifier = Modifier.height(7.dp))
                             Text(
 
-                                text = " *",
-                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                                color = Color(0xffff1a1a),
-                                // fontWeight = FontWeight(700),
-                                fontSize = 16.sp,
-
-                                )
+                                text = "$roomNumber",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                            )
+                        }
+                        Column {
+                            Image(
+                                painter = painterResource(id = R.drawable.next),
+                                contentDescription = null,
+                                modifier = Modifier.size(17.dp, 17.dp)
+                            )
                         }
 
-                        Spacer(modifier = Modifier.height(7.dp))
-                        Text(
-
-                            text = "Chọn phòng",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color.Black,
-                            // fontWeight = FontWeight(700),
-                            fontSize = 14.sp,
-
-                            )
                     }
-                    Column {
-                        Image(
-                            painter = painterResource(id = R.drawable.next),
-                            contentDescription = null,
-                            modifier = Modifier.size(17.dp, 17.dp)
-                        )
-
-
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = Color.White)
+                                .padding(10.dp)
+                        ) {
+                            listRoom.forEach { item ->
+                                ItemRoomExpand(
+                                    room = item.room,
+                                    onRoomSelected = {
+                                        buildingId = item.room.building.building_id
+                                        roomId = item.room.room_id
+                                        roomNumber = item.room.room_number
+                                        expanded = false
+                                        supportViewModel.clearErrorRoom()
+                                    }
+                                )
+                            }
+                        }
                     }
+                }
+                errorRoom?.let {
+                    ShowReport.ShowError(message = it)
                 }
 ///2
                 Spacer(modifier = Modifier.height(20.dp))
@@ -206,8 +337,11 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 )
                         }
                         TextField(
-                            value = incidentdescription,
-                            onValueChange = { incidentdescription = it },
+                            value = incident,
+                            onValueChange = {
+                                incident = it
+                                supportViewModel.clearErrorTitle()
+                            },
                             modifier = Modifier
                                 .fillMaxWidth(),
                             colors = TextFieldDefaults.colors(
@@ -232,7 +366,9 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 fontFamily = FontFamily(Font(R.font.cairo_regular))
                             )
                         )
-
+                    }
+                    errorTitle?.let {
+                        ShowReport.ShowError(message = it)
                     }
                     // mô tả sự cố
                     Column(
@@ -261,8 +397,11 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 )
                         }
                         TextField(
-                            value = incident,
-                            onValueChange = { incident = it },
+                            value = incidentdescription,
+                            onValueChange = {
+                                incidentdescription = it
+                                supportViewModel.clearErrorContent()
+                            },
                             modifier = Modifier
                                 .fillMaxWidth(),
 
@@ -289,241 +428,228 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                             )
                         )
                     }
+                    errorContent?.let {
+                        ShowReport.ShowError(message = it)
+                    }
 //ảnh
-                    Row(
-                        modifier = Modifier.padding(5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
+                    Spacer(modifier = Modifier.padding(top = 10.dp))
+                    Text(
+                        text = "Ảnh sự cố",
+                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color.Black,
+                        // fontWeight = FontWeight(700),
+                        fontSize = 14.sp,
+                    )
+                    Spacer(modifier = Modifier.padding(top = 10.dp))
+                    Row {
                         Row(
                             modifier = Modifier
-                                //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                                .background(color = Color(0xFFffffff))
-
-                                .drawBehind {
-                                    val borderWidth = 2.dp.toPx()  // Độ rộng của viền
-                                    val dashWidth = 2.dp.toPx()   // Độ dài của nét đứt
-                                    val gapWidth = 1.dp.toPx()     // Khoảng cách giữa các nét đứt
-                                    val radius = 10.dp.toPx()      // Độ cong của góc
-
-                                    // Vẽ viền nét đứt xung quanh
-                                    drawRoundRect(
-                                        color = Color(0xFF7ccaef),
-                                        size = size.copy(
-                                            width = size.width - borderWidth,
-                                            height = size.height - borderWidth
-                                        ),
-                                        style = Stroke(
-                                            width = borderWidth,
-                                            pathEffect = PathEffect.dashPathEffect(
-                                                floatArrayOf(
-                                                    dashWidth,
-                                                    gapWidth
-                                                )
-                                            )
-                                        ),
-                                        cornerRadius = CornerRadius(radius, radius)
-                                    )
-                                },
-
+                                .padding(5.dp)
+                                .clickable { launcherImage.launch(arrayOf("image/*")) },
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(
-                                modifier = Modifier.padding(25.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.image1),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(30.dp, 30.dp)
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(15.dp))
-                        Column {
-                            Text(
-                                text = "Ảnh Phòng trọ",
-                                //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                                color = Color.Black,
-                                // fontWeight = FontWeight(700),
-                                fontSize = 14.sp,
-                            )
-                        }
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                                    .background(color = Color(0xFFffffff))
 
+                                    .drawBehind {
+                                        val borderWidth = 2.dp.toPx()  // Độ rộng của viền
+                                        val dashWidth = 2.dp.toPx()   // Độ dài của nét đứt
+                                        val gapWidth =
+                                            1.dp.toPx()     // Khoảng cách giữa các nét đứt
+                                        val radius = 10.dp.toPx()      // Độ cong của góc
 
-                    }
-                    Spacer(modifier = Modifier.height(17.dp))
-//video
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            //  .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                            .background(color = Color(0xFFffffff))
-                            .border(
-                                width = 0.dp,
-                                color = Color(0xFFEEEEEE),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .drawBehind {
-                                val borderWidth = 2.dp.toPx()  // Độ rộng của viền
-                                val dashWidth = 2.dp.toPx()   // Độ dài của nét đứt
-                                val gapWidth = 1.dp.toPx()     // Khoảng cách giữa các nét đứt
-                                val radius = 10.dp.toPx()      // Độ cong của góc
-
-                                // Vẽ viền nét đứt xung quanh
-                                drawRoundRect(
-                                    color = Color(0xFF7ccaef),
-                                    size = size.copy(
-                                        width = size.width - borderWidth,
-                                        height = size.height - borderWidth
-                                    ),
-                                    style = Stroke(
-                                        width = borderWidth,
-                                        pathEffect = PathEffect.dashPathEffect(
-                                            floatArrayOf(
-                                                dashWidth,
-                                                gapWidth
-                                            )
+                                        // Vẽ viền nét đứt xung quanh
+                                        drawRoundRect(
+                                            color = Color(0xFF7ccaef),
+                                            size = size.copy(
+                                                width = size.width - borderWidth,
+                                                height = size.height - borderWidth
+                                            ),
+                                            style = Stroke(
+                                                width = borderWidth,
+                                                pathEffect = PathEffect.dashPathEffect(
+                                                    floatArrayOf(
+                                                        dashWidth,
+                                                        gapWidth
+                                                    )
+                                                )
+                                            ),
+                                            cornerRadius = CornerRadius(radius, radius)
                                         )
-                                    ),
-                                    cornerRadius = CornerRadius(radius, radius)
-                                )
-                            }
-                            .padding(25.dp),
+                                    },
 
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.video2),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
-                        Spacer(modifier = Modifier.height(7.dp))
-                        Text(
-
-                            text = "Video",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color.Black,
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-
-                            )
-                    }
-                    //checkbox
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Column {
-                        Text(
-                            text = "Mức độ nghiêm trọng",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color.Black,
-                            // fontWeight = FontWeight(700),
-                            fontSize = 14.sp,
-                        )
-                        Row {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
                             ) {
-                                Checkbox(
-                                    checked = isCheckedHigh,
-                                    onCheckedChange = { isCheckedHigh = it }
-                                )
-                                Text(
-                                    text = "Cao",
-                                    modifier = Modifier
-                                        .background(
-                                            color = Color(0xffff0000),
-                                            shape = RoundedCornerShape(5.dp)
-                                        ) // bo tròn nền
-                                        .padding(5.dp),
-                                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                                    color = Color.White,
-                                    // fontWeight = FontWeight(700),
-                                    fontSize = 14.sp,
-                                )
-                            }
 
-                            // Checkbox "Trung bình"
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Checkbox(
-                                    checked = isCheckedMedium,
-                                    onCheckedChange = { isCheckedMedium = it }
-                                )
-                                Text(
-                                    text = "Trung bình",
-                                    modifier = Modifier
-                                        .background(
-                                            color = Color(0xffe40505),
-                                            shape = RoundedCornerShape(5.dp)
-                                        ) // bo tròn nền
-                                        .padding(5.dp),
-                                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                                    color = Color.White,
-                                    // fontWeight = FontWeight(700),
-                                    fontSize = 14.sp,
-                                )
+                                Row(
+                                    modifier = Modifier.padding(25.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.image1),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(30.dp, 30.dp)
+                                    )
+                                }
                             }
-
-                            // Checkbox "Thấp"
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
+                            Spacer(modifier = Modifier.width(15.dp))
+                            LazyRow(
+                                modifier = Modifier.padding(10.dp),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Checkbox(
-                                    checked = isCheckedLow,
-                                    onCheckedChange = { isCheckedLow = it }
-                                )
-                                Text(
-                                    text = "Thấp",
-                                    modifier = Modifier
-                                        .background(
-                                            color = Color(0xfff1d22d),
-                                            shape = RoundedCornerShape(5.dp)
-                                        ) // bo tròn nền
-                                        .padding(5.dp),
-                                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                                    color = Color.White,
-                                    // fontWeight = FontWeight(700),
-                                    fontSize = 14.sp,
-                                )
+//
+                                items(selectedImages) { uri ->
+                                    Box(
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                    ) {
+                                        AsyncImage(
+                                            model = uri,
+                                            contentDescription = "Selected Image",
+                                            modifier = Modifier
+                                                .size(100.dp)
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .border(
+                                                    2.dp,
+                                                    Color.Gray,
+                                                    RoundedCornerShape(8.dp)
+                                                ),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .size(20.dp)
+                                                .align(Alignment.TopEnd)
+                                                .background(
+                                                    Color.Red,
+                                                    shape = RoundedCornerShape(30.dp)
+                                                )
+                                        ) {
+                                            IconButton(
+                                                modifier = Modifier.fillMaxSize(),
+                                                onClick = {
+                                                    selectedImages =
+                                                        selectedImages.filter { it != uri }
+                                                },
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Close,
+                                                    contentDescription = "Remove Image",
+                                                    modifier = Modifier.size(16.dp),
+                                                    tint = Color.White
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
+                    }
 
+                    Spacer(modifier = Modifier.height(17.dp))
+                    Button(
+                        onClick = {/**/
+                            supportViewModel.createSupportReport(
+                                userId,
+                                roomId,
+                                buildingId,
+                                titleSupport = incident,
+                                contentSupport = incidentdescription,
+                                imagePaths = imagePaths,
+                                status = 1,
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        //  , RoundedCornerShape(25.dp)), // Bo tròn 12.dp
+
+                        shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xfffb6b53)
+                        )
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 10.dp),
+                            text = "Báo cáo sự cố",
+                            fontSize = 16.sp,
+                            // fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xffffffff)
+                        )
                     }
                 }
-                Spacer(modifier = Modifier.height(25.dp))
-
             }
 
         }
-        Box(
-            modifier = Modifier.background(Color(0xfff7f7f7))
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp)
-                .height(screenHeight.dp/8f)
+    }
 
-        ) {
-            Button(
-                onClick = {/**/
-                },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                //  , RoundedCornerShape(25.dp)), // Bo tròn 12.dp
+//    val rooms = (roomUiState as RoomSupportUiState.Success).data
 
-                shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xfffb6b53)
-                )
-            ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 10.dp),
-                    text = "Báo cáo sự cố",
-                    fontSize = 16.sp,
-                    // fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color(0xffffffff)
-                )
+}
+
+
+@Composable
+fun ItemRoomExpand(
+    room: ContractRoom,
+    onRoomSelected: (ContractRoom) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onRoomSelected(room)
             }
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(building_icon),
+            contentDescription = null,
+            modifier = Modifier.size(30.dp, 30.dp)
+        )
+
+        Text(
+            text = room.room_number,
+            modifier = Modifier.padding(start = 10.dp),
+            fontSize = 15.sp
+        )
+    }
+}
+
+fun getImagePathFromUri(context: Context, uri: Uri): String? {
+    return try {
+        // Sử dụng DocumentFile để làm việc với URI
+        val documentFile = DocumentFile.fromSingleUri(context, uri)
+        documentFile?.let { file ->
+            // Tạo file tạm
+            val tempFile = File(context.cacheDir, "temp_${file.name}")
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            tempFile.absolutePath
         }
+    } catch (e: Exception) {
+        Log.e("UriConversion", "Error converting URI to file path", e)
+        null
+    }
+}
+
+fun isValidImageUri(context: Context, uri: Uri): Boolean {
+    return try {
+        // Kiểm tra quyền truy cập persistent
+        val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        context.contentResolver.takePersistableUriPermission(uri, takeFlags)
+
+        // Kiểm tra loại MIME
+        val mimeType = context.contentResolver.getType(uri)
+        mimeType?.startsWith("image/") == true
+    } catch (e: Exception) {
+        Log.e("ImageSelection", "Error validating URI", e)
+        false
     }
 }
 

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
+import com.rentify.user.app.utils.Component.getLoginViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -31,7 +33,9 @@ fun ItemNameComponent() {
 
 @Composable
 fun LayoutItemName(navController: NavHostController) {
-
+    val context = LocalContext.current
+    val loginViewModel = getLoginViewModel(context)
+    val userData = loginViewModel.getUserData()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,7 +63,7 @@ fun LayoutItemName(navController: NavHostController) {
                 .weight(1f)
         ) {
             Text(
-                text = "Vũ Văn Phúc",
+                text = userData.name,
                 fontSize = 14.sp,
                 color = Color(0xff2d293a),
                 modifier = Modifier
@@ -68,7 +72,7 @@ fun LayoutItemName(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.padding(3.dp))
             Text(
-                text = "0981139895",
+                text = userData.phoneNumber ?: "",
                 fontSize = 12.sp,
                 color = Color(0xff2d293a),
                 modifier = Modifier

@@ -13,6 +13,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +39,12 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
-import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.repository.SupportRepository.SupportRepository
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.UserViewmodel.CheckContractUiState
+import com.rentify.user.app.viewModel.UserViewmodel.RoomSupportUiState
+import com.rentify.user.app.viewModel.UserViewmodel.SupportViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -48,12 +54,37 @@ fun ItemSComponent() {
 
 @Composable
 fun LayoutItems(navController: NavHostController) {
-    val context = LocalContext.current
-    val apiService = RetrofitService()
-    val userRepository = LoginRepository(apiService)
-    val loginViewModel: LoginViewModel = viewModel(
-        factory = LoginViewModel.LoginViewModelFactory(userRepository, context)
+    val supportService = RetrofitService()
+    val supportRepository = SupportRepository(supportService.ApiService)
+    val supportViewModel: SupportViewModel = viewModel(
+        factory = SupportViewModel.SupportViewModelFactory(supportRepository)
     )
+    val context = LocalContext.current
+    val loginViewModel = getLoginViewModel(context)
+    val userId = loginViewModel.getUserData().userId
+    val showContractErrorDialog = remember { mutableStateOf(false) }
+// Theo dõi trạng thái hợp đồng
+    val contractState by supportViewModel.contractUiState.collectAsState()
+    // Kiểm tra hợp đồng khi màn hình được tải
+    LaunchedEffect(userId) {
+        supportViewModel.checkUserContract(userId)
+    }
+
+    if (showContractErrorDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showContractErrorDialog.value = false },
+            title = { Text("Thông báo") },
+            text = { Text("Bạn không có hợp đồng hoặc hợp đồng của bạn đã hết hạn.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { showContractErrorDialog.value = false }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
     var showLogoutDialog by remember { mutableStateOf(false) }
     if (showLogoutDialog) {
         AlertDialog(
@@ -136,7 +167,23 @@ fun LayoutItems(navController: NavHostController) {
                 CustomRow(
                     imageId = R.drawable.baocao,
                     text = "Báo cáo sự cố",
-                    onClick = { navController.navigate("INCIDENTREPORT") }
+                    onClick = {
+                        if (contractState is CheckContractUiState.Success) {
+                            val contract = (contractState as CheckContractUiState.Success).data
+                            val isContractValid = contract.any { it.status == 0 } // Kiểm tra nếu có hợp đồng còn hiệu lực
+
+                            if (isContractValid) {
+                                // Nếu hợp đồng còn hiệu lực, điều hướng đến màn báo cáo sự cố
+                                navController.navigate("INCIDENTREPORT")
+                            } else if(isContractValid == null){
+                                // Nếu không có hợp đồng hoặc hợp đồng đã hết hạn, hiển thị thông báo lỗi
+                                showContractErrorDialog.value = true
+                            }
+                        } else {
+                            // Nếu không thể lấy dữ liệu hợp đồng, hiển thị thông báo lỗi
+                            showContractErrorDialog.value = true
+                        }
+                    }
                 )
                 CustomRow(
                     imageId = R.drawable.out,
