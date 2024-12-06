@@ -83,18 +83,27 @@
             <div class="row mb-3">
                 <!-- Size -->
                 <div class="col-md-6">
-                    <label for="size" class="form-label">Diện Tích</label>
-                    <input type="text" id="size" name="size" class="form-control"
-                        placeholder="Nhập diện tích (VD: 40m2)" required>
+                    <label for="decrease" class="form-label">Giảm giá</label>
+                    <input type="number" id="decrease" name="decrease" class="form-control" min="0"
+                        placeholder="Nhập số tiền giảm" value="0" required>
                 </div>
 
                 <!-- Limit Person -->
                 <div class="col-md-6">
                     <label for="limit_person" class="form-label">Giới Hạn Người Ở</label>
                     <input type="number" id="limit_person" name="limit_person" class="form-control" min="1"
-                        placeholder="Nhập số người tối đa" required>
+                        placeholder="Nhập số người tối đa">
                 </div>
             </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="size" class="form-label">Diện Tích</label>
+                    <input type="text" id="size" name="size" class="form-control"
+                        placeholder="Nhập diện tích (VD: 40m2)" required>
+                </div>
+            </div>
+
 
             <!-- Description -->
             <div class="mb-3">

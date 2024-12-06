@@ -61,10 +61,11 @@ const fetchRoomDetails = async () => {
             const room = response.data;
             renderServices(room.service);
             console.log(room.service);
-            
+
             document.getElementById('room_name').value = room.room_name;
             document.getElementById('status').value = room.status;
             document.getElementById('price').value = room.price;
+            document.getElementById('decrease').value = room.decrease;
             document.getElementById('room_type').value = room.room_type;
             document.getElementById('size').value = room.size;
             document.getElementById('limit_person').value = room.limit_person;
@@ -82,11 +83,11 @@ const fetchRoomDetails = async () => {
             displayAmenities();
 
             const photosContainer = document.querySelector('#photos_room').parentNode.querySelector('.preview');
-            photosContainer.innerHTML = ''; 
+            photosContainer.innerHTML = '';
             room.photos_room.forEach(photoPath => {
                 const sanitizedPath = photoPath.replace(/^\/landlord\//, '').replace(/^public\//, '');
                 const imgElement = document.createElement('img');
-                imgElement.src = `/public/${sanitizedPath}`; 
+                imgElement.src = `/public/${sanitizedPath}`;
                 imgElement.alt = 'Ảnh phòng';
                 imgElement.style.width = '100%';
                 imgElement.style.marginBottom = '10px';
@@ -94,11 +95,11 @@ const fetchRoomDetails = async () => {
             });
 
             const videosContainer = document.querySelector('#video_room').parentNode.querySelector('.preview');
-            videosContainer.innerHTML = ''; 
+            videosContainer.innerHTML = '';
             room.video_room.forEach(videoPath => {
                 const sanitizedPath = videoPath.replace(/^\/landlord\//, '').replace(/^public\//, '');
                 const videoElement = document.createElement('video');
-                videoElement.src = `/public/${sanitizedPath}`; 
+                videoElement.src = `/public/${sanitizedPath}`;
                 videoElement.controls = true;
                 videoElement.autoplay = true;
                 videoElement.muted = true;
@@ -123,7 +124,7 @@ const fetchRoomDetails = async () => {
 
 const previewFiles = (input) => {
     const previewContainer = input.parentNode.querySelector('.preview');
-    const iconContainer = input.parentNode.querySelector('i'); 
+    const iconContainer = input.parentNode.querySelector('i');
     const files = input.files;
 
     previewContainer.innerHTML = "";
@@ -134,7 +135,7 @@ const previewFiles = (input) => {
         Array.from(files).forEach((file) => {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const fileType = file.type.split('/')[0]; 
+                const fileType = file.type.split('/')[0];
 
                 if (fileType === 'image') {
                     const img = document.createElement("img");
@@ -143,9 +144,9 @@ const previewFiles = (input) => {
                 } else if (fileType === 'video') {
                     const video = document.createElement("video");
                     video.src = e.target.result;
-                    video.controls = true; 
-                    video.autoplay = true; 
-                    video.muted = true; 
+                    video.controls = true;
+                    video.autoplay = true;
+                    video.muted = true;
                     previewContainer.appendChild(video);
                 }
             };
@@ -175,7 +176,7 @@ const fetchAmenities = async () => {
 
 const displayAmenities = () => {
     const amenitiesContainer = document.getElementById('amenities-container');
-    amenitiesContainer.innerHTML = ''; 
+    amenitiesContainer.innerHTML = '';
 
     const allAmenities = [...new Set([...amenities, ...allAmenitie])];
     const selectedAmenitiesSet = new Set(selectedAmenities);
@@ -203,18 +204,18 @@ const addNewAmenity = () => {
     const newAmenity = newAmenityInput.value.trim();
 
     if (newAmenity && !amenities.includes(newAmenity)) {
-        amenities.push(newAmenity); 
-        displayAmenities(); 
+        amenities.push(newAmenity);
+        displayAmenities();
     }
 
     newAmenityInput.value = '';
 };
 
 const updateSelectedAmenities = () => {
-    selectedAmenities = []; 
+    selectedAmenities = [];
     const amenityItems = document.querySelectorAll('.amenity-item.active');
     amenityItems.forEach(item => {
-        selectedAmenities.push(item.textContent); 
+        selectedAmenities.push(item.textContent);
     });
     const selectedAmenitiesContainer = document.getElementById('selected-amenities');
     selectedAmenitiesContainer.innerHTML = selectedAmenities.length > 0
@@ -231,6 +232,7 @@ document.getElementById('update-room-form').addEventListener('submit', async (ev
     formData.append('room_name', document.getElementById('room_name').value);
     formData.append('status', document.getElementById('status').value);
     formData.append('price', document.getElementById('price').value);
+    formData.append('decrease', document.getElementById('decrease').value);
     formData.append('room_type', document.getElementById('room_type').value);
     formData.append('size', document.getElementById('size').value);
     formData.append('limit_person', document.getElementById('limit_person').value);
@@ -268,6 +270,7 @@ document.getElementById('update-room-form').addEventListener('submit', async (ev
                 room_name: document.getElementById('room_name').value,
                 status: document.getElementById('status').value,
                 price: document.getElementById('price').value,
+                decrease: document.getElementById('decrease').value,
                 room_type: document.getElementById('room_type').value,
                 size: document.getElementById('size').value,
                 limit_person: document.getElementById('limit_person').value,
@@ -290,11 +293,11 @@ document.getElementById('update-room-form').addEventListener('submit', async (ev
     }
 });
 
-document.getElementById('delete-room').addEventListener('click', function() {
+document.getElementById('delete-room').addEventListener('click', function () {
     $('#deleteRoomModal').modal('show'); // Hiển thị modal xác nhận
 });
 
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
     // Gọi API xóa phòng với axios
     axios.delete(`/api/delete-room/${roomId}`)
         .then(response => {
@@ -318,6 +321,30 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function()
             }).showToast();
         });
     $('#deleteRoomModal').modal('hide'); // Ẩn modal sau khi xác nhận xóa
+});
+
+const decreaseInput = document.getElementById('decrease');
+
+// Xóa giá trị mặc định khi focus vào trường nhập
+decreaseInput.addEventListener('focus', () => {
+    if (decreaseInput.value === '0') {
+        decreaseInput.value = '';
+    }
+});
+
+// Hiển thị lại 0 nếu trường nhập bị bỏ trống khi blur
+decreaseInput.addEventListener('blur', () => {
+    if (decreaseInput.value === '') {
+        decreaseInput.value = '0';
+    }
+});
+
+// Ngăn nhập giá trị âm
+decreaseInput.addEventListener('input', () => {
+    // Nếu giá trị âm, set lại thành 0
+    if (parseFloat(decreaseInput.value) < 0) {
+        decreaseInput.value = '0';
+    }
 });
 
 

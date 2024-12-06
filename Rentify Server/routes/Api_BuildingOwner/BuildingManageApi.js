@@ -260,7 +260,7 @@ router.post('/add-room', upload.fields([
     { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
 ]), async (req, res) => {
     try {
-        const { building_id, room_name, room_type, description, price, size, service, amenities, limit_person, status, } = req.body;
+        const { building_id, room_name, room_type, description, price, decrease, size, service, amenities, limit_person, status, } = req.body;
 
         // Kiểm tra dữ liệu bắt buộc
         if (!building_id || !room_name || !room_type || !description || !price || !size || status === undefined) {
@@ -278,6 +278,7 @@ router.post('/add-room', upload.fields([
             room_type,
             description,
             price,
+            decrease,
             size,
             video_room,
             photos_room,
@@ -344,7 +345,7 @@ router.put('/update-room/:id', upload.fields([
     { name: 'video_room', maxCount: 2 }   // Tối đa 2 video
 ]), async (req, res) => {
     const { id } = req.params;
-    const { room_name, room_type, description, price, size, service, amenities, limit_person, status } = req.body;
+    const { room_name, room_type, description, price, decrease, size, service, amenities, limit_person, status } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid room ID.' });
@@ -405,6 +406,7 @@ router.put('/update-room/:id', upload.fields([
             room_type,
             description,
             price,
+            decrease,
             size,
             service,
             amenities,

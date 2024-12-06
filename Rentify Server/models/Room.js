@@ -11,6 +11,7 @@ const Room = new Schema({
     room_type: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true }, // tien phong
+    decrease: {type: Number, default: 0}, // số tiền giảm 
     size: { type: String, required: true },// vd: 40m2 nên sẽ để là String
     video_room: { type: Array },
     photos_room: { type: Array },
