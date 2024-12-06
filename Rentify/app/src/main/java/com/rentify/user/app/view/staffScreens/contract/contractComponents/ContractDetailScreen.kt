@@ -34,6 +34,7 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -47,6 +48,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -168,6 +170,19 @@ fun ContractDetailScreen(navController: NavController,contractId: String) {
                 }
             }
 
+        }
+    }?: run{
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White), // Màu nền nếu cần
+            contentAlignment = Alignment.Center // Căn giữa nội dung
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp), // Kích thước loading
+                color = Color(0xFF5DADFF), // Màu sắc hiệu ứng
+                strokeWidth = 4.dp // Độ dày của đường loading
+            )
         }
     }}
 
@@ -365,14 +380,7 @@ fun EditContractDialog(
                             if (isFieldEmpty(userId)) {
                             // Hiển thị thông báo lỗi nếu title trống
                             Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
-                            return@Button        }
-                        if (selectedPhotos.isEmpty()) {
-                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-
-
+                            return@Button }
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()

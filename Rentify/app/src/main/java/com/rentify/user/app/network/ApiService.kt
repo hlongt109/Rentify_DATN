@@ -23,7 +23,9 @@ import com.rentify.user.app.model.Model.StatusBookingRequest
 import com.rentify.user.app.model.Model.UpdateInvoiceStatus
 import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.Post
+import com.rentify.user.app.model.PostListResponse
 import com.rentify.user.app.model.PostResponse
+
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
@@ -250,7 +252,7 @@ interface APIService {
 
     // API lấy danh sách các tòa nhà theo user_id
     @GET("staff/posts/buildings")
-    suspend fun getBuildings(@Query("user_id") userId: String): Response<BuildingsResponse>
+    suspend fun getBuildings(@Query("manager_id") userId: String): Response<BuildingsResponse>
 
     // API lấy danh sách phòng trong một tòa nhà theo building_id
     @GET("staff/posts/rooms")
@@ -351,10 +353,15 @@ interface APIService {
     suspend fun getRooms_contrac(@Path("building_id") buildingId: String): Response<RoomsResponse>
 
     //TÌM KIẾM HỌPƯ ĐỒNG
+//    @GET("staff/contracts/search")
+//    suspend fun searchContracts(
+//        @Query("userName") userName: String? = null,
+//        @Query("buildingRoom") buildingRoom: String? = null,
+//        @Query("manageId") manageId: String? = null // Thêm manageId
+//    ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
     @GET("staff/contracts/search")
     suspend fun searchContracts(
-        @Query("userName") userName: String? = null,
-        @Query("buildingRoom") buildingRoom: String? = null,
+        @Query("keyword") keyword: String? =null,
         @Query("manageId") manageId: String? = null // Thêm manageId
     ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
 
@@ -366,13 +373,18 @@ interface APIService {
         @Part("building_id") buildingId: RequestBody,
         @Part("room_id") roomId: RequestBody?,
         @Part("title") title: RequestBody,
+        @Part("address") address: RequestBody,
         @Part("content") content: RequestBody,
         @Part("post_type") postType: RequestBody,
         @Part("status") status: RequestBody,
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
-
+// bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
+@GET("list/type/{post_type}")
+suspend fun getPostsByType(
+    @Path("post_type") postType: String
+): Response<PostListResponse>  // Phản hồi kiểu PostListResponse
     // thiên thực hiện sử lý phần hợp đồng
     @GET("contract-detail/{user_id}")
     suspend fun getContractDetail(@Path("user_id") userId: String): Response<List<ContractResponse>>

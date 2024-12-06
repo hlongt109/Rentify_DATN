@@ -47,8 +47,6 @@ data class TypeProduct(val type: String, val icon: Int)
 fun SearchComponent(navController: NavHostController) {
     LayoutSearch(navController = rememberNavController())
 }
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LayoutSearch(navController: NavHostController) {
@@ -187,7 +185,7 @@ fun LayoutSearch(navController: NavHostController) {
                         .clickable {
                             statusType = type.type
                             if (type.type == "Tìm người ở ghép") {
-                                navController.navigate("TogeTher") // Điều hướng đến TogetherScreen
+                                navController.navigate("Search_roommate") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }

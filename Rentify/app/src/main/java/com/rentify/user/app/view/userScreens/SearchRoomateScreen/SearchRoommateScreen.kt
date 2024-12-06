@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.SearchRoomScreen
+package com.rentify.user.app.view.userScreens.SearchRoomateScreen
 
 import BottomSheetContent
 import LocationViewModel
@@ -55,9 +55,11 @@ import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ArrangeComponent
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ChangeLocation
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.HeaderSearchComponent
-import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemPost
+
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemTypeRoom
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.LocationComponent
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.FeetReportyeucau
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.ItemPost
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.PostListRoomateScreen
 
 import kotlinx.coroutines.launch
@@ -68,7 +70,7 @@ enum class LocationLevel {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PostRoomScreen(navController: NavController) {
+fun SearchRoommateScreen(navController: NavController) {
 //    val list = FakeData().rooms
     val listPost = FakeData().listPost
     val sheetState = rememberModalBottomSheetState(
@@ -294,10 +296,10 @@ fun PostRoomScreen(navController: NavController) {
                     }
                     Divider(color = colorInput, thickness = 1.dp)
                     Spacer(modifier = Modifier.padding(top = 10.dp))
-
-                    PostListRoomateScreen( navController, postType = "rent" )
+                    PostListRoomateScreen( navController, postType = "roomate" )
+                    }
                 }
             }
         }
     }
-}
+

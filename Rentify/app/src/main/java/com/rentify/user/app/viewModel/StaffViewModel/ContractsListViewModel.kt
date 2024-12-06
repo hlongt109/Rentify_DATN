@@ -10,6 +10,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.Room_post
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -64,8 +66,11 @@ class ContractViewModel : ViewModel() {
             }
         }
     }
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
     fun fetchContractsByBuilding(manageId: String) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val response = RetrofitClient.apiService.getContractsByBuilding(manageId)
                 if (response.isSuccessful) {
@@ -78,6 +83,8 @@ class ContractViewModel : ViewModel() {
             } catch (e: Exception) {
                 _error.value = "Error: ${e.message}"
                 Log.e("ContractViewModel", "Error fetching contracts: ${e.message}")
+            }finally {
+                _isLoading.value = false
             }
         }
     }
@@ -146,24 +153,25 @@ class ContractViewModel : ViewModel() {
     fun searchContracts(query: String, manageId: String? = null) {
         viewModelScope.launch {
             try {
+                // Xử lý tìm kiếm khi có manageId
                 val result = when {
                     manageId != null -> {
-                        // Nếu có manageId, kết hợp query và manageId
+                        // Nếu có manageId, gửi yêu cầu tìm kiếm hợp đồng với keyword và manageId
                         RetrofitClient.apiService.searchContracts(
-                            userName = if (!query.contains("/")) query else null,
-                            buildingRoom = if (query.contains("/")) query else null,
+                            keyword = query,  // Gửi luôn query tìm kiếm (tòa nhà, phòng, người dùng)
                             manageId = manageId
                         )
                     }
-                    query.contains("/") -> {
-                        // Nếu query theo định dạng buildingRoom
-                        RetrofitClient.apiService.searchContracts(buildingRoom = query)
-                    }
                     else -> {
-                        // Nếu tìm kiếm theo userName
-                        RetrofitClient.apiService.searchContracts(userName = query)
+                        // Nếu không có manageId, tìm kiếm theo từ khóa query mà không cần phân tách
+                        RetrofitClient.apiService.searchContracts(
+                            keyword = query,  // Gửi luôn query tìm kiếm
+                            manageId = null    // Không có manageId
+                        )
                     }
                 }
+
+                // Đặt kết quả vào LiveData hoặc MutableLiveData
                 _contracts.postValue(result)
             } catch (e: Exception) {
                 _error.postValue("Lỗi khi tìm kiếm hợp đồng: ${e.message}")

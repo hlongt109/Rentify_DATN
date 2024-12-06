@@ -75,7 +75,7 @@ fun HeaderComponent(navController: NavController) {
 
             IconButton(
                 modifier = Modifier.width(100.dp),
-                onClick = { navController.navigate("${MainActivity.ROUTER.ADDPOST.name}?postType=seek") }
+                onClick = { navController.navigate("${MainActivity.ROUTER.ADDPOST.name}?postType=rent") }
 
             ) {
                 Image(

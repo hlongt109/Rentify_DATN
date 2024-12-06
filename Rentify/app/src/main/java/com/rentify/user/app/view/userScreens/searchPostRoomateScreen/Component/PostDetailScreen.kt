@@ -85,13 +85,13 @@ import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PostDetailUserScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
-    val postDetail by viewModel.postDetail.observeAsState()
+    val postDetail = viewModel.postDetail.value
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
-
+    val baseUrl = "http://192.168.2.104:3000/"
     // Chạy khi màn hình được hiển thị lại hoặc khi postId thay đổi
     LaunchedEffect(postId, isPostUpdated.value) {
         Log.d("detail", "RequestBody check: ")
@@ -422,7 +422,8 @@ fun PostImageSection(images: List<String>) {
             ) { pageIndex ->
                 val image = images[pageIndex]
                 Image(
-                    painter = rememberImagePainter("http://192.168.2.106:3000/$image"),
+                    painter = rememberImagePainter("http://192.168.2.104:3000/$image"),
+
                     contentDescription = "Post Image",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -467,7 +468,7 @@ fun PostVideoSection(videos: List<String>) {
                     .height(300.dp)
             ) { pageIndex ->
                 val videoUrl = videos[pageIndex]
-                VideoPlayer(videoUrl = "http://192.168.2.106:3000/$videoUrl")
+                VideoPlayer(videoUrl = "http://192.168.2.104:3000/$videoUrl")
             }
 
             // Dấu chấm chỉ số video
@@ -512,7 +513,7 @@ fun PostMediaDialog(mediaList: List<String>, currentIndex: Int, onDismiss: () ->
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         if (media.endsWith(".mp4")) {
-                            VideoPlayer(videoUrl = "http://192.168.2.106:3000/$media")
+                            VideoPlayer(videoUrl = "http://192.168.2.104:3000/$media")
                         } else {
                             Image(
                                 painter = rememberImagePainter("http://192.168.2.106:3000/$media"),
