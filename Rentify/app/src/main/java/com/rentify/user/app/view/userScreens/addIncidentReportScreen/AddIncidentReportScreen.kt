@@ -99,6 +99,7 @@ import com.rentify.user.app.repository.SupportRepository.ContractRoom
 import com.rentify.user.app.repository.SupportRepository.ContractRoomData
 import com.rentify.user.app.repository.SupportRepository.SupportRepository
 import com.rentify.user.app.ui.theme.building_icon
+import com.rentify.user.app.ui.theme.colorLocation
 import com.rentify.user.app.utils.CheckUnit.toFilePath
 import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.utils.ShowReport
@@ -170,6 +171,9 @@ fun AddIncidentReportScreen(navController: NavHostController) {
     val errorRoom by supportViewModel.errorRoom.observeAsState()
     val errorTitle by supportViewModel.errorTitle.observeAsState()
     val errorContent by supportViewModel.errorContent.observeAsState()
+
+    val successMessage by supportViewModel.successMessage.observeAsState()
+    val isLoading by supportViewModel.isLoading.observeAsState()
 
     LaunchedEffect(userId) {
         supportViewModel.getInfoRoom(userId)
@@ -562,6 +566,11 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 imagePaths = imagePaths,
                                 status = 1,
                             )
+                            successMessage?.let {
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                navController.navigate(navController.navigateUp())
+                            }
+
                         },
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -584,7 +593,23 @@ fun AddIncidentReportScreen(navController: NavHostController) {
 
         }
     }
-
+    if (isLoading == true) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(70.dp)
+                    .background(Color.White, shape = RoundedCornerShape(10.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = colorLocation)
+            }
+        }
+    }
 //    val rooms = (roomUiState as RoomSupportUiState.Success).data
 
 }
@@ -616,41 +641,7 @@ fun ItemRoomExpand(
             fontSize = 15.sp
         )
     }
-}
 
-fun getImagePathFromUri(context: Context, uri: Uri): String? {
-    return try {
-        // Sử dụng DocumentFile để làm việc với URI
-        val documentFile = DocumentFile.fromSingleUri(context, uri)
-        documentFile?.let { file ->
-            // Tạo file tạm
-            val tempFile = File(context.cacheDir, "temp_${file.name}")
-            context.contentResolver.openInputStream(uri)?.use { input ->
-                tempFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            tempFile.absolutePath
-        }
-    } catch (e: Exception) {
-        Log.e("UriConversion", "Error converting URI to file path", e)
-        null
-    }
-}
-
-fun isValidImageUri(context: Context, uri: Uri): Boolean {
-    return try {
-        // Kiểm tra quyền truy cập persistent
-        val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        context.contentResolver.takePersistableUriPermission(uri, takeFlags)
-
-        // Kiểm tra loại MIME
-        val mimeType = context.contentResolver.getType(uri)
-        mimeType?.startsWith("image/") == true
-    } catch (e: Exception) {
-        Log.e("ImageSelection", "Error validating URI", e)
-        false
-    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)

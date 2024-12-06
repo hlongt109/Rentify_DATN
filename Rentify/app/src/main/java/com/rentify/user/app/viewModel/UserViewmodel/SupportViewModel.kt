@@ -202,6 +202,7 @@ class SupportViewModel(
                 getListSupport(userId) // Lấy danh sách mới sau khi thêm
             }.onFailure { error ->
                 // Cập nhật thông báo lỗi
+                _isLoading.postValue(false)
                 _errorMessage.postValue(error.message ?: "Lỗi không xác định khi tạo báo cáo")
             }
         }
