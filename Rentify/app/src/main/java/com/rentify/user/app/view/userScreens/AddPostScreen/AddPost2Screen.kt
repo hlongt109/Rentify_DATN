@@ -425,54 +425,7 @@ fun AddPostScreen(navController: NavHostController) {
                     )
                 }
                 Spacer(modifier = Modifier.height(3.dp))
-//                Column {
-//                    RoomLabel()
-//                    RoomOptions(
-//                        userId = userId,
-//                        selectedRoom = selectedRoom,
-//                        onRoomSelected = { roomId ->
-//                            selectedRoom = roomId
-//                            Log.d("MainScreen", "Selected room ID: $roomId")
-//                        }
-//                    )
-
-
-//                    viewModel.selectedBuilding.value?.let {
-//                        RoomOptions (
-//                            buildingId = it,
-//                            selectedRoom = selectedRoom,
-//                            onRoomSelected = { roomId ->
-//                                selectedRoom = roomId
-//                            }
-//                        )
-//                    }
-                    //673b57f7d24f9f5e94603b17
-//            ServiceOptions(
-//                selectedService = selectedService,
-//                onServiceSelected = { service ->
-//                    selectedService = if (selectedService.contains(service)) {
-//                        selectedService - service
-//                    } else {
-//                        selectedService + service
-//                    }
-//                }
-//            )
-              //  }
-
-
-                // dịch vụ
                 Spacer(modifier = Modifier.height(10.dp))
-//                Column {
-//                    BuildingLabel()
-//
-//                    selectedRoom?.let {
-//                        BuildingOptions(
-//                            roomId= it,
-//                            selectedBuilding = selectedBuilding,
-//                            )
-//                        Log.d("MainScreen", "Selected buiding ID: $selectedBuilding")
-//                    }
-//                }
             }
         }
         Box(
@@ -485,17 +438,6 @@ fun AddPostScreen(navController: NavHostController) {
             Box(modifier = Modifier.padding(20.dp)) {
                 Button(
                     onClick = {
-                        if (selectedImages.isEmpty()) {
-                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        if (selectedVideos.isEmpty()) {
-                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()

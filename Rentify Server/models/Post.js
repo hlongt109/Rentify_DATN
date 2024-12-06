@@ -15,7 +15,7 @@ const Post = new Schema({
     },
     title: { type: String },
     content: { type: String },
-    address: {type: String},
+    address: { type: String },
     status: { type: Number, enum: [0, 1, 2], default: 0 }, // 0 hoạt động, 1 tạm ẩn, 2 ban
     video: { type: Array },
     photo: { type: Array },
