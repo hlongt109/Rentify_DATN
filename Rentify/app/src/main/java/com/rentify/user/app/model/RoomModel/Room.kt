@@ -1,6 +1,7 @@
 package com.rentify.user.app.model
 
 import com.google.gson.annotations.SerializedName
+import com.rentify.user.app.model.Model.ServiceFee
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -61,6 +62,7 @@ data class BuildingWithRooms(
     val _id: String,
     val nameBuilding: String,
     val address: String,
+    val serviceFees: List<ServiceFee>,
     val rooms: List<Room>
 )
 

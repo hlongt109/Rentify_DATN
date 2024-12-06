@@ -48,10 +48,9 @@ import com.rentify.user.app.view.staffScreens.contract.contractComponents.Contra
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
+import com.rentify.user.app.view.userScreens.QuanLiDichVu.QuanLiDichVu
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
-import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.SeachRoomateDetailScreen
-import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
@@ -131,6 +130,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.CATEGORYPOST.name) {
                 CategoryPostScreen(navController)
             }
+            composable(ROUTER.QuanLiDichVuUser.name) {
+                QuanLiDichVu(navController)
+            }
             composable(ROUTER.SEARCHPOSTROOMATE.name) {
                 SearchPostRoomateScreen(navController = navController)
             }
@@ -191,9 +193,11 @@ class MainActivity : ComponentActivity() {
 
             composable("Payments/{amount}/{buildingId}/{_id}") { backStackEntry ->
                 val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
-                val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
-                val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
-                PaymentScreen( invoiceId = invoiceId ,amount = amount, buildingId = buildingId, navController = navController)
+                PaymentConfirmationScreen(amount = amount, navController = navController)
+            }
+
+            composable(ROUTER.Payments.name) {
+                PaymentScreen(navController = navController)
             }
 
             composable(ROUTER.ConTract.name) {
@@ -390,6 +394,7 @@ class MainActivity : ComponentActivity() {
         SPLASH,
         RESGITER,
         LOGIN,
+        FORGOTPASS,
         PROFILE,
         LAUDRY,
         LAUDRYDETAIL,
@@ -425,16 +430,12 @@ class MainActivity : ComponentActivity() {
         POSTING_STAFF,
         REPORT_STAFF,
         ADDPOST_staff,
-        Search_roommate,
+
         //những màn hình thiên thêm
 
         AppointmentScreen,
         ADDCONTRAC_STAFF,
-        ListSupportByRoom,
-
-        //phong forgot
-        PREFORGOT,
-        FORGOTPASS,
+        ListSupportByRoom
     }
 }
 

@@ -2,6 +2,7 @@ package com.rentify.user.app.network
 
 import Contract
 import ContractResponse
+import android.telecom.Call
 import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
@@ -13,6 +14,7 @@ import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
 import com.rentify.user.app.model.LandlordOrStaffs
+import com.rentify.user.app.model.ListServiceResponse
 import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
@@ -453,6 +455,14 @@ suspend fun getPostsByType(
         @Part images: List<MultipartBody.Part>
     ): Response<CreateReportResponse>
 
+    @GET("staff/rooms/Listservices")
+    suspend fun getServiceList(): Response<List<ListServiceResponse>>
+
+    @PUT("staff/users/addUserInfo/{id}")
+    suspend fun updateUserInfo(
+        @Path("id") userId: String,
+        @Body userDetails: Map<String, String>
+    ): Response<UserResponse>
     //bao cao su co
     @GET("getSupportsByUserId/{userId}")
     suspend fun getSupportsByUserId(@Path("userId") userId: String): Response<APISupportResponse>

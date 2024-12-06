@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Building = require('../../models/Building');
 const Room = require('../../models/Room');
+const Service = require('../../models/Service');
 const upload = require('../../config/common/uploadImageRoom')
 
 const Invoice = require('../../models/Invoice')
@@ -338,6 +339,34 @@ router.get('/building/:id/services', async (req, res) => {
       message: "Có lỗi xảy ra",
       error: error.message
     });
+  }
+});
+
+router.get('/Listservices', async (req, res) => {
+  try {
+      // Find all services
+      const services = await Service.find().select('_id landlord_id name description price photos created_at updated_at');
+
+      // Modify the response structure to match the desired format
+      const formattedServices = services.map(service => ({
+          _id: service._id,
+          landlord_id: service.landlord_id, // Only return the ObjectId without populated data
+          name: service.name,
+          description: service.description,
+          price: service.price,
+          photos: service.photos,
+          created_at: service.created_at,
+          updated_at: service.updated_at,
+          __v: service.__v
+      }));
+
+      res.status(200).json(formattedServices); // Return the formatted list
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({
+          message: 'Failed to fetch the list of services',
+          error: error.message
+      });
   }
 });
 

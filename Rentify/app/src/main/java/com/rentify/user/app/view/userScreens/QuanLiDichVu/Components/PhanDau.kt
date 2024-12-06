@@ -1,6 +1,7 @@
-package com.rentify.user.app.view.userScreens.profileScreen.components
+package com.rentify.user.app.view.userScreens.QuanLiDichVu.Components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,24 +21,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 @Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun ProfileComponentPreview() {
-    ProfileComponent(navController = rememberNavController())
-}
-
-@Composable
-fun ProfileComponent(navController: NavHostController) {
+fun PhanDauQuanLiDichVu(navController: NavHostController){
     Column (
         modifier = Modifier.fillMaxWidth()
             .height(100.dp)
+            .background(color = Color(0xFF84d8ff))
     ){
         Row(
             modifier = Modifier
@@ -45,7 +39,7 @@ fun ProfileComponent(navController: NavHostController) {
                 .padding(top = 50.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.trove),
+                painter = painterResource(id = R.drawable.back),
                 contentDescription = "back",
                 modifier = Modifier
                     .width(40.dp)
@@ -64,7 +58,8 @@ fun ProfileComponent(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center // Center vertically
             ) {
                 Text(
-                    text = "Hồ sơ cá nhân",
+                    text = "Quản Lí dịch vụ ",
+                    modifier = Modifier.padding(end = 20.dp),
                     fontSize = 25.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
