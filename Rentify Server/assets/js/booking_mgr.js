@@ -6,8 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const getStatusText = (status) => {
         switch (status) {
             case 0: return '<span class="status-pending">Chưa xử lý</span>';
-            case 1: return '<span class="status-completed">Đã xử lý</span>';
-            case -1: return '<span class="status-rejected">Đã hủy</span>';
+            case 1: return '<span class="status-completed">Đang xử lý</span>';
+            case 2: return '<span class="status-rejected2">Đã xem</span>';
+            case 3: return '<span class="status-rejected">Đã hủy</span>';
             default: return '<span class="status-unknown">Không xác định</span>';
         }
     };
@@ -40,21 +41,57 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Kiểm tra nếu dữ liệu trả về hợp lệ
                     const userName = userResult && userResult.data ? userResult.data : 'N/A'; // Lấy tên người hẹn từ API
-
+                    const rowId = `roomName-${index}`; // Tạo ID duy nhất cho mỗi hàng
+                    const buildingId = `buildingName-${index}`;
+                    // Tạo hàng mới trong bảng với tên người hẹn
                     // Tạo hàng mới trong bảng với tên người hẹn
                     const row = document.createElement('tr');
+                    row.classList.add('item'); // Thêm lớp 'item'
+                    row.dataset.status = item.status; // Thêm thuộc tính 'data-status'
                     row.innerHTML = `
                         <td>${index + 1}</td> <!-- Thêm index vào bảng -->
-                        <td>${userName}</td> <!-- Hiển thị tên người hẹn -->
-                        <td>${new Date(item.check_in_date).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</td>
+                        <td>${userName}</td> 
+                        <td id="${rowId}">Đang tải...</td> <!-- ID duy nhất -->
+                        <td id="${buildingId}">Đang tải...</td> <!-- Tên tòa nhà -->
+                        <td class="check-in-date">
+                            ${new Date(item.check_in_date).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
+                        </td>
+
                         <td>${getStatusText(item.status)}</td>
                         <td>
-                            <button class="btn btn-info btn-sm" onclick="handleView('${item._id}')">Xem</button>
                             <button class="btn btn-warning btn-sm" onclick="handleEdit('${item._id}', ${item.status})">Sửa</button>
                             <button class="btn btn-danger btn-sm" onclick="handleDelete('${item._id}')">Xóa</button>
                         </td>
                     `;
                     reportTableBody.appendChild(row);
+
+
+                    // Gọi API để lấy tên phòng
+                    try {
+                        const roomResponse = await fetch(`/api/booking/room_name/${item._id}`);
+                        const roomData = await roomResponse.json();
+                        if (roomData.success) {
+                            document.getElementById(rowId).innerText = roomData.data.roomName; // Cập nhật tên phòng vào bảng
+                        } else {
+                            document.getElementById(rowId).innerText = 'Không xác định';
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi lấy tên phòng:', error);
+                        document.getElementById(rowId).innerText = 'Không xác định';
+                    }
+                    // Gọi API để lấy tên tòa nhà
+                    try {
+                        const buildingResponse = await fetch(`/api/booking/building_name/${item._id}`);
+                        const buildingData = await buildingResponse.json();
+                        if (buildingData.success) {
+                            document.getElementById(buildingId).innerText = buildingData.data.buildingName;
+                        } else {
+                            document.getElementById(buildingId).innerText = 'Không xác định';
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi lấy tên tòa nhà:', error);
+                        document.getElementById(buildingId).innerText = 'Không xác định';
+                    }
                 }
             } else {
                 console.error('Dữ liệu không hợp lệ hoặc không có dữ liệu.');
@@ -67,8 +104,40 @@ document.addEventListener('DOMContentLoaded', function () {
     // Gọi hàm fetchData khi trang tải xong
     fetchData();
 });
+// Hàm để lọc theo trạng thái
+// Lắng nghe sự kiện click vào các item trong dropdown
+document.querySelectorAll('#roomFilter .dropdown-item').forEach(item => {
+    item.addEventListener('click', function (event) {
+        event.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
 
+        // Lấy giá trị trạng thái từ thuộc tính data-status
+        const status = this.getAttribute('data-status');
 
+        // Cập nhật trạng thái trên button
+        document.getElementById('statusButton').textContent = this.textContent;
+
+        // Gọi hàm lọc dữ liệu với trạng thái được chọn
+        filterByStatus(status);
+    });
+});
+
+// Hàm lọc dữ liệu theo trạng thái
+function filterByStatus(status) {
+    // Đây là ví dụ đơn giản, bạn cần thay thế bằng cách thực hiện lọc trên dữ liệu của bạn
+    console.log("Lọc theo trạng thái:", status);
+
+    // Ví dụ: lọc các phần tử hoặc cập nhật giao diện người dùng (UI)
+    // Dưới đây là cách bạn có thể lọc các dữ liệu trong một bảng hoặc danh sách
+    const items = document.querySelectorAll('.item'); // Giả sử các item có lớp "item"
+
+    items.forEach(item => {
+        if (status === "" || item.dataset.status === status) {
+            item.style.display = ''; // Hiển thị item nếu nó khớp với trạng thái
+        } else {
+            item.style.display = 'none'; // Ẩn item nếu nó không khớp
+        }
+    });
+}
 
 
 

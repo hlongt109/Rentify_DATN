@@ -12,6 +12,8 @@ const Building = require("../../models/Building")
 router.get("/booking/list/:id", async (req, res) => {
     try {
         const landlordId = req.params.id;
+        const { status } = req.query;  // Lấy trạng thái từ query
+
         console.log('Landlord ID nhận được từ client:', landlordId);
         if (!mongoose.Types.ObjectId.isValid(landlordId)) {
             return res.status(400).json({ message: "Invalid landlord_id format" });
@@ -25,8 +27,17 @@ router.get("/booking/list/:id", async (req, res) => {
         // Lấy danh sách building_id từ các tòa nhà
         const buildingIds = buildings.map(building => building._id);
 
+        // Điều kiện lọc với status nếu có
+        const filterConditions = { building_id: { $in: buildingIds } };
+        if (status !== undefined) {
+            filterConditions.status = parseInt(status);  // Lọc theo trạng thái nếu có
+        }
+
+        const data = await Booking.find(filterConditions);
+
         // Tìm tất cả các yêu cầu hỗ trợ có building_id trong danh sách buildingIds
-        const data = await Booking.find({ building_id: { $in: buildingIds } });
+        //const data = await Booking.find({ building_id: { $in: buildingIds } });
+
 
 
         res.json({ data });
@@ -63,5 +74,67 @@ router.put("/booking/update/:id", async (req, res) => {
         data: support
     })
 })
+
+
+router.get("/booking/room_name/:bookingId", async (req, res) => {
+    const { bookingId } = req.params;
+
+    try {
+        // Kiểm tra xem bookingId có phải là ObjectId hợp lệ không
+        if (!mongoose.Types.ObjectId.isValid(bookingId)) {
+            return res.status(400).json({ message: "ID không hợp lệ" });
+        }
+
+        // Tìm Booking và populate room_id để lấy dữ liệu từ Room
+        const booking = await Booking.findById(bookingId).populate({
+            path: 'room_id',
+            select: 'room_name', // Chỉ lấy trường room_name từ Room
+        });
+
+        // Kiểm tra nếu không tìm thấy hoặc room_id rỗng
+        if (!booking || !booking.room_id) {
+            return res.status(404).json({ message: "Không tìm thấy Booking hoặc Room" });
+        }
+
+        // Trả về tên phòng
+        return res.json({
+            success: true,
+            data: {
+                roomName: booking.room_id.room_name, // Tên phòng từ Room
+            },
+        });
+    } catch (error) {
+        console.error("Lỗi server:", error);
+        return res.status(500).json({ message: "Lỗi server" });
+    }
+});
+router.get("/booking/building_name/:bookingId", async (req, res) => {
+    const { bookingId } = req.params;
+
+    try {
+        // Tìm booking theo bookingId và populate room_id
+        const booking = await Booking.findById(bookingId).populate('room_id');
+        if (!booking || !booking.room_id || !booking.room_id.building_id) {
+            return res.status(404).json({ message: 'Không tìm thấy thông tin phòng hoặc tòa nhà' });
+        }
+
+        // Tìm tòa nhà dựa trên building_id của phòng
+        const building = await Building.findById(booking.room_id.building_id);
+        if (!building) {
+            return res.status(404).json({ message: 'Không tìm thấy tòa nhà' });
+        }
+
+        // Trả về tên tòa nhà
+        return res.json({
+            success: true,
+            data: {
+                buildingName: building.nameBuilding, // Trả về tên tòa nhà
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Lỗi server' });
+    }
+});
 
 module.exports = router;
