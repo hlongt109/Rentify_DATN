@@ -1,13 +1,13 @@
 let building = []
-// let userId = localStorage.getItem('user_id');
-// console.log(userId);
+let landlord_id = localStorage.getItem('user_id');
+console.log(landlord_id);
 
 let search = '';
 
 // Lấy thông tin các tòa nhà
 const fetchBuildings = async () => {
     try {
-        const response = await axios.get(`/api/buildings/${userId}`);
+        const response = await axios.get(`/api/buildings/${landlord_id}`);
         console.log(response.data); // Kiểm tra cấu trúc dữ liệu
 
         if (Array.isArray(response.data)) {

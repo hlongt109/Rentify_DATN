@@ -14,7 +14,6 @@
             max-width: 100%;
         }
 
-
         .table thead {
             background-color: #f9f9f9;
             text-align: left;
@@ -57,22 +56,98 @@
             line-height: 1.66;
             font-weight: 600;
         }
+
+        #iconSelectContainer {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            /* 5 cột, mỗi cột chiếm 1 phần bằng nhau */
+            gap: 10px;
+            /* Khoảng cách giữa các biểu tượng */
+            padding: 10px;
+            /* Thêm khoảng cách bên trong */
+
+        }
+
+        .icon-option {
+            width: 30px;
+            /* Chiều rộng mỗi biểu tượng */
+            height: 80px;
+            text-align: center;
+            /* Căn giữa nội dung bên trong */
+            cursor: pointer;
+            /* Hiệu ứng trỏ chuột */
+            border: 2px solid transparent;
+            /* Đường viền mặc định */
+            border-radius: 8px;
+            /* Bo góc biểu tượng */
+            transition: border 0.3s;
+            /* Hiệu ứng khi hover */
+        }
+
+        .icon-option img {
+            width: 100%;
+            /* Chiếm toàn bộ chiều rộng của .icon-option */
+            height: auto;
+            /* Tỷ lệ ảnh không bị méo */
+            border-radius: 4px;
+            /* Bo góc ảnh */
+        }
+
+        .icon-option:hover {
+            border-color: #007bff;
+            /* Đổi màu viền khi hover */
+        }
+
+        .icon-option p {
+            margin-top: 5px;
+            font-size: 14px;
+            /* Kích thước chữ nhỏ gọn */
+            color: #333;
+        }
+
+        .icon-option {
+            cursor: pointer;
+            border: 2px solid transparent;
+            padding: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        .icon-option.selected {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
     </style>
 </head>
 
 <body>
 
+    <!-- Header -->
 
-    <h2 class="text-center" style="color: rgb(0, 0, 0);">Danh sách dịch vụ</h2>
+    <div class="d-flex align-items-center justify-content-between mb-4 position-relative mx-3" style="height: 100px;">
+        <!-- Back button -->
+        <div></div>
+
+        <!-- Centered title -->
+        <div class="mx-auto text-center">
+            <h1 class="text-primary mb-1">Quản lý nội thất</h1>
+        </div>
+
+        <!-- Add button -->
+        <button class="btn btn-primary border" style="font-weight: 600;" id="btnAdd">
+            Thêm nội thất
+        </button>
+    </div>
+
+    <!-- <h2 class="text-center" style="color: rgb(0, 0, 0);">Danh sách dịch vụ</h2> -->
 
     <div class="container-fluid mb-4">
-
         <!-- add new -->
-        <div class="container my-3">
+        <!-- <div class="container my-3">
             <button id="btnAdd" class="btn btn-success btn-lg">
                 <i class="bi bi-plus-circle"></i> Add New Service
             </button>
-        </div>
+        </div> -->
+
         <!-- Modal Thêm Dịch vụ -->
         <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -83,24 +158,65 @@
                     </div>
                     <div class="modal-body">
                         <form id="addUserForm" enctype="multipart/form-data">
+
+
+                            <!-- Khu vực chọn biểu tượng -->
                             <div class="mb-3">
-                                <label for="name" class="form-label">Tên dịch vụ</label>
-                                <input type="text" class="form-control" id="name" placeholder="Nhập tên dịch vụ"
-                                    required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Mô tả</label>
-                                <textarea class="form-control" id="description" rows="3" placeholder="Mô tả dịch vụ"
-                                    required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="price" class="form-label">Giá</label>
-                                <input type="number" class="form-control" id="price" placeholder="Nhập giá" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="photos" class="form-label">Ảnh dịch vụ</label>
-                                <input type="file" class="form-control" id="photos" name="photos" accept="image/*"
-                                    multiple />
+                                <label for="photos" class="form-label">Chọn biểu tượng nội thất</label>
+                                <div id="iconSelectContainer">
+                                    <!-- Đây là ví dụ về 10 biểu tượng nội thất có thể tùy chỉnh theo nhu cầu -->
+                                    <div class="icon-option" data-name="Sofa" data-icon="/public/icons/sofa.png">
+                                        <img src="/public/icons/sofa.png" alt="Sofa" class="img-fluid">
+                                        <p>Sofa</p>
+                                    </div>
+                                    <div class="icon-option" data-name="Bàn ăn" data-icon="/images/icons/table.png">
+                                        <img src="/public/icons/table.png" alt="Bàn ăn" class="img-fluid">
+                                        <p>Bàn ăn</p>
+                                    </div>
+                                    <!-- Thêm các biểu tượng khác ở đây -->
+                                    <div class="icon-option" data-name="Bathroom"
+                                        data-icon="/public/icons/bathroom.png">
+                                        <img src="/public/icons/bathroom.png" alt="Bathroom" class="img-fluid">
+                                        <p>Nhà tắm</p>
+                                    </div>
+                                    <div class="icon-option" data-name="dieuhoa" data-icon="/public/icons/dieuhoa.png">
+                                        <img src="/public/icons/dieuhoa.png" alt="dieuhoa" class="img-fluid">
+                                        <p>Điều hòa</p>
+                                    </div>
+                                    <div class="icon-option" data-name="Elevator"
+                                        data-icon="/public/icons/elevator.png">
+                                        <img src="/public/icons/elevator.png" alt="Elevator" class="img-fluid">
+                                        <p>Thang máy</p>
+                                    </div>
+                                    <div class="icon-option" data-name="Garbage_bag"
+                                        data-icon="/public/icons/garbage_bag.png">
+                                        <img src="/public/icons/garbage-bag.png" alt="Garbage_bag" class="img-fluid">
+                                        <p>Dọn rác</p>
+                                    </div>
+                                    <div class="icon-option" data-name="Kitchen" data-icon="/public/icons/kitchen.png">
+                                        <img src="/public/icons/kitchen.png" alt="Kitchen" class="img-fluid">
+                                        <p>Gian bếp</p>
+                                    </div>
+                                    <div class="icon-option" data-name="Bed" data-icon="/public/icons/bed.png">
+                                        <img src="/public/icons/bed.png" alt="Bed" class="img-fluid">
+                                        <p>Giường</p>
+                                    </div>
+                                    <div class="icon-option" data-name="Tulanh" data-icon="/public/icons/tulanh.png">
+                                        <img src="/public/icons/tulanh.png" alt="Tulanh" class="img-fluid">
+                                        <p>Tủ lạnh </p>
+                                    </div>
+                                    <div class="icon-option" data-name="Nonglanh"
+                                        data-icon="/public/icons/nonglanh.png">
+                                        <img src="/public/icons/nonglanh.png" alt="Nonglanh" class="img-fluid">
+                                        <p>Bình nóng lạnh</p>
+                                    </div>
+
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Mô tả</label>
+                                    <textarea class="form-control" id="description" rows="3" placeholder="Mô tả dịch vụ"
+                                        required></textarea>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">Thêm mới</button>
                         </form>
@@ -108,7 +224,6 @@
                 </div>
             </div>
         </div>
-
 
         <!-- Modal: Sửa dịch vụ -->
         <div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel"
@@ -124,24 +239,13 @@
                             <input type="hidden" id="editServiceId" />
                             <div class="mb-3">
                                 <label for="editName" class="form-label">Tên Dịch Vụ</label>
-                                <input type="text" class="form-control" id="editName" required />
+                                <input type="text" class="form-control" id="editName" disabled />
                             </div>
                             <div class="mb-3">
                                 <label for="editDescription" class="form-label">Mô Tả</label>
                                 <textarea class="form-control" id="editDescription" rows="3" required></textarea>
                             </div>
-                            <div class="mb-3">
-                                <label for="editPrice" class="form-label">Giá Dịch Vụ</label>
-                                <input type="number" class="form-control" id="editPrice" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="editPhotos" class="form-label">Ảnh Dịch Vụ</label>
-                                <input type="file" class="form-control" id="editPhotos" name="editPhotos"
-                                    accept="image/*" multiple />
-                            </div>
 
-                            <!-- Phần tử để hiển thị ảnh hiện tại -->
-                            <div id="editPhotoPreview" class="mb-3"></div>
 
                             <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                         </form>
@@ -155,57 +259,20 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>STT</th>
-                        <th>Dịch vụ</th>
-                        <th>Mô tả</th>
-                        <th>Giá tiền</th>
-                        <th>Hành động</th>
+                        <th style="width: 10%;">STT</th>
+                        <th style="width: 30%;">Dịch vụ</th>
+                        <th style="width: 40%;">Mô tả</th>
+                        <th style="width: 30%;">Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <% if (data && data.length> 0) { %>
-                        <% data.forEach((item,index)=> { %>
-                            <tr>
-                                <td>
-                                    <%= index + 1 %>
-                                </td>
-                                <td>
-                                    <%= item.name || "Chưa có tên" %>
-                                </td>
-                                <td>
-                                    <%= item.description || "Không có mô tả" %>
-                                </td>
-                                <td>
-                                    <%= item.price || "Không có giá" %>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-primary btn-sm" data-show-list='<%- JSON.stringify(item) %>'
-                                        onclick="openDetailModal(this)">
-                                        Xem chi tiết
-                                    </button>
-                                    <button class="btn btn-warning btn-sm"
-                                        onclick="editService('<%= item._id %>', '<%= item.name %>', '<%= item.description %>', '<%= item.price %>')">
-                                        Sửa
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= item._id %>')">
-                                        Xóa
-                                    </button>
-                                </td>
-                            </tr>
-                            <% }) %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="4" class="text-center">Không có dịch vụ nào được tìm thấy.</td>
-                                    </tr>
-                                    <% } %>
+                <tbody id="serviceTableBody">
+                    <!-- Dữ liệu sẽ được hiển thị ở đây -->
                 </tbody>
             </table>
         </div>
 
-
-
-
     </div>
+
     <!-- Modal for displaying details -->
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -225,174 +292,231 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // const service = [];
-        // let userId = localStorage.getItem('user_id');
-        
+        async function loadServices() {
+            try {
+                let userId = localStorage.getItem('user_id');
+                const response = await fetch(`/api/services_mgr/list/${userId}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch services');
+                }
+
+                const data = await response.json();
+                const services = data.data;
+
+                const tbody = document.getElementById("serviceTableBody");
+                tbody.innerHTML = '';
+
+                services.forEach((service, index) => {
+                    const tr = document.createElement("tr");
+
+                    tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${service.name}</td>
+                    <td>${service.description}</td>
+                
+                     <td>
+                        <div class="d-flex justify-content-between w-100">
+                            <button class="btn btn-info btn-sm" style="width: 33%" onclick="openDetailModal('${service._id}')">Xem chi tiết</button>
+                            <button class="btn btn-warning btn-sm mx-2" style="width: 33%" onclick="editService('${service._id}', '${service.name.replace(/'/g, "\\'")}', '${service.description.replace(/'/g, "\\'")}', '${service.photos}')">Sửa</button>
+                            <button class="btn btn-danger btn-sm" style="width: 33%" onclick="deleteService('${service._id}')">Xóa</button>
+                        </div>
+                    </td>
+                `;
+
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error loading services:', error);
+            }
+        }
+
+        function openDetailModal(serviceId) {
+            fetch(`/api/services_mgr/detail/${serviceId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Service not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Kiểm tra xem data có tồn tại và chứa thông tin dịch vụ hay không
+                    console.log('API response:', data);  // In ra phản hồi API để kiểm tra
+
+                    if (!data || !data.data) {
+                        throw new Error('Invalid service data');
+                    }
+
+                    const service = data.data;
+                    const modalContent = document.getElementById('modalContent');
+
+                    // Kiểm tra và xử lý phần ảnh dịch vụ
+                    if (service.photos && Array.isArray(service.photos) && service.photos.length > 0) {
+                        modalContent.innerHTML = `
+                    <h5>Ảnh dịch vụ:</h5>
+                    <div id="serviceImages">
+                        ${service.photos.map(photo =>
+                            `<img src="${photo}" class="img-fluid" style="max-width: 100%; height: auto; margin-bottom: 10px;">`
+                        ).join('')}
+                    </div>
+                `;
+                    } else {
+                        modalContent.innerHTML = '<p>No images available for this service.</p>';
+                    }
+
+                    // Mở modal chi tiết
+                    new bootstrap.Modal(document.getElementById('detailModal')).show();
+                })
+                .catch(err => {
+                    console.error('Error fetching details:', err);
+                    const modalContent = document.getElementById('modalContent');
+                    modalContent.innerHTML = `<p>Error: ${err.message}</p>`;
+                    new bootstrap.Modal(document.getElementById('detailModal')).show();
+                });
+        }
+
+
+        // Hàm hiển thị modal sửa dịch vụ với thông tin hiện tại của dịch vụ
+        function editService(id, name, description, photos) {
+            document.getElementById('editServiceId').value = id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editDescription').value = description;
+
+
+
+            if (photos && Array.isArray(photos) && photos.length > 0) {
+                photos.forEach(photo => {
+                    const img = document.createElement('img');
+                    img.src = photo;
+                    img.className = 'img-fluid';
+                    img.style = 'max-width: 100%; height: auto; margin-bottom: 10px;';
+                    photoPreview.appendChild(img);
+                });
+            }
+
+            // Mở modal sửa dịch vụ
+            new bootstrap.Modal(document.getElementById('editServiceModal')).show();
+        }
+
+        // Xử lý submit form sửa dịch vụ
+        document.getElementById('editServiceForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const data = {
+                id: document.getElementById('editServiceId').value,
+                description: document.getElementById('editDescription').value,
+            };
+
+            let serviceId = data.id;
+
+            try {
+                const response = await fetch(`/api/services_mgr/update/${serviceId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Dịch vụ đã được cập nhật thành công!');
+                    const editServiceModal = bootstrap.Modal.getInstance(document.getElementById('editServiceModal'));
+                    editServiceModal.hide();
+                    loadServices();
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error details:', errorData);
+                    alert('Không thể cập nhật dịch vụ: ' + errorData.message);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('Đã xảy ra lỗi: ' + error.message);
+            }
+        });
+
+
+
+
+
+        function deleteService(serviceId) {
+            if (confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) {
+                fetch(`/api/services_mgr/delete/${serviceId}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        //loadServices();
+                        window.location.reload();
+                    })
+                    .catch(error => console.error('Error deleting service:', error));
+            }
+        }
+
+
+        // add
         document.getElementById("btnAdd").addEventListener("click", function () {
-            // Mở modal thêm dịch vụ
             const addUserModal = new bootstrap.Modal(document.getElementById("addUserModal"));
             addUserModal.show();
         });
-        document.getElementById("addUserForm").addEventListener("submit", async (e) => {
-            e.preventDefault(); // Ngăn form reload trang
 
-            // Lấy dữ liệu từ form
-            const name = document.getElementById("name").value;
-            const description = document.getElementById("description").value;
-            const price = document.getElementById("price").value;
-            const photos = document.getElementById("photos").files;
+        // add
+        document.getElementById("btnAdd").addEventListener("click", function () {
+            // Mở modal thêm dịch vụ
+            const addUserModal = new bootstrap.Modal(document.getElementById("addUserModal"));
+            addUserModal.show(); // Sử dụng show() để mở modal
+        });
 
-            // Tạo FormData để xử lý file upload
-            const formData = new FormData();
-            formData.append("name", name);
-            formData.append("description", description);
-            formData.append("price", price);
+        document.addEventListener('DOMContentLoaded', () => {
+            const iconOptions = document.querySelectorAll('.icon-option');
+            let selectedIcon = null;
 
-            // Duyệt qua các tệp ảnh được chọn và thêm vào formData
-            for (const file of photos) {
-                formData.append("photos", file);
-            }
-           
-            try {
-                // Gửi dữ liệu tới API
-                const response = await fetch(`/api/services/add/${userId}`, {
-                    method: "POST",
-                    body: formData, // Gửi dữ liệu dạng multipart/form-data
+            // Lắng nghe sự kiện click để chọn biểu tượng
+            iconOptions.forEach(icon => {
+                icon.addEventListener('click', function () {
+                    iconOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedIcon = {
+                        name: this.querySelector('p').innerText,
+                        photos: this.getAttribute('data-icon')
+                    };
+
+                    console.log('Selected icon:', selectedIcon);
                 });
+            });
 
-                const result = await response.json();
-                if (response.ok) {
-                    alert("Thêm dịch vụ thành công!");
-                    const addUserModal = bootstrap.Modal.getInstance(document.getElementById("addUserModal"));
-                    addUserModal.hide(); // Đóng modal
-                    e.target.reset(); // Xóa dữ liệu trong form
-                    window.location.reload(); // Làm mới trang
-                } else {
-                    alert(`Thêm dịch vụ thất bại: ${result.message}`);
+            // Xử lý form submit
+            document.getElementById('addUserForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                if (!selectedIcon) {
+                    alert('Vui lòng chọn một biểu tượng nội thất.');
+                    return;
                 }
-            } catch (error) {
-                console.error("Lỗi khi thêm dịch vụ:", error);
-                alert("Đã xảy ra lỗi khi thêm dịch vụ.");
-            }
-        });
 
+                // Tạo FormData và gửi dữ liệu
+                const formData = new FormData();
+                formData.append('name', selectedIcon.name);    // Lưu tên biểu tượng vào name
+                formData.append('photos', selectedIcon.photos); // Lưu đường dẫn ảnh vào image
+                formData.append('description', document.getElementById('description').value);
 
-
-
-        //xem chi tiet
-        function openDetailModal(button) {
-            const showList = JSON.parse(button.getAttribute('data-show-list'));
-
-            const modalContent = document.getElementById('modalContent');
-            modalContent.innerHTML = ''; // Xóa nội dung cũ
-
-            // Hiện ảnh
-            if (showList.photos && showList.photos.length > 0) {
-                const photoSection = document.createElement('div');
-                photoSection.innerHTML = '<h3>Ảnh</h3>';
-                showList.photos.forEach(photo => {
-                    const img = document.createElement('img');
-                    img.src = `/public/uploads/${photo}`;
-                    img.alt = 'Ảnh';
-                    img.className = 'img-fluid mb-2'; // Thêm class để responsive
-                    photoSection.appendChild(img);
+                let userId = localStorage.getItem('user_id');
+                const response = await fetch(`/api/services/add/${userId}`, {
+                    method: 'POST',
+                    body: formData
                 });
-                modalContent.appendChild(photoSection);
-            }
-            const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
-            detailModal.show();
-        }
-        //sua
-        // Chức năng mở modal sửa dịch vụ
-        function editService(serviceId, currentName, currentDescription, currentPrice, currentPhotos = []) {//, currentPhotos
-            document.getElementById("editServiceId").value = serviceId;
-            document.getElementById("editName").value = currentName;
-            document.getElementById("editDescription").value = currentDescription;
-            document.getElementById("editPrice").value = currentPrice;
 
-            // Hiển thị ảnh hiện tại (nếu có)
-            const editPhotoPreview = document.getElementById("editPhotoPreview");
-            editPhotoPreview.innerHTML = ''; // Xóa ảnh cũ nếu có
-
-            currentPhotos.forEach(photos => {
-                const img = document.createElement("img");
-                img.src = `/public/uploads/${photos}`;
-                img.alt = "Ảnh hiện tại";
-                img.className = "img-fluid img-thumbnail me-2";
-                img.style.width = "100px";
-                editPhotoPreview.appendChild(img);
+                if (response.ok) {
+                    alert('Dịch vụ đã được thêm thành công!');
+                    window.location.reload();
+                } else {
+                    alert('Không thể thêm dịch vụ!');
+                }
             });
-
-            const editServiceModal = new bootstrap.Modal(document.getElementById("editServiceModal"));
-            editServiceModal.show();
-        }
-
-        // Xử lý khi nhấn nút "Lưu thay đổi" trong modal sửa
-        document.getElementById("editServiceForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const serviceId = document.getElementById("editServiceId").value;
-            const name = document.getElementById("editName").value;
-            const description = document.getElementById("editDescription").value;
-            const price = document.getElementById("editPrice").value;
-            const photosInput = document.getElementById("editPhotos");
-            if (!photosInput) {
-                console.error("Không tìm thấy phần tử với ID 'editPhotos'.");
-                return;
-            }
-            const photos = photosInput.files;
-
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('description', description);
-            formData.append('price', price);
-
-            // Duyệt qua các ảnh mới và thêm vào FormData
-            for (const file of photos) {
-                formData.append("photos", file);
-            }
-
-            // Gửi yêu cầu PUT tới API mà không cần Content-Type trong header
-            const response = await fetch(`/api/services_mgr/update/${serviceId}`, {
-                method: 'PUT',
-                body: formData,
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                alert("Cập nhật dịch vụ thành công!");
-                const editServiceModal = bootstrap.Modal.getInstance(document.getElementById("editServiceModal"));
-                editServiceModal.hide();
-                window.location.reload();
-            } else {
-                alert(`Lỗi: ${data.message}`);
-            }
         });
 
-        //xoa
-        function confirmDelete(id) {
-            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                fetch(`/api/services1/${id}`, {
-                    method: 'DELETE'
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Xóa không thành công');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        alert(data.message || 'Xóa thành công');
-                        window.location.reload(); // Quay lại trang danh sách bài đăng
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        alert('Đã xảy ra lỗi khi xóa');
-                    });
-            }
-        }
-
+        loadServices();
     </script>
+
 </body>
 
 </html>

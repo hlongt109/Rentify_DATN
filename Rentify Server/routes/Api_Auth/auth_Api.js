@@ -6,9 +6,10 @@ const bcrypt = require('bcrypt');
 // model
 const User = require("../../models/User");
 // send email service
-const {transporter} = require("../../config/common/mailer")
+const { transporter } = require("../../config/common/mailer")
 // upload file (image,images, video)
-const uploadFile = require("../../config/common/upload")
+const uploadFile = require("../../config/common/upload");
+const handleServerError = require("../../utils/errorHandle");
 
 // api 
 router.get("/rentify/login", (req, res) => {
@@ -74,6 +75,7 @@ router.post("/rentify/register", async (req, res) => {
             gender: data.gender,
             address: data.address,
             profile_picture_url: "",
+            bankAccount: [],
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         });
@@ -98,6 +100,64 @@ router.post("/rentify/register", async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: error.message || 'Server error' });
+    }
+});
+// check bankAccount
+router.get("/rentify/user/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const hasBankAccount = user.bankAccount && user.bankAccount.bank_name && user.bankAccount.bank_number && user.bankAccount.qr_bank;
+
+        res.status(200).json({
+            data: user,
+            hasBankAccount: !!hasBankAccount
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// cập nhật thông tin bank
+router.put("/rentify/user/:id", uploadFile.single('qr_bank'), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { bank_name, bank_number, username } = req.body; // Lấy dữ liệu từ form
+        const file = req.file; // Lấy file (ảnh mã QR)
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ messenger: 'User not found' });
+        }
+
+        let qrImage = "";
+        if (file) {
+            qrImage = `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`;
+        }
+
+        user.bankAccount = {
+            bank_name,
+            bank_number,
+            qr_bank: qrImage, 
+            username,
+        };
+
+        await user.save();
+
+        return res.status(200).json({
+            messenger: 'User information updated successfully',
+            data: user
+        });
+
+    } catch (error) {
+        console.error(error);
+        handleServerError(res, error)
     }
 });
 

@@ -104,11 +104,13 @@
             display: flex;
             justify-content: space-between;
         }
+
         .form-select.form-select-lg {
             height: 33px;
             border-color: lightgray;
             border-radius: 5px;
         }
+
         .input_style {
             height: 35px;
             border-radius: 5px;
@@ -149,15 +151,18 @@
 
                     <div class="col-md-4">
                         <label for="type-fee" class="form-label">Lọc theo loại</label>
-                        <select class="form-select form-select-lg mb-3 px-2" id="type-fee" aria-label="Chọn tháng và năm">
+                        <select class="form-select form-select-lg mb-3 px-2" id="type-fee"
+                            aria-label="Chọn tháng và năm">
                             <option selected value="electric"> Tiền điện</option>
                             <option value="water"> Tiền nước</option>
+                            <option value="internet"> Tiền Internet</option>
                         </select>
                     </div>
                     <!-- Dropdown chọn tháng năm -->
                     <div class="col-md-4">
                         <label for="month-year" class="form-label">Lọc theo tháng</label>
-                        <select class="form-select form-select-lg mb-3 px-2" id="month-year" aria-label="Chọn tháng và năm">
+                        <select class="form-select form-select-lg mb-3 px-2" id="month-year"
+                            aria-label="Chọn tháng và năm">
                             <option selected value="">-- Chọn tháng --</option>
                         </select>
                     </div>
@@ -207,6 +212,7 @@
                 <select class="form-select form-select-lg mb-3 px-2" id="typeSelected">
                     <option value="electric" selected>Tiền điện</option>
                     <option value="water">Tiền nước</option>
+                    <option value="internet">Tiền Internet</option>
                 </select>
             </div>
 
@@ -221,7 +227,8 @@
             <!-- Input Rows -->
             <div style="margin-top: 10px;">
                 <label style="width: 150px;">Mô tả:</label>
-                <input class="input_style border px-2" style="margin-right: 50px;" type="text" id="describe" placeholder="Nhập mô tả">
+                <input class="input_style border px-2" style="margin-right: 50px;" type="text" id="describe"
+                    placeholder="Nhập mô tả">
                 <label style="width: 150px;">Số tiền:</label>
                 <input class="input_style border px-2" type="number" id="fee" placeholder="Nhập số tiền">
             </div>
@@ -254,7 +261,7 @@
         window.history.back();
     }
     //
-    // let userId = localStorage.getItem('user_id');
+    let landlord_id = localStorage.getItem('user_id');
     // console.log("userId :", userId)
     let buildings = [];
     let isMonthLoad = true;
@@ -268,7 +275,7 @@
     // ============ Building ===========
     const getListBuildings = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${userId}`);
+            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${landlord_id}`);
             const data = await res.json();
             if (res.ok) {
                 buildings = data.data;
@@ -432,7 +439,15 @@
                 html += `<div class="col-md-4 mb-4">
                             <div class="border p-3 rounded shadow-sm d-flex justify-content-between align-items-center">
                                 <div class="left-side">
-                                    <strong>${invoice.type_invoice === "electric" ? "Hóa đơn tiền điện" : "Hóa đơn tiền nước"}</strong><br>
+                                    <strong>
+                                        ${invoice.type_invoice === "electric"
+                        ? "Hóa đơn tiền điện"
+                        : invoice.type_invoice === "water"
+                            ? "Hóa đơn tiền nước"
+                            : invoice.type_invoice === "internet"
+                                ? "Hóa đơn tiền Internet"
+                                : "Hóa đơn không xác định"}
+                                    </strong><br>
                                     <div class="mb-0 mt-1" style="font-size: 14px;">
                                         <span style="font-size: small; color: #777; padding-right:9px;">Tháng:</span>
                                         <span>${new Date(invoice.created_at).toLocaleString('vi-VN', { month: 'long' })}</span>
@@ -597,7 +612,8 @@
         const typeSelect = document.getElementById('typeSelected');
         const types = [
             { value: 'electric', label: 'Tiền điện' },
-            { value: 'water', label: 'Tiền nước' }
+            { value: 'water', label: 'Tiền nước' },
+            { value: 'internet', label: 'Tiền Internet' },
         ];
         typeSelect.innerHTML = types.map(type => `
         <option value="${type.value}" ${type.value === 'electric' ? 'selected' : ''}>
@@ -624,8 +640,25 @@
             ? new Date(year, selectMonth - 1, today.getDate()) // Giữ nguyên ngày nếu là tháng hiện tại
             : new Date(year, selectMonth - 1, 10);
 
+        const description = [
+            {
+                service_name:
+                    typeSelect === "electric"
+                        ? "Tiền điện"
+                        : typeSelect === "water"
+                            ? "Tiền nước"
+                            : typeSelect === "internet"
+                                ? "Tiền Internet"
+                                : "Dịch vụ không xác định",
+                quantity: 1,
+                price_per_unit: fee,
+                total: fee
+            }
+        ];
+
         const invoice = {
             building_id: buildingId,
+            description: description,
             describe: describe,
             type_invoice: typeSelect,
             amount: fee,

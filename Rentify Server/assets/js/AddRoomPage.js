@@ -173,6 +173,7 @@ document.getElementById('addUpdateRoomForm').addEventListener('submit', async fu
     const roomType = document.getElementById('room_type').value;
     const description = document.getElementById('description').value;
     const price = document.getElementById('price').value;
+    const decrease = document.getElementById('decrease').value;
     const size = document.getElementById('size').value;
     const limitPerson = document.getElementById('limit_person').value;
     const status = document.getElementById('status').value;
@@ -187,7 +188,7 @@ document.getElementById('addUpdateRoomForm').addEventListener('submit', async fu
 
     console.log("Filtered Service IDs:", service);
 
-    if (!id || !roomName || !roomType || !description || !price || !size || !status) {
+    if (!id || !roomName || !roomType || !description || !price || !size || !status || !decrease) {
         alert('Một số trường dữ liệu không hợp lệ hoặc không tìm thấy.');
         return;
     }
@@ -197,6 +198,7 @@ document.getElementById('addUpdateRoomForm').addEventListener('submit', async fu
     formData.append('room_type', roomType);
     formData.append('description', description);
     formData.append('price', price);
+    formData.append('decrease', decrease);
     formData.append('size', size);
 
     // Thêm từng phần tử của amenities vào FormData
@@ -292,6 +294,30 @@ document.getElementById('addUpdateRoomForm').addEventListener('submit', async fu
             backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
             duration: 3000,
         }).showToast();
+    }
+});
+
+const decreaseInput = document.getElementById('decrease');
+
+// Xóa giá trị mặc định khi focus vào trường nhập
+decreaseInput.addEventListener('focus', () => {
+    if (decreaseInput.value === '0') {
+        decreaseInput.value = '';
+    }
+});
+
+// Hiển thị lại 0 nếu trường nhập bị bỏ trống khi blur
+decreaseInput.addEventListener('blur', () => {
+    if (decreaseInput.value === '') {
+        decreaseInput.value = '0';
+    }
+});
+
+// Ngăn nhập giá trị âm
+decreaseInput.addEventListener('input', () => {
+    // Nếu giá trị âm, set lại thành 0
+    if (parseFloat(decreaseInput.value) < 0) {
+        decreaseInput.value = '0';
     }
 });
 

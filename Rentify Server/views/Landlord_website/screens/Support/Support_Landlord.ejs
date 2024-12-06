@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Đảm bảo bảng có chiều rộng đầy đủ và tự động căn chỉnh các cột */
+        #supportTable {
+            width: 100%;
+            table-layout: fixed;
+            /* Sử dụng fixed layout để các cột có độ rộng đều nhau */
+            border-collapse: collapse;
+            /* Gộp các đường biên giữa các ô lại */
+        }
+
+        #supportTable th,
+        #supportTable td {
+            text-align: center;
+            /* Căn giữa nội dung trong các ô */
+            padding: 10px;
+            /* Thêm khoảng cách xung quanh nội dung của ô */
+            border: 1px solid #ccc;
+            /* Thêm đường biên cho các ô */
+        }
+
+        #supportTable th {
+            background-color: #f5f5f5;
+            /* Màu nền cho tiêu đề cột */
+        }
+
+        /* Đảm bảo rằng các cột có chiều rộng bằng nhau */
+        #supportTable td {
+            width: 20%;
+            /* Mỗi cột có chiều rộng 20% của bảng (tổng 5 cột = 100%) */
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            max-width: 100%;
+        }
+
+
+        .table thead {
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+
+        .table td:first-child,
+        .table th:first-child {
+            width: 50px;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            border: none;
+            width: 100%;
+            white-space: normal;
+            vertical-align: middle;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: none;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .table th {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: normal;
+            color: rgb(3, 2, 41);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .table td {
+            font-size: 0.75rem;
+            font-family: Nunito, sans-serif;
+            line-height: 1.66;
+            font-weight: 600;
+        }
+
+
+
+        .status-waiting {
+            font-size: 1rem;
+            color: white;
+            background-color: #dc3545;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .status-completed {
+            font-size: 1rem;
+            color: black;
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        #detailModal .modal-dialog {
+            max-width: 90%;
+            width: auto;
+        }
+
+        #detailModal .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        #detailModal .modal-content {
+            width: 90%;
+            max-width: none;
+        }
+
+        #detailModal img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .modal-body h5 {
+            display: inline-block;
+            margin-bottom: 0;
+            /* Loại bỏ khoảng cách mặc định */
+            padding-right: 10px;
+            /* Thêm khoảng cách bên phải cho tiêu đề */
+        }
+
+        .row.gx-5 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            /* Đảm bảo các phần tử căn chỉnh ở đầu cột */
+        }
+
+        .form-select.form-select-lg {
+            height: 33px;
+            border-color: lightgray;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content-wrapper">
+        <div class="d-flex align-items-center justify-content-between mb-4 position-relative mx-3" style="height: 100px;">
+            <!-- Back button -->
+            <div></div>
+    
+            <!-- Centered title -->
+            <div class="mx-auto text-center">
+                <h1 class="text-primary mb-1">Quản lý các yêu cầu hỗ trợ</h1>
+            </div>
+    
+            <div></div>
+        </div>
+        <!-- Modal for displaying details -->
+        <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailModalLabel">Chi tiết yêu cầu hỗ trợ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="container overflow-hidden text-center">
+                        <div class="row gx-5">
+                            <!-- đây là phần show ảnh -->
+                            <div class="col">
+                                <div class="modal-body" id="modalBody">
+                                    <h5 class="text-start mb-3 text-primary">Hình ảnh</h5>
+                                    <div id="modalContent"></div>
+                                </div>
+                            </div>
+
+                            <!-- show chi tiết phần dữ liệu ở đây -->
+                            <div class="col" id="showSupport">
+                                <div class="modal-body">
+                                    <h5 class="text-start mb-3">Nội dung</h5> <!-- Tiêu đề "Nội dung" -->
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal: Sửa Role -->
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModalLabel">Edit Support</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editUserForm">
+                            <input type="hidden" id="editUserId" />
+                            <div class="mb-3">
+                                <label for="editRole" class="form-label">Status</label>
+                                <select class="form-select" id="editRole" required>
+                                    <option value="1">Đang đợi</option>
+                                    <option value="0">Đã hoàn thành</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container-fluid my-4">
+            <div class="d-flex align-items-cente">
+                <label for="roomFilter" class="mr-2 fw-bold">Lọc phòng</label>
+                <select class="form-select form-select-lg px-2" id="roomFilter" style="min-width: 200px;">
+                    <option value="">Tất cả</option>
+                    <option value="supported">Đã hỗ trợ</option>
+                    <!-- Các phòng sẽ được thêm động từ server -->
+                </select>
+            </div>
+        </div>
+
+
+        <!-- Thông báo khi không có dữ liệu -->
+        <div id="noDataMessage" class="text-center mt-4" style="display: none;">
+            <p>Hãy chọn một phòng để hiển thị danh sách yêu cầu hỗ trợ.</p>
+        </div>
+
+        <!-- Bảng hiển thị dữ liệu -->
+        <div class="container-fluid my-4">
+            <div class="table-responsive shadow-lg p-3 mb-5 bg-white rounded">
+                <table id="supportTable" class="table table-hover table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Content</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table">
+                        <!-- Nội dung sẽ được render vào đây -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../../../../assets/js/support_script.js"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

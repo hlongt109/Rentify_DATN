@@ -153,7 +153,6 @@ const renderAddressSuggestions = (addresses) => {
 let debounceTimer;
 addressInput.addEventListener('input', (e) => {
     const query = e.target.value.trim();
-
     clearTimeout(debounceTimer);
     if (query.length >= 3) { // Chỉ gọi API khi có ít nhất 3 ký tự
         debounceTimer = setTimeout(() => {
@@ -198,7 +197,9 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
     if (!manager_id || !nameBuilding || !address || !number_of_floors || service.length === 0) {
         return Toastify({
             text: "Vui lòng điền đầy đủ thông tin!",
-            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+            style: {
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+            },
             duration: 3000,
         }).showToast();
     }
@@ -240,7 +241,9 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
         console.error("Lỗi khi cập nhật tòa nhà:", error);
         Toastify({
             text: "Lỗi khi cập nhật tòa nhà!",
-            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+            style: {
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+            },
             duration: 3000,
         }).showToast();
     }
@@ -279,11 +282,11 @@ const renderServiceFees = (selectedServices = []) => {
         const checkbox = document.querySelector(`input[type="checkbox"][value="${service.name}"]`);
         const feeInput = document.querySelector(`input[name="fee_${safeName}"]`);
         const selectedService = selectedServices.find(selected => selected.name === service.name);
-        
+
         if (checkbox && feeInput) {
-            checkbox.checked = selectedService ? true : false; 
-            feeInput.disabled = !checkbox.checked; 
-            feeInput.value = selectedService ? selectedService.price || "" : ""; 
+            checkbox.checked = selectedService ? true : false;
+            feeInput.disabled = !checkbox.checked;
+            feeInput.value = selectedService ? selectedService.price || "" : "";
             console.log(`Service: ${service.name}, Checked: ${checkbox.checked}`);
         } else {
             createServiceItem(service, servicesContainer, selectedService);
@@ -294,7 +297,7 @@ const renderServiceFees = (selectedServices = []) => {
 
 const init = async () => {
     await fetchService(); // Tải dữ liệu dịch vụ và nhân viên
-    if(buildingId){
+    if (buildingId) {
         await fetchBuildingServiceFees();
     }
 
@@ -336,8 +339,8 @@ const createServiceItem = (service, servicesContainer, selectedService = null) =
     feeInput.name = `fee_${safeName}`;
     feeInput.placeholder = "Phí (VNĐ)";
     feeInput.classList.add("form-control", "form-control-sm");
-    feeInput.step = "0.01"; 
-    feeInput.min = "0"; 
+    feeInput.step = "0.01";
+    feeInput.min = "0";
 
     // Đặt trạng thái mặc định cho "add"
     if (selectedService) {
@@ -370,7 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const addServiceButton = document.getElementById("add-service");
 
     serviceFees.forEach(service => {
-        createServiceItem(service, servicesContainer, servicesContainer); 
+        createServiceItem(service, servicesContainer, servicesContainer);
     });
 
     addServiceButton.addEventListener("click", () => {

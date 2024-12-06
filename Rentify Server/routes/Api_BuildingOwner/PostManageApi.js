@@ -62,7 +62,7 @@ router.put("/posts_mgr/:id", uploadFile.fields([
 
         const post = await Post.findById(id);
         if (!post) {
-            return res.status(404).json({ messenger: 'No movie found to update' });
+            return res.status(404).json({ messenger: 'No post found to update' });
         }
 
         let images

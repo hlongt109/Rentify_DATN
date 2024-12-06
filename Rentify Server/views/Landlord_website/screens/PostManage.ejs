@@ -212,8 +212,8 @@
     </div>
 </body>
 <script>
-    // let userId = localStorage.getItem('user_id');
-    console.log("userId :", userId)
+    let landlord_id = localStorage.getItem('user_id');
+    // console.log("userId :", userId)
     let buildings = [];
     let isMonthLoad = 0;
     let selectedBuildingId = null;
@@ -230,7 +230,7 @@
 
     const getListBuildings = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${userId}`);
+            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${landlord_id}`);
             const data = await res.json();
             if (res.ok) {
                 buildings = data.data;
@@ -641,7 +641,7 @@
         const formData = new FormData();
 
         // Thêm các thông tin vào FormData
-        formData.append('user_id', userId);
+        formData.append('user_id', landlord_id);
         formData.append('building_id', buildingId);
         formData.append('room_id', roomId);
         formData.append('title', title);

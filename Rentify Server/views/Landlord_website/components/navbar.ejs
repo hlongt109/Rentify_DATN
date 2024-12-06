@@ -7,12 +7,80 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="../../../assets/style/navbar.css">
   <title>Document</title>
+  <style>
+    /* Dialog styles */
+    .dialog-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .dialog-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 10000;
+    }
+
+    .dialog-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .dialog-buttons button {
+      flex: 1;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .dialog-buttons button.btn-confirm {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .dialog-buttons button.btn-cancel {
+      background-color: #ccc;
+      color: black;
+    }
+
+    .navbar ul li.active a i {
+      background: linear-gradient(45deg, #FFD700, #FFFFFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .navbar ul li a i {
+      color: #ffffff;
+      transition: color 0.3s ease;
+      /* Thêm hiệu ứng chuyển đổi mềm mại */
+    }
+
+    .navbar ul li:not(.active) a:hover i {
+      color: #ccc;
+      /* Hover chỉ áp dụng cho các mục không active */
+    }
+  </style>
 </head>
 
 <body>
   <nav class="navbar">
     <ul>
-      <li>
+      <li class="active"> 
         <a href="/landlord/home">
           <i class="fas fa-home"></i> <span>Trang chủ</span> <!-- Giữ nguyên -->
         </a>
@@ -34,47 +102,106 @@
         </a>
       </li>
       <li>
+        <a href="/landlord/statistic_mrg">
+          <i class="fa-regular fa-clock"></i> <span>Quản lý lịch hẹn</span> <!-- Giữ nguyên -->
+        </a>
+      </li>
+      <li>
         <a href="/landlord/post_mgr">
           <i class="fas fa-thumbtack"></i> <span>Quản lý bài đăng</span> <!-- Thay đổi: biểu tượng ghim bài -->
         </a>
       </li>
       <li>
-        <a id="service-link">
-          <i class="fas fa-cogs"></i> <span>Quản lý dịch vụ</span>
+        <a href="/landlord/services_mgr">
+          <i class="fa-solid fa-couch"></i> <span>Quản lý nội thất</span>
         </a>
       </li>
       <li>
-        <a id="user-link">
+        <a href="/landlord/staffs_mgr">
           <i class="fas fa-user"></i> <span>Quản lý nhân viên</span>
         </a>
       </li>
-      <li>
-        <a href="/landlord/statistic_mrg">
-          <i class="fas fa-chart-bar"></i> <span>Thống kê</span> <!-- Giữ nguyên -->
-        </a>
-      </li>
+
       <li>
         <!-- <a href="/api/supports_mgr"> -->
-        <a id="support-link">
+        <a href="/landlord/support_mgr">
           <i class="fas fa-headset"></i> <span>Hỗ trợ khách hàng</span> <!-- Giữ nguyên -->
         </a>
       </li>
       <li>
-        <a href="/api/home">
-          <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span> <!-- Giữ nguyên -->
+        <a href="/signout" id="logout-link">
+          <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
         </a>
       </li>
     </ul>
   </nav>
-  <script>
 
-    // list service theo ID cua account login 
-    let userId = localStorage.getItem('user_id');
-    document.getElementById('service-link').href = `/landlord/api/services_mgr/list/${userId}`;
-    //list user theo ID cuar landlord
-    document.getElementById('user-link').href = `/landlord/api/staffs_mgr/list/${userId}`;
-    //list support theo ID cuar landlord
-    document.getElementById('support-link').href = `/landlord/api/support_mgr/list/${userId}`;
+  <!-- Dialog for logout confirmation -->
+  <div class="dialog-overlay" id="logout-dialog">
+    <div class="dialog-box">
+      <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+      <div class="dialog-buttons">
+        <button class="btn-confirm" id="confirm-logout">Đăng xuất</button>
+        <button class="btn-cancel" id="cancel-logout">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Lấy phần tử logout-link và logout-dialog
+    const logoutLink = document.getElementById('logout-link');
+    const logoutDialog = document.getElementById('logout-dialog');
+    const confirmLogout = document.getElementById('confirm-logout');
+    const cancelLogout = document.getElementById('cancel-logout');
+
+    // Chặn sự kiện mặc định khi bấm Đăng xuất
+    logoutLink.addEventListener('click', (e) => {
+      e.preventDefault(); // Chặn chuyển hướng
+      logoutDialog.style.display = 'flex'; // Hiển thị hộp thoại
+    });
+
+    // Xác nhận Đăng xuất
+    confirmLogout.addEventListener('click', () => {
+      // Xóa dữ liệu trong localStorage
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('data_user');
+
+      // Thay thế trang hiện tại trong lịch sử
+      window.history.replaceState(null, null, '/api/rentify/login');
+
+      // Chuyển hướng về trang Login
+      window.location.replace('/api/rentify/login');
+    });
+
+    // Hủy Đăng xuất
+    cancelLogout.addEventListener('click', () => {
+      logoutDialog.style.display = 'none'; // Ẩn hộp thoại
+    });
+
+    // ===============================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuItems = document.querySelectorAll('.navbar ul li');
+      const currentPath = window.location.pathname;
+
+      let isActiveSet = false;
+
+      menuItems.forEach(item => {
+        const link = item.querySelector('a');
+        if (link.getAttribute('href') === currentPath) {
+          item.classList.add('active'); // Đặt active cho li
+          isActiveSet = true; // Đánh dấu rằng active đã được thiết lập
+        } else {
+          item.classList.remove('active'); // Loại bỏ active nếu không khớp
+        }
+      });
+
+      // Nếu không có mục nào khớp, đặt menu đầu tiên là active
+      if (!isActiveSet && menuItems.length > 0) {
+        menuItems[0].classList.add('active');
+      }
+    });
+
   </script>
 </body>
 

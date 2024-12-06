@@ -104,11 +104,13 @@
             display: flex;
             justify-content: space-between;
         }
+
         .form-select.form-select-lg {
             height: 33px;
             border-color: lightgray;
             border-radius: 5px;
         }
+
         .input_style {
             height: 35px;
             border-radius: 5px;
@@ -151,7 +153,8 @@
                     <!-- Dropdown chọn tháng năm -->
                     <div class="col-md-4">
                         <label for="month-year" class="form-label">Lọc theo tháng</label>
-                        <select class="form-select form-select-lg mb-3 px-2" id="month-year" aria-label="Chọn tháng và năm">
+                        <select class="form-select form-select-lg mb-3 px-2" id="month-year"
+                            aria-label="Chọn tháng và năm">
                             <option selected value="">-- Chọn tháng --</option>
                         </select>
                     </div>
@@ -186,7 +189,7 @@
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
         <div
             style="background: white; padding: 20px; border-radius: 8px; width: 75%; max-height: 80%; overflow-y: auto;">
-            <h3 id="invoiceFormTitle" style="margin-bottom: 20px;">Tạo hóa đơn phí bảo trì</h3>
+            <h3 id="invoiceFormTitle" style="margin-bottom: 20px;">Tạo hóa đơn phí bảo trì, sửa chữa</h3>
 
             <!-- Select Building -->
             <div>
@@ -200,14 +203,16 @@
             <div class="row align-items-center" style="margin-top: 10px;">
                 <label style="width: 153px; margin-left: 15px;" for="datetime">Thời gian:</label>
                 <div class="">
-                    <input type="text" class="form-control" id="datetime" readonly style="background-color: white; height: 35px;">
+                    <input type="text" class="form-control" id="datetime" readonly
+                        style="background-color: white; height: 35px;">
                 </div>
             </div>
 
             <!-- Input Rows -->
             <div style="margin-top: 10px;">
                 <label style="width: 150px;">Vấn đề:</label>
-                <input class="input_style border px-2" style="margin-right: 50px;" type="text" id="describe" placeholder="Nhập mô tả">
+                <input class="input_style border px-2" style="margin-right: 50px;" type="text" id="describe"
+                    placeholder="Nhập mô tả">
                 <label style="width: 150px;">Số tiền:</label>
                 <input class="input_style border px-2" type="number" id="fee" placeholder="Nhập số tiền">
             </div>
@@ -239,7 +244,7 @@
 
     function goBack() { window.history.back(); }
     // 
-    // let userId = localStorage.getItem('user_id');
+    let landlord_id = localStorage.getItem('user_id');
     // console.log("userId :", userId)
     let buildings = [];
     let isMonthLoad = true;
@@ -253,7 +258,7 @@
     // ============ Building ===========
     const getListBuildings = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${userId}`);
+            const res = await fetch(`http://localhost:3000/api/buildings_mgr/${landlord_id}`);
             const data = await res.json();
             if (res.ok) {
                 buildings = data.data;
@@ -521,7 +526,7 @@
         document.getElementById('fee').value = "";
         staffId = null;
 
-        document.getElementById('invoiceFormTitle').innerText = 'Tạo hóa đơn phí bảo trì';
+        document.getElementById('invoiceFormTitle').innerText = 'Tạo hóa đơn phí bảo trì, sửa chữa';
         document.getElementById('invoiceFormButton').innerText = 'Tạo';
 
         const paymentStatusPending = document.querySelector('input[name="paymentStatus"][value="unpaid"]');
@@ -559,10 +564,19 @@
         datetime.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
 
         // return console.log("date time :", datetime)
+        const description = [
+            {
+                service_name: "Phí bảo trì",
+                quantity: 1,
+                price_per_unit: fee,
+                total: fee
+            }
+        ];
 
         const invoice = {
-            user_id: userId,
+            user_id: landlord_id,
             building_id: buildingId,
+            description: description,
             describe: describe,
             type_invoice: "maintain",
             amount: fee,

@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const User = require('../../models/User');
 const { decode } = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
 
 
 router.get('/staffs_mgr/list/:id', async (req, res) => {
@@ -22,7 +23,7 @@ router.get('/staffs_mgr/list/:id', async (req, res) => {
             return res.render("Landlord_website/screens/QuanLyNhanVien.ejs", { data: [] });
         }
 
-        res.render("Landlord_website/screens/QuanLyNhanVien.ejs", { data }); // Truyền data tới EJS
+        res.json({ data });
     } catch (error) {
         console.error("Error fetching services:", error.message);
         res.status(500).render("Landlord_website/screens/QuanLyNhanVien", { data: [] });
@@ -33,18 +34,23 @@ router.post("/staffs_mgr/add/:id", async (req, res) => {
     try {
         const userId = req.params.id;
         // Kiểm tra dữ liệu đầu vào (req.body)
-        const { username, email, password, role } = req.body;
+        const { username, email, password, role, name, phoneNumber, dob, gender, address } = req.body;
         if (!username || !email || !password || !role) {
             return res.status(400).json({ message: "Thiếu dữ liệu cần thiết!" });
         }
-
+        const hashPassword = await bcrypt.hash(password, 10);
         // Tạo mới tài khoản
         const newUser = new User({
             username,
             email,
-            password,
+            password: hashPassword,
             role,
             landlord_id: userId,  // Gán id người dùng chủ sở hữu
+            name,
+            phoneNumber,
+            dob,
+            gender,
+            address,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         });
@@ -124,6 +130,32 @@ router.delete("/delete_mgr/delete/:id", async (req, res) => {
         res.status(200).json({ message: "Xóa tài khoản thành công" });
     } catch (error) {
         res.status(500).json({ message: "Đã có lỗi xảy ra", error });
+    }
+});
+//lay ten nguoi dung de booking
+router.get("/booking/name", async (req, res) => {
+    const userId = req.query.userId; // Lấy userId từ query string
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'ID người dùng không hợp lệ.' });
+    }
+
+    try {
+        // Tìm người dùng theo userId
+        const user = await User.findById(userId); // Lấy trường 'name' từ User
+
+        if (!user) {
+            return res.status(404).json({ message: 'Người dùng không tìm thấy' });
+        }
+
+        res.json({
+            status: 200,
+            message: 'Lấy tên người dùng thành công',
+            data: user.name // Trả về tên người dùng
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu từ API:', error);
+        res.status(500).json({ message: 'Lỗi server' });
     }
 });
 

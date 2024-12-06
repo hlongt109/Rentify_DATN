@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 var router = express.Router();
 
 const Service = require("../../models/Service");
-const uploadFile = require("../../config/common/upload");
+const uploadFile = require("../../config/common/uploadServices");
 const handleServerError = require("../../utils/errorHandle");
 const { getFormattedDate } = require('../../utils/dateUtils');
 
@@ -25,7 +25,7 @@ router.get("/services_mgr/list/:id", async (req, res) => {
             return res.render("Landlord_website/screens/QuanLydichVu", { data: [] });
         }
 
-        res.render("Landlord_website/screens/QuanLydichVu", { data }); // Truyền data tới EJS
+        res.json({ data }); // Truyền data tới EJS
     } catch (error) {
         console.error("Error fetching services:", error.message);
         res.status(500).render("Landlord_website/screens/QuanLydichVu", { data: [] });
@@ -34,21 +34,37 @@ router.get("/services_mgr/list/:id", async (req, res) => {
 
 
 // details
-router.get("/api/services/:id", async (req, res) => {
+router.get("/services_mgr/detail/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const result = await Service.findById(id);
+
         if (!result) {
             return res.status(404).json({
                 status: 404,
                 messenger: 'Service not found'
             });
         }
-        res.status(200).send(result)
+
+        // Kiểm tra và xử lý ảnh (nếu có)
+        const serviceData = {
+            _id: result._id,
+            name: result.name,
+            description: result.description,
+            price: result.price,
+            photos: result.photos || [], // Nếu không có ảnh, trả về mảng rỗng
+        };
+
+        res.status(200).json({
+            status: 200,
+            data: serviceData // Trả về dữ liệu dưới dạng "data"
+        });
+
     } catch (error) {
         handleServerError(res, error);
     }
-})
+});
+
 // search
 router.get("/api/services", async (req, res) => {
     try {
@@ -83,17 +99,17 @@ router.get("/api/services1", async (req, res) => {
 router.post("/services/add/:id", uploadFile.array('photos'), async (req, res) => {
     try {
         const userId = req.params.id;
-        const { name, description, price } = req.body;
+        const { name, description } = req.body;
 
-        const photos = req.files ? req.files.map(file => file.filename) : [];
+        // Nếu không tải lên tệp ảnh, photos sẽ là một chuỗi chứa đường dẫn icon
+        const photos = req.body.photos ? [req.body.photos] : [];
 
         console.log('Uploaded files:', req.files);
 
         const objService = new Service({
-            photos,
+            photos: photos,
             name,
             description,
-            price,
             landlord_id: userId,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -128,59 +144,41 @@ router.get("/api/services1/:id", async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 })
-router.put("/services_mgr/update/:id", uploadFile.array('photos', 10), async (req, res) => {
+router.put("/services_mgr/update/:id", async (req, res) => {
     try {
-        const { name, description, price } = req.body;
-        const newPhotos = req.files ? req.files.map(file => file.filename) : [];
+        const serviceId = req.params.id;
+        const { description } = req.body;
 
-        if (!name || !description || !price) {
-            return res.status(400).json({
-                status: 400,
-                message: 'Tên, mô tả và giá không được để trống',
-                data: []
-            });
-        }
-        // Kiểm tra sự tồn tại của dịch vụ
-        const service = await Service.findById(req.params.id);
-        if (!service) {
-            return res.status(404).json({
-                status: 404,
-                message: 'Dịch vụ không tìm thấy',
-                data: []
-            });
-        }
-        // Nếu có ảnh mới, thay thế ảnh cũ; nếu không, giữ nguyên ảnh cũ
-        if (newPhotos.length > 0) {
-            service.photos = newPhotos;  // Ghi đè ảnh mới
-        }
-        // Cập nhật dịch vụ
-        service.name = name;
-        service.description = description;
-        service.price = price;
-        service.updated_at = new Date().toISOString();
+        // Log dữ liệu nhận được
+        console.log("Request Body:", req.body);
+        console.log("Uploaded Files:", req.files);
 
-        await service.save(); // Lưu thay đổi vào MongoDB
-        // Trả lại kết quả cập nhật thành công
-        res.json({
-            status: 200,
-            message: 'Cập nhật dịch vụ thành công',
-            data: service
-        });
+        // Tìm và cập nhật tài liệu
+        const updatedService = await Service.findByIdAndUpdate(
+            serviceId,
+            {
+                description,
+                photos: req.files ? req.files.map(file => file.filename) : undefined,
+                updated_at: new Date()
+            },
+            { new: true } // Trả về tài liệu sau khi cập nhật
+        );
 
+        if (!updatedService) {
+            return res.status(404).json({ message: "Dịch vụ không tồn tại!" });
+        }
+
+        return res.status(200).json({ message: "Cập nhật thành công!", service: updatedService });
     } catch (error) {
-        // Xử lý lỗi server
-        console.error(error);
-        res.status(500).json({
-            status: 500,
-            message: 'Lỗi server nội bộ',
-            data: []
-        });
+        console.error("Lỗi server:", error.message);
+        return res.status(500).json({ message: "Đã xảy ra lỗi server!" });
     }
 });
 
 
+
 // delete 
-router.delete("/services1/:id", async (req, res) => {
+router.delete("/services_mgr/delete/:id", async (req, res) => {
     try {
         const { id } = req.params
         const result = await Service.findByIdAndDelete(id);
@@ -204,7 +202,7 @@ router.delete("/services1/:id", async (req, res) => {
 })
 
 // service list
-router.get("/get-services/:landlord_id", async (req, res) => { 
+router.get("/get-services/:landlord_id", async (req, res) => {
     try {
         const landlordId = req.params.landlord_id;
 
@@ -221,7 +219,7 @@ router.get("/get-services/:landlord_id", async (req, res) => {
         const objectId = new mongoose.Types.ObjectId(landlordId);
 
         // Tìm dịch vụ có liên quan đến landlord_id
-        const data = await Service.find({ landlord_id: objectId }); 
+        const data = await Service.find({ landlord_id: objectId });
 
         if (data && data.length > 0) {
             // Nếu có dữ liệu dịch vụ, trả về danh sách dịch vụ

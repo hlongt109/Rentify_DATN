@@ -47,7 +47,7 @@ router.get('/contracts/:id', async (req, res) => {
 
     try {
         const contract = await Contract.findById(id);
-        
+
         if (!contract) {
             return res.status(404).json({ error: 'Contract not found.' });
         }
@@ -162,13 +162,15 @@ router.get('/contracts/available-rooms/:buildingId', async (req, res) => {
 
 // #9. Tạo hợp đồng với ảnh POST: http://localhost:3000/api/contracts/with-images
 router.post('/contracts/with-images', upload.array('photos_contract', 10), async (req, res) => {
-    const { user_id, room_id, content, start_date, end_date, status } = req.body;
+    const { manage_id, building_id, user_id, room_id, content, start_date, end_date, status } = req.body;
     const photos_contract = req.files.map(file => file.path);
 
     try {
         const newContract = new Contract({
-            user_id,
+            manage_id,
+            building_id,
             room_id,
+            user_id: JSON.parse(user_id),
             photos_contract,
             content,
             start_date,
@@ -192,7 +194,7 @@ router.post('/contracts/with-images', upload.array('photos_contract', 10), async
 // #10. Cập nhật ảnh và nội dung hợp đồng PUT: http://localhost:3000/api/contracts/update-images/:id
 router.put('/contracts/update-images/:id', upload.array('photos_contract', 10), async (req, res) => {
     const { id } = req.params;
-    const { content } = req.body;
+    const { user_id, content } = req.body;
     const photos_contract = req.files.map(file => file.path);
 
     try {
@@ -202,17 +204,21 @@ router.put('/contracts/update-images/:id', upload.array('photos_contract', 10), 
             return res.status(404).json({ error: 'Contract not found.' });
         }
 
-        // Delete old photos
-        contract.photos_contract.forEach(photo => {
-            fs.unlink(path.join(photo), (err) => {
-                if (err) {
-                    console.error('Failed to delete old photo:', err);
-                }
+        // Kiểm tra nếu có ảnh mới
+        if (req.files.length > 0) {
+            // Delete old photos
+            contract.photos_contract.forEach(photo => {
+                fs.unlink(path.join(photo), (err) => {
+                    if (err) {
+                        console.error('Failed to delete old photo:', err);
+                    }
+                });
             });
-        });
+            contract.photos_contract = photos_contract; // Gán ảnh mới
+        }
 
-        // Update contract with new photos and content
-        contract.photos_contract = photos_contract;
+        contract.user_id = JSON.parse(user_id),
+        // contract.photos_contract = photos_contract
         contract.content = content;
         contract.created_at = new Date().toISOString();
 
