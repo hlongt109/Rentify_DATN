@@ -768,6 +768,20 @@ fun SelectMedia(
 ) {
     val selectedImages = remember { mutableStateListOf<Uri>() }
     val selectedVideos = remember { mutableStateListOf<Uri>() }
+        val baseUrl = "http://192.168.2.104:3000/"
+
+// Chuyển đổi các đường dẫn ảnh và video từ detail thành Uri, thêm base URL vào trước mỗi đường dẫn
+    val imagesFromDetail = detail.photos?.map { Uri.parse( baseUrl+it) } ?: listOf()
+    val videosFromDetail = detail.videos?.map { Uri.parse(baseUrl+it) } ?: listOf()
+
+    // Gán giá trị ảnh và video từ detail vào selectedImages và selectedVideos
+    if (selectedImages.isEmpty()) {
+        selectedImages.addAll(imagesFromDetail)
+    }
+
+    if (selectedVideos.isEmpty()) {
+        selectedVideos.addAll(videosFromDetail)
+    }
     val launcherImage = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->
