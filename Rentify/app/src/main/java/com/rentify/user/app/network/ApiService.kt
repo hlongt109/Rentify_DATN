@@ -414,6 +414,11 @@ interface APIService {
         @Part image: MultipartBody.Part
     ): Response<InvoiceOfUpdate>
 
+    @PUT("update-status-to-wait/{id}")
+    suspend fun updateStatusToWait(
+        @Path("id") invoiceId: String
+    ): Response<InvoiceOfUpdate>
+
     // thuc hien khi chon thanh toan bang tien mat
     @Multipart
     @POST("create-report")

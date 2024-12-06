@@ -59,6 +59,7 @@ import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutC
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutInterior
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.QRViewModel
+import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
@@ -169,6 +170,7 @@ fun PaymentConfirmationScreen(
                                 status = "1",
                                 imageFiles = listOf()
                             )
+                            qrViewModel.updateStatusInvoice(invoiceId)
                             Toast.makeText(
                                 context,
                                 "Đã ghi nhận thanh toán bằng tiền mặt. Cảm ơn bạn!",

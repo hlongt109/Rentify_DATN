@@ -18,6 +18,10 @@ class QRRepository (private val apiService: APIService) {
         return apiService.updatePaymentImage(invoiceId, image)
     }
 
+    suspend fun updateStatusInvoice(invoiceId: String): Response<InvoiceOfUpdate> {
+        return apiService.updateStatusToWait(invoiceId)
+    }
+
     suspend fun addSupport(
         userId: RequestBody,
         roomId: RequestBody,

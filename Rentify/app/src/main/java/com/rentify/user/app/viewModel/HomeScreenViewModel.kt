@@ -9,6 +9,7 @@ import com.rentify.user.app.model.Model.Room
 import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.HomeScreenRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeScreenViewModel : ViewModel() {
@@ -21,12 +22,16 @@ class HomeScreenViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
     init {
         fetchListRoom()
     }
 
     private fun fetchListRoom(){
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val response = homeScreenRepository.getListOfRandomRooms()
                 if(response.isSuccessful && response.body() != null){
@@ -36,6 +41,8 @@ class HomeScreenViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 _errorMessage.postValue("Failed to fetch room list: ${e.message}")
+            } finally {
+                _isLoading.value = false
             }
         }
     }

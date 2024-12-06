@@ -19,8 +19,12 @@ class ContractViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
     fun getContractDetails(user_id: String){
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val response = contractRepository.getContractDetails(user_id)
                 if(response.isSuccessful && response.body() != null){
@@ -30,6 +34,8 @@ class ContractViewModel : ViewModel() {
                 }
             }catch (e: Exception){
                 _errorMessage.postValue("Failed to fetch contract: ${e.message}")
+            }finally {
+                _isLoading.value = false
             }
         }
     }

@@ -70,6 +70,21 @@ class QRViewModel : ViewModel() {
         }
     }
 
+    fun updateStatusInvoice(invoiceId: String) {
+        viewModelScope.launch {
+            try {
+                val response = qrRepository.updateStatusInvoice(invoiceId)
+                if (response.isSuccessful && response.body() != null) {
+                    _updateStatus.value = response.body()
+                } else {
+                    _errorMessage.value = response.message()
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            }
+        }
+    }
+
     fun addSupport(
         userId: String,
         roomId: String,

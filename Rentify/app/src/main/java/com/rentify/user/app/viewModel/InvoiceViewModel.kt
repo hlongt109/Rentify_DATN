@@ -19,19 +19,24 @@ class InvoiceViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
-    fun fetchListInvoice(room_id: String, status: String){
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    fun fetchListInvoice(room_id: String, status: String) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val response = invoiceRepository.getListInvoice(room_id, status)
-                if(response.isSuccessful && response.body() != null){
+                if (response.isSuccessful && response.body() != null) {
                     _listInvoice.value = response.body()
-                }else{
+                } else {
                     _errorMessage.value = "Failed to fetch invoice: ${response.message()}"
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _errorMessage.value = "Failed to fetch invoice: ${e.message}"
+            } finally {
+                _isLoading.value = false
             }
         }
     }
-
 }

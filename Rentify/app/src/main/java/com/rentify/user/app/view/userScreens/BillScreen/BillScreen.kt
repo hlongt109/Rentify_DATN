@@ -77,6 +77,7 @@ fun BillScreen(
 
     val tabs = listOf(
         "Chưa thanh toán" to "unpaid",
+        "Đang đợi duyệt" to "wait",
         "Đã thanh toán" to "paid"
     )
 
@@ -112,6 +113,16 @@ fun BillScreen(
                                 roomId = roomId,
                                 invoiceViewModel = invoiceViewModel,
                                 status = "unpaid"
+                            )
+                        }
+                    }
+                    "wait" -> {
+                        if (roomId != null) {
+                            WantScreen(
+                                navController = navController,
+                                roomId = roomId,
+                                invoiceViewModel = invoiceViewModel,
+                                status = "wait"
                             )
                         }
                     }
