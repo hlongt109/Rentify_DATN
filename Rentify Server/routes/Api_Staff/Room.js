@@ -392,4 +392,20 @@ router.get('/RoomsForBuilding/:building_id', async (req, res) => {
   }
 });
 
+router.get("/get-room-buildingId/:buildingId", async (req, res) => {
+  try {
+      const buildingId = req.params.buildingId;
+      const rooms = await Room.find({ building_id: buildingId })
+          .populate('service')  // thêm populate để lấy thông tin chi tiết của service
+          .populate('building_id', "serviceFees"); // có thể thêm populate building nếu cần
+      res.json({
+          status: 200,
+          message: "Lấy danh sách phòng thành công",
+          data: rooms
+      });
+  } catch (error) {
+      res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
+  }
+});
+
 module.exports = router
