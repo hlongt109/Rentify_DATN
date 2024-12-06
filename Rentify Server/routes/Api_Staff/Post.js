@@ -133,7 +133,8 @@ router.get('/rooms', async (req, res) => {
 
 router.post('/add',  upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
     try {
-        const { user_id, building_id, room_id, title, content, post_type, status } = req.body;
+        const { user_id, building_id, room_id, title,address, content, post_type, status } = req.body;
+        console.log(req.body); // Kiểm tra xem `address` có trong request hay không
 
         // Kiểm tra giá trị `post_type`
         if (!["roomate", "rent", "seek"].includes(post_type)) {
@@ -146,6 +147,7 @@ router.post('/add',  upload.fields([{ name: 'video' }, { name: 'photo' }]), asyn
             building_id: building_id ?new mongoose.Types.ObjectId(building_id) : null, // Kiểm tra nếu có building_id
             room_id: room_id ?new mongoose.Types.ObjectId(room_id) : null, // Kiểm tra nếu có room_id
             title,
+            address,
             content,
             post_type,
             status: status || 0, // Mặc định là `0`

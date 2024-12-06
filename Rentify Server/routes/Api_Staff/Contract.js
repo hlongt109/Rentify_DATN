@@ -264,7 +264,7 @@ router.put("/update/:id", upload.fields([{ name: "photos_contract" }]), async (r
 });
 router.get('/search', async (req, res) => {
     try {
-        const { userName, buildingRoom, manageId } = req.query; // Thêm manageId vào query
+        const { keyword, manageId } = req.query; // Lấy 'keyword' và 'manageId' từ query string
 
         // Kiểm tra nếu không có manageId, trả về lỗi
         if (!manageId) {
@@ -273,33 +273,55 @@ router.get('/search', async (req, res) => {
 
         let filters = { manage_id: manageId }; // Bắt buộc có manageId trong filters
 
-        // Tìm theo tên người dùng (userName)
-        if (userName) {
-            const users = await User.find({ name: new RegExp(userName, "i") });
-            if (users.length > 0) {
-                filters['user_id'] = { $in: users.map(user => user._id) };
-            } else {
-                return res.status(200).json([]); // Không có kết quả
+        // Nếu không có từ khóa, trả về tất cả các hợp đồng theo manageId
+        if (!keyword) {
+            const contracts = await Contract.find(filters)
+                .populate("user_id", "name")
+                .populate("building_id", "nameBuilding")
+                .populate("room_id", "room_name")
+                .lean();
+
+            return res.status(200).json(contracts);
+        }
+
+        // Xử lý tìm kiếm theo tên người dùng (userName)
+        const userIds = [];
+        const users = await User.find({ name: new RegExp(keyword, "i") }); // Tìm kiếm userName không phân biệt hoa thường
+        if (users.length > 0) {
+            userIds.push(...users.map(user => user._id)); // Lưu user_id của các user tìm được
+        }
+
+        // Xử lý tìm kiếm theo tòa nhà và phòng
+        const buildingIds = [];
+        const roomIds = [];
+        let nameBuilding = keyword;  // Tìm kiếm theo tên tòa nhà hoặc tên phòng
+        let room_name = null;        // Không phân tách theo phòng
+
+        // Tìm kiếm tòa nhà nếu có
+        if (nameBuilding) {
+            const buildings = await Building.find({ nameBuilding: new RegExp(nameBuilding, "i") }); // Tìm kiếm tên tòa nhà
+            if (buildings.length > 0) {
+                buildingIds.push(...buildings.map(building => building._id)); // Lưu building_id
             }
         }
 
-        // Tìm theo buildingRoom
-        if (buildingRoom) {
-            const [nameBuilding, room_name] = buildingRoom.split("/").map(item => item.trim());
-            const building = await Building.findOne({ nameBuilding: new RegExp(nameBuilding, "i") });
-            const room = await Room.findOne({ room_name: new RegExp(room_name, "i") });
-
-            if (building && room) {
-                filters['building_id'] = building._id;
-                filters['room_id'] = room._id;
-            } else {
-                return res.status(200).json([]); // Không có kết quả
+        // Tìm kiếm phòng nếu có
+        if (room_name) {
+            const rooms = await Room.find({ room_name: new RegExp(room_name, "i") }); // Tìm kiếm tên phòng
+            if (rooms.length > 0) {
+                roomIds.push(...rooms.map(room => room._id)); // Lưu room_id
             }
         }
 
-        // Nếu không có điều kiện tìm kiếm
-        if (Object.keys(filters).length === 0) {
-            return res.status(200).json([]); // Không có kết quả
+        // Kết hợp các điều kiện tìm kiếm
+        if (userIds.length > 0) {
+            filters['user_id'] = { $in: userIds }; // Tìm kiếm theo user_id
+        }
+        if (buildingIds.length > 0) {
+            filters['building_id'] = { $in: buildingIds }; // Tìm kiếm theo building_id
+        }
+        if (roomIds.length > 0) {
+            filters['room_id'] = { $in: roomIds }; // Tìm kiếm theo room_id
         }
 
         // Truy vấn danh sách hợp đồng
@@ -309,7 +331,12 @@ router.get('/search', async (req, res) => {
             .populate("room_id", "room_name")
             .lean();
 
-        // Tính duration
+        // Nếu không có hợp đồng, trả về thông báo
+        if (contracts.length === 0) {
+            return res.status(200).json({ message: 'Không tìm thấy hợp đồng nào' });
+        }
+
+        // Tính duration cho các hợp đồng
         const contractsWithDuration = contracts.map(contract => {
             const startDate = moment(contract.start_date);
             const endDate = moment(contract.end_date);
@@ -317,10 +344,11 @@ router.get('/search', async (req, res) => {
 
             return {
                 ...contract,
-                duration: `${duration} tháng`,
+                duration: `${duration} tháng` || "0 tháng",
             };
         });
 
+        // Trả về kết quả hợp đồng đã tính duration
         res.status(200).json(contractsWithDuration);
     } catch (error) {
         console.error("Error fetching contracts:", error);
