@@ -1,6 +1,5 @@
 package com.rentify.user.app.view.userScreens.profileScreen.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,8 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,9 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.DatePickerDialog
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
 
@@ -47,7 +45,7 @@ fun PreviewFeetPersonalProfile(){
 @Composable
 fun FeetPersonalProfileuser(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
-    val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
+    val userDetail by viewModel.user.observeAsState()
     val context = LocalContext.current
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
@@ -57,127 +55,116 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
 
-    // Trạng thái cho các Dialog
     val showGenderDialog = remember { mutableStateOf(false) }
     val showDobDialog = remember { mutableStateOf(false) }
     val showAddressDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailById(userId)  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserDetailById(userId)
     }
 
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
             androidx.compose.material.Text(
-                text = "Họ và tên ",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
+                text = "Họ và tên",
+                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
             androidx.compose.material.Text(
                 text = "${userDetail?.name}",
-                modifier = Modifier
-                    .padding(end = 20.dp),
+                modifier = Modifier.padding(end = 20.dp),
                 fontSize = 15.sp
             )
         }
+
+        // Giới tính với checkbox
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             androidx.compose.material.Text(
-                text = "Giới tính ",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
+                text = "Giới tính",
+                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            androidx.compose.material.Text(
-                text = userDetail?.gender ?: "Thêm giới tính bắt buộc",
+            Row(
                 modifier = Modifier
                     .padding(end = 20.dp)
-                    .clickable { showGenderDialog.value = true },  // Mở dialog khi nhấn
-                fontSize = 15.sp,
-                color = Color.Black
-            )
-        }
-        Divider() // Separator
+                    .clickable { showGenderDialog.value = true }
+            ) {
+                Checkbox(
+                    checked = userDetail?.gender == "Nam",
+                    onCheckedChange = {
+                        val newGender = if (it) "Nam" else "Nữ"
+                        viewModel.updateUserDetails(userId, gender = newGender, dob = userDetail?.dob ?: "", address = userDetail?.address ?: "")
+                    }
+                )
+                Text(text = "Nam", modifier = Modifier.padding(start = 8.dp, top = 15.dp))
 
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Checkbox(
+                    checked = userDetail?.gender == "Nữ",
+                    onCheckedChange = {
+                        val newGender = if (it) "Nữ" else "Nam"
+                        viewModel.updateUserDetails(userId, gender = newGender, dob = userDetail?.dob ?: "", address = userDetail?.address ?: "")
+                    }
+                )
+                Text(text = "Nữ", modifier = Modifier.padding(start = 8.dp, top = 15.dp))
+            }
+        }
+        Divider()
+
+        // Ngày sinh với lịch
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             androidx.compose.material.Text(
                 text = "Ngày sinh",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
+                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
             androidx.compose.material.Text(
-                text = userDetail?.dob ?: "Thêm ngày sinh bắt buộc",
+                text = userDetail?.dob ?: "",
                 modifier = Modifier
                     .padding(end = 20.dp)
-                    .clickable { showDobDialog.value = true },  // Mở dialog khi nhấn
+                    .clickable { showDobDialog.value = true },
                 fontSize = 15.sp,
                 color = Color.Black
             )
         }
-        Divider() // Separator
+        Divider()
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             androidx.compose.material.Text(
                 text = "Địa chỉ",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
+                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
             androidx.compose.material.Text(
-                text = userDetail?.address ?: "Thêm địa chỉ bắt buộc",
+                text = userDetail?.address ?: "",
                 modifier = Modifier
                     .padding(end = 20.dp)
-                    .clickable { showAddressDialog.value = true },  // Mở dialog khi nhấn
+                    .clickable { showAddressDialog.value = true },
                 fontSize = 15.sp,
                 color = Color.Black
             )
         }
-
-        // Hiển thị Dialog cho giới tính
-        if (showGenderDialog.value) {
-            UpdateDialog(
-                title = "Cập nhật giới tính",
-                initialValue = userDetail?.gender ?: "",
-                onDismiss = { showGenderDialog.value = false },
-                onConfirm = { updatedValue ->
-                    viewModel.updateUserDetails(userId, gender = updatedValue, dob = userDetail?.dob ?: "", address = userDetail?.address ?: "")
-                    showGenderDialog.value = false
-                }
-            )
-        }
-
-        // Hiển thị Dialog cho ngày sinh
-        if (showDobDialog.value) {
-            UpdateDialog(
-                title = "Cập nhật ngày sinh",
-                initialValue = userDetail?.dob ?: "",
-                onDismiss = { showDobDialog.value = false },
-                onConfirm = { updatedValue ->
-                    viewModel.updateUserDetails(userId, gender = userDetail?.gender ?: "", dob = updatedValue, address = userDetail?.address ?: "")
-                    showDobDialog.value = false
-                }
-            )
-        }
-
-        // Hiển thị Dialog cho địa chỉ
         if (showAddressDialog.value) {
             UpdateDialog(
                 title = "Cập nhật địa chỉ",
@@ -189,8 +176,20 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                 }
             )
         }
+
+        // Hiển thị lịch chọn ngày sinh
+        if (showDobDialog.value) {
+            DatePickerDialog(
+                onDismissRequest = { showDobDialog.value = false },
+                onDateSelected = { selectedDate ->
+                    viewModel.updateUserDetails(userId, gender = userDetail?.gender ?: "", dob = selectedDate, address = userDetail?.address ?: "")
+                    showDobDialog.value = false
+                }
+            )
+        }
     }
 }
+
 
 @Composable
 fun UpdateDialog(
@@ -208,7 +207,7 @@ fun UpdateDialog(
             androidx.compose.material.OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text("Nhập giá trị mới") },
+                label = { Text("Nhập địa chỉ mới") },
                 modifier = Modifier.fillMaxWidth()
             )
         },

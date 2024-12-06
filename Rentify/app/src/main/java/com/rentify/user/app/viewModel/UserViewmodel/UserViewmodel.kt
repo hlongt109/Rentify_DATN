@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.network.RetrofitService
 import kotlinx.coroutines.launch
@@ -17,7 +18,8 @@ class UserViewModel : ViewModel() {
     private val apiService = RetrofitService().ApiService
     private val _updateSuccess = MutableLiveData<Boolean>()
     val updateSuccess: LiveData<Boolean> = _updateSuccess
-    
+    private val _serviceFees = MutableLiveData<List<ServiceFeesItem>?>()
+    val serviceFees: LiveData<List<ServiceFeesItem>?> = _serviceFees
     // Hàm lấy thông tin người dùng theo _id (MongoDB _id)
     fun getUserDetailById(userId: String) {
         viewModelScope.launch {
@@ -58,6 +60,24 @@ class UserViewModel : ViewModel() {
             } catch (e: Exception) {
                 _updateSuccess.postValue(false) // Báo lỗi
                 _error.postValue("Lỗi khi cập nhật: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+    // viết tiếp
+    fun getServiceFeesByUser(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getServiceFeesByUser(userId)  // Gọi API với userId
+                if (response.isSuccessful && response.body() != null) {
+                    _serviceFees.postValue(response.body())  // Cập nhật LiveData với danh sách phí dịch vụ
+                    Log.d("UserViewModel", "Service fees: ${response.body()}")
+                } else {
+                    _error.postValue("Không thể lấy phí dịch vụ: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Lỗi: ${e.message}")
                 Log.e("UserViewModel", "Exception: ${e.message}")
             }
         }

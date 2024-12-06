@@ -38,6 +38,7 @@ import com.rentify.user.app.model.SupportModel.SupportResponse
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserOfRoomDetail
 import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.SupportModel.CreateReportResponse
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.repository.ForgotRepository.ForgotRequest
@@ -363,7 +364,7 @@ interface APIService {
 //    ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
     @GET("staff/contracts/search")
     suspend fun searchContracts(
-        @Query("keyword") keyword: String? =null,
+        @Query("keyword") keyword: String? = null,
         @Query("manageId") manageId: String? = null // Thêm manageId
     ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
 
@@ -382,11 +383,13 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
-// bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
-@GET("list/type/{post_type}")
-suspend fun getPostsByType(
-    @Path("post_type") postType: String
-): Response<PostListResponse>  // Phản hồi kiểu PostListResponse
+
+    // bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
+    @GET("list/type/{post_type}")
+    suspend fun getPostsByType(
+        @Path("post_type") postType: String
+    ): Response<PostListResponse>  // Phản hồi kiểu PostListResponse
+
     // thiên thực hiện sử lý phần hợp đồng
     @GET("contract-detail/{user_id}")
     suspend fun getContractDetail(@Path("user_id") userId: String): Response<List<ContractResponse>>
@@ -463,9 +466,11 @@ suspend fun getPostsByType(
         @Path("id") userId: String,
         @Body userDetails: Map<String, String>
     ): Response<UserResponse>
+
     //bao cao su co
     @GET("getSupportsByUserId/{userId}")
     suspend fun getSupportsByUserId(@Path("userId") userId: String): Response<APISupportResponse>
+
     //them
     @Multipart
     @POST("create-report")
@@ -478,9 +483,11 @@ suspend fun getPostsByType(
         @Part("status") status: RequestBody,
         @Part images: List<MultipartBody.Part>
     ): Response<AddSupport>
+
     //lay thong tin phong trong hop dong theo userId
     @GET("get-room-by-contract/{userId}")
     suspend fun getRoomByContract(@Path("userId") userId: String): Response<ContractRoomResponse>
+
     //check co hợp đồng hay không
     @GET("check-contract/{userId}")
     suspend fun checkContract(@Path("userId") userId: String): Response<com.rentify.user.app.repository.SupportRepository.ContractResponse>
@@ -489,12 +496,20 @@ suspend fun getPostsByType(
     //gui mail xac nhan
     @POST("forgot-password")
     suspend fun postMailForgot(@Body forgotRequest: ForgotRequest): Response<ForgotResponse>
+
     //xac nhan ma
     @POST("confirm-code")
     suspend fun confirmCode(@Body confirmCode: MailConfirmForgot): Response<ForgotResponse>
+
     @PUT("reset-password")
     suspend fun resetPassword(@Body resetPassword: ResetPassword): Response<ForgotResponse>
+
     //lay thong tin nguoi dung
     @GET("get-user-infor/{userId}")
     suspend fun getInfoUser(@Path("userId") userId: String): Response<ApiResponse>
+
+    @GET("staff/users/serviceFeesUser/{userId}")
+    suspend fun getServiceFeesByUser(
+        @Path("userId") userId: String
+    ): Response<List<ServiceFeesItem>>
 }
