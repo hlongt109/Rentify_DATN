@@ -43,7 +43,7 @@ router.put('/update-payment-image/:id', Upload.single('image'), async (req, res)
 
         const invoice = await Invoice.findByIdAndUpdate(
             id,
-            { image_paymentofuser },
+            { image_paymentofuser, payment_status: 'wait' },
             { new: true }
         );
 
@@ -52,12 +52,44 @@ router.put('/update-payment-image/:id', Upload.single('image'), async (req, res)
         }
 
         res.status(200).json({
-            message: 'Image updated successfully',
+            message: 'Image updated successfully and status updated to wait',
             invoice
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
+// Cập nhật trạng thái hoá đơn thành 'wait'
+const mongoose = require('mongoose');
+
+router.put('/update-status-to-wait/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Kiểm tra nếu id không phải ObjectId hợp lệ
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid invoice ID' });
+        }
+
+        const invoice = await Invoice.findByIdAndUpdate(
+            id,
+            { payment_status: 'wait' },
+            { new: true }
+        );
+
+        if (!invoice) {
+            return res.status(404).json({ message: 'Cannot find invoice' });
+        }
+
+        res.status(200).json({
+            message: 'Status updated to wait successfully',
+            invoice
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 
 module.exports = router;

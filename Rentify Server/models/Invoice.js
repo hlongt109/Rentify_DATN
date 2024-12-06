@@ -34,7 +34,7 @@ const Invoice = new Schema({
     require: true,
   },
   due_date: { type: String }, // hạn chót
-  payment_status: { type: String, enum: ["paid", "unpaid"] },
+  payment_status: { type: String, enum: ["wait" ,"paid", "unpaid"] },
   image_paymentofuser: {type: String},
   created_at: { type: String },
 });
