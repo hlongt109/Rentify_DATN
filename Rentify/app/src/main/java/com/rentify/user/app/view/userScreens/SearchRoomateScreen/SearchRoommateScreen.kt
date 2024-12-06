@@ -58,6 +58,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponen
 
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemTypeRoom
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.LocationComponent
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.FeetReportyeucau
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.ItemPost
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.PostListRoomateScreen
 
@@ -295,7 +296,6 @@ fun SearchRoommateScreen(navController: NavController) {
                     }
                     Divider(color = colorInput, thickness = 1.dp)
                     Spacer(modifier = Modifier.padding(top = 10.dp))
-
                     PostListRoomateScreen( navController, postType = "roomate" )
                     }
                 }

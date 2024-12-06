@@ -360,6 +360,7 @@ interface APIService {
         @Part("building_id") buildingId: RequestBody,
         @Part("room_id") roomId: RequestBody?,
         @Part("title") title: RequestBody,
+        @Part("address") address: RequestBody,
         @Part("content") content: RequestBody,
         @Part("post_type") postType: RequestBody,
         @Part("status") status: RequestBody,
