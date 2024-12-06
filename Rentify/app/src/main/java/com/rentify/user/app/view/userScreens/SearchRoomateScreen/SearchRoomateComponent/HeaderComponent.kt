@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent
+package com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -77,7 +77,7 @@ fun HeaderSearchComponent(navController: NavController) {
 
             IconButton(
                 onClick = {
-                    navController.navigate("HOME")
+                    navController.navigateUp()
                 },
                 modifier = Modifier
                     .width(30.dp)

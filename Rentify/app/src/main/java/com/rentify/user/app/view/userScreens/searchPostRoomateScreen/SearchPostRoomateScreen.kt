@@ -23,26 +23,38 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.CustomTabBar
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.HeaderComponent
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.PostListScreen
+import com.rentify.user.app.viewModel.LoginViewModel
 
 
 @Composable
 fun SearchPostRoomateScreen(navController: NavController) {
     var selectedTabIndex by remember { mutableStateOf(0) }
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val context = LocalContext.current
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
     val tabs = listOf("Đang chờ duyệt", "Đang hoạt động", "Đã bị ẩn")
-
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +70,7 @@ fun SearchPostRoomateScreen(navController: NavController) {
                 selectedTabIndex = index
             }
         )
-        PostListScreen(navController,userId = "671a29b84e350b2df4aee4ed")
+        PostListScreen(navController,userId = userId)
 
     }
 }

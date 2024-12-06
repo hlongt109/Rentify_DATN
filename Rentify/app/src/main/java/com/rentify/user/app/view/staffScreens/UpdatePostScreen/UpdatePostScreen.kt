@@ -84,6 +84,8 @@ import com.google.accompanist.flowlayout.FlowRow
 //import com.google.android.exoplayer2.MediaItem
 //import com.google.android.exoplayer2.ui.PlayerView
 import com.rentify.user.app.model.PostingDetail
+import androidx.compose.material.CircularProgressIndicator
+
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableLabel
@@ -91,6 +93,11 @@ import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.Servic
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -141,21 +148,17 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     var selectedBuilding1 by remember { mutableStateOf<String?>(null) }
     var selectedRoom by remember { mutableStateOf<String?>(null) }
     var selectedRoom1 by remember { mutableStateOf<String?>(null) }
-
+    var isLoading by remember { mutableStateOf(false) }
+    var isError by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     var title by remember { mutableStateOf("") }
-
     var isEdited by remember { mutableStateOf(false) }
     var content by remember { mutableStateOf("") }
     val postId = navController.currentBackStackEntry?.arguments?.getString("postId")
-
     val viewModel: PostViewModel = viewModel()
-
     val buildingId = viewModel.selectedBuilding.value
-
     val postDetail by viewModel.postDetail.observeAsState()
-
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
     val factory = remember(context) {
@@ -434,25 +437,44 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         }
 
                         postId?.let {
-                            viewModel.updatePost(
-                                postId = postId,
-                                userId = userId,
-                                buildingId = buildingId,
-                                roomId = selectedRoom1,
-                                title = title,
-                                content = content,
-                                status = "0",
-                                postType = "rent",
-                                videoFile = videoParts,  // List<MultipartBody.Part>
-                                photoFile = photoParts   // List<MultipartBody.Part>
-                            )
-                        }
-//                        navController.navigate("post_detail/$postId")
-                        navController.navigate("POSTING_STAFF")
-                        {
-                            popUpTo("update_post_screen/$postId")
-                        }
+                            isLoading = true // Bắt đầu loading
+                            CoroutineScope(Dispatchers.Main).launch {
+                                try {
+                                    // Cập nhật bài đăng
+                                    viewModel.updatePost(
+                                        postId = postId,
+                                        userId = userId,
+                                        buildingId = buildingId,
+                                        roomId = selectedRoom1,
+                                        title = title,
+                                        content = content,
+                                        status = "0",
+                                        postType = "rent",
+                                        videoFile = videoParts,
+                                        photoFile = photoParts
+                                    )
 
+                                    // Sau khi cập nhật thành công, tải lại dữ liệu bài đăng
+//                                    val updatedPost = withContext(Dispatchers.IO) {
+//                                        viewModel.getPostDetail(postId) // Gọi API tải lại dữ liệu
+//                                    }
+
+                                    // Chuyển màn hình sau khi tải lại dữ liệu thành công
+                                    navController.navigate("post_detail/$postId") {
+                                        popUpTo("update_post_screen/$postId") { inclusive = true }
+                                    }
+                                } catch (e: Exception) {
+                                    isError = true
+                                    Toast.makeText(
+                                        context,
+                                        "Lỗi khi cập nhật bài đăng: ${e.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } finally {
+                                    isLoading = false // Kết thúc loading
+                                }
+                            }
+                        }
                     }, modifier = Modifier
                         .height(50.dp)
                         .fillMaxWidth(),
@@ -469,9 +491,36 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 }
 
             }
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            }
+
+            // Hiển thị thông báo lỗi nếu có lỗi
+            if (isError) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Lỗi khi cập nhật bài đăng!",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        }
         }
     }
-}
+
 
 @Composable
 fun BuildingOptions(
@@ -636,9 +685,6 @@ fun RoomOptions(
         }
     }
 }
-
-
-
 @Composable
 fun RoomOption(
     text: String,
@@ -722,6 +768,20 @@ fun SelectMedia(
 ) {
     val selectedImages = remember { mutableStateListOf<Uri>() }
     val selectedVideos = remember { mutableStateListOf<Uri>() }
+        val baseUrl = "http://192.168.2.104:3000/"
+
+// Chuyển đổi các đường dẫn ảnh và video từ detail thành Uri, thêm base URL vào trước mỗi đường dẫn
+    val imagesFromDetail = detail.photos?.map { Uri.parse( baseUrl+it) } ?: listOf()
+    val videosFromDetail = detail.videos?.map { Uri.parse(baseUrl+it) } ?: listOf()
+
+    // Gán giá trị ảnh và video từ detail vào selectedImages và selectedVideos
+    if (selectedImages.isEmpty()) {
+        selectedImages.addAll(imagesFromDetail)
+    }
+
+    if (selectedVideos.isEmpty()) {
+        selectedVideos.addAll(videosFromDetail)
+    }
     val launcherImage = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->

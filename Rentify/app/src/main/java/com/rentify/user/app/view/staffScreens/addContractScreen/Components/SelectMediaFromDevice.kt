@@ -289,12 +289,12 @@ fun SelectMedia(
             Spacer(modifier = Modifier.width(15.dp))
             Column {
                 Text(
-                    text = "Ảnh Phòng trọ",
+                    text = "Ảnh hợp đồng",
                     color = Color.Black,
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "Tối đa 10 ảnh",
+                    text = "Tối đa 15 ảnh",
                     color = Color(0xFFBFBFBF),
                     fontSize = 13.sp
                 )

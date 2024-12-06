@@ -46,13 +46,17 @@ data class PostResponse(
     val room_id: String?,
     val title: String,
     val content: String,
+    val price: Int,
     val post_type: String,
     val status: Int,
     val photos: List<String> = listOf(),
     val  videos: List<String> = listOf(),
     // Danh sách dịch vụ
     val createdAt: String? = null,     // Ngày tạo
-    val updatedAt: String? = null      // Ngày cập nhật
+    val updatedAt: String? = null,
+    val user: User?,// Ngày cập nhật
+    val room_type: String,
+    val address: String,
 )
 
 data class PostingDetail(
@@ -118,4 +122,7 @@ data class UpdatePostRequest(
 data class ContractsResponse(
     val status: Int,
     val data: List<Contract>
+)
+data class PostListResponse(
+    val formattedPosts: List<PostResponse>   // Danh sách bài viết
 )

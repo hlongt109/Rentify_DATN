@@ -112,7 +112,7 @@ fun AddPostScreens(navController: NavHostController) {
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-
+    var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
@@ -288,8 +288,7 @@ fun AddPostScreens(navController: NavHostController) {
                     value = title,
                     onValueChange = { title = it },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
+                        .fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
@@ -346,8 +345,7 @@ fun AddPostScreens(navController: NavHostController) {
                     value = content,
                     onValueChange = { content = it },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
+                        .fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color(0xFFcecece),
                         unfocusedIndicatorColor = Color(0xFFcecece),
@@ -375,7 +373,7 @@ fun AddPostScreens(navController: NavHostController) {
                 BuildingLabel()
 
                 BuildingOptions(
-                    userId = "674f1c2975eb705d0ff112b6",
+                    userId = userId,
                     selectedBuilding = viewModel.selectedBuilding.value,
                     onBuildingSelected = { buildingId ->
                         viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
@@ -430,7 +428,16 @@ fun AddPostScreens(navController: NavHostController) {
 //                            Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
 //                     return@Button
 //                        }
+                        if (viewModel.selectedBuilding.value.isNullOrBlank()) {
+                            Toast.makeText(context, "Vui lòng chọn tòa", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
 
+
+                        if (selectedRoom.isNullOrEmpty()) {
+                            Toast.makeText(context, "Vui lòng chọn phòng", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
@@ -443,6 +450,7 @@ fun AddPostScreens(navController: NavHostController) {
                             }
 
                             if (isSuccessful) {
+                                Toast.makeText(context, "Tạo hợp đồng thành công!", Toast.LENGTH_SHORT).show()
                                 // Chuyển màn khi bài đăng được tạo thành công
                                 navController.navigate("POSTING_STAFF")
                             } else {

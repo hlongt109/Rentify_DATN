@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.staffScreens.postingList.PostingListComponents
+package com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -47,12 +47,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.RotateRight
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -75,22 +80,24 @@ import com.rentify.user.app.R
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun PostDetailScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
+fun SeachRoomateDetailScreen(navController: NavController, postId: String, viewModel: PostViewModel = PostViewModel()) {
     val postDetail by viewModel.postDetail.observeAsState()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
- //   val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
+    val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
 
     // Chạy khi màn hình được hiển thị lại hoặc khi postId thay đổi
-    LaunchedEffect(postId) {
+    LaunchedEffect(postId, isPostUpdated.value) {
+        Log.d("detail", "RequestBody check: ")
         viewModel.getPostDetail(postId)
-       // isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
+
+        isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
     }
 
     postDetail?.let { detail ->
-        Log.d("detail", "RequestBody check màn detail:${detail} ")
+        Log.d("detail", "RequestBody check:${detail} ")
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -108,7 +115,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    IconButton(onClick = { navController.navigate("POSTING_STAFF")}) {
+                    IconButton(onClick = { navController.navigate("Search_roommate")}) {
                         Image(
                             painter = painterResource(id = R.drawable.back),
                             contentDescription = null,
@@ -127,7 +134,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .height(screenHeight.dp / 1.3f)
+                        .height(screenHeight.dp / 0.6f)
                         .verticalScroll(scrollState)
                 ) {
 
@@ -250,7 +257,7 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.user),
+                            painter = painterResource(id = R.drawable.building_2),
                             contentDescription = "",
                             modifier = Modifier.size(50.dp)
                         )
@@ -358,63 +365,55 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .height(screenHeight.dp / 9f)
-                    .background(color = Color(0xfff7f7f7))
-            ) {
-                Button(
-                    onClick = {
-                        navController.navigate("update_post_screen/${postId}") {
-                            popUpTo("post_detail/$postId") { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier.height(50.dp).fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xff5dadff))
-                ) {
-                    Text(
-                        text = "Sửa bài đăng",
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffffffff)
-                    )
-                }
-            }
+//            Box(
+//                modifier = Modifier
+//                    .align(Alignment.BottomCenter)
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 16.dp)
+//                    .height(screenHeight.dp / 9f)
+//                    .background(color = Color(0xfff7f7f7))
+//            ) {
+//                Button(
+//                    onClick = {
+//                        navController.navigate("update_post_screen/${postId}") {
+//                            popUpTo("post_detail/$postId") { inclusive = true }
+//                        }
+//                    },
+//                    modifier = Modifier.height(50.dp).fillMaxWidth(),
+//                    shape = RoundedCornerShape(10.dp),
+//                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xff5dadff))
+//                ) {
+//                    Text(
+//                        text = "Sửa bài đăng",
+//                        fontSize = 16.sp,
+//                        fontFamily = FontFamily(Font(R.font.cairo_regular)),
+//                        color = Color(0xffffffff)
+//                    )
+//                }
+//            }
         }
     } ?: run {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White), // Màu nền nếu cần
-            contentAlignment = Alignment.Center // Căn giữa nội dung
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(50.dp), // Kích thước loading
-                color = Color(0xFF5DADFF), // Màu sắc hiệu ứng
-                strokeWidth = 4.dp // Độ dày của đường loading
-            )
-        }
-
+        Text("Đang tải chi tiết bài đăng...")
     }
 }
 @Preview(showBackground = true)
 @Composable
 fun PostDetailScreenPreview() {
     val mockNavController = rememberNavController() // Tạo NavController giả lập cho preview
-    PostDetailScreen(
+    SeachRoomateDetailScreen(
         navController = mockNavController,
         postId = "mockPostId", // Truyền postId giả lập
         viewModel = PostViewModel()
     )
 }
 @OptIn(ExperimentalPagerApi::class)
+
 @Composable
 fun PostImageSection(images: List<String>) {
     if (images.isNotEmpty()) {
+        var showDialog by remember { mutableStateOf(false) }
+        var selectedIndex by remember { mutableStateOf(0) }
+
         val pagerState = rememberPagerState() // Quản lý trạng thái pager
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -428,7 +427,7 @@ fun PostImageSection(images: List<String>) {
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(200.dp)
             ) { pageIndex ->
                 val image = images[pageIndex]
                 Image(
@@ -436,15 +435,17 @@ fun PostImageSection(images: List<String>) {
                     contentDescription = "Post Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(200.dp)
                         .padding(8.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color.LightGray),
+                        .background(Color.LightGray)
+                        .clickable {
+                            selectedIndex = pageIndex
+                            showDialog = true // Mở dialog
+                        },
                     contentScale = ContentScale.Crop
                 )
             }
-
-            // Dấu chấm chỉ số ảnh
             HorizontalPagerIndicator(
                 pagerState = pagerState,
                 modifier = Modifier
@@ -454,12 +455,26 @@ fun PostImageSection(images: List<String>) {
                 inactiveColor = Color.Gray
             )
         }
+
+        // Hiển thị dialog nếu người dùng nhấn vào ảnh
+        if (showDialog) {
+            PostMediaDialog(
+                mediaList = images,
+                currentIndex = selectedIndex,
+                onDismiss = { showDialog = false } // Đóng dialog
+            )
+        }
     }
 }
+
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PostVideoSection(videos: List<String>) {
     if (videos.isNotEmpty()) {
+        var showDialog by remember { mutableStateOf(false) }
+        var selectedIndex by remember { mutableStateOf(0) }
+
         val pagerState = rememberPagerState() // Quản lý trạng thái pager
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -474,13 +489,30 @@ fun PostVideoSection(videos: List<String>) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
-                    .height(300.dp)
+                    .height(200.dp)
             ) { pageIndex ->
                 val videoUrl = videos[pageIndex]
-                VideoPlayer(videoUrl = "http://192.168.2.104:3000/$videoUrl")
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.Black)
+                        .clickable {
+                            selectedIndex = pageIndex
+                            showDialog = true // Mở dialog
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Play Video",
+                        tint = Color.White,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
             }
 
-            // Dấu chấm chỉ số video
             HorizontalPagerIndicator(
                 pagerState = pagerState,
                 modifier = Modifier
@@ -490,85 +522,166 @@ fun PostVideoSection(videos: List<String>) {
                 inactiveColor = Color.Gray
             )
         }
+
+        // Hiển thị dialog nếu người dùng nhấn vào video
+        if (showDialog) {
+            PostMediaDialog(
+                mediaList = videos,
+                currentIndex = selectedIndex,
+                onDismiss = { showDialog = false } // Đóng dialog
+            )
+        }
     }
 }
 
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun PostMediaDialog(mediaList: List<String>, currentIndex: Int, onDismiss: () -> Unit) {
+fun PostMediaDialog(
+    mediaList: List<String>,
+    currentIndex: Int,
+    onDismiss: () -> Unit
+) {
     val pagerState = rememberPagerState(initialPage = currentIndex)
+    var isLandscape by remember { mutableStateOf(false) } // Quản lý trạng thái xoay ảnh
+    val currentPlayingIndex = remember { mutableStateOf(-1) } // Theo dõi video đang phát
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = MaterialTheme.shapes.medium,
-            color = Color.White,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(500.dp)
+            modifier = Modifier.fillMaxSize(), // Hiển thị toàn màn hình
+            color = Color.Black // Nền đen để tạo cảm giác fullscreen
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                HorizontalPager(
-                    count = mediaList.size,
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth()
-                ) { pageIndex ->
-                    val media = mediaList[pageIndex]
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Nút đóng (X) ở góc trên bên phải
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.End
                     ) {
-                        if (media.endsWith(".mp4")) {
-                            VideoPlayer(videoUrl = "http://192.168.2.104:3000/$media")
-                        } else {
-                            Image(
-                                painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
-                                contentDescription = "Post Image",
-                                modifier = Modifier.fillMaxWidth()
+                        IconButton(onClick = onDismiss) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = Color.White
                             )
                         }
+                    }
+
+                    // Nội dung chính: ảnh/video với trạng thái xoay
+                    HorizontalPager(
+                        count = mediaList.size,
+                        state = pagerState,
+                        modifier = Modifier.weight(1f) // Chiếm phần lớn chiều cao màn hình
+                    ) { pageIndex ->
+                        val media = mediaList[pageIndex]
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (media.endsWith(".mp4")) {
+                                // Video
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .rotate(if (isLandscape) 90f else 0f)
+                                ) {
+                                    VideoPlayer(
+                                        videoUrl = "http://192.168.2.104:3000/$media",
+                                        isPlaying = currentPlayingIndex.value == pageIndex
+                                    )
+                                }
+                            } else {
+                                // Ảnh
+                                Image(
+                                    painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
+                                    contentDescription = "Post Image",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .rotate(if (isLandscape) 90f else 0f), // Xoay ảnh
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                        }
+                    }
+
+                    // Cập nhật video đang phát khi trang thay đổi
+                    LaunchedEffect(pagerState.currentPage) {
+                        currentPlayingIndex.value = pagerState.currentPage
+                    }
+
+                    // Nút điều khiển xoay
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f)) // Đẩy nút xoay về giữa
+                        IconButton(
+                            onClick = { isLandscape = !isLandscape } // Đổi trạng thái xoay
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.RotateRight,
+                                contentDescription = "Rotate",
+                                tint = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
         }
     }
 }
+
 @Composable
-fun VideoPlayer(videoUrl: String) {
-    // Quản lý ExoPlayer
+fun VideoPlayer(
+    videoUrl: String,
+    isPlaying: Boolean
+) {
     val context = LocalContext.current
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(videoUrl))
             prepare()
-            playWhenReady = false // Chỉ phát khi người dùng bấm
         }
     }
 
-    // Đảm bảo ExoPlayer được giải phóng khi Composable bị hủy
+    // Cập nhật trạng thái phát khi `isPlaying` thay đổi
+    LaunchedEffect(isPlaying) {
+        exoPlayer.playWhenReady = isPlaying
+        if (!isPlaying) {
+            exoPlayer.pause()
+        }
+    }
+
+    // Giải phóng ExoPlayer khi không còn được sử dụng
     DisposableEffect(key1 = exoPlayer) {
         onDispose {
-            exoPlayer.release() // Giải phóng tài nguyên ExoPlayer
+            exoPlayer.release()
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Black) // Màu nền để đảm bảo không bị trống
+            .background(Color.Black)
     ) {
         AndroidView(
             factory = { context ->
                 PlayerView(context).apply {
                     player = exoPlayer
-                    useController = true // Hiển thị thanh điều khiển
+                    useController = true
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT,
-                        Gravity.CENTER // Căn giữa PlayerView trong FrameLayout
+                        Gravity.CENTER
                     )
                 }
             },

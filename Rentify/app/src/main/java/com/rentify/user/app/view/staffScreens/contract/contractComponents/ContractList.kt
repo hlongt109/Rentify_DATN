@@ -3,8 +3,10 @@ package com.rentify.user.app.view.contract.contractComponents
 import Contract
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +64,7 @@ fun ContractRoomListScreen(navController: NavController,manageId:String) {
     val context = LocalContext.current
     val searchQuery by viewModel.searchQuery
     val error by viewModel.error.observeAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     LaunchedEffect(searchQuery) {
         if (searchQuery.isNotEmpty()) {
             Log.e("log search id", "Searching with manageId: $manageId and query: $searchQuery")
@@ -68,7 +73,20 @@ fun ContractRoomListScreen(navController: NavController,manageId:String) {
             viewModel.fetchContractsByBuilding(manageId)
         }
     }
-
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White), // Màu nền nếu cần
+            contentAlignment = Alignment.Center // Căn giữa nội dung
+        ) {
+            androidx.compose.material3.CircularProgressIndicator(
+                modifier = Modifier.size(50.dp), // Kích thước loading
+                color = Color(0xFF5DADFF), // Màu sắc hiệu ứng
+                strokeWidth = 4.dp // Độ dày của đường loading
+            )
+        }
+    } else {
     if (contracts.isEmpty() && searchQuery.isNotEmpty()) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -101,7 +119,7 @@ fun ContractRoomListScreen(navController: NavController,manageId:String) {
             }
         }
     }
-}
+}}
 
 @Composable
 fun ContractCard(contract: Contract ,onClick: () -> Unit) {
@@ -131,11 +149,11 @@ fun ContractCard(contract: Contract ,onClick: () -> Unit) {
                     .size(60.dp)
                     .padding(end = 16.dp)
             )
-            Log.d("log item contract", "Log building/phong: ${contract.building_id?.nameBuilding}/${contract.room_id?.room_name}")
+            Log.d("log item contract", "Log building/phong: ${contract.building_id?.nameBuilding}_${contract.room_id?.room_name}")
             // Room Info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Số hợp đồng:   ${contract.building_id?.nameBuilding}/${contract.room_id?.room_name}",
+                    text = "Số hợp đồng:   ${contract.building_id?.nameBuilding}_${contract.room_id?.room_name}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     maxLines = 1,

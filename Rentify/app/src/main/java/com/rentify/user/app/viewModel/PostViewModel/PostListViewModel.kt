@@ -94,12 +94,16 @@ class PostViewModel : ViewModel() {
                 _errorMessage.postValue(e.message)
                 Log.e("updatePost", "Exception: ${e.message}", e)
             }
+
         }
     }
 // thien code phan nay
+private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
 
 fun getPostingList(userId: String) {
     viewModelScope.launch {
+        _isLoading.value = true
         try {
             val response = RetrofitClient.apiService.getPosts(userId)
             Log.d("API Response", response.toString())
@@ -113,6 +117,8 @@ fun getPostingList(userId: String) {
             }
         } catch (e: Exception) {
             Log.e("API Error", "Lỗi khi lấy danh sách bài viết: ${e.message}")
+        }finally {
+            _isLoading.value = false
         }
     }
 }
