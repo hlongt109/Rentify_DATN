@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
+const Contract = require('../../models/Contract');
+const Building = require('../../models/Building');
 const User = require('../../models/User')
 // hiển thị danh sách người dùng 
 router.get('/listusers', async (req, res) => {
@@ -91,4 +93,34 @@ router.put("/addUserInfo/:id", async (req, res) => {
     });
   }
 });
+// api lấy servicerFees 
+router.get('/serviceFeesUser/:userId', async (req, res) => {
+  try {
+      const { userId } = req.params;
+
+      // Tìm hợp đồng theo user_id (có thể có nhiều hợp đồng)
+      const contracts = await Contract.find({ 'user_id': userId })
+          .populate({
+              path: 'building_id',
+              select: 'nameBuilding address description service serviceFees number_of_floors',
+              populate: {
+                  path: 'service',
+                  select: 'name', // Dữ liệu dịch vụ liên quan đến tòa nhà
+              },
+          })
+          .exec();
+
+      // Nếu không tìm thấy hợp đồng
+      if (contracts.length === 0) {
+          return res.status(404).json('Không tìm thấy hợp đồng cho người dùng này.');
+      }
+
+      // Trả về trực tiếp danh sách hợp đồng
+      res.status(200).json(contracts);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json('Đã xảy ra lỗi khi lấy thông tin hợp đồng');
+  }
+});
+
 module.exports = router;
