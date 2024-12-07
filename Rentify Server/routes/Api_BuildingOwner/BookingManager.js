@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 const Booking = require("../../models/Booking");
 const Room = require("../../models/Room");
+const User = require("../../models/User");
 const Building = require("../../models/Building")
 
 
@@ -88,7 +89,29 @@ router.delete("/booking/delete/:id", async (req, res) => {
         res.status(500).json({ message: "Đã xảy ra lỗi khi xóa" });
     }
 });
+router.get("/booking/user/phone/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
 
+        // Kiểm tra xem ID có hợp lệ hay không
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "ID không hợp lệ" });
+        }
+
+        // Tìm người dùng theo ID
+        const user = await User.findById(id).select("phoneNumber");
+
+        if (!user) {
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
+        }
+
+        // Gửi phản hồi thành công
+        res.status(200).json({ success: true, data: user.phoneNumber });
+    } catch (error) {
+        console.error("Lỗi khi tìm phoneNumber:", error);
+        res.status(500).json({ message: "Đã xảy ra lỗi khi tìm phoneNumber", error: error.message });
+    }
+});
 
 
 router.get("/booking/room_name/:bookingId", async (req, res) => {

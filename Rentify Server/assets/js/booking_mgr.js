@@ -49,20 +49,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     row.classList.add('item'); // Thêm lớp 'item'
                     row.dataset.status = item.status; // Thêm thuộc tính 'data-status'
                     row.innerHTML = `
-                        <td>${index + 1}</td> <!-- Thêm index vào bảng -->
-                        <td>${userName}</td> 
-                        <td id="${rowId}">Đang tải...</td> <!-- ID duy nhất -->
-                        <td id="${buildingId}">Đang tải...</td> <!-- Tên tòa nhà -->
-                        <td class="check-in-date">
-                            ${new Date(item.check_in_date).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
-                        </td>
+    <td>${index + 1}</td> <!-- Thêm index vào bảng -->
+    <td>${userName}</td> 
+    <td id="${rowId}">Đang tải...</td> <!-- Tên phòng -->
+    <td id="${buildingId}">Đang tải...</td> <!-- Tên tòa nhà -->
+    <td id="phone-${item._id}">Đang tải...</td> <!-- Số điện thoại -->
+    <td class="check-in-date">
+        ${new Date(item.check_in_date).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
+    </td>
+    <td>${getStatusText(item.status)}</td>
+    <td>
+        <button class="btn btn-warning btn-sm" onclick="handleEdit('${item._id}', ${item.status})">Sửa</button>
+        <button class="btn btn-danger btn-sm" onclick="handleDelete('${item._id}')">Xóa</button>
+    </td>
+`;
 
-                        <td>${getStatusText(item.status)}</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm" onclick="handleEdit('${item._id}', ${item.status})">Sửa</button>
-                            <button class="btn btn-danger btn-sm" onclick="handleDelete('${item._id}')">Xóa</button>
-                        </td>
-                    `;
                     reportTableBody.appendChild(row);
 
 
@@ -91,6 +92,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     } catch (error) {
                         console.error('Lỗi khi lấy tên tòa nhà:', error);
                         document.getElementById(buildingId).innerText = 'Không xác định';
+                    }
+                    try {
+                        const phoneResponse = await fetch(`/api/booking/user/phone/${item.user_id}`);
+                        const phoneData = await phoneResponse.json();
+                        document.getElementById(`phone-${item._id}`).innerText = phoneData.success ? phoneData.data : "Không có dữ liệu";
+                    } catch (error) {
+                        console.error("Lỗi khi lấy số điện thoại:", error);
+                        document.getElementById(`phone-${item._id}`).innerText = "Lỗi";
                     }
                 }
             } else {
