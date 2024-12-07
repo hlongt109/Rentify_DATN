@@ -74,6 +74,21 @@ router.put("/booking/update/:id", async (req, res) => {
         data: support
     })
 })
+router.delete("/booking/delete/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteBooking = await Booking.findByIdAndDelete(id);
+        if (!deleteBooking) {
+            console.log("Không tìm thấy đối tượng");
+            return res.status(404).json({ message: "Không tìm thấy đối tượng" });
+        }
+        res.status(200).json({ message: "Xóa thành công", data: deleteBooking });
+    } catch (error) {
+        console.error("Lỗi khi xóa:", error);
+        res.status(500).json({ message: "Đã xảy ra lỗi khi xóa" });
+    }
+});
+
 
 
 router.get("/booking/room_name/:bookingId", async (req, res) => {

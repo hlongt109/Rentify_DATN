@@ -195,3 +195,31 @@ const saveStatusChange = async () => {
 const handleEdit = (id, currentStatus) => {
     openEditStatusModal(id, currentStatus);
 };
+
+// Hàm xử lý xóa booking
+async function handleDelete(bookingId) {
+    const confirmation = confirm("Bạn có chắc chắn muốn xóa mục này không?");
+    if (!confirmation) {
+        return; // Người dùng từ chối xóa
+    }
+
+    try {
+        // Gửi yêu cầu DELETE tới API
+        const response = await fetch(`/api/booking/delete/${bookingId}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert(result.message || "Xóa thành công");
+            window.location.reload();
+            //fetchData();
+        } else {
+            const errorResult = await response.json();
+            alert(errorResult.message || "Có lỗi xảy ra khi xóa");
+        }
+    } catch (error) {
+        console.error("Lỗi khi xóa:", error);
+        alert("Đã xảy ra lỗi khi xóa mục");
+    }
+}
