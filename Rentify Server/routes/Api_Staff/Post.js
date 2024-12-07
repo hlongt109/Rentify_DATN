@@ -76,7 +76,7 @@ router.get("/postType/list/:user_id", async (req, res) => {
 
     // Kiểm tra user_id có hợp lệ hay không
   if (!mongoose.Types.ObjectId.isValid(user_id)) {
-        return res.status(400).json({ message: "ID ngườii dùng không hợp lệ" });
+        return res.status(400).json({ message: "ID người dùng không hợp lệ" });
     }
     try {
         // Tạo điều kiện tìm kiếm
