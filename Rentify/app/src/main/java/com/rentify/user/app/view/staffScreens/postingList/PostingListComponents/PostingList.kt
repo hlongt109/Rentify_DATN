@@ -60,7 +60,14 @@ data class PostingList(
     val photos: List<String> = listOf(),
     val  videos: List<String> = listOf(),
     val user: User?,// Ngày cập nhật
-    val post_type: String
+    val post_type: String,
+    val created_at: String,
+    val updated_at: String,
+    val building_id: String,
+    val photo: List<String>,
+    val room_id: String,
+    val user_id: String,
+
 )
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

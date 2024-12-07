@@ -204,7 +204,7 @@ fun SelectMedia(
                 .padding(5.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
-        ) {
+        )                 {
             // Button chọn video
             Column(
                 modifier = Modifier

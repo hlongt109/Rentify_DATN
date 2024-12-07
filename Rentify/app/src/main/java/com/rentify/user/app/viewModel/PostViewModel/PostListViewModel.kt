@@ -45,6 +45,7 @@ class PostViewModel : ViewModel() {
         buildingId: String?,
         roomId: String?,
         title: String?,
+        address: String?,
         content: String?,
         status: String?,
         postType: String?,
@@ -58,17 +59,19 @@ class PostViewModel : ViewModel() {
                 val buildingIdBody = buildingId?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val roomIdBody = roomId?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val titleBody = title?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val addressBody = address?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val contentBody = content?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val statusBody = status?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val postTypeBody = postType?.toRequestBody("text/plain".toMediaTypeOrNull())
 
                 // Gọi API để cập nhật bài viết
-                val response = RetrofitClient.apiService.updatePostUser(
+                val response = RetrofitClient.apiService.updatePost(
                     postId,
                     userIdBody,
                     buildingIdBody,
                     roomIdBody,
                     titleBody,
+                    addressBody,
                     contentBody,
                     statusBody,
                     postTypeBody,
@@ -86,8 +89,14 @@ class PostViewModel : ViewModel() {
                     val updatedPost = response.body()
                     if (updatedPost != null) {
                         // Trả về kết quả thành công
+                        // Cập nhật lại dữ liệu trong LiveData
+                        _postDetail.value = updatedPost as? PostingDetail
                         _updateBookingStatusResult.postValue(Result.success(updatedPost))
                         Log.d("updatePost", "Update successful: $updatedPost")
+
+                        // Nếu cần, gọi lại API để lấy thông tin chi tiết bài đăng mới nhất
+                        getPostDetail(postId) // Cập nhật lại chi tiết bài đăng
+
                     } else {
                         _updateBookingStatusResult.postValue(Result.failure(Exception("Update failed")))
                         Log.e("updatePost", "Update failed: Response body is null")
@@ -430,5 +439,11 @@ fun deletePostWithFeedback(postId: String) {
 
 
     ////
+    private fun updatePostLists() {
+        val posts = _posts.value
+        _pendingPosts.value = posts.filter { it.status == 0 }
+        _activePosts.value = posts.filter { it.status == 1 }
+        _hiddenPosts.value = posts.filter { it.status == 2 }
+    }
 
 }

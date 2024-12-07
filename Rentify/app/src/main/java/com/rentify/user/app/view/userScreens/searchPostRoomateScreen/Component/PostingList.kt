@@ -2,6 +2,7 @@
 
 package com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component
 
+import android.net.Uri
 import android.util.Log
 import android.view.Gravity
 import android.widget.FrameLayout
@@ -25,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,10 +43,13 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RotateRight
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
@@ -57,6 +62,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.viewinterop.AndroidView
@@ -73,9 +81,19 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Post
+import com.rentify.user.app.network.RetrofitClient
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.prepareMultipartBody
+import com.rentify.user.app.view.staffScreens.contract.contractComponents.EditContractDialog
+import com.rentify.user.app.view.staffScreens.contract.contractComponents.SelectMedia
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
+import com.rentify.user.app.view.userScreens.AddPostScreen.isFieldEmpty
 import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
+import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 //@OptIn(ExperimentalMaterialApi::class)
@@ -191,9 +209,15 @@ fun PostingListCard(
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val maxWidth = screenWidth * 0.7f // Giới hạn 70% chiều rộng màn hình
     var isExpanded by remember { mutableStateOf(false) }
-
+    var showDialog by remember { mutableStateOf(false) }
     var cardHeightPx by remember { mutableStateOf(0) }
-
+    val scrollState = rememberScrollState()
+    // Khi dialog đóng, cần reset trạng thái của thông báo
+    val onDismissDialog: () -> Unit = {
+        showDialog = false
+    }
+    // State để hiển thị thông báo
+    val snackbarHostState = remember { SnackbarHostState() }
     // Sử dụng onGloballyPositioned để lấy chiều cao của Card
     Card(
         elevation = 4.dp,
@@ -296,14 +320,41 @@ fun PostingListCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(color = Color.White)
-                        .padding(15.dp)
-                        .height(270.dp),
+                        .padding(5.dp)
+                        .height(320.dp),
+                   // .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.Center,
                 ) {
                     com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.PostMediaSection1(
                         mediaList = postlist.photos + postlist.videos
                     )
-                    Spacer(modifier = Modifier.height(25.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Box(modifier = Modifier.padding(horizontal = 10.dp)) {
+                        androidx.compose.material3.Button(
+                            onClick = {
+                                showDialog = true
+
+                            }, modifier = Modifier.height(50.dp).fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xff5dadff)
+                            )
+                        ) {
+                            androidx.compose.material3.Text(
+                                text = "Sửa bài đăng",
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                                color = Color(0xffffffff)
+                            )
+                        }
+
+                    }
+                    if (showDialog) {
+                        EditPostDialog(
+                            postId="${postlist._id}",
+                            onDismiss = onDismissDialog, // Truyền snackbarHostState vào dialog,
+                                    snackbarHostState = snackbarHostState
+                        )
+                    }
                 }
             }
         }
@@ -406,253 +457,289 @@ fun PostListWithSwipe(
 
 
 
-@OptIn(ExperimentalPagerApi::class)
+
 @Composable
-fun PostMediaSection1(mediaList: List<String>) {
-    if (mediaList.isNotEmpty()) {
-        var showDialog by remember { mutableStateOf(false) }
-        var selectedIndex by remember { mutableStateOf(0) }
+fun EditPostDialog(
+    postId: String?,
+    onDismiss: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+) {
+    val context = LocalContext.current
+    var address by remember { mutableStateOf("") }
+    var content by remember { mutableStateOf("") }
+    var userId by remember { mutableStateOf("") }
+    var post_type by remember { mutableStateOf("") }
+    var selectedPhotos by remember { mutableStateOf(emptyList<Uri>()) }
+    val PostViewModel: PostViewModel = viewModel()
+    val postDetail by PostViewModel.postDetail.observeAsState()
+    val updateStatus by PostViewModel.error.observeAsState() // Theo dõi trạng thái lỗi từ ViewModel
+    var isEdited by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
-        val pagerState = rememberPagerState() // Quản lý trạng thái pager
-        Column(modifier = Modifier.fillMaxWidth()) {
-            androidx.compose.material3.Text(
-                text = "Media",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-            )
-            HorizontalPager(
-                count = mediaList.size,
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) { pageIndex ->
-                val media = mediaList[pageIndex]
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color.Gray)
-                        .clickable {
-                            selectedIndex = pageIndex
-                            showDialog = true // Mở dialog
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
+    var selectedImages by remember { mutableStateOf(emptyList<Uri>()) }
+    var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
+    // Lấy chi tiết hợp đồng khi hợp đồng ID thay đổi
+    LaunchedEffect(postId) {
+        postId?.let { PostViewModel.getPostDetail(it) }
+    }
 
-                    if (media.endsWith(".mp4")) {
-                        // Play button overlay
-                        androidx.compose.material3.Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "Play Video",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .align(Alignment.Center)
-                        )
+    val scrollState = rememberScrollState()
 
-                    } else {
-                        // Hiển thị ảnh
-                        Image(
-                            painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
-                            contentDescription = "Post Image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .padding(8.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(Color.LightGray),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                }
-            }
-
-            HorizontalPagerIndicator(
-                pagerState = pagerState,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(8.dp),
-                activeColor = Color.Black,
-                inactiveColor = Color.Gray
-            )
-        }
-
-        // Hiển thị dialog nếu người dùng nhấn vào media
-        if (showDialog) {
-            PostMediaDialog1(
-                mediaList = mediaList,
-                currentIndex = selectedIndex,
-                onDismiss = { showDialog = false } // Đóng dialog
-            )
+    postDetail?.let { postDetail ->
+        if (!isEdited) {
+            address = postDetail.address ?: "" // Ghép ID người dùng
+            content = postDetail.content?:""
+            userId = postDetail.user?._id?:""
+            post_type = postDetail.post_type?:""
+            Log.d("address", "API response address: ${address}")
+            Log.d("content", "API response content: ${content}")
         }
     }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun PostMediaDialog1(
-    mediaList: List<String>,
-    currentIndex: Int,
-    onDismiss: () -> Unit
-) {
-    val pagerState = rememberPagerState(initialPage = currentIndex)
-    var isLandscape by remember { mutableStateOf(false) } // Quản lý trạng thái xoay ảnh/video
-    val currentPlayingIndex = remember { mutableStateOf(-1) } // Theo dõi video đang phát
 
     Dialog(onDismissRequest = onDismiss) {
         androidx.compose.material3.Surface(
-            modifier = Modifier.fillMaxSize(), // Hiển thị toàn màn hình
-            color = Color.Black // Nền đen để tạo cảm giác fullscreen
+            shape = MaterialTheme.shapes.medium,
+            color = Color(0xfff7f7f7)
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+                Text(
+                    text = "Sửa bài đăng",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                // Sửa User ID
                 Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
                 ) {
-                    // Nút đóng (X) ở góc trên bên phải
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        androidx.compose.material3.IconButton(onClick = onDismiss) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Close",
-                                tint = Color.White
+                    Row {
+                        Text(
+                            text = "Địa chỉ",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xff7f7f7f),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 13.sp,
+                        )
+                        Text(
+                            text = " *",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xffff1a1a),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 16.sp,
+
                             )
+                    }
+                    androidx.compose.material3.TextField(
+                        value = address,
+                        onValueChange = { newValue ->
+                            address = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFFcecece),
+                            unfocusedIndicatorColor = Color(0xFFcecece),
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFf7f7f7),
+                            focusedContainerColor = Color(0xFFf7f7f7),
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Nhập địa chỉ",
+                                fontSize = 13.sp,
+                                color = Color(0xFF898888),
+                                fontFamily = FontFamily(Font(R.font.cairo_regular))
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 8.dp),
+                        textStyle = TextStyle(
+                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
+                        )
+                    )
+                }
+                // Sửa Content
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                ) {
+                    Row {
+                        Text(
+                            text = "Nội dung",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xff7f7f7f),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 13.sp,
+                        )
+                        Text(
+                            text = " *",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xffff1a1a),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 16.sp,
+
+                            )
+                    }
+                    androidx.compose.material3.TextField(
+                        value = content,
+                        onValueChange = { newValue ->
+                            content = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                            isEdited = true  // Đánh dấu là đã chỉnh sửa
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFFcecece),
+                            unfocusedIndicatorColor = Color(0xFFcecece),
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFf7f7f7),
+                            focusedContainerColor = Color(0xFFf7f7f7),
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Nhập nội dung",
+                                fontSize = 13.sp,
+                                color = Color(0xFF898888),
+                                fontFamily = FontFamily(Font(R.font.cairo_regular))
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 8.dp),
+                        textStyle = TextStyle(
+                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
+                        )
+                    )
+                }
+
+                postDetail?.let {
+                    com.rentify.user.app.view.staffScreens.UpdatePostScreen.SelectMedia(
+                        onMediaSelected = { images, videos ->
+                            selectedImages = images
+                            selectedVideos = videos
+
+
+                        },
+                        detail = it
+                    )
+
+                // Phản hồi trạng thái lỗi/thành công
+                updateStatus?.let { errorMessage ->
+                    LaunchedEffect(errorMessage) {
+                        if (errorMessage.isNotEmpty()) {
+                           snackbarHostState.showSnackbar(errorMessage)
                         }
                     }
+                }
+                Row {
+                    androidx.compose.material3.Button(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(
+                                end = 10
+                                    .dp
+                            ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFf7f7f7)
+                        ),
+                        shape = RoundedCornerShape(10.dp)
 
-                    // Nội dung chính: ảnh/video với trạng thái xoay
-                    HorizontalPager(
-                        count = mediaList.size,
-                        state = pagerState,
-                        modifier = Modifier.weight(1f) // Chiếm phần lớn chiều cao màn hình
-                    ) { pageIndex ->
-                        val media = mediaList[pageIndex]
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (media.endsWith(".mp4")) {
-                                // Render video
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .rotate(if (isLandscape) 90f else 0f)
-                                ) {
-                                    VideoPlayer1(
-                                        videoUrl = "http://192.168.2.104:3000/$media",
-                                        isPlaying = currentPlayingIndex.value == pageIndex
-                                    )
-                                }
-                            } else {
-                                // Render ảnh
-                                Image(
-                                    painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
-                                    contentDescription = "Post Image",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .rotate(if (isLandscape) 90f else 0f), // Xoay ảnh
-                                    contentScale = ContentScale.Fit
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = "Quay lại",
+                            color = Color(0xff2e90fa),
+                            fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            fontWeight = FontWeight(600),
+                            fontSize = 17.sp,
+                        )
+                    }
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            if (isFieldEmpty(address)) {
+                                // Hiển thị thông báo lỗi nếu title trống
+                                Toast.makeText(
+                                    context,
+                                    "Userid không thể trống",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@Button
+                            }
+                            if (isFieldEmpty(content)) {
+                                // Hiển thị thông báo lỗi nếu content trống
+                                Toast.makeText(
+                                    context,
+                                    "Nội dung không thể trống",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@Button
+                            }
+                            val photoParts = selectedPhotos.mapNotNull { uri ->
+                                val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+                                prepareMultipartBody(
+                                    context,
+                                    uri,
+                                    "photos_contract",
+                                    ".jpg",
+                                    mimeType
                                 )
                             }
-                        }
-                    }
+                            val videoParts = selectedVideos.mapNotNull { uri ->
+                                val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
+                                prepareMultipartBody(
+                                    context,
+                                    uri,
+                                    "video",
+                                    ".mp4",
+                                    mimeType
+                                )
+                            }
+                            postId?.let {
+                                PostViewModel.updatePost(
+                                    postId = postId,
+                                    userId = userId,
+                                    buildingId = "",
+                                    roomId = "",
+                                    title = "",
+                                    address = address,
+                                    content = content,
+                                    status = "0",
+                                    postType = post_type,
+                                    videoFile =videoParts ,
+                                    photoFile = photoParts
+                                )
 
-                    // Cập nhật video đang phát khi trang thay đổi
-                    LaunchedEffect(pagerState.currentPage) {
-                        currentPlayingIndex.value = pagerState.currentPage
-                    }
-
-                    // Nút điều khiển xoay
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                            }
+                            onDismiss() // Đóng Dialog
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFf7f7f7)
+                        ),
+                        shape = RoundedCornerShape(10.dp)
                     ) {
-                        Spacer(modifier = Modifier.weight(1f)) // Đẩy nút xoay về giữa
-                        androidx.compose.material3.IconButton(
-                            onClick = { isLandscape = !isLandscape } // Đổi trạng thái xoay
-                        ) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.Default.RotateRight,
-                                contentDescription = "Rotate",
-                                tint = Color.White
-                            )
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
+                        androidx.compose.material3.Text(
+                            text = "Xác nhận",
+                            color = Color(0xfff04438),
+                            fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            fontWeight = FontWeight(600),
+                            fontSize = 17.sp
+                        )
                     }
+
                 }
             }
         }
     }
-}
-
-
-
-@Composable
-fun VideoPlayer1(
-    videoUrl: String,
-    isPlaying: Boolean
-) {
-    val context = LocalContext.current
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(videoUrl))
-            prepare()
-        }
-    }
-
-    // Cập nhật trạng thái phát khi `isPlaying` thay đổi
-    LaunchedEffect(isPlaying) {
-        exoPlayer.playWhenReady = isPlaying
-        if (!isPlaying) {
-            exoPlayer.pause()
-        }
-    }
-
-    // Giải phóng ExoPlayer khi không còn được sử dụng
-    DisposableEffect(key1 = exoPlayer) {
-        onDispose {
-            exoPlayer.release()
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Black)
-    ) {
-        AndroidView(
-            factory = { context ->
-                PlayerView(context).apply {
-                    player = exoPlayer
-                    useController = true
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        Gravity.CENTER
-                    )
-                }
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-
-
-
-
-
+}}
 //    Box(
 //        modifier = Modifier
 //            .fillMaxWidth()

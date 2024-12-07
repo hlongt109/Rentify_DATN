@@ -64,7 +64,6 @@ fun HeaderComponent(navController: NavController) {
                     modifier = Modifier.size(30.dp, 30.dp)
                 )
             }
-
             // Tiêu đề
             Text(
                 text = "Bài đăng tìm bạn ở ghép",

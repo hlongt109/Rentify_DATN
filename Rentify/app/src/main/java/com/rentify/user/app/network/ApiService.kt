@@ -298,12 +298,13 @@ interface APIService {
 
     @Multipart
     @PUT("staff/posts/update/{id}")
-    suspend fun updatePostUser(
+    suspend fun updatePost(
         @Path("id") postId: String,
         @Part("user_id") userId: RequestBody?,
         @Part("building_id") buildingId: RequestBody?,
         @Part("room_id") roomId: RequestBody?,
         @Part("title") title: RequestBody?,
+        @Part("address") address: RequestBody?,
         @Part("content") content: RequestBody?,
         @Part("status") status: RequestBody?,
         @Part("post_type") postType: RequestBody?,

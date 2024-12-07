@@ -448,6 +448,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                         buildingId = buildingId,
                                         roomId = selectedRoom1,
                                         title = title,
+                                        address = "",
                                         content = content,
                                         status = "0",
                                         postType = "rent",
