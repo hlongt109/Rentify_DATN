@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,22 +10,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,9 +54,9 @@ fun PreviewFeetPersonalProfile(){
     FeetPersonalProfile2(navController= rememberNavController())
 }
 @Composable
-fun FeetPersonalProfile(navController: NavHostController){
+fun FeetPersonalProfile(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
-    val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
+    val userDetail by viewModel.user.observeAsState() // Quan sát LiveData người dùng
     val context = LocalContext.current
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
@@ -56,147 +65,181 @@ fun FeetPersonalProfile(navController: NavHostController){
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
+
+    // Trạng thái Dialog
+    var showEditDialog by remember { mutableStateOf(false) }
+    var currentField by remember { mutableStateOf("") }
+    var newValue by remember { mutableStateOf("") }
+
+    // Lấy thông tin người dùng khi composable được gọi
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailById(userId)  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserDetailById(userId)
     }
+
     Column {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 20.dp, top = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+        // Họ và tên
+        EditableRow(
+            label = "Họ và tên",
+            value = userDetail?.name ?: "",
+            onClick = {
+                currentField = "name"
+                newValue = userDetail?.name ?: ""
+                showEditDialog = true
+            }
+        )
 
-                Text(text = "Họ và tên ",
-                    modifier = Modifier
-                        .padding(start = 20.dp, top = 5.dp),
-                    color = Color(0xFF989898)
-                )
-                Text(text = "${userDetail?.name}",
-                    modifier = Modifier
-                        .padding(end = 20.dp),
-                    fontSize = 15.sp
-                )
+        // Giới tính
+        EditableRow(
+            label = "Giới tính",
+            value = userDetail?.gender ?: "",
+            onClick = {
+                currentField = "gender"
+                newValue = userDetail?.gender ?: ""
+                showEditDialog = true
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .padding(start = 20.dp, end = 20.dp)
-                    .background(color = Color(0xFFe4e4e4))
-            ) {
-            }
-//        _vanphuc : giới tính
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 20.dp, top = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Giới tính ",
-                    modifier = Modifier
-                        .padding(start = 20.dp, top = 5.dp),
-                    color = Color(0xFF989898)
-                )
-                Text(text = "${userDetail?.gender}",
-                    modifier = Modifier
-                        .padding(end = 20.dp),
-                    fontSize = 15.sp
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .padding(start = 20.dp, end = 20.dp)
-                    .background(color = Color(0xFFe4e4e4))
-            ) {
-            }
-//        _vanphuc : ngay sinh
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 20.dp, top = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Ngày sinh",
-                    modifier = Modifier
-                        .padding(start = 20.dp, top = 5.dp),
-                    color = Color(0xFF989898)
-                )
-                Text(text = "${userDetail?.dob}",
-                    modifier = Modifier
-                        .padding(end = 20.dp),
-                    fontSize = 15.sp
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .padding(start = 20.dp, end = 20.dp)
-                    .background(color = Color(0xFFe4e4e4))
-            ) {
-            }
-//        _vanphuc : dia chi
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 20.dp, top = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Địa chỉ",
-                    modifier = Modifier
-                        .padding(start = 20.dp, top = 5.dp),
-                    color = Color(0xFF989898)
-                )
-                Text(text = "${userDetail?.address}",
-                    modifier = Modifier
-                        .padding(end = 20.dp),
-                    fontSize = 15.sp
-                )
-            }
-        }
+        )
 
+        // Ngày sinh
+        EditableRow(
+            label = "Ngày sinh",
+            value = userDetail?.dob ?: "",
+            onClick = {
+                currentField = "dob"
+                newValue = userDetail?.dob ?: ""
+                showEditDialog = true
+            }
+        )
+        EditableRow(
+            label = "Địa chỉ",
+            value = userDetail?.address ?: "",
+            onClick = {
+                currentField = "address"
+                newValue = userDetail?.address ?: ""
+                showEditDialog = true
+            }
+        )
 
-}
-@Composable
-fun FeetPersonalProfile1(navController: NavHostController){
-    val viewModel: UserViewModel = viewModel()
-    val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
-    val context = LocalContext.current
-    val apiService = RetrofitService()
-    val userRepository = LoginRepository(apiService)
-    val factory = remember(context) {
-        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
-    }
-    val loginViewModel: LoginViewModel = viewModel(factory = factory)
-    val userId = loginViewModel.getUserData().userId
-    LaunchedEffect(Unit) {
-        viewModel.getUserDetailById(userId)  // Lấy dữ liệu người dùng khi composable được gọi
-    }
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(bottom = 20.dp, top = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Số điện thoại",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
-                color = Color(0xFF989898)
+        // Hiển thị Dialog chỉnh sửa
+        if (showEditDialog) {
+            EditDialog(
+                title = "Chỉnh sửa $currentField",
+                value = newValue,
+                onValueChange = { newValue = it },
+                onSave = {
+                    showEditDialog = false
+                    when (currentField) {
+                        "name" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(name = newValue))
+                        "gender" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(gender = newValue))
+                        "dob" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(dob = newValue))
+                    }
+                },
+                onCancel = { showEditDialog = false }
             )
-            Text(text = "${userDetail?.phoneNumber}",
-                modifier = Modifier
-                    .padding(end = 20.dp),
+        }
+    }
+}
+
+@Composable
+fun EditableRow(label: String, value: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp, top = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier
+                .padding(start = 20.dp, top = 5.dp),
+            color = Color(0xFF989898)
+        )
+        Row(
+            modifier = Modifier.clickable { onClick() },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = value,
+                modifier = Modifier.padding(end = 20.dp),
                 fontSize = 15.sp
             )
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Edit $label",
+                modifier = Modifier.size(16.dp),
+                tint = Color.Gray
+            )
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .padding(start = 20.dp, end = 20.dp)
-                .background(color = Color(0xFFe4e4e4))
-        ) {
+    }
+}
+
+@Composable
+fun EditDialog(
+    title: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    onSave: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text(title) },
+        text = {
+            Column {
+                TextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    label = { Text("Nhập giá trị mới") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onSave() }) {
+                Text("Lưu")
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onCancel() }) {
+                Text("Hủy")
+            }
         }
-//        _vanphuc : giới tính
+    )
+}
+
+//============1============
+@Composable
+fun FeetPersonalProfile1(navController: NavHostController) {
+    val viewModel: UserViewModel = viewModel()
+    val userDetail by viewModel.user.observeAsState() // Quan sát LiveData người dùng
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+
+    // Trạng thái Dialog
+    var showEditDialog by remember { mutableStateOf(false) }
+    var currentField by remember { mutableStateOf("") }
+    var newValue by remember { mutableStateOf("") }
+
+    // Lấy thông tin người dùng khi composable được gọi
+    LaunchedEffect(Unit) {
+        viewModel.getUserDetailById(userId)
+    }
+
+    Column {
+        // Số điện thoại
+        EditableRow(
+            label = "Số điện thoại",
+            value = userDetail?.phoneNumber ?: "",
+            onClick = {
+                currentField = "phoneNumber"
+                newValue = userDetail?.phoneNumber ?: ""
+                showEditDialog = true
+            }
+        )
         Row(
             modifier = Modifier.fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
@@ -221,7 +264,6 @@ fun FeetPersonalProfile1(navController: NavHostController){
                 .background(color = Color(0xFFe4e4e4))
         ) {
         }
-//        _vanphuc : ngay sinh
         Row(
             modifier = Modifier.fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
@@ -246,7 +288,6 @@ fun FeetPersonalProfile1(navController: NavHostController){
                 .background(color = Color(0xFFe4e4e4))
         ) {
         }
-//        _vanphuc : dia chi
         Row(
             modifier = Modifier.fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
@@ -263,8 +304,28 @@ fun FeetPersonalProfile1(navController: NavHostController){
                 fontSize = 15.sp
             )
         }
+        // Hiển thị Dialog chỉnh sửa
+        if (showEditDialog) {
+            EditDialog(
+                title = "Chỉnh sửa $currentField",
+                value = newValue,
+                onValueChange = { newValue = it },
+                onSave = {
+                    showEditDialog = false
+                    when (currentField) {
+                        "phoneNumber" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(phoneNumber = newValue))
+                        "username" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(username = newValue))
+                        "email" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(email = newValue))
+                        "password" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(password = newValue)) // Đảm bảo mã hóa mật khẩu nếu cần
+                    }
+                },
+                onCancel = { showEditDialog = false }
+            )
+        }
     }
 }
+
+//================================
 @Composable
 fun FeetPersonalProfile2(navController: NavHostController){
     val viewModel: UserViewModel = viewModel()
@@ -358,7 +419,8 @@ fun FeetPersonalProfile2(navController: NavHostController){
                     model = urianhBank,
                     contentDescription = "QR Bank Photo",
                     modifier = Modifier
-                        .size(150.dp) // Thay đổi kích thước ảnh tùy ý
+                        .width(250.dp)
+                        .height(250.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color.LightGray)
                         .align(Alignment.CenterHorizontally), // Căn giữa ảnh

@@ -5,8 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rentify.user.app.model.BankAccount
 import com.rentify.user.app.model.Model.Bank
+import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
+
 import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.network.RetrofitService
@@ -24,6 +25,9 @@ class UserViewModel : ViewModel() {
     val serviceFees: LiveData<List<ServiceFeesItem>?> = _serviceFees
     private val _bankAccount = MutableLiveData<Bank?>()  // Cập nhật thành đối tượng Bank
     val bankAccount: LiveData<Bank?> = _bankAccount
+    private val _updateTaiKhoanResponse = MutableLiveData<UpdateTaiKhoanResponse?>()
+    val updateTaiKhoanResponse: LiveData<UpdateTaiKhoanResponse?> = _updateTaiKhoanResponse
+
     // Hàm lấy thông tin người dùng theo _id (MongoDB _id)
     fun getUserDetailById(userId: String) {
         viewModelScope.launch {
@@ -42,6 +46,8 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
+    // hàm thêm thông tin còn thiếu của người dùng
     fun updateUserDetails(userId: String, gender: String, dob: String, address: String) {
         viewModelScope.launch {
             val userDetails = mapOf(
@@ -68,6 +74,7 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
     fun getServiceFeesByUser(userId: String) {
         viewModelScope.launch {
             try {
@@ -85,6 +92,7 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
     fun getBankAccountByUser(userId: String) {
         viewModelScope.launch {
             try {
@@ -107,4 +115,27 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
+    fun updateTaiKhoan(id: String, updatedUser: UserResponse?) {
+        viewModelScope.launch {
+            try {
+                // Gọi API updateTaiKhoan
+                val response = apiService.updateTaiKhoan(id, updatedUser)
+                if (response.isSuccessful && response.body() != null) {
+                    // Thành công, cập nhật LiveData với dữ liệu mới
+                    _updateTaiKhoanResponse.postValue(response.body())
+                    Log.d("UserViewModel", "Update successful: ${response.body()}")
+                } else {
+                    // Xử lý lỗi từ server
+                    _error.postValue("Cập nhật thất bại: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                // Xử lý ngoại lệ khi gọi API
+                _error.postValue("Lỗi khi cập nhật tài khoản: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+
 }

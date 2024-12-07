@@ -12,7 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.RadioButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -64,32 +69,33 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
     }
 
     Column {
+        // Họ và tên
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            androidx.compose.material.Text(
+            Text(
                 text = "Họ và tên",
                 modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            androidx.compose.material.Text(
-                text = "${userDetail?.name}",
+            Text(
+                text = userDetail?.name ?: "",
                 modifier = Modifier.padding(end = 20.dp),
                 fontSize = 15.sp
             )
         }
 
-        // Giới tính với checkbox
+        // Giới tính
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            androidx.compose.material.Text(
+            Text(
                 text = "Giới tính",
                 modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
@@ -99,42 +105,30 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                     .padding(end = 20.dp)
                     .clickable { showGenderDialog.value = true }
             ) {
-                Checkbox(
-                    checked = userDetail?.gender == "Nam",
-                    onCheckedChange = {
-                        val newGender = if (it) "Nam" else "Nữ"
-                        viewModel.updateUserDetails(userId, gender = newGender, dob = userDetail?.dob ?: "", address = userDetail?.address ?: "")
-                    }
+                Text(
+                    text = userDetail?.gender ?: "",
+                    modifier = Modifier.padding(end = 20.dp),
+                    fontSize = 15.sp,
+                    color = Color.Black
                 )
-                Text(text = "Nam", modifier = Modifier.padding(start = 8.dp, top = 15.dp))
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Checkbox(
-                    checked = userDetail?.gender == "Nữ",
-                    onCheckedChange = {
-                        val newGender = if (it) "Nữ" else "Nam"
-                        viewModel.updateUserDetails(userId, gender = newGender, dob = userDetail?.dob ?: "", address = userDetail?.address ?: "")
-                    }
-                )
-                Text(text = "Nữ", modifier = Modifier.padding(start = 8.dp, top = 15.dp))
             }
         }
+
         Divider()
 
-        // Ngày sinh với lịch
+        // Ngày sinh
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            androidx.compose.material.Text(
+            Text(
                 text = "Ngày sinh",
                 modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            androidx.compose.material.Text(
+            Text(
                 text = userDetail?.dob ?: "",
                 modifier = Modifier
                     .padding(end = 20.dp)
@@ -145,18 +139,19 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
         }
         Divider()
 
+        // Địa chỉ
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            androidx.compose.material.Text(
+            Text(
                 text = "Địa chỉ",
                 modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            androidx.compose.material.Text(
+            Text(
                 text = userDetail?.address ?: "",
                 modifier = Modifier
                     .padding(end = 20.dp)
@@ -165,6 +160,8 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                 color = Color.Black
             )
         }
+
+        // Hiển thị dialog cập nhật địa chỉ
         if (showAddressDialog.value) {
             UpdateDialog(
                 title = "Cập nhật địa chỉ",
@@ -187,9 +184,63 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                 }
             )
         }
+
+        // Hiển thị hộp thoại giới tính
+        if (showGenderDialog.value) {
+            GenderDialog(
+                currentGender = userDetail?.gender ?: "",
+                onDismiss = { showGenderDialog.value = false },
+                onConfirm = { updatedGender ->
+                    viewModel.updateUserDetails(userId, gender = updatedGender, dob = userDetail?.dob ?: "", address = userDetail?.address ?: "")
+                    showGenderDialog.value = false
+                }
+            )
+        }
     }
 }
 
+@Composable
+fun GenderDialog(
+    currentGender: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    val genders = listOf("Nam", "Nữ")
+    var selectedGender by remember { mutableStateOf(currentGender) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Cập nhật giới tính", fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                genders.forEach { gender ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedGender = gender },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (gender == selectedGender),
+                            onClick = { selectedGender = gender }
+                        )
+                        Text(text = gender, modifier = Modifier.padding(start = 8.dp))
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(selectedGender) }) {
+                Text("Cập nhật")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Hủy")
+            }
+        }
+    )
+}
 
 @Composable
 fun UpdateDialog(
@@ -200,11 +251,11 @@ fun UpdateDialog(
 ) {
     var text by remember { mutableStateOf(initialValue) }
 
-    androidx.compose.material.AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title, fontWeight = FontWeight.Bold) },
         text = {
-            androidx.compose.material.OutlinedTextField(
+            OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
                 label = { Text("Nhập địa chỉ mới") },
@@ -212,17 +263,18 @@ fun UpdateDialog(
             )
         },
         confirmButton = {
-            androidx.compose.material.TextButton(onClick = { onConfirm(text) }) {
+            TextButton(onClick = { onConfirm(text) }) {
                 Text("Cập nhật")
             }
         },
         dismissButton = {
-            androidx.compose.material.TextButton(onClick = onDismiss) {
+            TextButton(onClick = onDismiss) {
                 Text("Hủy")
             }
         }
     )
 }
+
 
 @Composable
 fun FeetPersonalProfileUSER(navController: NavHostController){

@@ -41,7 +41,7 @@ fun PhanDauQuanLiDichVu(
         Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và text
 
         androidx.compose.material.Text(
-            text = "Hoá đơn",
+            text = "Quản lý dịch vụ",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             fontSize = 18.sp,

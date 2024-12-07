@@ -2,12 +2,10 @@ package com.rentify.user.app.network
 
 import Contract
 import ContractResponse
-import android.telecom.Call
 import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
 import com.rentify.user.app.model.AddRoomResponse
-import com.rentify.user.app.model.BankAccount
 import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.BuildingsResponse
@@ -24,9 +22,8 @@ import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.model.Model.StatusBookingRequest
-import com.rentify.user.app.model.Model.UpdateInvoiceStatus
+import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
-import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostListResponse
 import com.rentify.user.app.model.PostResponse
 
@@ -39,7 +36,6 @@ import com.rentify.user.app.model.SupportModel.SupportResponse
 
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserOfRoomDetail
-import com.rentify.user.app.model.Room_post
 import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.SupportModel.CreateReportResponse
 import com.rentify.user.app.model.UserResponse
@@ -54,7 +50,6 @@ import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.repository.SupportRepository.APISupportResponse
 import com.rentify.user.app.repository.SupportRepository.AddSupport
 import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
-import com.rentify.user.app.repository.SupportRepository.CreateSupportResponse
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -520,4 +515,9 @@ interface APIService {
         @Path("userId") userId: String
     ): Response<Bank>
 
+    @PUT("staff/users/updateTaiKhoan/{id}")
+    suspend fun updateTaiKhoan(
+        @Path("id") id: String,
+        @Body updatedUser: UserResponse?
+    ): Response<UpdateTaiKhoanResponse>
 }
