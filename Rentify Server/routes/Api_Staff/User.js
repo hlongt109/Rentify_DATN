@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Contract = require('../../models/Contract');
 const Building = require('../../models/Building');
 const User = require('../../models/User')
-// hiển thị danh sách người dùng 
+// hiển thị danh sách người dùng _vanphuc
 router.get('/listusers', async (req, res) => {
     try {
       const users = await User.find(); // Fetch all users from the database
@@ -22,7 +22,7 @@ router.get('/listusers', async (req, res) => {
       });
     }
   });
-// hiển thị chi tiết theo id 
+// hiển thị chi tiết theo id _vanphuc
 router.get('/getUser/:id', async (req, res) => {
     try {
         // Lấy id từ params
@@ -50,7 +50,7 @@ router.get('/getUser/:id', async (req, res) => {
         });
     }
 });
-// thêm gender,dob,address theo id 
+// Bổ sung thông tin cho User _vanphuc :
 router.put("/addUserInfo/:id", async (req, res) => {
   try {
     const { id } = req.params; // Lấy ID từ URL
@@ -158,6 +158,122 @@ router.get('/getBankAccount/:userId', async (req, res) => {
     });
   }
 });
+// chỉnh sửa thông tin tài khoản ngân hàng :
+router.put("/updateBankAccount/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { bank_name, bank_number, qr_bank, username } = req.body;
+
+    // Tìm người dùng và cập nhật thông tin tài khoản ngân hàng
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    // Kiểm tra và cập nhật từng trường trong bankAccount
+    if (bank_name !== undefined) user.bankAccount.bank_name = bank_name;
+    if (bank_number !== undefined) user.bankAccount.bank_number = bank_number;
+    if (qr_bank !== undefined) user.bankAccount.qr_bank = qr_bank;
+    if (username !== undefined) user.bankAccount.username = username;
+
+    // Lưu thay đổi
+    await user.save();
+
+    // Trả về dữ liệu trong format mong muốn
+    res.status(200).json({
+      bank_name: user.bankAccount.bank_name,
+      bank_number: user.bankAccount.bank_number,
+      qr_bank: user.bankAccount.qr_bank,
+      username: user.bankAccount.username,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi cập nhật thông tin tài khoản ngân hàng",
+      error: error.message,
+    });
+  }
+});
+// API chỉnh sửa toàn bộ thông tin người dùng _vanphuc
+router.put('/updateTaiKhoan/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      username,
+      email,
+      phoneNumber,
+      role,
+      name,
+      dob,
+      gender,
+      address,
+      profile_picture_url,
+      verified,
+      landlord_id,
+      bankAccount,
+    } = req.body; // Lấy các thông tin cần chỉnh sửa từ body
+
+    // Kiểm tra vai trò hợp lệ
+    const validRoles = ["admin", "landlord", "staffs", "user", "ban"];
+    if (role && !validRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Vai trò không hợp lệ"
+      });
+    }
+
+    // Tạo đối tượng cập nhật
+    const updateData = {
+      username,
+      email,
+      phoneNumber,
+      role,
+      name,
+      dob,
+      gender,
+      address,
+      profile_picture_url,
+      verified,
+      landlord_id,
+      updated_at: new Date().toISOString(), // Cập nhật thời gian
+    };
+
+    // Kiểm tra xem có cần cập nhật tài khoản ngân hàng không
+    if (bankAccount) {
+      updateData.bankAccount = bankAccount; // Cập nhật thông tin tài khoản ngân hàng nếu có
+    }
+
+    // Tìm và cập nhật thông tin người dùng
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true } // Trả về thông tin người dùng đã cập nhật
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng để cập nhật"
+      });
+    }
+
+    // Trả về đối tượng người dùng đã cập nhật mà không có "success", "message", "data"
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Lỗi khi chỉnh sửa thông tin người dùng:", error);
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi chỉnh sửa thông tin người dùng",
+      error: error.message,
+    });
+  }
+});
+
 
 
 module.exports = router;
