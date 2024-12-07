@@ -82,7 +82,7 @@ router.get("/postType/list/:user_id", async (req, res) => {
         // Tạo điều kiện tìm kiếm
         let query = { user_id };
 
-        // Nếu có post_type thì thêm vào điều kiện tìm kiếm
+        // Nếu có post_type thì têm vào điều kiện tìm kiếm
         if (post_type) {
             query.post_type = post_type;
         }
