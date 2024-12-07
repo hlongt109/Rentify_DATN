@@ -16,7 +16,7 @@ const Post = new Schema({
     },
     title: { type: String },
     content: { type: String },
-    status: { type: Number, enum: [0, 1, 2], default: 0 }, // 0 hoạt động, 1 tạm ẩn, 2 ban
+    status: { type: Number, enum: [0, 1, 2, 3], default: 0 }, // 0 chờ xác nhận, 1 hoạt động, 2 ban, 3 ẩn
     video: { type: Array },
     photo: { type: Array },
     post_type: { type: String, enum: ['roomate', 'rent', 'seek']},
