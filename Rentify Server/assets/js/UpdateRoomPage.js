@@ -11,6 +11,8 @@ let allAmenitie = []
 const params = new URLSearchParams(window.location.search);
 const buildingId = params.get('buildingId');
 const roomId = params.get('roomId');
+let selectedServiceIds = [];
+let selectedAmenitieIds = [];
 
 const fetchService = async () => {
     try {
@@ -20,6 +22,7 @@ const fetchService = async () => {
         // Kiểm tra xem dữ liệu trả về có phải là mảng hay không
         if (Array.isArray(response.data)) {
             services = response.data;
+            console.log("Danh sách service :", services)
             renderServices();
         } else {
             console.error('Dữ liệu không phải là mảng:', response.data);
@@ -30,28 +33,129 @@ const fetchService = async () => {
 };
 
 const renderServices = (selectedServices = []) => {
+
     const container = document.getElementById("services-container");
     container.innerHTML = ""; // Xóa nội dung cũ
 
     services.forEach((service) => {
+        // Tạo phần tử bao gồm checkbox và nhãn
         const serviceItem = document.createElement("div");
-        serviceItem.className = "service-item";
-        serviceItem.textContent = service.name;
-        serviceItem.dataset.id = service._id;
+        serviceItem.className = "form-check mb-3"; // Sử dụng Bootstrap để tạo kiểu
 
-        // Kiểm tra nếu service ID có trong danh sách `selectedServices`
+        // Tạo checkbox
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "form-check-input";
+        checkbox.id = `service-${service._id}`;
+        checkbox.dataset.id = service._id;
+
+        // Đánh dấu checkbox nếu service ID có trong selectedServices
         if (selectedServices.includes(service._id)) {
-            serviceItem.classList.add("active");
+            checkbox.checked = true;
         }
 
-        // Thêm sự kiện click để chuyển đổi trạng thái active
-        serviceItem.addEventListener("click", () => {
-            serviceItem.classList.toggle("active");
+        // Tạo nhãn (label) cho checkbox
+        const label = document.createElement("label");
+        label.className = "form-check-label";
+        label.setAttribute("for", `service-${service._id}`);
+        label.textContent = service.name;
+
+        // Gắn checkbox và nhãn vào `serviceItem`
+        serviceItem.appendChild(checkbox);
+        serviceItem.appendChild(label);
+
+        // Thêm sự kiện để cập nhật selectedServiceIds khi chọn hoặc bỏ chọn
+        checkbox.addEventListener("change", (event) => {
+            const serviceId = event.target.dataset.id;
+
+            if (event.target.checked) {
+                // Nếu checkbox được chọn, thêm ID vào selectedServiceIds
+                if (!selectedServiceIds.includes(serviceId)) {
+                    selectedServiceIds.push(serviceId);
+                }
+                console.log(`Dịch vụ được chọn: ${serviceId}`);
+            } else {
+                // Nếu checkbox bị bỏ chọn, xóa ID khỏi selectedServiceIds
+                selectedServiceIds = selectedServiceIds.filter(id => id !== serviceId);
+                console.log(`Dịch vụ bị bỏ chọn: ${serviceId}`);
+            }
+
+            // Cập nhật lại danh sách ID đã chọn
+            console.log("Danh sách dịch vụ đã chọn:", selectedServiceIds);
         });
 
+        // Thêm serviceItem vào container
         container.appendChild(serviceItem);
     });
+    selectedServiceIds = Array.from(container.querySelectorAll("input[type='checkbox']:checked"))
+        .map(checkbox => checkbox.dataset.id);
+    console.log("Danh sách dịch vụ đã chọn sau khi render:", selectedServiceIds);
 };
+
+const displayAmenities = () => {
+    const amenitiesContainer = document.getElementById('amenities-container');
+    amenitiesContainer.innerHTML = ''; // Xóa nội dung cũ
+
+    const allAmenities = [...new Set([...amenities, ...allAmenitie])]; // Gộp và loại bỏ trùng lặp
+    const selectedAmenitiesSet = new Set(selectedAmenitieIds); // Sử dụng Set để lưu các amenity đã chọn
+
+    allAmenities.forEach(amenity => {
+        const amenityElement = document.createElement('div');
+        amenityElement.classList.add('form-check', 'mb-3'); // Sử dụng Bootstrap để tạo kiểu
+
+        // Tạo checkbox
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.classList.add('form-check-input');
+        checkbox.id = `amenity-${amenity}`;
+        checkbox.dataset.id = amenity;
+
+        // Đánh dấu checkbox nếu amenity có trong selectedAmenitieIds
+        if (selectedAmenitiesSet.has(amenity)) {
+            checkbox.checked = true;
+        }
+
+        // Tạo nhãn (label) cho checkbox
+        const label = document.createElement('label');
+        label.classList.add('form-check-label');
+        label.setAttribute('for', `amenity-${amenity}`);
+        label.textContent = amenity;
+
+        // Gắn checkbox và nhãn vào `amenityElement`
+        amenityElement.appendChild(checkbox);
+        amenityElement.appendChild(label);
+
+        // Thêm sự kiện để cập nhật selectedAmenitieIds khi chọn hoặc bỏ chọn
+        checkbox.addEventListener('change', (event) => {
+            const amenityId = event.target.dataset.id;
+
+            if (event.target.checked) {
+                // Nếu checkbox được chọn, thêm ID vào selectedAmenitieIds
+                if (!selectedAmenitieIds.includes(amenityId)) {
+                    selectedAmenitieIds.push(amenityId);
+                }
+            } else {
+                // Nếu checkbox bị bỏ chọn, xóa ID khỏi selectedAmenitieIds
+                selectedAmenitieIds = selectedAmenitieIds.filter(id => id !== amenityId);
+            }
+
+            // Cập nhật lại danh sách ID đã chọn
+            console.log('Danh sách tiện ích đã chọn:', selectedAmenitieIds);
+        });
+
+        // Thêm amenityElement vào container
+        amenitiesContainer.appendChild(amenityElement);
+    });
+
+    // Lấy tất cả checkbox đã được chọn sau khi render và cập nhật selectedAmenitieIds
+    selectedAmenitieIds = Array.from(amenitiesContainer.querySelectorAll("input[type='checkbox']:checked"))
+        .map(checkbox => checkbox.dataset.id);
+
+    // In ra danh sách các tiện ích đã chọn
+    console.log('Danh sách tiện ích đã chọn sau khi render:', selectedAmenitieIds);
+};
+
+
 
 // Lấy thông tin chi tiết phòng từ API
 const fetchRoomDetails = async () => {
@@ -165,6 +269,8 @@ const fetchAmenities = async () => {
         // Kiểm tra xem dữ liệu trả về có phải là mảng hay không
         if (Array.isArray(response.data)) {
             allAmenitie = response.data;
+            selectedAmenitieIds = allAmenitie
+            displayAmenities();
             renderServices();
         } else {
             console.error('Dữ liệu không phải là mảng:', response.data);
@@ -174,30 +280,6 @@ const fetchAmenities = async () => {
     }
 };
 
-const displayAmenities = () => {
-    const amenitiesContainer = document.getElementById('amenities-container');
-    amenitiesContainer.innerHTML = '';
-
-    const allAmenities = [...new Set([...amenities, ...allAmenitie])];
-    const selectedAmenitiesSet = new Set(selectedAmenities);
-
-    allAmenities.forEach(amenity => {
-        const amenityElement = document.createElement('div');
-        amenityElement.classList.add('amenity-item');
-        amenityElement.textContent = amenity;
-
-        if (selectedAmenitiesSet.has(amenity)) {
-            amenityElement.classList.add('active');
-        }
-
-        amenityElement.addEventListener('click', () => {
-            amenityElement.classList.toggle('active');
-            updateSelectedAmenities(); // Cập nhật selectedAmenities khi thay đổi
-        });
-
-        amenitiesContainer.appendChild(amenityElement);
-    });
-};
 
 const addNewAmenity = () => {
     const newAmenityInput = document.getElementById('new-amenity');
@@ -213,14 +295,19 @@ const addNewAmenity = () => {
 
 const updateSelectedAmenities = () => {
     selectedAmenities = [];
-    const amenityItems = document.querySelectorAll('.amenity-item.active');
+    const amenityItems = document.querySelectorAll('.form-check-input:checked');  // Lấy các checkbox đã được chọn
     amenityItems.forEach(item => {
-        selectedAmenities.push(item.textContent);
+        selectedAmenities.push(item.dataset.id); // Thêm ID tiện ích vào danh sách đã chọn
     });
+
+    // Cập nhật hiển thị danh sách tiện ích đã chọn
     const selectedAmenitiesContainer = document.getElementById('selected-amenities');
     selectedAmenitiesContainer.innerHTML = selectedAmenities.length > 0
         ? `Các tiện nghi đã chọn: ${selectedAmenities.join(', ')}`
         : 'Chưa có tiện nghi nào được chọn';
+
+    // In ra danh sách các tiện ích đã chọn (console log)
+    console.log("Danh sách tiện ích đã chọn:", selectedAmenities);
 };
 
 document.getElementById('add-amenity').addEventListener('click', addNewAmenity);
@@ -248,12 +335,11 @@ document.getElementById('update-room-form').addEventListener('submit', async (ev
         formData.append('video_room', videosInput.files[i]);
     }
 
-    selectedAmenities.forEach((amenity, index) => {
+    const selectedAmenities = selectedAmenitieIds.forEach((amenity, index) => {
         formData.append(`amenities[${index}]`, amenity);
     });
 
-    const activeServices = Array.from(document.querySelectorAll('.service-item.active')).map(item => item.dataset.id);
-    activeServices.forEach((serviceId, index) => {
+    const activeServices = selectedServiceIds.forEach((serviceId, index) => {
         formData.append(`service[${index}]`, serviceId);
     });
 
@@ -348,11 +434,13 @@ decreaseInput.addEventListener('input', () => {
 });
 
 
-displayAmenities();
+// displayAmenities();
 
 const init = async () => {
-    await fetchAmenities()
+    const titleScreen = document.getElementById('titleScreen');
+    titleScreen.textContent = 'Cập Nhật Phòng';
     await fetchService();
+    await fetchAmenities();
     await fetchRoomDetails()
 };
 

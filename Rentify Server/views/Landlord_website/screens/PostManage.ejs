@@ -110,7 +110,8 @@
                     <div class="col-md-3">
                         <label for="status-form" class="form-label">Trạng thái</label>
                         <select class="form-select form-select-lg mb-3" id="status-form" aria-label="Chọn trạng thái">
-                            <option selected value="0">Đang hoạt động</option>
+                            <option selected value="0">Chờ xác nhận</option>
+                            <option value="1">Đang hoạt động</option>
                             <option value="2">Vi phạm</option>
                         </select>
                     </div>
@@ -313,7 +314,7 @@
             const res = await fetch(`http://localhost:3000/api/posts_mgr/${buildingId}/posts/day?${queryParams.toString()}`)
             const data = await res.json();
             if (res.ok) {
-                displayPost(selectStatus === 0 ? data.isPostActive : data.isPostBan);
+                displayPost(selectStatus === 0 ? data.isPostPendding : selectStatus === 1 ? data.isPostActive : data.isPostBan);
             } else {
                 console.error('Không thể lấy dữ liệu post:', data.message);
             }
@@ -374,9 +375,12 @@
                 let postStatusText = '';
 
                 if (post.status === 0) {
-                    postStatusClass = 'text-success';
-                    postStatusText = 'Đang hoạt động';
-                } else {
+                    postStatusClass = 'text-warning';
+                    postStatusText = 'Chờ duyệt';
+                } else if (post.status === 1) {
+                    postStatusClass = 'text-succsess';
+                    postStatusText = 'Hoạt động';
+                } else if (post.status === 3) {
                     postStatusClass = 'text-danger';
                     postStatusText = 'Vi phạm';
                 }
@@ -456,8 +460,8 @@
                                     
                                     <div class="d-flex flex-row gap-2 mt-2">
                                         <button class="btn btn-primary btn-sm mt-2 flex-fill" onclick="openUpdatePostForm('${post._id}')">Cập nhật</button>
-                                        <button class="btn btn-danger mx-2 btn-sm mt-2 flex-fill" onclick="deletePost('${post._id}')">Xóa</button>
-                                        <button class="btn btn-warning btn-sm mt-2 flex-fill" style="color: #fff;" onclick="banPost('${post._id}', ${post.status === 2 ? 0 : 2})">${post.status === 0 ? 'Cấm đăng' : 'Bỏ cấm'}</button>
+                                        <button class="btn btn-danger mx-2 btn-sm mt-2 flex-fill" onclick="${post.status === 0 ? `confirmPost('${post._id}')` : `deletePost('${post._id}')`}">${post.status === 0 ? 'Xác nhận' : 'Xóa'}</button>
+                                        <button class="btn btn-warning btn-sm mt-2 flex-fill" style="color: #fff;" onclick="banPost('${post._id}', ${post.status === 2 ? 1 : 2})">${post.status === 0 || post.status === 1 ? 'Cấm đăng' : 'Bỏ cấm'}</button>
                                     </div>
                                 </div>
                         </div>`;
@@ -539,7 +543,7 @@
     statusDropdown.addEventListener("change", function () {
         selectStatus = parseInt(statusDropdown.value);
         console.log("Selected status:", selectStatus);
-        
+
         if (isMonthLoad === 0) {
             getPostListDay(selectedBuildingId, selectTime, selectStatus)
         } else if (isMonthLoad === 1) {
@@ -646,7 +650,7 @@
         formData.append('room_id', roomId);
         formData.append('title', title);
         formData.append('content', content);
-        formData.append('status', 0); // Giá trị mặc định
+        formData.append('status', 1); // Giá trị mặc định
         formData.append('post_type', "rent");
         formData.append('created_at', new Date().toISOString());
 
@@ -808,6 +812,46 @@
 
             } catch (error) {
                 console.error("Error deleting post:", error);
+            }
+        }
+    }
+
+    async function confirmPost(postId) {
+        if (confirm(`Xác nhận bài viết này ?`)) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/posts_mgr_confirm/${postId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ status: parseInt(status) })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+
+                    if (isMonthLoad === 0) {
+                        getPostListDay(selectedBuildingId, selectTime, selectStatus);
+                    } else if (isMonthLoad === 1) {
+                        getPostList(selectedBuildingId, selectedMonth, selectedYear, selectStatus);
+                    } else {
+                        getPostListYear(selectedBuildingId, selectedYear, selectStatus);
+                    }
+
+                    Toastify({
+                        text: `${status === 2 ? 'Đã cấm đăng' : 'Đã bỏ cấm đăng'}`,
+                        style: { background: "linear-gradient(to right, #007bff, #00b8d8)" }
+                    }).showToast();
+                } else {
+                    Toastify({
+                        text: "Lỗi khi cập nhật trạng thái",
+                        style: { background: "linear-gradient(to right, #ff5f6d, #ffc371)" }
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error("Error updating status:", error);
+                alert("An error occurred while updating the status");
             }
         }
     }

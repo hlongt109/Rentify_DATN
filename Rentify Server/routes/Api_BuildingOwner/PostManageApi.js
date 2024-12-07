@@ -13,8 +13,8 @@ router.post('/posts_mgr', uploadFile.fields([
     { name: 'images', maxCount: 5 }
 ]), async (req, res) => {
     try {
-        const data = req.body; 
-        const files = req.files; 
+        const data = req.body;
+        const files = req.files;
 
         const video = files.video ? `${req.protocol}://${req.get("host")}/public/uploads/${files.video[0].filename}` : null;
 
@@ -69,13 +69,13 @@ router.put("/posts_mgr/:id", uploadFile.fields([
         let video
         if (files && files.images) {
             images = files.images ? files.images.map(file => `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`) : [];
-        }else{
+        } else {
             images = post.photo
         }
 
-        if(files && files.video){
+        if (files && files.video) {
             video = files.video ? `${req.protocol}://${req.get("host")}/public/uploads/${files.video[0].filename}` : null;
-        }else{
+        } else {
             video = post.video;
         }
 
@@ -90,7 +90,7 @@ router.put("/posts_mgr/:id", uploadFile.fields([
         post.video = video;
         post.created_at = post.created_at;
         post.updated_at = new Date().toISOString();
-        
+
 
         const result = await post.save();
         if (result) {
@@ -105,7 +105,40 @@ router.put("/posts_mgr/:id", uploadFile.fields([
     }
 })
 
-router.put("/posts_mgr_status/:id", async(req, res) => {
+router.put("/posts_mgr_confirm/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const post = await Post.findById(id);
+        if (!post) {
+            return res.status(404).json({ messenger: 'No post found to update' });
+        }
+
+        post.user_id = post.user_id;
+        post.building_id = post.building_id;
+        post.room_id = post.room_id;
+        post.title = post.title;
+        post.content = post.content;
+        post.status = 1;
+        post.post_type = post.post_type;
+        post.photo = post.photo;
+        post.video = post.video;
+        post.created_at = post.created_at;
+        post.updated_at = new Date().toISOString();
+
+        const result = await post.save();
+        if (result) {
+            res.status(200).json({ message: "Update post success", data: result })
+        } else {
+            res.status(401).json({ message: "Update post failed" })
+        }
+    } catch (error) {
+        console.log("Error: ", error);
+        handleServerError(res, error);
+    }
+})
+
+router.put("/posts_mgr_status/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const data = req.body;
@@ -166,10 +199,12 @@ router.get('/posts_mgr/:buildingId/posts/day', async (req, res) => {
             })
             .exec();
 
-        const isPostActive = posts.filter(post => post.status === 0)
+        const isPostPendding = posts.filter(post => post.status === 0)
+        const isPostActive = posts.filter(post => post.status === 1)
         const isPostBan = posts.filter(post => post.status === 2)
 
         return res.status(200).json({
+            isPostPendding,
             isPostActive,
             isPostBan
         });
@@ -212,10 +247,12 @@ router.get('/posts_mgr/:buildingId/posts', async (req, res) => {
             })
             .exec();
 
-        const isPostActive = posts.filter(post => post.status === 0)
+        const isPostPendding = posts.filter(post => post.status === 0)
+        const isPostActive = posts.filter(post => post.status === 1)
         const isPostBan = posts.filter(post => post.status === 2)
 
         return res.status(200).json({
+            isPostPendding,
             isPostActive,
             isPostBan
         });
@@ -254,10 +291,12 @@ router.get('/posts_mgr/:buildingId/posts/year', async (req, res) => {
             })
             .exec();
 
+        const isPostPendding = posts.filter(post => post.status === 0)
         const isPostActive = posts.filter(post => post.status === 0)
         const isPostBan = posts.filter(post => post.status === 2)
 
         return res.status(200).json({
+            isPostPendding,
             isPostActive,
             isPostBan
         });
