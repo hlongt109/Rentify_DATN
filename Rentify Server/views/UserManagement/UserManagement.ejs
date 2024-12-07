@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+    <style>
+        .table-left td,
+        .table-left th {
+            text-align: left;
+        }
+    </style>
 </head>
+
 <body>
 
     <div class="containerhaha">
@@ -16,7 +24,9 @@
             <h4>Quản lý người dùng</h4>
             <div class="search-input-container1 d-flex align-items-center">
                 <div class="dropdown input-spacing"> <!-- Thêm lớp input-spacing -->
-                    <button id="roleDropdownButton" class="btn text-white shadow-button dropdown-toggle" style="font-size: 0.75rem; background-color: #007bff; width: 100px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button id="roleDropdownButton" class="btn text-white shadow-button dropdown-toggle"
+                        style="font-size: 0.75rem; background-color: #007bff; width: 100px;" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
                         Vai trò
                     </button>
                     <div class="dropdown-menu" aria-labelledby="roleDropdownButton">
@@ -33,9 +43,9 @@
                     <span class="search-icon">&#128269;</span>
                 </div>
             </div>
-            
 
-            <table class="table table-striped">
+
+            <table class="table table-striped table-left">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -74,4 +84,5 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="../../assets/js/UserManagement.js"></script>
 </body>
+
 </html>
