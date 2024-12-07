@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const Contract = require('../../models/Contract');
 const Building = require('../../models/Building');
+const upload = require('../../config/common/uploadImageBank')
 const User = require('../../models/User')
 // hiển thị danh sách người dùng _vanphuc
 router.get('/listusers', async (req, res) => {
@@ -158,47 +159,52 @@ router.get('/getBankAccount/:userId', async (req, res) => {
     });
   }
 });
-// chỉnh sửa thông tin tài khoản ngân hàng :
-router.put("/updateBankAccount/:userId", async (req, res) => {
+
+router.put("/updateBankAccount/:userId", upload.array("qr_bank", 5), async (req, res) => {
   try {
     const { userId } = req.params;
-    const { bank_name, bank_number, qr_bank, username } = req.body;
+    const { bank_name, bank_number, username } = req.body;
 
-    // Tìm người dùng và cập nhật thông tin tài khoản ngân hàng
+    // Tìm người dùng
     const user = await User.findById(userId);
-
     if (!user) {
       return res.status(404).json({
-        success: false,
         message: "Không tìm thấy người dùng",
       });
     }
 
-    // Kiểm tra và cập nhật từng trường trong bankAccount
+    // Cập nhật thông tin tài khoản ngân hàng
     if (bank_name !== undefined) user.bankAccount.bank_name = bank_name;
     if (bank_number !== undefined) user.bankAccount.bank_number = bank_number;
-    if (qr_bank !== undefined) user.bankAccount.qr_bank = qr_bank;
     if (username !== undefined) user.bankAccount.username = username;
+
+    // Xử lý các file upload
+    if (req.files && req.files.length > 0) {
+      // Lưu đường dẫn các file
+      // Loại bỏ phần 'public' để lưu đường dẫn tương đối
+      user.bankAccount.qr_bank = req.files.map(file => file.path)
+    }
 
     // Lưu thay đổi
     await user.save();
 
-    // Trả về dữ liệu trong format mong muốn
+    // Trả về response mà không có trường 'success'
     res.status(200).json({
       bank_name: user.bankAccount.bank_name,
       bank_number: user.bankAccount.bank_number,
-      qr_bank: user.bankAccount.qr_bank,
+      qr_banks: user.bankAccount.qr_bank,
       username: user.bankAccount.username,
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      success: false,
       message: "Đã xảy ra lỗi khi cập nhật thông tin tài khoản ngân hàng",
       error: error.message,
     });
   }
 });
+
 // API chỉnh sửa toàn bộ thông tin người dùng _vanphuc
 router.put('/updateTaiKhoan/:id', async (req, res) => {
   try {
