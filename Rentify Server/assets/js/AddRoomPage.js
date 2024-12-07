@@ -131,6 +131,8 @@ const displayServices = (services) => {
 
 // Khởi tạo và hiển thị dữ liệu
 const initAddRoomPage = () => {
+    const titleScreen = document.getElementById('titleScreen');
+    titleScreen.textContent = 'Thêm Phòng';
     const { buildingId, services } = getQueryParams();
     // Hiển thị các dịch vụ
     displayServices(services);

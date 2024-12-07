@@ -437,6 +437,8 @@ decreaseInput.addEventListener('input', () => {
 // displayAmenities();
 
 const init = async () => {
+    const titleScreen = document.getElementById('titleScreen');
+    titleScreen.textContent = 'Cập Nhật Phòng';
     await fetchService();
     await fetchAmenities();
     await fetchRoomDetails()
