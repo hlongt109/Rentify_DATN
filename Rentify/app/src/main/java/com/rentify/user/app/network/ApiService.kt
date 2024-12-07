@@ -514,6 +514,11 @@ interface APIService {
     suspend fun getBankAccount(
         @Path("userId") userId: String
     ): Response<Bank>
+    @PUT("staff/users/updateBankAccount/{userId}")
+    suspend fun updateBankAccount(
+        @Path("userId") userId: String,
+        @Body bank: Bank
+    ): Response<Bank>
 
     @PUT("staff/users/updateTaiKhoan/{id}")
     suspend fun updateTaiKhoan(

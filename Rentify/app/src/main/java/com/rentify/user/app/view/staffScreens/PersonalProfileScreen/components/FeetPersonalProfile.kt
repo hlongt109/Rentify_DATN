@@ -17,7 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -34,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +49,7 @@ import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
+import java.util.Calendar
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -70,6 +75,8 @@ fun FeetPersonalProfile(navController: NavHostController) {
     var showEditDialog by remember { mutableStateOf(false) }
     var currentField by remember { mutableStateOf("") }
     var newValue by remember { mutableStateOf("") }
+    var genderValue by remember { mutableStateOf(userDetail?.gender) }
+    var dobValue by remember { mutableStateOf(userDetail?.dob) }
 
     // Lấy thông tin người dùng khi composable được gọi
     LaunchedEffect(Unit) {
@@ -94,7 +101,7 @@ fun FeetPersonalProfile(navController: NavHostController) {
             value = userDetail?.gender ?: "",
             onClick = {
                 currentField = "gender"
-                newValue = userDetail?.gender ?: ""
+                genderValue = userDetail?.gender ?: ""
                 showEditDialog = true
             }
         )
@@ -105,10 +112,11 @@ fun FeetPersonalProfile(navController: NavHostController) {
             value = userDetail?.dob ?: "",
             onClick = {
                 currentField = "dob"
-                newValue = userDetail?.dob ?: ""
+                dobValue = userDetail?.dob ?: ""
                 showEditDialog = true
             }
         )
+
         EditableRow(
             label = "Địa chỉ",
             value = userDetail?.address ?: "",
@@ -121,23 +129,172 @@ fun FeetPersonalProfile(navController: NavHostController) {
 
         // Hiển thị Dialog chỉnh sửa
         if (showEditDialog) {
-            EditDialog(
-                title = "Chỉnh sửa $currentField",
-                value = newValue,
-                onValueChange = { newValue = it },
-                onSave = {
-                    showEditDialog = false
-                    when (currentField) {
-                        "name" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(name = newValue))
-                        "gender" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(gender = newValue))
-                        "dob" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(dob = newValue))
-                    }
-                },
-                onCancel = { showEditDialog = false }
-            )
+            when (currentField) {
+                "gender" -> GenderDialog(
+                    gender = genderValue ?: "",
+                    onGenderChange = { genderValue = it },
+                    onSave = {
+                        viewModel.updateTaiKhoan(userId,
+                            genderValue?.let { userDetail?.copy(gender = it) })
+                        showEditDialog = false
+                    },
+                    onCancel = { showEditDialog = false }
+                )
+                "dob" -> DatePickerDialog(
+                    dob = dobValue ?: "",
+                    onDateChange = { dobValue = it },
+                    onSave = {
+                        viewModel.updateTaiKhoan(userId,
+                            dobValue?.let { userDetail?.copy(dob = it) })
+                        showEditDialog = false
+                    },
+                    onCancel = { showEditDialog = false }
+                )
+                else -> EditDialog(
+                    title = "Chỉnh sửa $currentField",
+                    value = newValue,
+                    onValueChange = { newValue = it },
+                    onSave = {
+                        showEditDialog = false
+                        when (currentField) {
+                            "name" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(name = newValue))
+                            "address" -> viewModel.updateTaiKhoan(userId, userDetail?.copy(address = newValue))
+                        }
+                    },
+                    onCancel = { showEditDialog = false }
+                )
+            }
         }
     }
 }
+
+@Composable
+fun GenderDialog(gender: String, onGenderChange: (String) -> Unit, onSave: () -> Unit, onCancel: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text("Chỉnh sửa Giới tính", fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                Row {
+                    RadioButton(
+                        selected = gender == "Male",
+                        onClick = { onGenderChange("Male") }
+                    )
+                    Text("Nam", modifier = Modifier.padding(start = 8.dp))
+                }
+                Row {
+                    RadioButton(
+                        selected = gender == "Female",
+                        onClick = { onGenderChange("Female") }
+                    )
+                    Text("Nữ", modifier = Modifier.padding(start = 8.dp))
+                }
+                Row {
+                    RadioButton(
+                        selected = gender == "Other",
+                        onClick = { onGenderChange("Other") }
+                    )
+                    Text("Khác", modifier = Modifier.padding(start = 8.dp))
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave() }) {
+                Text("Lưu")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text("Hủy")
+            }
+        }
+    )
+}
+
+@Composable
+fun DatePickerDialog(dob: String, onDateChange: (String) -> Unit, onSave: () -> Unit, onCancel: () -> Unit) {
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    // Trạng thái lưu ngày được chọn
+    var selectedDate by remember { mutableStateOf(dob) }
+
+    val datePickerDialog = android.app.DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            selectedDate = "$dayOfMonth/${month + 1}/$year" // Cập nhật ngày đã chọn
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
+
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text("Chỉnh sửa Ngày sinh", fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                Text(text = "Ngày đã chọn: $selectedDate", fontSize = 16.sp)
+            }
+        },
+        confirmButton = {
+            Row {
+                TextButton(onClick = { datePickerDialog.show() }) {
+                    Text("Chọn ngày")
+                }
+                Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa 2 nút
+                TextButton(onClick = {
+                    onDateChange(selectedDate) // Gửi ngày đã chọn
+                    onSave() // Lưu thay đổi
+                }) {
+                    Text("OK")
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text("Hủy")
+            }
+        }
+    )
+}
+
+
+@Composable
+fun EditDialog(
+    title: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    onSave: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text(title, fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    label = { Text("Nhập giá trị mới") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave() }) {
+                Text("Lưu")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text("Hủy")
+            }
+        }
+    )
+}
+
 
 @Composable
 fun EditableRow(label: String, value: String, onClick: () -> Unit) {
@@ -164,7 +321,7 @@ fun EditableRow(label: String, value: String, onClick: () -> Unit) {
             )
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = "Edit $label",
+                contentDescription = "Chỉnh sửa $label",
                 modifier = Modifier.size(16.dp),
                 tint = Color.Gray
             )
@@ -172,38 +329,7 @@ fun EditableRow(label: String, value: String, onClick: () -> Unit) {
     }
 }
 
-@Composable
-fun EditDialog(
-    title: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    onSave: () -> Unit,
-    onCancel: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = { onCancel() },
-        title = { Text(title) },
-        text = {
-            Column {
-                TextField(
-                    value = value,
-                    onValueChange = onValueChange,
-                    label = { Text("Nhập giá trị mới") }
-                )
-            }
-        },
-        confirmButton = {
-            Button(onClick = { onSave() }) {
-                Text("Lưu")
-            }
-        },
-        dismissButton = {
-            Button(onClick = { onCancel() }) {
-                Text("Hủy")
-            }
-        }
-    )
-}
+
 
 //============1============
 @Composable
@@ -327,7 +453,7 @@ fun FeetPersonalProfile1(navController: NavHostController) {
 
 //================================
 @Composable
-fun FeetPersonalProfile2(navController: NavHostController){
+fun FeetPersonalProfile2(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
     val bankAccountDetail by viewModel.bankAccount.observeAsState()
     val context = LocalContext.current
@@ -338,96 +464,93 @@ fun FeetPersonalProfile2(navController: NavHostController){
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
+
+    // States for dialog and input fields
+    var showEditDialog by remember { mutableStateOf(false) }
+    var currentField by remember { mutableStateOf("") }
+    var newValue by remember { mutableStateOf("") }
+
     LaunchedEffect(Unit) {
-        viewModel.getBankAccountByUser(userId)  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getBankAccountByUser(userId)  // Fetch user bank details on composable call
     }
+
     Column {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(bottom = 20.dp, top = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Tên ngân hàng",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
-                color = Color(0xFF989898)
-            )
-            Text(text = "${bankAccountDetail?.bank_name}",
-                modifier = Modifier
-                    .padding(end = 20.dp),
-                fontSize = 15.sp
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .padding(start = 20.dp, end = 20.dp)
-                .background(color = Color(0xFFe4e4e4))
-        ) {
-        }
-//        _vanphuc : giới tính
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(bottom = 20.dp, top = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Số tài khoản",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
-                color = Color(0xFF989898)
-            )
-            Text(text = "${bankAccountDetail?.bank_number}",
-                modifier = Modifier
-                    .padding(end = 20.dp),
-                fontSize = 15.sp
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .padding(start = 20.dp, end = 20.dp)
-                .background(color = Color(0xFFe4e4e4))
-        ) {
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(bottom = 20.dp, top = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Tên tài khoản ngân hàng",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
-                color = Color(0xFF989898)
-            )
-            Text(text = "${bankAccountDetail?.username}",
-                modifier = Modifier
-                    .padding(end = 20.dp),
-                fontSize = 15.sp
-            )
-        }
+        // Bank Name
+        EditableRow(
+            label = "Tên ngân hàng",
+            value = bankAccountDetail?.bank_name ?: "",
+            onClick = {
+                currentField = "bank_name"
+                newValue = bankAccountDetail?.bank_name ?: ""
+                showEditDialog = true
+            }
+        )
+
+        // Account Number
+        EditableRow(
+            label = "Số tài khoản",
+            value = bankAccountDetail?.bank_number.toString(),
+            onClick = {
+                currentField = "bank_number"
+                newValue = bankAccountDetail?.bank_number.toString()
+                showEditDialog = true
+            }
+        )
+
+        // Account Username
+        EditableRow(
+            label = "Tên tài khoản ngân hàng",
+            value = bankAccountDetail?.username ?: "",
+            onClick = {
+                currentField = "username"
+                newValue = bankAccountDetail?.username ?: ""
+                showEditDialog = true
+            }
+        )
+
+        // QR codes
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.Center // Căn giữa các item trong LazyRow
+            horizontalArrangement = Arrangement.Center
         ) {
             items(bankAccountDetail?.qr_bank ?: emptyList()) { qrUrl ->
-                val urianhBank: String = "http://10.0.2.2:3000/${qrUrl}"
+                val qrImageUri = "http://10.0.2.2:3000/$qrUrl"
                 AsyncImage(
-                    model = urianhBank,
+                    model = qrImageUri,
                     contentDescription = "QR Bank Photo",
                     modifier = Modifier
                         .width(250.dp)
                         .height(250.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color.LightGray)
-                        .align(Alignment.CenterHorizontally), // Căn giữa ảnh
+                        .align(Alignment.CenterHorizontally),
                     contentScale = ContentScale.Crop
                 )
             }
         }
-        Spacer(modifier = Modifier.height(50.dp))
+
+        // Edit Dialog for updating bank account
+        if (showEditDialog) {
+            EditDialog(
+                title = "Chỉnh sửa $currentField",
+                value = newValue,
+                onValueChange = { newValue = it },
+                onSave = {
+                    showEditDialog = false
+                    val updatedBankAccount = when (currentField) {
+                        "bank_name" -> bankAccountDetail?.copy(bank_name = newValue)
+                        "bank_number" -> bankAccountDetail?.copy(bank_number = newValue.toLong())
+                        "username" -> bankAccountDetail?.copy(username = newValue)
+                        else -> bankAccountDetail
+                    }
+                    updatedBankAccount?.let {
+                        viewModel.updateBankAccount(userId, it)
+                    }
+                },
+                onCancel = { showEditDialog = false }
+            )
+        }
     }
 }

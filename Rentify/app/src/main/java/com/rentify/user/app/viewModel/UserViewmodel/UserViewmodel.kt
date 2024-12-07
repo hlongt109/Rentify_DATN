@@ -116,6 +116,30 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun updateBankAccount(userId: String, bank: Bank) {
+        viewModelScope.launch {
+            try {
+                // Gọi API updateBankAccount với userId và đối tượng Bank
+                val response = apiService.updateBankAccount(userId, bank)
+
+                // Kiểm tra nếu yêu cầu thành công
+                if (response.isSuccessful && response.body() != null) {
+                    _bankAccount.postValue(response.body())  // Cập nhật LiveData với dữ liệu ngân hàng mới
+                    _updateSuccess.postValue(true)  // Báo thành công
+                    Log.d("UserViewModel", "Update bank account successful: ${response.body()}")
+                } else {
+                    _updateSuccess.postValue(false)  // Báo lỗi
+                    _error.postValue("Cập nhật tài khoản ngân hàng thất bại: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _updateSuccess.postValue(false)  // Báo lỗi
+                _error.postValue("Lỗi khi cập nhật tài khoản ngân hàng: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+
     fun updateTaiKhoan(id: String, updatedUser: UserResponse?) {
         viewModelScope.launch {
             try {
