@@ -16,16 +16,21 @@ import com.rentify.user.app.R
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.rahad.riobottomnavigation.composables.RioBottomNavigation
 import com.rentify.user.app.R.drawable.bottomiconmain
 import com.rentify.user.app.view.userScreens.homeScreen.HomeScreen
+import com.rentify.user.app.view.userScreens.homeScreen.LayoutHome
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
+import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
 import com.rentify.user.app.view.userScreens.messengerScreen.MessengerScreen
+import com.rentify.user.app.view.userScreens.personalScreen.LayoutPersonal
 import com.rentify.user.app.view.userScreens.personalScreen.PersonalScreen
+import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 
 @Composable
 fun BottomNavigation(
-    navController: NavController
+    navHostController: NavHostController
 ){
     val items = listOf(
         R.drawable.bottomhomeicon,
@@ -35,10 +40,10 @@ fun BottomNavigation(
     )
 
     val labels = listOf(
-        "Home",
-        "Service",
-        "Tin nhăn",
-        "Personal"
+        "Trang chính",
+        "Dịch vụ",
+        "Tin nhắn",
+        "Cá nhân"
     )
 
     var selectedIndex = rememberSaveable { mutableIntStateOf(0) }
@@ -55,25 +60,25 @@ fun BottomNavigation(
     Scaffold(
         modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),
         bottomBar = {
-            BottomNavigationBar(buttons = buttons)
+            BottomNavigationBar(buttons = buttons, navHostController)
         },
     ) { innerPadding ->
-        ScreenContent(selectedIndex.intValue, modifier = Modifier.padding(innerPadding), navController)
+        ScreenContent(selectedIndex.intValue, modifier = Modifier.padding(innerPadding), navHostController)
     }
 
 }
 
 @Composable
-fun ScreenContent(selectedIndex: Int, modifier: Modifier = Modifier, navController: NavController) {
+fun ScreenContent(selectedIndex: Int, modifier: Modifier = Modifier, navHostController: NavHostController) {
     when (selectedIndex) {
-        0 -> HomeScreen()
-        1 -> LaundryScreen(navController)
-        2 -> MessengerScreen()
-        3 -> PersonalScreen()
+        0 -> LayoutHome(navHostController)
+        1 -> LayoutService(navHostController)
+        2 -> LayoutMessenger(navHostController)
+        3 -> LayoutPersonal(navHostController)
     }
 }
 @Composable
-fun BottomNavigationBar(buttons: List<RioBottomNavItemData>) {
+fun BottomNavigationBar(buttons: List<RioBottomNavItemData>, navHostController: NavHostController) {
     RioBottomNavigation(
         fabIcon = ImageVector.vectorResource(id = bottomiconmain),
         buttons = buttons,
@@ -81,5 +86,8 @@ fun BottomNavigationBar(buttons: List<RioBottomNavItemData>) {
         barHeight = 70.dp,
         selectedItemColor = Color(0xff44ACFE),
         fabBackgroundColor = Color(0xff44ACFE),
+        onFabClick = {
+            navHostController.navigate("RENT")
+        }
     )
 }

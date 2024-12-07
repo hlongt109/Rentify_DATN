@@ -64,5 +64,6 @@ fun LayoutPersonal(navController: NavHostController) {
         MenuComponent()
         Spacer(modifier = Modifier.padding(3.dp))
         LayoutItems(navController)
+        Spacer(modifier = Modifier.padding(30.dp))
     }
 }

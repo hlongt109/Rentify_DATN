@@ -135,7 +135,8 @@ fun LayoutHome(
         }
 
         item {
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.padding(40.dp))
         }
+
     }
 }
