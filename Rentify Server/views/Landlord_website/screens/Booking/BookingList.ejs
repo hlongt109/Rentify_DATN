@@ -23,6 +23,10 @@
         color: #28a745;
     }
 
+    .status-rejected2 {
+        color: rgb(18, 106, 112);
+    }
+
     .status-rejected {
         color: #f20;
     }
@@ -33,7 +37,7 @@
 
     th:nth-child(5),
     td:nth-child(5) {
-        width: 60%;
+        width: 100%;
     }
 
     .issue-type {
@@ -188,6 +192,17 @@
         width: 120px;
         font-weight: bold;
     }
+
+    .check-in-date {
+        white-space: normal;
+        /* Cho phép xuống dòng */
+        word-wrap: break-word;
+        /* Chia từ nếu quá dài */
+        word-break: break-word;
+        /* Đảm bảo xuống dòng với từ dài */
+        max-width: 200px;
+        /* Giới hạn chiều rộng */
+    }
 </style>
 
 <body>
@@ -209,8 +224,9 @@
                                 <label for="statusSelect">Chọn trạng thái</label>
                                 <select id="statusSelect" class="form-control">
                                     <option value="0">Chưa xử lý</option>
-                                    <option value="1">Đã xử lý</option>
-                                    <option value="-1">Đã hủy</option>
+                                    <option value="1">Đã duyệt</option>
+                                    <option value="2">Đã xem</option>
+                                    <option value="3">Đã hủy</option>
                                 </select>
                             </div>
                             <button class="btn btn-primary" onclick="saveStatusChange()">Lưu</button>
@@ -219,25 +235,24 @@
 
 
                 </div>
+                <!-- Dropdown để chọn trạng thái -->
                 <div class="dropdown input-spacing">
                     <button id="statusButton" class="btn text-white shadow-button dropdown-toggle"
                         style="font-size: 0.75rem; background-color: #007bff; width: 100px;" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         Trạng thái
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="statusButton">
-                        <a class="dropdown-item border-bottom" href="#"
-                            onclick="updateDropdownText('statusButton', 'All'); filterByStatus(-1)">Toàn bộ</a>
-                        <a class="dropdown-item border-bottom" href="#"
-                            onclick="updateDropdownText('statusButton', 'Chưa xử lý'); filterByStatus(0)">Chưa xử lý</a>
-                        <a class="dropdown-item border-bottom" href="#"
-                            onclick="updateDropdownText('statusButton', 'Đang xử lý'); filterByStatus(0)">Đang xử lý</a>
-                        <a class="dropdown-item " href="#"
-                            onclick="updateDropdownText('statusButton', 'Đã xử lý'); ; filterByStatus(1)">Đã xử lý</a>
-                        <a class="dropdown-item border-bottom" href="#"
-                            onclick="updateDropdownText('statusButton', 'Đã hủy'); filterByStatus(0)">Đã hủy</a>
+                    <div class="dropdown-menu" aria-labelledby="statusButton" id="roomFilter">
+                        <a class="dropdown-item" href="#" data-status="">Tất cả</a>
+                        <a class="dropdown-item" href="#" data-status="0">Đang xử lý</a>
+                        <a class="dropdown-item" href="#" data-status="1">Đã duyệt</a>
+                        <a class="dropdown-item" href="#" data-status="2">Đã xem</a>
+                        <a class="dropdown-item" href="#" data-status="3">Đã hủy</a>
                     </div>
                 </div>
+
+
+
                 <div class="search-input-container">
                     <!-- <input type="text" id="search-input" placeholder="Nhập tên để tìm kiếm" class="search-input" /> -->
                     <div class="input-container">
@@ -258,9 +273,11 @@
                     <tr>
                         <th>#</th>
                         <th>Người tạo lịch hẹn</th>
+                        <th>Tên phòng hẹn xem</th>
+                        <th>Tên tòa nhà hẹn xem</th>
                         <th>Ngày hẹn xem</th>
-                        <th style="width: 200px;">Trạng thái</th>
-                        <th style="width: 200px;">Act</th>
+                        <th style="width: 180px;">Trạng thái</th>
+                        <th style="width: 180px;">Act</th>
                     </tr>
                 </thead>
                 <tbody id="report-table-body">
@@ -293,6 +310,12 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="../../../../assets/js/booking_mgr.js"> </script>
+    <!-- Thêm jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Thêm Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
 
 
 
