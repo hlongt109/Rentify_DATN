@@ -26,6 +26,14 @@ class PostViewModel : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
+    private val _pendingPosts = mutableStateOf<List<PostingList>>(emptyList())
+    val pendingPosts: State<List<PostingList>> = _pendingPosts
+
+    private val _activePosts = mutableStateOf<List<PostingList>>(emptyList())
+    val activePosts: State<List<PostingList>> = _activePosts
+
+    private val _hiddenPosts = mutableStateOf<List<PostingList>>(emptyList())
+    val hiddenPosts: State<List<PostingList>> = _hiddenPosts
 
     private val _updateBookingStatusResult = MutableLiveData<Result<UpdatePostRequest>?>()
     val updateBookingStatusResult: LiveData<Result<UpdatePostRequest>?> get() = _updateBookingStatusResult
@@ -37,6 +45,7 @@ class PostViewModel : ViewModel() {
         buildingId: String?,
         roomId: String?,
         title: String?,
+        address: String?,
         content: String?,
         status: String?,
         postType: String?,
@@ -50,17 +59,19 @@ class PostViewModel : ViewModel() {
                 val buildingIdBody = buildingId?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val roomIdBody = roomId?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val titleBody = title?.toRequestBody("text/plain".toMediaTypeOrNull())
+                val addressBody = address?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val contentBody = content?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val statusBody = status?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val postTypeBody = postType?.toRequestBody("text/plain".toMediaTypeOrNull())
 
                 // Gọi API để cập nhật bài viết
-                val response = RetrofitClient.apiService.updatePostUser(
+                val response = RetrofitClient.apiService.updatePost(
                     postId,
                     userIdBody,
                     buildingIdBody,
                     roomIdBody,
                     titleBody,
+                    addressBody,
                     contentBody,
                     statusBody,
                     postTypeBody,
@@ -78,8 +89,14 @@ class PostViewModel : ViewModel() {
                     val updatedPost = response.body()
                     if (updatedPost != null) {
                         // Trả về kết quả thành công
+                        // Cập nhật lại dữ liệu trong LiveData
+                        _postDetail.value = updatedPost as? PostingDetail
                         _updateBookingStatusResult.postValue(Result.success(updatedPost))
                         Log.d("updatePost", "Update successful: $updatedPost")
+
+                        // Nếu cần, gọi lại API để lấy thông tin chi tiết bài đăng mới nhất
+                        getPostDetail(postId) // Cập nhật lại chi tiết bài đăng
+
                     } else {
                         _updateBookingStatusResult.postValue(Result.failure(Exception("Update failed")))
                         Log.e("updatePost", "Update failed: Response body is null")
@@ -122,7 +139,32 @@ fun getPostingList(userId: String) {
         }
     }
 }
+    fun getPostingList_user(userId: String, postType: String? = null) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                // Gọi API với cả userId và postType
+                val response = RetrofitClient.apiService.getPosts_user(userId, postType)
 
+                if (response.status == 200 && response.data.isNotEmpty()) {
+                    _posts.value = response.data
+                    _pendingPosts.value = response.data.filter { it.status == 0 }
+                    _activePosts.value = response.data.filter { it.status == 1 }
+                    _hiddenPosts.value = response.data.filter { it.status == 2 }
+                    Log.d("Posts Updated", _posts.value.toString())
+                } else {
+                    _errorMessage.value = "Không có bài đăng nào được trả về."
+                    Log.d("Posts Empty", "Không có bài đăng nào được trả về")
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Lỗi khi lấy danh sách bài viết: ${e.message}"
+                Log.e("API Error", "Lỗi khi lấy danh sách bài viết: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+
+    }
 private val _postDetail = MutableLiveData<PostingDetail?>()
 val postDetail: LiveData<PostingDetail?> get() = _postDetail
 
@@ -159,6 +201,22 @@ fun deletePostWithFeedback(postId: String) {
         }
     }
 }
+
+    fun deletePostWithFeedback_user(postId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.deletePost(postId)
+                if (response.isSuccessful) {
+                    // Loại bỏ bài đăng khỏi danh sách hiện tại
+                    _pendingPosts.value = _pendingPosts.value.filter { it._id != postId }
+                    _activePosts.value = _activePosts.value.filter { it._id != postId }
+                    _hiddenPosts.value = _hiddenPosts.value.filter { it._id != postId }
+                }
+            } catch (e: Exception) {
+                Log.e("DeletePost", "Error: $e")
+            }
+        }
+    }
     private val _buildings = mutableStateOf<List<Building>>(emptyList())
     val buildings: State<List<Building>> = _buildings
 
@@ -378,4 +436,14 @@ fun deletePostWithFeedback(postId: String) {
             searchPosts(newQuery) // Tự động tìm kiếm khi giá trị thay đổi
         }
     }
+
+
+    ////
+    private fun updatePostLists() {
+        val posts = _posts.value
+        _pendingPosts.value = posts.filter { it.status == 0 }
+        _activePosts.value = posts.filter { it.status == 1 }
+        _hiddenPosts.value = posts.filter { it.status == 2 }
+    }
+
 }

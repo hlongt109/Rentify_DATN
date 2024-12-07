@@ -63,7 +63,7 @@ import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingL
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingOptions
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomOptions
-import com.rentify.user.app.view.staffScreens.addPostScreen.Components.SelectMedia
+import com.rentify.user.app.view.userScreens.AddPostScreen.Components.SelectMedia
 import com.rentify.user.app.viewModel.LoginViewModel
 
 
@@ -450,7 +450,7 @@ fun AddPostScreens(navController: NavHostController) {
                             }
 
                             if (isSuccessful) {
-                                Toast.makeText(context, "Tạo hợp đồng thành công!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Tạo bài đăng thành công!", Toast.LENGTH_SHORT).show()
                                 // Chuyển màn khi bài đăng được tạo thành công
                                 navController.navigate("POSTING_STAFF")
                             } else {

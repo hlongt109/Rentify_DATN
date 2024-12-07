@@ -298,12 +298,13 @@ interface APIService {
 
     @Multipart
     @PUT("staff/posts/update/{id}")
-    suspend fun updatePostUser(
+    suspend fun updatePost(
         @Path("id") postId: String,
         @Part("user_id") userId: RequestBody?,
         @Part("building_id") buildingId: RequestBody?,
         @Part("room_id") roomId: RequestBody?,
         @Part("title") title: RequestBody?,
+        @Part("address") address: RequestBody?,
         @Part("content") content: RequestBody?,
         @Part("status") status: RequestBody?,
         @Part("post_type") postType: RequestBody?,
@@ -382,6 +383,11 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
+    @GET("staff/posts/postType/list/{user_id}")
+    suspend fun getPosts_user(
+        @Path("user_id") userId: String,
+        @Query("post_type") postType: String? = null // Thêm post_type vào query parameter
+    ): ApiResponsee<List<PostingList>>
 // bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
 @GET("list/type/{post_type}")
 suspend fun getPostsByType(

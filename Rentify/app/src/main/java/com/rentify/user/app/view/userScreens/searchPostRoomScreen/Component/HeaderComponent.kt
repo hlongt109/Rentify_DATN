@@ -46,7 +46,7 @@ fun HeaderComponent(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White)
-            .padding(10.dp)
+
     ) {
         Row(
             modifier = Modifier
@@ -73,16 +73,11 @@ fun HeaderComponent(navController: NavController) {
                 fontSize = 17.sp
             )
 
-            IconButton(
+            Row(
                 modifier = Modifier.width(100.dp),
-                onClick = { navController.navigate("${MainActivity.ROUTER.ADDPOST.name}?postType=rent") }
 
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.addr),
-                    contentDescription = null,
-                    modifier = Modifier.size(25.dp, 25.dp)
-                )
+
             }
         }
     }

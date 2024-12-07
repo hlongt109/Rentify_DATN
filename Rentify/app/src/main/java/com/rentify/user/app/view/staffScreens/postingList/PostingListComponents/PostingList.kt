@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.model.User
 import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlin.math.roundToInt
@@ -51,9 +52,22 @@ data class PostingList(
     val title: String,  // Tương ứng với trường title trong API
     val price: String,  // Tương ứng với trường price trong API
     val address: String, // Tương ứng với trường address trong API
-    val status: String,
+    val addresss: String, // Tương ứng với trường address trong API
+    val content: String, // Tương ứng với trường content trong API
+    val status: Int,
     val building: Building?,
-    val room: Room_post?
+    val room: Room_post?,
+    val photos: List<String> = listOf(),
+    val  videos: List<String> = listOf(),
+    val user: User?,// Ngày cập nhật
+    val post_type: String,
+    val created_at: String,
+    val updated_at: String,
+    val building_id: String,
+    val photo: List<String>,
+    val room_id: String,
+    val user_id: String,
+
 )
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -246,153 +260,7 @@ fun PostingListCard(
 }
 
 
-//@Composable
-//fun PostListScreen(navController: NavController, userId: String) {
-//    val viewModel: PostViewModel = viewModel()
-//    val post by viewModel.posts
-//    val context = LocalContext.current
-//    var isShowDialog by remember { mutableStateOf(false) }
-//    var postIdToDelete by remember { mutableStateOf<String?>(null) }
-//
-//    // Gọi API lấy danh sách bài đăng
-//    LaunchedEffect(userId) {
-//        viewModel.getPostingList(userId)
-//    }
-//
-//    // Hiển thị dialog xác nhận xóa
-//    if (isShowDialog) {
-//        DialogCompose(
-//            onConfirmation = {
-//                isShowDialog = false
-//                postIdToDelete?.let { id ->
-//                    viewModel.deletePostWithFeedback(id)
-//                    postIdToDelete = null
-//                }
-//            },
-//            onCloseDialog = {
-//                isShowDialog = false
-//                postIdToDelete = null
-//            },
-//            titleDialog = "Xác nhận xóa",
-//            mess = "Bạn có chắc chắn muốn xóa bài đăng này?"
-//        )
-//    }
-//
-//    LazyColumn(
-//        modifier = Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.spacedBy(8.dp),
-//        contentPadding = PaddingValues(16.dp)
-//    ) {
-//        items(post, key = { it._id }) { post ->
-//            // Quản lý trạng thái vuốt
-//            val dismissState = rememberSwipeToDismissBoxState(
-//                confirmValueChange = { direction ->
-//                    if (direction == SwipeToDismissBoxValue.EndToStart) {
-//                        // Vuốt sang trái, kích hoạt logic xóa
-//                        postIdToDelete = post._id
-//                        isShowDialog = true
-//                        false // Đợi người dùng xác nhận trước khi xóa
-//                    } else {
-//                        // Vuốt sang phải (StartToEnd), không làm gì cả
-//                        false
-//                    }
-//                }
-//            )
-//
-//
-//            SwipeToDismissBox(
-//                state = dismissState,
-//                // Nội dung nền xuất hiện khi vuốt
-//                backgroundContent = {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .padding(horizontal = 8.dp)
-//                            .clip(RoundedCornerShape(10.dp))
-//                            .background(Color.Red),
-//                        contentAlignment = Alignment.CenterEnd
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Delete,
-//                            contentDescription = "Delete",
-//                            tint = Color.White,
-//                            modifier = Modifier
-//                                .size(40.dp)
-//                                .padding(end = 10.dp)
-//                        )
-//                    }
-//                },
-//                // Nội dung chính
-//                content = {
-//                    PostingListCard(
-//                        postlist = post,
-//                        onClick = {
-//                            navController.navigate("post_detail/${post._id}")
-//                        }
-//                    )
-//                }
-//            )
-//        }
-//
-//    }
-//}
-//
-//@Composable
-//fun PostingListCard(postlist: PostingList, onClick: () -> Unit) {
-//    Card(
-//        elevation = 4.dp,
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(horizontal = 8.dp)
-//            .shadow(elevation = 4.dp, shape = RoundedCornerShape(10.dp))
-//            .clip(RoundedCornerShape(8.dp))
-//            .clickable { onClick() } // Thêm sự kiện click để xem chi tiết
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(16.dp)
-//        ) {
-//            Column(
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .padding(horizontal = 18.dp)
-//            ) {
-//                Text(
-//                    text = postlist.title,
-//                    fontWeight = FontWeight.Bold,
-//                    fontSize = 16.sp,
-//                    maxLines = 1,
-//                    overflow = TextOverflow.Ellipsis
-//                )
-//                Spacer(modifier = Modifier.height(3.dp))
-//                Text(
-//                    text = "Từ ${postlist.price}",
-//                    color = Color.Red,
-//                    fontSize = 14.sp
-//                )
-//                Spacer(modifier = Modifier.height(4.dp))
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    Icon(
-//                        imageVector = Icons.Default.LocationOn,
-//                        contentDescription = "Location",
-//                        tint = Color(0xFF03A9F4),
-//                        modifier = Modifier.size(16.dp)
-//                    )
-//                    Text(
-//                        text = " ${postlist.address}",
-//                        color = Color.Gray,
-//                        fontSize = 12.sp,
-//                        maxLines = 1,
-//                        overflow = TextOverflow.Ellipsis
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
 
-///
 
 
 

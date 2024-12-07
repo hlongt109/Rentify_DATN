@@ -91,6 +91,7 @@ import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
+import com.rentify.user.app.view.userScreens.AddPostScreen.Components.VideoThumbnail
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -447,6 +448,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                         buildingId = buildingId,
                                         roomId = selectedRoom1,
                                         title = title,
+                                        address = "",
                                         content = content,
                                         status = "0",
                                         postType = "rent",
@@ -824,103 +826,154 @@ fun SelectMedia(
             }
             Spacer(modifier = Modifier.width(15.dp))
             Column {
-                Text(
-                    text = "Ảnh Phòng trọ",
-                    color = Color.Black,
-                    fontSize = 14.sp
-                )
-                Text(
-                    text = "Tối đa 10 ảnh",
-                    color = Color(0xFFBFBFBF),
-                    fontSize = 13.sp
-                )
-            }
-        }
-
-        // Hiển thị ảnh đã chọn từ detail
-        LazyRow {
-            items(selectedImages) { uri ->
-                Box(modifier = Modifier.padding(4.dp)) {
-                    Image(
-                        painter = rememberImagePainter(uri),
-                        contentDescription = null,
-                        modifier = Modifier.size(80.dp)
+                // Chỉ hiển thị Text khi selectedImages rỗng
+                if (selectedImages.isEmpty()) {
+                    Text(
+                        text = "Ảnh Phòng trọ",
+                        color = Color.Black,
+                        fontSize = 14.sp
                     )
-                    // Nút xóa
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp) // Kích thước nút nhỏ hơn
-                            .background(Color.Red, shape = CircleShape)
-                            .align(Alignment.TopEnd)
-                            .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
-                        contentAlignment = Alignment.Center
+                    Text(
+                        text = "Tối đa 10 ảnh",
+                        color = Color(0xFFBFBFBF),
+                        fontSize = 13.sp
+                    )
+                }
+
+                // Hiển thị LazyRow nếu có ảnh
+                if (selectedImages.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.padding(top = 8.dp) // Khoảng cách giữa LazyRow và các thành phần khác
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Xóa",
-                            tint = Color.White,
-                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
-                        )
+                        items(selectedImages) { uri ->
+                            Box(modifier = Modifier.padding(4.dp)) {
+                                Image(
+                                    painter = rememberImagePainter(uri),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(120.dp)
+                                )
+                                // Nút xóa
+                                Box(
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .background(Color.Red, shape = CircleShape)
+                                        .align(Alignment.TopEnd)
+                                        .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Xóa",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
+
+//        // Hiển thị ảnh đã chọn từ detail
+//        LazyRow {
+//            items(selectedImages) { uri ->
+//                Box(modifier = Modifier.padding(4.dp)) {
+//                    Image(
+//                        painter = rememberImagePainter(uri),
+//                        contentDescription = null,
+//                        modifier = Modifier.size(80.dp)
+//                    )
+//                    // Nút xóa
+//                    Box(
+//                        modifier = Modifier
+//                            .size(16.dp) // Kích thước nút nhỏ hơn
+//                            .background(Color.Red, shape = CircleShape)
+//                            .align(Alignment.TopEnd)
+//                            .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Close,
+//                            contentDescription = "Xóa",
+//                            tint = Color.White,
+//                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
+//                        )
+//                    }
+//                }
+//            }
+//        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Button chọn video
-        Column(
+        Row(
             modifier = Modifier
-                .clickable { launcherVideo.launch(arrayOf("video/*")) }
-                .fillMaxWidth()
-                .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                .background(Color.White)
-                .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
-                .padding(25.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(5.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.video),
-                contentDescription = null,
-                modifier = Modifier.size(30.dp)
-            )
-            Spacer(modifier = Modifier.height(7.dp))
-            Text(
-                text = "Video",
-                color = Color.Black,
-                fontSize = 13.sp
-            )
-        }
+            // Button chọn video
+            Column(
+                modifier = Modifier
+                    .clickable { launcherVideo.launch(arrayOf("video/*")) }
+                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+                    .padding(if (selectedVideos.isEmpty()) 25.dp else 22.dp) // Thu nhỏ khi có video
+                    .weight(1f), // Chiếm khoảng không còn lại
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.video),
+                    contentDescription = null,
+                    modifier = Modifier.size(if (selectedVideos.isEmpty()) 30.dp else 35.dp) // Thu nhỏ khi có video
+                )
 
-        // Hiển thị video đã chọn từ detail
-        LazyRow {
-            items(selectedVideos) { uri ->
-                Box(modifier = Modifier.padding(4.dp)) {
-                    // Hiển thị thumbnail video
-                    VideoThumbnail(uri)
-                    // Nút xóa
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp) // Kích thước nút nhỏ hơn
-                            .background(Color.Red, shape = CircleShape)
-                            .align(Alignment.TopEnd)
-                            .clickable { selectedVideos.remove(uri) }, // Xóa video khi nhấn
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Xóa",
-                            tint = Color.White,
-                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
-                        )
+                if (selectedVideos.isEmpty()) { // Hiển thị text khi chưa có video
+                    Spacer(modifier = Modifier.height(7.dp))
+                    Text(
+                        text = "Video",
+                        color = Color.Black,
+                        fontSize = 13.sp
+                    )
+                }
+            }
+
+            // Hiển thị danh sách video đã chọn (LazyRow)
+            if (selectedVideos.isNotEmpty()) {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(3f) // Chiếm không gian rộng hơn cho LazyRow
+                ) {
+                    items(selectedVideos) { uri ->
+                        Box(modifier = Modifier.padding(4.dp)) {
+                            // Hiển thị thumbnail video
+                            VideoThumbnail(uri)
+                            // Nút xóa
+                            Box(
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .background(Color.Red, shape = CircleShape)
+                                    .align(Alignment.TopEnd)
+                                    .clickable { selectedVideos.remove(uri) }, // Xóa video khi nhấn
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Xóa",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
-    }
-}
 
+    }}
 @Composable
 fun VideoThumbnail(uri: Uri) {
     val context = LocalContext.current
