@@ -95,8 +95,6 @@ fun PostListRoomateScreen(navController: NavController, postType: String) {
         viewModel.fetchPostsByType(postType)
         Log.d("Debug", "LaunchedEffect triggered with postType: $postType")
     }
-
-
     if (posts.isEmpty()) {
         Text(
             text = "Không có bài đăng nào",
@@ -271,6 +269,7 @@ fun PostMediaSection1(mediaList: List<String>) {
                         },
                     contentAlignment = Alignment.Center
                 ) {
+
                     if (media.endsWith(".mp4")) {
                             // Play button overlay
                             Icon(

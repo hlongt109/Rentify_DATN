@@ -382,6 +382,11 @@ interface APIService {
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
     ): Response<PostResponse>
+    @GET("staff/posts/postType/list/{user_id}")
+    suspend fun getPosts_user(
+        @Path("user_id") userId: String,
+        @Query("post_type") postType: String? = null // Thêm post_type vào query parameter
+    ): ApiResponsee<List<PostingList>>
 // bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
 @GET("list/type/{post_type}")
 suspend fun getPostsByType(

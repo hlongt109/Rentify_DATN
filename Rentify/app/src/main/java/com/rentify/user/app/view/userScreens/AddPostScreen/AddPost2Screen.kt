@@ -80,6 +80,7 @@ import com.rentify.user.app.repository.LoginRepository.LoginRepository
 
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
+import com.rentify.user.app.view.userScreens.AddPostScreen.Components.AppointmentAppBar
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.BuildingOptions
 
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomLabel
@@ -274,31 +275,40 @@ fun AddPostScreen(navController: NavHostController) {
                     .padding(10.dp)
 
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-
-                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = {   navController.popBackStack()}) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
+                AppointmentAppBar(
+                    onBackClick = {
+                        navController.navigate("SEARCHPOSTROOMATE")
+                    },
+                    canlendarClick = {
+                        // Xử lý khi nhấn nút lịch
+                        println("Calendar clicked!")
                     }
-                    Text(
-                        text = "Thêm bài đăng tìm ở ghép",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                    }
-                }
+                )
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//
+//                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    IconButton(onClick = {   navController.popBackStack()}) {
+//                        Image(
+//                            painter = painterResource(id = R.drawable.back),
+//                            contentDescription = null,
+//                            modifier = Modifier.size(30.dp, 30.dp)
+//                        )
+//                    }
+//                    Text(
+//                        text = "Thêm bài đăng tìm ở ghép",
+//                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+//                        color = Color.Black,
+//                        fontWeight = FontWeight(700),
+//                        fontSize = 17.sp,
+//                    )
+//                    IconButton(onClick = { /*TODO*/ }) {
+//                    }
+//                }
             }
             Column(
                 modifier = Modifier
@@ -307,6 +317,14 @@ fun AddPostScreen(navController: NavHostController) {
                     .background(color = Color(0xfff7f7f7))
                     .padding(15.dp)
             ) {
+
+//video
+                SelectMedia { images, videos ->
+                    selectedImages = images
+                    selectedVideos = videos
+                    Log.d("AddPost", "Received Images: $selectedImages")
+                    Log.d("AddPost", "Received Videos: $selectedVideos")
+                }
                 // tiêu đề
                 Column(
                     modifier = Modifier
@@ -336,10 +354,10 @@ fun AddPostScreen(navController: NavHostController) {
                         onValueChange = { address = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                        .border(
-                            BorderStroke(2.dp, Color(0xFF908b8b)), // Độ dày và màu viền
-                    shape = RoundedCornerShape(12.dp) // Bo góc
-                    ),
+                            .border(
+                                BorderStroke(2.dp, Color(0xFF908b8b)), // Độ dày và màu viền
+                                shape = RoundedCornerShape(12.dp) // Bo góc
+                            ),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
@@ -361,16 +379,8 @@ fun AddPostScreen(navController: NavHostController) {
                             color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
                         ),
 
-                    )
+                        )
                 }
-//video
-                SelectMedia { images, videos ->
-                    selectedImages = images
-                    selectedVideos = videos
-                    Log.d("AddPost", "Received Images: $selectedImages")
-                    Log.d("AddPost", "Received Videos: $selectedVideos")
-                }
-
                 //  Nội dung
                 Column(
                     modifier = Modifier
