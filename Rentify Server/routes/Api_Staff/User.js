@@ -159,7 +159,7 @@ router.get('/getBankAccount/:userId', async (req, res) => {
     });
   }
 });
-
+// update tài khoản ngân hàng 
 router.put("/updateBankAccount/:userId", upload.array("qr_bank", 5), async (req, res) => {
   try {
     const { userId } = req.params;
