@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
@@ -40,19 +41,20 @@ fun ServiceLabel() {
             .border(
                 width = 2.dp, color = Color(0xFFeeeeee), shape = RoundedCornerShape(9.dp)
             )
-            .padding(5.dp),
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             painter = painterResource(id = R.drawable.service),
             contentDescription = null,
-            modifier = Modifier.size(30.dp, 30.dp)
+            modifier = Modifier.size(25.dp)
         )
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = "Dịch vụ",
+            text = "Nội thất",
             color = Color.Black,
             fontSize = 13.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }
@@ -72,15 +74,15 @@ fun ServiceOptions(
 
     FlowRow(
         modifier = Modifier.padding(5.dp),
-        mainAxisSpacing = 10.dp, // Khoảng cách giữa các phần tử trên cùng một hàng
-        crossAxisSpacing = 10.dp // Khoảng cách giữa các hàng
+        mainAxisSpacing = 10.dp,
+        crossAxisSpacing = 10.dp
     ) {
         listServices?.forEach { service ->
             ServiceOption(
                 text = service.name,
-                isSelected = selectedService.contains(service._id),
+                isSelected = selectedService.contains(service._id), // Kiểm tra xem đã chọn hay chưa
                 onClick = {
-                    onServiceSelected(service._id)
+                    onServiceSelected(service._id) // Xử lý thêm/bỏ chọn
                 }
             )
         }
@@ -94,7 +96,7 @@ fun ServiceOption(
     Box(
         modifier = Modifier
             .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
+            .shadow(2.dp, shape = RoundedCornerShape(9.dp))
             .border(
                 width = 1.dp,
                 color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
@@ -137,4 +139,3 @@ fun ServiceOption(
         }
     }
 }
-

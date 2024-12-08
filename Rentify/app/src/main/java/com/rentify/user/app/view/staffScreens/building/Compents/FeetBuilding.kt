@@ -30,6 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import com.rentify.user.app.R
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
@@ -60,6 +63,8 @@ fun FeetBuilding(navController: NavController){
     val userId = loginViewModel.getUserData().userId
 
     val buildingWithRooms by viewModel.buildingWithRooms.observeAsState(emptyList())
+    val isLoading by viewModel.isLoading.observeAsState(false)
+
     LaunchedEffect(Unit) {
         try {
             viewModel.fetchBuildingsWithRooms(userId)
@@ -68,34 +73,39 @@ fun FeetBuilding(navController: NavController){
         }
     }
 
-    LazyColumn(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp)
+            .background(Color(0xfff7f7f7))
     ) {
-        item {
-            Text(
-                text = "Danh sách tòa nhà",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
-
-        if (buildingWithRooms.isNotEmpty()) {
-            items(buildingWithRooms) { building ->
-                BuildingCard(building = building, navController = navController, viewModel = viewModel)
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(R.drawable.loading)
+                        .decoderFactory(GifDecoder.Factory())
+                        .build(),
+                    contentDescription = "Loading GIF",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .align(Alignment.Center)
+                )
             }
         } else {
-            item {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Không có dữ liệu tòa nhà.",
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                item{
+                    Spacer(modifier = Modifier.padding(5.dp))
+                }
+                items(buildingWithRooms) { building ->
+                    BuildingCard(building = building, navController = navController, viewModel = viewModel)
                 }
             }
         }
@@ -104,17 +114,13 @@ fun FeetBuilding(navController: NavController){
 
 @Composable
 fun BuildingCard(building: BuildingWithRooms, navController: NavController, viewModel: RoomViewModel) {
-    var isExpanded by remember { mutableStateOf(false) }
-
-    // Quan sát danh sách phòng
-    val rooms by viewModel.rooms.observeAsState(emptyList())
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(15.dp)
-            .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-            .clip(RoundedCornerShape(12.dp))
+            .padding(horizontal = 15.dp, vertical = 7.dp)
+            .shadow(elevation = 4.dp, shape = RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(10.dp))
             .clickable {
                 navController.navigate("ListRoom/${building._id}")
             }
@@ -135,6 +141,7 @@ fun BuildingCard(building: BuildingWithRooms, navController: NavController, view
                         .clip(CircleShape)
                         .padding(start = 15.dp)
                 )
+                Spacer(modifier = Modifier.padding(5.dp))
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 5.dp)
@@ -171,8 +178,3 @@ fun BuildingCard(building: BuildingWithRooms, navController: NavController, view
         }
     }
 }
-
-
-
-
-

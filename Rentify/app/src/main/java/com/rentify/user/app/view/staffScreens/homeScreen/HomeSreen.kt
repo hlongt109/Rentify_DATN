@@ -68,9 +68,6 @@ import com.rentify.user.app.MainActivity
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.HeaderSection
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.ListFunction
 
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -79,34 +76,36 @@ fun HomeScreen(navController: NavHostController) {
     val screenHeight = configuration.screenHeightDp
 
     val scrollState = rememberScrollState()
-  // Danh sách các tiện nghi đã chọn
-    // Danh sách các tùy chọn đã chọn
+
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
-    // Hàm xử lý khi người dùng nhấn vào một lựa chọn
     val onComfortableSelected: (String) -> Unit = { option ->
         selectedComfortable = if (selectedComfortable.contains(option)) {
-            selectedComfortable - option // Nếu đã chọn, bỏ lựa chọn
+            selectedComfortable - option
         } else {
-            selectedComfortable + option // Nếu chưa chọn, thêm lựa chọn
+            selectedComfortable + option
         }
 
-        // Điều hướng tới màn hình mới khi lựa chọn được nhấn
         when (option) {
             "Tòa nhà & căn hộ" -> {
-                navController.navigate(MainActivity.ROUTER.BUILDING.name) // Điều hướng đến màn hình tương ứng
+                navController.navigate(MainActivity.ROUTER.BUILDING.name)
             }
+
             "Hợp đồng" -> {
                 navController.navigate(MainActivity.ROUTER.CONTRACT_STAFF.name)
             }
+
             "Hoá đơn" -> {
                 navController.navigate(MainActivity.ROUTER.BILL_STAFF.name)
             }
+
             "Sự cố & bảo trì" -> {
                 navController.navigate(MainActivity.ROUTER.REPORT_STAFF.name)
             }
+
             "Tin nhắn" -> {
                 navController.navigate(MainActivity.ROUTER.ADDROOM.name)
             }
+
             "Bài đăng" -> {
                 navController.navigate(MainActivity.ROUTER.POSTING_STAFF.name)
             }
@@ -115,111 +114,83 @@ fun HomeScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xfff5f5f5))
+            .background(color = Color(0xfff7f7f7))
     ) {
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            //.padding(bottom = screenHeight.dp / 10f)
-
-    ) {
-        HeaderSection(navController)
-        Spacer(modifier = Modifier.height(15.dp))
         Column(
             modifier = Modifier
-                .verticalScroll(scrollState)
-                .fillMaxWidth()
-                .padding(15.dp)
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+
         ) {
+            HeaderSection(navController)
             Column(
                 modifier = Modifier
-                    .height(230.dp)
+                    .verticalScroll(scrollState)
                     .fillMaxWidth()
-                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                    .background(color = Color(0xFFffffff))
-                    .border(
-                        width = 0.dp, color = Color(0xFFEEEEEE), shape = RoundedCornerShape(10.dp)
-                    ),
-
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(10.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.tkeee),
-                    contentDescription = null,
-                    modifier = Modifier.size(60.dp, 60.dp)
-                )
-
-
-            }
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Column(
-                modifier = Modifier
-                    .height(230.dp)
-                    .fillMaxWidth()
-                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                    .background(color = Color(0xFFffffff))
-                    .border(
-                        width = 0.dp, color = Color(0xFFEEEEEE), shape = RoundedCornerShape(10.dp)
-                    ),
-
-
-            ) {
-                Row(
-                    modifier = Modifier
-
-                        .padding(15.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.function),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp, 30.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(10.dp))
-                    androidx.compose.material.Text(
-                        text = "Các tính năng khác",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color.Black,
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-
-                        )
-                }
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .height(230.dp)
+                        .fillMaxWidth()
+                        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                        .background(color = Color(0xFFffffff))
+                        .border(
+                            width = 0.dp,
+                            color = Color(0xFFEEEEEE),
+                            shape = RoundedCornerShape(10.dp)
+                        ),
+
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ComfortableOptionsDemo(
-                        selectedComfortable = selectedComfortable,
-                        onComfortableSelected = onComfortableSelected,
-                        navController = navController // Truyền NavController vào
+                    Image(
+                        painter = painterResource(id = R.drawable.tkeee),
+                        contentDescription = null,
+                        modifier = Modifier.size(60.dp, 60.dp)
                     )
                 }
+                Spacer(modifier = Modifier.height(10.dp))
 
-
-
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                        .background(color = Color(0xFFffffff))
+                        .border(
+                            width = 0.dp,
+                            color = Color(0xFFEEEEEE),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .padding(vertical = 20.dp),
+                    ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        ComfortableOptionsDemo(
+                            selectedComfortable = selectedComfortable,
+                            onComfortableSelected = onComfortableSelected,
+                            navController = navController // Truyền NavController vào
+                        )
+                    }
+                }
             }
-
-
         }
     }
-    }}
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingLayoutHomeScreen() {
     HomeScreen(navController = rememberNavController())
 }
+
 data class ComfortableOptionData(val text: String, val imageRes: Int)
-//
+
 @Composable
 fun ComfortableOptionsDemo(
     selectedComfortable: List<String>,
@@ -232,12 +203,12 @@ fun ComfortableOptionsDemo(
         ComfortableOptionData("Hoá đơn", R.drawable.bill1),
         ComfortableOptionData("Sự cố & bảo trì", R.drawable.inciden),
         ComfortableOptionData("Tin nhắn", R.drawable.mess),
-                ComfortableOptionData("Bài đăng", R.drawable.post)
+        ComfortableOptionData("Bài đăng", R.drawable.post)
     )
 
     FlowRow(
-        modifier = Modifier.padding(5.dp),
-        mainAxisSpacing = 10.dp,
+        modifier = Modifier,
+        mainAxisSpacing = 20.dp,
         crossAxisSpacing = 10.dp
     ) {
         comfortableOptions.forEach { option ->
