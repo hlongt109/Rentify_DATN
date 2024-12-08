@@ -284,44 +284,66 @@ router.get('/search', async (req, res) => {
             return res.status(200).json(contracts);
         }
 
-        // Xử lý tìm kiếm theo tên người dùng (userName)
+        // Tìm kiếm theo tên người dùng
         const userIds = [];
         const users = await User.find({ name: new RegExp(keyword, "i") }); // Tìm kiếm userName không phân biệt hoa thường
         if (users.length > 0) {
             userIds.push(...users.map(user => user._id)); // Lưu user_id của các user tìm được
         }
 
-        // Xử lý tìm kiếm theo tòa nhà và phòng
-        const buildingIds = [];
+        // Tìm kiếm theo phòng (room_name)
         const roomIds = [];
-        let nameBuilding = keyword;  // Tìm kiếm theo tên tòa nhà hoặc tên phòng
-        let room_name = null;        // Không phân tách theo phòng
+        const rooms = await Room.find({ room_name: new RegExp(keyword, "i") }); // Tìm kiếm tên phòng
+        if (rooms.length > 0) {
+            roomIds.push(...rooms.map(room => room._id)); // Lưu room_id
+        }
 
-        // Tìm kiếm tòa nhà nếu có
-        if (nameBuilding) {
-            const buildings = await Building.find({ nameBuilding: new RegExp(nameBuilding, "i") }); // Tìm kiếm tên tòa nhà
+        // Xử lý tìm kiếm theo tòa và phòng (tòa_phòng)
+        const buildingIds = [];
+        const match = keyword.match(/^([a-zA-Z0-9]+)_([a-zA-Z0-9]+)$/); // Tách theo format tòa_phòng
+  
+        if (match) {
+            const buildingKeyword = match[1];  // Phần trước dấu gạch dưới (tòa nhà)
+            const roomKeyword = match[2];      // Phần sau dấu gạch dưới (phòng)
+        
+            // Tìm kiếm tòa nhà khớp chính xác với buildingKeyword
+            const buildings = await Building.find({ nameBuilding: new RegExp(`^${buildingKeyword}$`, "i") });
+            
+            if (buildings.length === 0) {
+                return res.status(404).json({ message: `Tòa nhà ${buildingKeyword} không tồn tại` });
+            }
+            
+            buildingIds.push(...buildings.map(building => building._id)); // Lưu building_id
+        
+            // Nếu có phòng (roomKeyword), tìm theo phòng
+            if (roomKeyword) {
+                const rooms = await Room.find({ room_name: new RegExp(roomKeyword, "i") });
+                if (rooms.length > 0) {
+                    roomIds.push(...rooms.map(room => room._id)); // Lưu room_id
+                }
+            }
+        } else {
+            // Nếu không có dấu gạch dưới, tìm theo cả tòa và phòng
+            const buildings = await Building.find({ nameBuilding: new RegExp(keyword, "i") });
             if (buildings.length > 0) {
                 buildingIds.push(...buildings.map(building => building._id)); // Lưu building_id
             }
-        }
-
-        // Tìm kiếm phòng nếu có
-        if (room_name) {
-            const rooms = await Room.find({ room_name: new RegExp(room_name, "i") }); // Tìm kiếm tên phòng
+            
+            const rooms = await Room.find({ room_name: new RegExp(keyword, "i") });
             if (rooms.length > 0) {
                 roomIds.push(...rooms.map(room => room._id)); // Lưu room_id
             }
         }
 
-        // Kết hợp các điều kiện tìm kiếm
-        if (userIds.length > 0) {
-            filters['user_id'] = { $in: userIds }; // Tìm kiếm theo user_id
-        }
+     
         if (buildingIds.length > 0) {
             filters['building_id'] = { $in: buildingIds }; // Tìm kiếm theo building_id
         }
         if (roomIds.length > 0) {
             filters['room_id'] = { $in: roomIds }; // Tìm kiếm theo room_id
+        }
+        if (userIds.length > 0) {
+            filters['user_id'] = { $in: userIds }; // Tìm kiếm theo user_id
         }
 
         // Truy vấn danh sách hợp đồng
@@ -355,5 +377,7 @@ router.get('/search', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+
 
 module.exports = router;
