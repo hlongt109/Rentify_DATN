@@ -514,10 +514,18 @@ interface APIService {
     suspend fun getBankAccount(
         @Path("userId") userId: String
     ): Response<Bank>
+
     @PUT("staff/users/updateBankAccount/{userId}")
     suspend fun updateBankAccount(
         @Path("userId") userId: String,
         @Body bank: Bank
+    ): Response<Bank>
+
+    @Multipart
+    @PUT("staff/users/updateBankAccount/{userId}")
+    suspend fun updateBankAccountWithImage(
+        @Path("userId") userId: String,
+        @Part qr_bank: MultipartBody.Part,
     ): Response<Bank>
 
     @PUT("staff/users/updateTaiKhoan/{id}")

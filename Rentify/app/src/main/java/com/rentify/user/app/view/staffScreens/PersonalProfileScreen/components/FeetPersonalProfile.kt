@@ -1,8 +1,13 @@
 package com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +51,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.Bank
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.viewModel.LoginViewModel
@@ -331,7 +339,6 @@ fun EditableRow(label: String, value: String, onClick: () -> Unit) {
 
 
 
-//============1============
 @Composable
 fun FeetPersonalProfile1(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
@@ -451,7 +458,6 @@ fun FeetPersonalProfile1(navController: NavHostController) {
     }
 }
 
-//================================
 @Composable
 fun FeetPersonalProfile2(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
@@ -464,18 +470,19 @@ fun FeetPersonalProfile2(navController: NavHostController) {
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
-
-    // States for dialog and input fields
     var showEditDialog by remember { mutableStateOf(false) }
     var currentField by remember { mutableStateOf("") }
     var newValue by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
+    val pickImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        selectedImageUri = uri
+    }
     LaunchedEffect(Unit) {
-        viewModel.getBankAccountByUser(userId)  // Fetch user bank details on composable call
+        viewModel.getBankAccountByUser(userId)
     }
 
     Column {
-        // Bank Name
         EditableRow(
             label = "Tên ngân hàng",
             value = bankAccountDetail?.bank_name ?: "",
@@ -486,7 +493,6 @@ fun FeetPersonalProfile2(navController: NavHostController) {
             }
         )
 
-        // Account Number
         EditableRow(
             label = "Số tài khoản",
             value = bankAccountDetail?.bank_number.toString(),
@@ -497,7 +503,6 @@ fun FeetPersonalProfile2(navController: NavHostController) {
             }
         )
 
-        // Account Username
         EditableRow(
             label = "Tên tài khoản ngân hàng",
             value = bankAccountDetail?.username ?: "",
@@ -507,8 +512,6 @@ fun FeetPersonalProfile2(navController: NavHostController) {
                 showEditDialog = true
             }
         )
-
-        // QR codes
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -525,13 +528,41 @@ fun FeetPersonalProfile2(navController: NavHostController) {
                         .height(250.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color.LightGray)
-                        .align(Alignment.CenterHorizontally),
+                        .align(Alignment.CenterHorizontally)
+                        .clickable { pickImageLauncher.launch("image/*") },
                     contentScale = ContentScale.Crop
                 )
             }
         }
 
-        // Edit Dialog for updating bank account
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.save),
+                contentDescription = "Cập nhật hình ảnh",
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable {
+                        selectedImageUri?.let { uri ->
+                            val updatedBank = Bank(
+                                bank_name = bankAccountDetail?.bank_name ?: "",
+                                bank_number = bankAccountDetail?.bank_number ?: 0L,
+                                qr_bank = bankAccountDetail?.qr_bank ?: emptyList(),
+                                username = bankAccountDetail?.username ?: ""
+                            )
+                            viewModel.updateBankAccountWithImage(userId, updatedBank, uri, context)
+                        }
+                    }
+            )
+        }
+
+
+
+        Spacer(modifier = Modifier.height(70.dp))
         if (showEditDialog) {
             EditDialog(
                 title = "Chỉnh sửa $currentField",

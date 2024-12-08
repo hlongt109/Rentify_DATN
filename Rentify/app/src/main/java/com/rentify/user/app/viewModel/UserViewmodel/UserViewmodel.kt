@@ -1,5 +1,7 @@
 package com.rentify.user.app.viewModel.UserViewmodel
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +14,10 @@ import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.network.RetrofitService
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class UserViewModel : ViewModel() {
     private val _user = MutableLiveData<UserResponse?>()
@@ -74,7 +80,7 @@ class UserViewModel : ViewModel() {
             }
         }
     }
-
+    // phí dịch vụ người dùng
     fun getServiceFeesByUser(userId: String) {
         viewModelScope.launch {
             try {
@@ -92,7 +98,7 @@ class UserViewModel : ViewModel() {
             }
         }
     }
-
+    // hiển thị thông tin tài khoản
     fun getBankAccountByUser(userId: String) {
         viewModelScope.launch {
             try {
@@ -115,7 +121,7 @@ class UserViewModel : ViewModel() {
             }
         }
     }
-
+    // update tài khoản ngân hàng
     fun updateBankAccount(userId: String, bank: Bank) {
         viewModelScope.launch {
             try {
@@ -140,6 +146,58 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun updateBankAccountWithImage(
+        userId: String,
+        bank: Bank,
+        imageUri: Uri?,
+        context: Context
+    ) {
+        viewModelScope.launch {
+            try {
+                if (imageUri == null) {
+                    // Nếu không chọn ảnh, chỉ cập nhật thông tin ngân hàng
+                    updateBankAccount(userId, bank)
+                } else {
+                    // Đọc tệp từ URI và chuẩn bị MultipartBody
+                    val contentResolver = context.contentResolver
+                    val inputStream = contentResolver.openInputStream(imageUri)
+                    val tempFile =
+                        File(context.cacheDir, "qr_bank_${System.currentTimeMillis()}.jpg")
+                    inputStream?.use { tempFile.outputStream().use { output -> it.copyTo(output) } }
+
+                    val imagePart = MultipartBody.Part.createFormData(
+                        "qr_bank",
+                        tempFile.name,
+                        tempFile.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                    )
+
+                    // Gọi API
+                    val response = apiService.updateBankAccountWithImage(
+                        userId = userId,
+                        qr_bank = imagePart,
+                    )
+
+                    if (response.isSuccessful && response.body() != null) {
+                        _bankAccount.postValue(response.body())
+                        _updateSuccess.postValue(true)
+                        Log.d(
+                            "UserViewModel",
+                            "Update bank account successful with image: ${response.body()}"
+                        )
+                    } else {
+                        _updateSuccess.postValue(false)
+                        _error.postValue("Cập nhật tài khoản ngân hàng thất bại: ${response.message()}")
+                        Log.e("UserViewModel", "Error response: ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                _updateSuccess.postValue(false)
+                _error.postValue("Lỗi khi cập nhật tài khoản ngân hàng: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+    // update tài khoản người dùng
     fun updateTaiKhoan(id: String, updatedUser: UserResponse?) {
         viewModelScope.launch {
             try {
