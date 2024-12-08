@@ -195,7 +195,7 @@ fun SelectMedia(
                             }
                         }
                     }
-        }}}
+                }}}
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -265,7 +265,7 @@ fun SelectMedia(
                 }
             }
         }
-}
+    }
 }
 
 @Composable

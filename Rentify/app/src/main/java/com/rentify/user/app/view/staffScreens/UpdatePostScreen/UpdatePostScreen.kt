@@ -83,7 +83,6 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 //import com.google.android.exoplayer2.MediaItem
 //import com.google.android.exoplayer2.ui.PlayerView
-import com.rentify.user.app.model.PostingDetail
 import androidx.compose.material.CircularProgressIndicator
 
 import com.rentify.user.app.network.RetrofitService
@@ -91,6 +90,7 @@ import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.VideoThumbnail
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -103,7 +103,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.io.File
 import java.io.IOException
@@ -175,7 +174,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     }
 
     postDetail?.let { detail ->
-          // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
+        // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
         if (!isEdited) {
             title = detail.title ?: ""
             content = detail.content ?: ""
@@ -250,7 +249,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         .fillMaxWidth()
                         .padding(5.dp)
                 ) {
-  // tieeu de
+                    // tieeu de
                     Row {
                         Text(
                             text = "Tiêu đề bài đằng",
@@ -373,7 +372,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         onBuildingSelected = { selectedBuilding ->
                             viewModel.setSelectedBuilding(selectedBuilding) // Cập nhật tòa nhà đã chọn
                             Log.d("toa nha looo", "Updated selected building: $selectedBuilding1")
-                          //  onBuildingUpdated(buildingId) // Gửi callback ra ngoài
+                            //  onBuildingUpdated(buildingId) // Gửi callback ra ngoài
                         }
                     )
                 }
@@ -415,10 +414,28 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
+                        val maxPhotos = 10
+                        val maxVideos = 3
+                        if (selectedImages.size > maxPhotos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxPhotos ảnh!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
 
+                        if (selectedVideos.size > maxVideos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxVideos video!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
                         val videoParts = selectedVideos.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
-                           prepareMultipartBody(
+                            prepareMultipartBody(
                                 context,
                                 uri,
                                 "video",
@@ -428,7 +445,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         }
                         val photoParts = selectedImages.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-                         prepareMultipartBody(
+                            prepareMultipartBody(
                                 context,
                                 uri,
                                 "photo",
@@ -455,15 +472,15 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                         videoFile = videoParts,
                                         photoFile = photoParts
                                     )
-
                                     // Sau khi cập nhật thành công, tải lại dữ liệu bài đăng
-//                                    val updatedPost = withContext(Dispatchers.IO) {
-//                                        viewModel.getPostDetail(postId) // Gọi API tải lại dữ liệu
-//                                    }
 
                                     // Chuyển màn hình sau khi tải lại dữ liệu thành công
                                     navController.navigate("post_detail/$postId") {
                                         popUpTo("update_post_screen/$postId") { inclusive = true }
+
+                                    }
+                                    val updatedPost = withContext(Dispatchers.IO) {
+                                        viewModel.getPostDetail(postId) // Gọi API tải lại dữ liệu
                                     }
                                 } catch (e: Exception) {
                                     isError = true
@@ -520,8 +537,8 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 }
             }
         }
-        }
     }
+}
 
 
 @Composable
@@ -766,11 +783,11 @@ class TriangleShape : Shape {
 @Composable
 fun SelectMedia(
     onMediaSelected: (List<Uri>, List<Uri>) -> Unit,
-    detail: PostingDetail // Truyền đối tượng detail chứa ảnh và video
+    detail: PostingList // Truyền đối tượng detail chứa ảnh và video
 ) {
     val selectedImages = remember { mutableStateListOf<Uri>() }
     val selectedVideos = remember { mutableStateListOf<Uri>() }
-        val baseUrl = "http://192.168.2.104:3000/"
+    val baseUrl = "http://192.168.2.104:3000/"
 
 // Chuyển đổi các đường dẫn ảnh và video từ detail thành Uri, thêm base URL vào trước mỗi đường dẫn
     val imagesFromDetail = detail.photos?.map { Uri.parse( baseUrl+it) } ?: listOf()

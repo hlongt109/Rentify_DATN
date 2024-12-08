@@ -89,9 +89,9 @@ fun ContractDetailScreen(navController: NavController,contractId: String) {
         contractViewModel.fetchContractDetail(contractId)
     }
 
-        val configuration = LocalConfiguration.current
-        val screenHeight = configuration.screenHeightDp
-        val scrollState = rememberScrollState()
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+    val scrollState = rememberScrollState()
     contractDetail?.let { contract ->
         Box(
             modifier = Modifier
@@ -239,14 +239,14 @@ fun EditContractDialog(
                         .padding(5.dp)
                 ) {
                     Row {
-                      Text(
+                        Text(
                             text = "UserId",
                             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color(0xff7f7f7f),
                             // fontWeight = FontWeight(700),
                             fontSize = 13.sp,
                         )
-                       Text(
+                        Text(
                             text = " *",
                             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color(0xffff1a1a),
@@ -292,14 +292,14 @@ fun EditContractDialog(
                         .padding(5.dp)
                 ) {
                     Row {
-                  Text(
+                        Text(
                             text = "Nội dung",
                             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color(0xff7f7f7f),
                             // fontWeight = FontWeight(700),
                             fontSize = 13.sp,
                         )
-                     Text(
+                        Text(
                             text = " *",
                             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color(0xffff1a1a),
@@ -378,35 +378,46 @@ fun EditContractDialog(
                     Button(
                         onClick = {
                             if (isFieldEmpty(userId)) {
-                            // Hiển thị thông báo lỗi nếu title trống
-                            Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
-                            return@Button }
-                        if (isFieldEmpty(content)) {
-                            // Hiển thị thông báo lỗi nếu content trống
-                            Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        val photoParts = selectedPhotos.mapNotNull { uri ->
-                            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-                            prepareMultipartBody(
-                                context,
-                                uri,
-                                "photos_contract",
-                                ".jpg",
-                                mimeType
-                            )
-                        }
+                                // Hiển thị thông báo lỗi nếu title trống
+                                Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
+                                return@Button }
+                            if (isFieldEmpty(content)) {
+                                // Hiển thị thông báo lỗi nếu content trống
+                                Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            val maxPhotos = 10
 
-                        contractId?.let {
-                            contractViewModel.updateContract_STAFF(
-                                contractId = contractId,
-                                userId = userId,
-                                content = content,
-                                photos = photoParts
-                            )
+                            if (selectedPhotos.size > maxPhotos) {
+                                Toast.makeText(
+                                    context,
+                                    "Chỉ cho phép tối đa $maxPhotos ảnh!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@Button
+                            }
 
-                        }
-                        onDismiss() // Đóng Dialog
+                            val photoParts = selectedPhotos.mapNotNull { uri ->
+                                val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+                                prepareMultipartBody(
+                                    context,
+                                    uri,
+                                    "photos_contract",
+                                    ".jpg",
+                                    mimeType
+                                )
+                            }
+
+                            contractId?.let {
+                                contractViewModel.updateContract_STAFF(
+                                    contractId = contractId,
+                                    userId = userId,
+                                    content = content,
+                                    photos = photoParts
+                                )
+
+                            }
+                            onDismiss() // Đóng Dialog
                         },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(

@@ -96,6 +96,9 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.io.File
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 fun prepareMultipartBody(
     context: Context,
@@ -122,10 +125,17 @@ fun prepareMultipartBody(
         null
     }
 }
-fun isValidUserIdArray(userId: List<String>, requiredLength: Int): Boolean {
-    // Kiểm tra nếu tất cả các phần tử đều đạt độ dài yêu cầu
-    return userId.all { it.length == requiredLength }
+fun validateUserIds(userIds: List<String>): Boolean {
+    for (userId in userIds) {
+        if (userId.length != 24) {
+            // Nếu có userId không đủ 24 ký tự
+            return false // Trả về false khi không hợp lệ
+        }
+    }
+    return true // Trả về true nếu tất cả userId đều hợp lệ
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,7 +146,7 @@ fun AddContractScreens(navController: NavHostController) {
     val screenHeight = configuration.screenHeightDp
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
-
+    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd") // Định dạng ngày tháng bạn sử dụng
     val viewModel: ContractViewModel = viewModel()
     val scrollState = rememberScrollState()
     var content by remember { mutableStateOf("") }
@@ -463,10 +473,30 @@ fun AddContractScreens(navController: NavHostController) {
                             // Hiển thị thông báo lỗi nếu title trống
                             Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button        }
-
+                        val userIdsList = userId.split(",").map { it.trim() }
+                        val isValid = validateUserIds(userIdsList)
+                        if (!isValid) {
+                            Toast.makeText(context, "Một hoặc nhiều userId không hợp lệ, mỗi userId phải có đủ 24 ký tự!", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
                         if (selectedImages.isEmpty()) {
                             // Hiển thị thông báo nếu không có ảnh nào được chọn
                             Toast.makeText(context, "Ảnh không thể để trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (isFieldEmpty(startDate) || isFieldEmpty(endDate)) {
+                            Toast.makeText(context, "Ngày bắt đầu và ngày kết thúc không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        val startLocalDate = LocalDate.parse(startDate, dateFormatter)
+                        val endLocalDate = LocalDate.parse(endDate, dateFormatter)
+
+                        // Tính số tháng giữa 2 ngày
+                        val monthsBetween = ChronoUnit.MONTHS.between(startLocalDate, endLocalDate)
+
+                        // Kiểm tra nếu khoảng cách ít hơn 1 tháng
+                        if (monthsBetween < 1) {
+                            Toast.makeText(context, "Ngày kết thúc phải cách ngày bắt đầu ít nhất 1 tháng!", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
                         if (selectedBuilding.isNullOrEmpty()) {
@@ -480,6 +510,16 @@ fun AddContractScreens(navController: NavHostController) {
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        val maxPhotos = 10
+
+                        if (selectedImages.size > maxPhotos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxPhotos ảnh!",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             return@Button
                         }
                         isLoading = true

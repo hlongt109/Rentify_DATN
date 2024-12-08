@@ -56,7 +56,9 @@ fun HeaderComponent(navController: NavController) {
             // Nút quay lại
             IconButton(
                 modifier = Modifier.width(100.dp),
-                onClick = { navController.navigate("CATEGORYPOST") }
+                onClick = {    navController.navigate("CATEGORYPOST") {
+                    popUpTo("SEARCHPOSTROOMATE") { inclusive = true } // Loại bỏ màn ADDPOST khỏi ngăn xếp
+                }}
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.back),

@@ -125,7 +125,7 @@ fun AddPostScreens(navController: NavHostController) {
     val viewModel: PostViewModel = viewModel()
     val scrollState = rememberScrollState()
     var title by remember { mutableStateOf("") }
-     var content by remember { mutableStateOf("") }
+    var content by remember { mutableStateOf("") }
 
     var selectedRoom by remember { mutableStateOf<String?>(null) }
 
@@ -211,198 +211,198 @@ fun AddPostScreens(navController: NavHostController) {
             .fillMaxSize()
             .background(color = Color(0xfff7f7f7))
     ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .background(color = Color(0xfff7f7f7))
-            .padding(bottom = screenHeight.dp/7f)
-
-    ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color(0xffffffff))
-                .padding(10.dp)
-
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-
-                    .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(onClick = {   navController.popBackStack()}) {
-                    Image(
-                        painter = painterResource(id = R.drawable.back),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp, 30.dp)
-                    )
-                }
-                Text(
-                    text = "Thêm bài đăng",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color.Black,
-                    fontWeight = FontWeight(700),
-                    fontSize = 17.sp,
-                    )
-                IconButton(onClick = { /*TODO*/ }) {
-                }
-            }
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(scrollState)
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .background(color = Color(0xfff7f7f7))
-                .padding(15.dp)
+                .padding(bottom = screenHeight.dp/7f)
+
         ) {
-            // tiêu đề
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp)
+                    .background(color = Color(0xffffffff))
+                    .padding(10.dp)
+
             ) {
-                Row {
-                    Text(
-                        text = "Tiêu đề bài đằng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xff7f7f7f),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-                    )
-                    Text(
-
-                        text = " *",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffff1a1a),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 16.sp,
-
-                        )
-                }
-                TextField(
-                    value = title,
-                    onValueChange = { title = it },
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập tiêu đề bài đăng",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
-//video
-            SelectMedia { images, videos ->
-                selectedImages = images
-                selectedVideos = videos
-                Log.d("AddPost", "Received Images: $selectedImages")
-                Log.d("AddPost", "Received Videos: $selectedVideos")
-            }
+                        .fillMaxWidth()
 
-            //  Nội dung
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Nội dung",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xff7f7f7f),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-                    )
-                    Text(
-                        text = " *",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffff1a1a),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 16.sp,
+                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    IconButton(onClick = {   navController.popBackStack()}) {
+                        Image(
+                            painter = painterResource(id = R.drawable.back),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp, 30.dp)
                         )
-                }
-                TextField(
-                    value = content,
-                    onValueChange = { content = it },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập nội dung",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.height(3.dp))
-            Column {
-                BuildingLabel()
-
-                BuildingOptions(
-                    userId = userId,
-                    selectedBuilding = viewModel.selectedBuilding.value,
-                    onBuildingSelected = { buildingId ->
-                        viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
                     }
-                )
+                    Text(
+                        text = "Thêm bài đăng",
+                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color.Black,
+                        fontWeight = FontWeight(700),
+                        fontSize = 17.sp,
+                    )
+                    IconButton(onClick = { /*TODO*/ }) {
+                    }
+                }
             }
-            // dịch vụ
-            Spacer(modifier = Modifier.height(10.dp))
-            Column {
-            RoomLabel()
-                viewModel.selectedBuilding.value?.let { buildingId ->
-                    RoomOptions(
-                        buildingId = buildingId,
-                        selectedRoom = selectedRoom,
-                        onRoomSelected = { roomId ->
-                            selectedRoom = roomId
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .background(color = Color(0xfff7f7f7))
+                    .padding(15.dp)
+            ) {
+                // tiêu đề
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                ) {
+                    Row {
+                        Text(
+                            text = "Tiêu đề bài đằng",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xff7f7f7f),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 13.sp,
+                        )
+                        Text(
+
+                            text = " *",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xffff1a1a),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 16.sp,
+
+                            )
+                    }
+                    TextField(
+                        value = title,
+                        onValueChange = { title = it },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFFcecece),
+                            unfocusedIndicatorColor = Color(0xFFcecece),
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFf7f7f7),
+                            focusedContainerColor = Color(0xFFf7f7f7),
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Nhập tiêu đề bài đăng",
+                                fontSize = 13.sp,
+                                color = Color(0xFF898888),
+                                fontFamily = FontFamily(Font(R.font.cairo_regular))
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 8.dp),
+                        textStyle = TextStyle(
+                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
+                        )
+                    )
+                }
+//video
+                SelectMedia { images, videos ->
+                    selectedImages = images
+                    selectedVideos = videos
+                    Log.d("AddPost", "Received Images: $selectedImages")
+                    Log.d("AddPost", "Received Videos: $selectedVideos")
+                }
+
+                //  Nội dung
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                ) {
+                    Row {
+                        Text(
+                            text = "Nội dung",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xff7f7f7f),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 13.sp,
+                        )
+                        Text(
+                            text = " *",
+                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                            color = Color(0xffff1a1a),
+                            // fontWeight = FontWeight(700),
+                            fontSize = 16.sp,
+                        )
+                    }
+                    TextField(
+                        value = content,
+                        onValueChange = { content = it },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFFcecece),
+                            unfocusedIndicatorColor = Color(0xFFcecece),
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Gray,
+                            unfocusedContainerColor = Color(0xFFf7f7f7),
+                            focusedContainerColor = Color(0xFFf7f7f7),
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Nhập nội dung",
+                                fontSize = 13.sp,
+                                color = Color(0xFF898888),
+                                fontFamily = FontFamily(Font(R.font.cairo_regular))
+                            )
+                        },
+                        shape = RoundedCornerShape(size = 8.dp),
+                        textStyle = TextStyle(
+                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.height(3.dp))
+                Column {
+                    BuildingLabel()
+
+                    BuildingOptions(
+                        userId = userId,
+                        selectedBuilding = viewModel.selectedBuilding.value,
+                        onBuildingSelected = { buildingId ->
+                            viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
                         }
                     )
-                } ?: run {
-                    Text(
-                        text = "Vui lòng chọn tòa nhà trước",
-                        color = Color.Red,
-                        modifier = Modifier.padding(8.dp)
-                    )
                 }
-        }
+                // dịch vụ
+                Spacer(modifier = Modifier.height(10.dp))
+                Column {
+                    RoomLabel()
+                    viewModel.selectedBuilding.value?.let { buildingId ->
+                        RoomOptions(
+                            buildingId = buildingId,
+                            selectedRoom = selectedRoom,
+                            onRoomSelected = { roomId ->
+                                selectedRoom = roomId
+                            }
+                        )
+                    } ?: run {
+                        Text(
+                            text = "Vui lòng chọn tòa nhà trước",
+                            color = Color.Red,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
 
+            }
         }
-    }
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -418,16 +418,35 @@ fun AddPostScreens(navController: NavHostController) {
                             Toast.makeText(context, "Tiêu đề không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button        }
 
-//                        if (selectedImages.isEmpty()) {
-//                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-//                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
-//                       return@Button
-//                        }
-//                        if (selectedVideos.isEmpty()) {
-//                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-//                            Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
-//                     return@Button
-//                        }
+                        if (selectedImages.isEmpty()) {
+                            // Hiển thị thông báo nếu không có ảnh nào được chọn
+                            Toast.makeText(context, "Ảnh không được để trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (selectedVideos.isEmpty()) {
+                            // Hiển thị thông báo nếu không có ảnh nào được chọn
+                            Toast.makeText(context, "Video không được để trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        val maxPhotos = 10
+                        val maxVideos = 3
+                        if (selectedImages.size > maxPhotos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxPhotos ảnh!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
+
+                        if (selectedVideos.size > maxVideos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxVideos video!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
                         if (viewModel.selectedBuilding.value.isNullOrBlank()) {
                             Toast.makeText(context, "Vui lòng chọn tòa", Toast.LENGTH_SHORT).show()
                             return@Button
