@@ -87,7 +87,7 @@ fun BottomNavigationBar(buttons: List<RioBottomNavItemData>, navHostController: 
         selectedItemColor = Color(0xff44ACFE),
         fabBackgroundColor = Color(0xff44ACFE),
         onFabClick = {
-            navHostController.navigate("RENT")
+            navHostController.navigate("CATEGORYPOST")
         }
     )
 }

@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -69,8 +71,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.ApiClient
@@ -273,35 +277,8 @@ fun AddPostScreen(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color(0xffffffff))
-                    .padding(10.dp)
-
             ) {
-                HeaderComponent(navController)
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//
-//                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    IconButton(onClick = {   navController.popBackStack()}) {
-//                        Image(
-//                            painter = painterResource(id = R.drawable.back),
-//                            contentDescription = null,
-//                            modifier = Modifier.size(30.dp, 30.dp)
-//                        )
-//                    }
-//                    Text(
-//                        text = "Thêm bài đăng tìm ở ghép",
-//                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-//                        color = Color.Black,
-//                        fontWeight = FontWeight(700),
-//                        fontSize = 17.sp,
-//                    )
-//                    IconButton(onClick = { /*TODO*/ }) {
-//                    }
-//                }
+                AddPostRoommateTopBar(navController)
             }
             Column(
                 modifier = Modifier
@@ -310,8 +287,6 @@ fun AddPostScreen(navController: NavHostController) {
                     .background(color = Color(0xfff7f7f7))
                     .padding(15.dp)
             ) {
-
-//video
                 SelectMedia { images, videos ->
                     selectedImages = images
                     selectedVideos = videos
@@ -446,23 +421,8 @@ fun AddPostScreen(navController: NavHostController) {
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
-                        if (selectedImages.isEmpty()) {
-                            Toast.makeText(
-                                context,
-                                "Vui lòng chọn ít nhất 1 ảnh!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@Button // Dừng thao tác nếu không có ảnh
-                        }
 
-                        if (selectedVideos.isEmpty()) {
-                            Toast.makeText(
-                                context,
-                                "Vui lòng chọn ít nhất 1 video!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@Button // Dừng thao tác nếu không có video
-                        }
+
                         val maxPhotos = 10
                         val maxVideos = 3
                         if (selectedImages.size > maxPhotos) {
@@ -526,4 +486,36 @@ fun AddPostScreen(navController: NavHostController) {
 @Composable
 fun GreetingLayoutAddPostScreen() {
     AddPostScreen(navController = rememberNavController())
+}
+
+@Composable
+fun AddPostRoommateTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(
+            onClick = { navController.popBackStack() }
+        ) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew,
+                contentDescription = "Back"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và text
+
+        androidx.compose.material.Text(
+            text = "Thêm bài đăng tìm bạn ở ghép",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
+    }
 }
