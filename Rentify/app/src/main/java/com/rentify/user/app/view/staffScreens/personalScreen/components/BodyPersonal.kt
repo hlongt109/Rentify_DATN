@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -72,7 +73,8 @@ fun BodyPersonal(navController: NavHostController) {
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = painterResource(id = R.drawable.anhdaidien),
@@ -87,8 +89,7 @@ fun BodyPersonal(navController: NavHostController) {
             )
             Column(
                 modifier = Modifier
-                    .padding(top = 22.dp, start = 10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .padding(start = 10.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 // Kiểm tra lỗi hoặc đang tải dữ liệu
@@ -105,15 +106,16 @@ fun BodyPersonal(navController: NavHostController) {
                     Text(
                         text = userDetail?.name ?: "Tên không có",  // Hiển thị tên người dùng
                         modifier = Modifier.padding(),
-                        fontSize = 20.sp,
+                        fontSize = 16.sp,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
+                    Spacer(modifier = Modifier.padding(2.dp))
                     Text(
                         text = userDetail?.email ?: "Email không có",  // Hiển thị email người dùng
-                        modifier = Modifier.padding(start = 6.dp),
-                        fontSize = 15.sp,
+                        modifier = Modifier,
+                        fontSize = 14.sp,
                         color = Color.Black,
                         textAlign = TextAlign.Center
                     )
