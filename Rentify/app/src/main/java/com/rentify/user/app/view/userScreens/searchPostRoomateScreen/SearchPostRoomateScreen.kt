@@ -59,7 +59,7 @@ import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.contract.contractComponents.ContractRoomListScreen
-import com.rentify.user.app.view.contract.contractComponents.ContractTopBar
+
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import com.rentify.user.app.view.userScreens.contract.components.DialogCompose
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen

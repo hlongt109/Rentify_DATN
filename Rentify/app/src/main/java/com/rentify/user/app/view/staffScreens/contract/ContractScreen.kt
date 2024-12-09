@@ -23,10 +23,12 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.contract.contractComponents.AppointmentAppBar
 import com.rentify.user.app.view.contract.contractComponents.ContractRoomListScreen
-import com.rentify.user.app.view.contract.contractComponents.ContractTopBar
+
+
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
-import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingListTopBar
+
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
@@ -81,10 +83,10 @@ fun ContractScreen(navController: NavHostController) {
                         .background(Color.White),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ContractTopBar(
-                        onClickGoBack = { navController.popBackStack() },
-                        contractViewModel = viewModel
-                    )
+                    AppointmentAppBar( onBackClick = {
+                        // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                        navController.navigate("HOME_STAFF")
+                    })
                     ContractRoomListScreen(navController,manageId=userId)
                 }
             }
