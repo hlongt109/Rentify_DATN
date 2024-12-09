@@ -5,12 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.RadioButton
@@ -168,7 +165,12 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                 initialValue = userDetail?.address ?: "",
                 onDismiss = { showAddressDialog.value = false },
                 onConfirm = { updatedValue ->
-                    viewModel.updateUserDetails(userId, gender = userDetail?.gender ?: "", dob = userDetail?.dob ?: "", address = updatedValue)
+                    viewModel.updateUserDetails(
+                        userId,
+                        gender = userDetail?.gender ?: "",
+                        dob = userDetail?.dob ?: "",
+                        address = updatedValue
+                    )
                     showAddressDialog.value = false
                 }
             )
@@ -179,7 +181,12 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
             DatePickerDialog(
                 onDismissRequest = { showDobDialog.value = false },
                 onDateSelected = { selectedDate ->
-                    viewModel.updateUserDetails(userId, gender = userDetail?.gender ?: "", dob = selectedDate, address = userDetail?.address ?: "")
+                    viewModel.updateUserDetails(
+                        userId,
+                        gender = userDetail?.gender ?: "",
+                        dob = selectedDate,
+                        address = userDetail?.address ?: ""
+                    )
                     showDobDialog.value = false
                 }
             )
@@ -191,7 +198,12 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                 currentGender = userDetail?.gender ?: "",
                 onDismiss = { showGenderDialog.value = false },
                 onConfirm = { updatedGender ->
-                    viewModel.updateUserDetails(userId, gender = updatedGender, dob = userDetail?.dob ?: "", address = userDetail?.address ?: "")
+                    viewModel.updateUserDetails(
+                        userId,
+                        gender = updatedGender,
+                        dob = userDetail?.dob ?: "",
+                        address = userDetail?.address ?: ""
+                    )
                     showGenderDialog.value = false
                 }
             )

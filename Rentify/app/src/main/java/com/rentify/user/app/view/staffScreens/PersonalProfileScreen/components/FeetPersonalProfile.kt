@@ -1,6 +1,7 @@
 package com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -51,6 +52,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.Bank
 import com.rentify.user.app.network.RetrofitService
@@ -188,21 +190,21 @@ fun GenderDialog(gender: String, onGenderChange: (String) -> Unit, onSave: () ->
                         selected = gender == "Male",
                         onClick = { onGenderChange("Male") }
                     )
-                    Text("Nam", modifier = Modifier.padding(start = 8.dp))
+                    Text("Nam", modifier = Modifier.padding(start = 8.dp, top = 13.dp))
                 }
                 Row {
                     RadioButton(
                         selected = gender == "Female",
                         onClick = { onGenderChange("Female") }
                     )
-                    Text("Nữ", modifier = Modifier.padding(start = 8.dp))
+                    Text("Nữ", modifier = Modifier.padding(start = 8.dp,top = 13.dp))
                 }
                 Row {
                     RadioButton(
                         selected = gender == "Other",
                         onClick = { onGenderChange("Other") }
                     )
-                    Text("Khác", modifier = Modifier.padding(start = 8.dp))
+                    Text("Khác", modifier = Modifier.padding(start = 8.dp,top = 13.dp))
                 }
             }
         },
@@ -326,12 +328,6 @@ fun EditableRow(label: String, value: String, onClick: () -> Unit) {
                 text = value,
                 modifier = Modifier.padding(end = 20.dp),
                 fontSize = 15.sp
-            )
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Chỉnh sửa $label",
-                modifier = Modifier.size(16.dp),
-                tint = Color.Gray
             )
         }
     }
@@ -470,6 +466,7 @@ fun FeetPersonalProfile2(navController: NavHostController) {
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
+
     var showEditDialog by remember { mutableStateOf(false) }
     var currentField by remember { mutableStateOf("") }
     var newValue by remember { mutableStateOf("") }
@@ -478,6 +475,7 @@ fun FeetPersonalProfile2(navController: NavHostController) {
     val pickImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUri = uri
     }
+
     LaunchedEffect(Unit) {
         viewModel.getBankAccountByUser(userId)
     }
@@ -512,29 +510,47 @@ fun FeetPersonalProfile2(navController: NavHostController) {
                 showEditDialog = true
             }
         )
+
+        // Hiển thị ảnh QR Code
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 10.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            items(bankAccountDetail?.qr_bank ?: emptyList()) { qrUrl ->
-                val qrImageUri = "http://10.0.2.2:3000/$qrUrl"
-                AsyncImage(
-                    model = qrImageUri,
-                    contentDescription = "QR Bank Photo",
-                    modifier = Modifier
-                        .width(250.dp)
-                        .height(250.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color.LightGray)
-                        .align(Alignment.CenterHorizontally)
-                        .clickable { pickImageLauncher.launch("image/*") },
-                    contentScale = ContentScale.Crop
-                )
+            if (selectedImageUri != null) {
+                item {
+                    Image(
+                        painter = rememberAsyncImagePainter(selectedImageUri),
+                        contentDescription = "Ảnh mới chọn",
+                        modifier = Modifier
+                            .width(250.dp)
+                            .height(250.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color.LightGray)
+                            .clickable { pickImageLauncher.launch("image/*") },
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            } else {
+                items(bankAccountDetail?.qr_bank ?: emptyList()) { qrUrl ->
+                    val qrImageUri = "http://10.0.2.2:3000/$qrUrl"
+                    AsyncImage(
+                        model = qrImageUri,
+                        contentDescription = "QR Bank Photo",
+                        modifier = Modifier
+                            .width(250.dp)
+                            .height(250.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color.LightGray)
+                            .clickable { pickImageLauncher.launch("image/*") },
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
 
+        // Nút lưu ảnh mới
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -556,13 +572,14 @@ fun FeetPersonalProfile2(navController: NavHostController) {
                             )
                             viewModel.updateBankAccountWithImage(userId, updatedBank, uri, context)
                         }
+                        Toast.makeText(context,"Đổi ảnh mới thành công ",Toast.LENGTH_SHORT).show()
                     }
             )
         }
 
-
-
         Spacer(modifier = Modifier.height(70.dp))
+
+        // Dialog chỉnh sửa thông tin
         if (showEditDialog) {
             EditDialog(
                 title = "Chỉnh sửa $currentField",
