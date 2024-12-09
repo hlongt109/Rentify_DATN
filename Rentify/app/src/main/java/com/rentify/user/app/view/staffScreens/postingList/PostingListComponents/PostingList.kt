@@ -64,11 +64,11 @@ data class PostingList(
     val created_at: String,
     val updated_at: String,
     val building_id: String,
-    val photo: List<String>,
+    val photo: List<String> = listOf(),
     val room_id: String,
 
     val user_id: String,
-    val video: List<String>
+    val video: List<String> = listOf(),
 
 )
 @OptIn(ExperimentalMaterialApi::class)

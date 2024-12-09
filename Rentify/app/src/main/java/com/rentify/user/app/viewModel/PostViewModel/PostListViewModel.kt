@@ -52,6 +52,7 @@ class PostViewModel : ViewModel() {
     // Chi tiết bài đăng
     private val _postDetail = MutableLiveData<PostingList?>()
     val postDetail: LiveData<PostingList?> get() = _postDetail
+
     var address by mutableStateOf<String?>(null)
     var content by mutableStateOf<String?>(null)
     var images by mutableStateOf<List<String>?>(null)
@@ -156,11 +157,13 @@ class PostViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     _postDetail.value = response.body()
                     _updateStatus.value = true // Thành công
+                    getPostDetail(postId)
                     Log.d("CheckUpdate", "updatePost: ${response.body()}")
                     _errorMessage.postValue("Cập nhật bài viết thành công.")
                     if (userId != null) {
                         getPostingList_user(userId, postType = postType)
                         getPostDetail(postId)
+                        Log.d("CheckUpdate", "_postDetail.value: ${_postDetail.value}")
                     }
                 } else {
                     _updateStatus.value = false // Thất bại

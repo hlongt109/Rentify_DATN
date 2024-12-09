@@ -583,23 +583,23 @@ fun EditPostDialog(
                                     ).show()
                                     return@Button
                                 }
-                                val photoParts = selectedPhotos.mapNotNull { uri ->
-                                    val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-                                    prepareMultipartBody(
-                                        context,
-                                        uri,
-                                        "photos_contract",
-                                        ".jpg",
-                                        mimeType
-                                    )
-                                }
-                                val videoParts = selectedVideos.mapNotNull { uri ->
+                                val videoPart = selectedVideos.mapNotNull { uri ->
                                     val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
-                                    prepareMultipartBody(
+                                    com.rentify.user.app.view.userScreens.AddPostScreen.prepareMultipartBody(
                                         context,
                                         uri,
                                         "video",
                                         ".mp4",
+                                        mimeType
+                                    )
+                                }
+                                val photoPart = selectedImages.mapNotNull { uri ->
+                                    val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+                                    com.rentify.user.app.view.userScreens.AddPostScreen.prepareMultipartBody(
+                                        context,
+                                        uri,
+                                        "photo",
+                                        ".jpg",
                                         mimeType
                                     )
                                 }
@@ -614,8 +614,8 @@ fun EditPostDialog(
                                         content = content,
                                         status = "0",
                                         postType = post_type,
-                                        videoFile =videoParts ,
-                                        photoFile = photoParts
+                                        videoFile =videoPart ,
+                                        photoFile = photoPart
                                     )
                                     onDismiss()
                                 }

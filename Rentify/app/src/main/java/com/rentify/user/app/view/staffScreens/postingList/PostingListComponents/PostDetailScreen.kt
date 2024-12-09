@@ -83,10 +83,14 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
     val screenHeight = configuration.screenHeightDp
  //   val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
 
-    // Chạy khi màn hình được hiển thị lại hoặc khi postId thay đổi
-    LaunchedEffect(postId) {
+    LaunchedEffect(key1 = postId) {
         viewModel.getPostDetail(postId)
-       // isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
+    }
+
+    LaunchedEffect(postDetail) {
+        if (postDetail == null) {
+            viewModel.getPostDetail(postId)
+        }
     }
 
     postDetail?.let { detail ->

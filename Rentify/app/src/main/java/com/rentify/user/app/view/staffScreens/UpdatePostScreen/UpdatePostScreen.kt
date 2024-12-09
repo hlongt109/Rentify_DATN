@@ -473,15 +473,15 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                         photoFile = photoParts
                                     )
                                     // Sau khi cập nhật thành công, tải lại dữ liệu bài đăng
-
+//                                    val updatedPost = withContext(Dispatchers.IO) {
+//                                        viewModel.getPostDetail(postId) // Gọi API tải lại dữ liệu
+//                                    }
                                     // Chuyển màn hình sau khi tải lại dữ liệu thành công
                                     navController.navigate("post_detail/$postId") {
                                         popUpTo("update_post_screen/$postId") { inclusive = true }
 
                                     }
-                                    val updatedPost = withContext(Dispatchers.IO) {
-                                        viewModel.getPostDetail(postId) // Gọi API tải lại dữ liệu
-                                    }
+
                                 } catch (e: Exception) {
                                     isError = true
                                     Toast.makeText(
