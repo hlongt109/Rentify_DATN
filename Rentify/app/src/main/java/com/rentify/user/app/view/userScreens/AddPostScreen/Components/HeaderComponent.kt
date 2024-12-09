@@ -1,4 +1,4 @@
-package com.rentify.user.app.view.userScreens.searchPostRoomScreen.Component
+package com.rentify.user.app.view.userScreens.AddPostScreen.Components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,7 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 import com.rentify.user.app.ui.theme.colorUnTabBar
 
@@ -46,21 +45,20 @@ fun HeaderComponent(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White)
-
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = Color.White),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween // Căn đều các phần tử trong Row
         ) {
+            // Nút quay lại
             IconButton(
                 modifier = Modifier.width(100.dp),
-                onClick = {
-                    navController.navigate("CATEGORYPOST") {
-                        popUpTo("SEARCHPOSTROOM") { inclusive = true } // Loại bỏ màn ADDPOST khỏi ngăn xếp
-                    }
+                onClick = { navController.navigate("CATEGORYPOST") {
+                    popUpTo("ADDPOST") { inclusive = true } // Loại bỏ màn ADDPOST khỏi ngăn xếp
+                }
                 }
             ) {
                 Image(
@@ -69,19 +67,22 @@ fun HeaderComponent(navController: NavController) {
                     modifier = Modifier.size(30.dp, 30.dp)
                 )
             }
-
+            // Tiêu đề
             Text(
-                text = "Bài đăng tìm phòng",
+                text = "Thêm bài đăng",
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp
             )
 
+            // Bạn có thể thêm các phần tử khác vào đây, nếu cần thiết
+            // Ví dụ: một button hoặc icon nữa
             Row(
-                modifier = Modifier.width(100.dp),
-
-                ) {
-
+                modifier = Modifier.width(100.dp), // Đảm bảo chiều rộng của Row con
+                horizontalArrangement = Arrangement.End // Căn cuối cùng cho phần tử trong Row con
+            ) {
+                // Ví dụ là một icon hoặc button ở đây
+                // IconButton(...) hoặc Image(...) nếu cần
             }
         }
     }

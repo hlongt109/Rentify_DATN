@@ -105,8 +105,8 @@ fun SearchPostRoonmScreen
                         .background(color = Color(0xfff7f7f7))
 
                 ) {
-                   HeaderComponent(navController)
-                   CustomTabBar(
+                    HeaderComponent(navController)
+                    CustomTabBar(
                         items = tabs,
                         selectedIndex = selectedTabIndex,
                         onTabSelected = { index ->

@@ -12,7 +12,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -61,32 +59,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.compose.rememberImagePainter
-import com.google.accompanist.flowlayout.FlowRow
 //import com.google.android.exoplayer2.MediaItem
 //import com.google.android.exoplayer2.ui.PlayerView
-import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
-import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.component.BuildingOptions
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.component.RoomOptions
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -94,7 +82,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.io.File
 import java.io.IOException
@@ -127,8 +114,6 @@ fun prepareMultipartBody(
 fun isFieldEmpty(field: String): Boolean {
     return field.isBlank() // Kiểm tra trường có trống không
 }
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdatePostUserScreen(navController: NavHostController,postId: String) {
@@ -162,7 +147,7 @@ fun UpdatePostUserScreen(navController: NavHostController,postId: String) {
     }
 
     postDetail?.let { detail ->
-          // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
+        // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
         if (!isEdited) {
             title = detail.title ?: ""
             content = detail.content ?: ""
@@ -237,7 +222,7 @@ fun UpdatePostUserScreen(navController: NavHostController,postId: String) {
                         .fillMaxWidth()
                         .padding(5.dp)
                 ) {
-  // tieeu de
+                    // tieeu de
                     Row {
                         Text(
                             text = "Tiêu đề bài đằng",
@@ -357,11 +342,11 @@ fun UpdatePostUserScreen(navController: NavHostController,postId: String) {
                 Column {
                     ComfortableLabel()
                     if (!selectedRoom.isNullOrEmpty()) {
-                    BuildingOptions(
-                        roomId = selectedRoom!!,
-                        selectedBuilding = selectedBuilding, // Truyền giá trị ban đầu
+                        BuildingOptions(
+                            roomId = selectedRoom!!,
+                            selectedBuilding = selectedBuilding, // Truyền giá trị ban đầu
 
-                    )}
+                        )}
                 }
                 // dịch vụ
                 Spacer(modifier = Modifier.height(10.dp))
@@ -413,7 +398,7 @@ fun UpdatePostUserScreen(navController: NavHostController,postId: String) {
 
                         val videoParts = selectedVideos.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
-                           prepareMultipartBody(
+                            prepareMultipartBody(
                                 context,
                                 uri,
                                 "video",
@@ -423,7 +408,7 @@ fun UpdatePostUserScreen(navController: NavHostController,postId: String) {
                         }
                         val photoParts = selectedImages.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-                         prepareMultipartBody(
+                            prepareMultipartBody(
                                 context,
                                 uri,
                                 "photo",
@@ -475,7 +460,7 @@ fun UpdatePostUserScreen(navController: NavHostController,postId: String) {
 @Composable
 fun SelectMedia(
     onMediaSelected: (List<Uri>, List<Uri>) -> Unit,
-    detail: PostingDetail // Truyền đối tượng detail chứa ảnh và video
+    detail: PostingList // Truyền đối tượng detail chứa ảnh và video
 ) {
     val selectedImages = remember { mutableStateListOf<Uri>() }
     val selectedVideos = remember { mutableStateListOf<Uri>() }
