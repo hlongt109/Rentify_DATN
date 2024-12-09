@@ -107,6 +107,7 @@ fun RoomDetailScreen(
     val roomDetail by viewModel.roomDetail.observeAsState()
     val configuration = LocalConfiguration.current
     val scrollState = rememberScrollState()
+
     LaunchedEffect(key1 = id) {
         viewModel.fetchRoomDetailById(id)
     }

@@ -156,6 +156,10 @@ dependencies {
 
     // Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+
+    implementation ("com.github.furkanaskin:ClickablePieChart:1.0.9")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
 }
 // Allow references to generated code
 kapt {

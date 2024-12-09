@@ -1,72 +1,46 @@
 package com.rentify.user.app.view.staffScreens.homeScreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.rentify.user.app.R
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.Icon
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.MainActivity
-
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.HeaderSection
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.ListFunction
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +48,6 @@ fun HomeScreen(navController: NavHostController) {
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-
     val scrollState = rememberScrollState()
 
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
@@ -132,24 +105,22 @@ fun HomeScreen(navController: NavHostController) {
             ) {
                 Column(
                     modifier = Modifier
-                        .height(230.dp)
+                        .height(300.dp)
                         .fillMaxWidth()
+
                         .shadow(3.dp, shape = RoundedCornerShape(10.dp))
                         .background(color = Color(0xFFffffff))
                         .border(
                             width = 0.dp,
                             color = Color(0xFFEEEEEE),
                             shape = RoundedCornerShape(10.dp)
-                        ),
+                        )
+                        .padding(10.dp),
 
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.tkeee),
-                        contentDescription = null,
-                        modifier = Modifier.size(60.dp, 60.dp)
-                    )
+                    ClickablePieChartDemo()
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -182,6 +153,48 @@ fun HomeScreen(navController: NavHostController) {
         }
     }
 }
+
+data class Slice(val value: Float, val color: Int, val label: String)
+
+@Composable
+fun ClickablePieChartDemo() {
+    val slices = arrayListOf(
+        Slice(40f, 0xFF6200EE.toInt(), "Hoá đơn đã thu"),
+        Slice(30f, 0xFF03DAC5.toInt(), "Hoá đơn chưa thu"),
+    )
+
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        factory = { context ->
+            val pieChart = com.github.mikephil.charting.charts.PieChart(context)
+            val entries = slices.map {
+                com.github.mikephil.charting.data.PieEntry(it.value, it.label)
+            }
+            val dataSet = PieDataSet(entries, "")
+            dataSet.colors = slices.map { it.color }
+            dataSet.setDrawValues(true)
+            dataSet.valueTextColor = 0xFFFFFFFF.toInt()
+            dataSet.valueTextSize = 13f
+            val valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    return value.toInt().toString()
+                }
+            }
+            dataSet.valueFormatter = valueFormatter
+            val pieData = PieData(dataSet)
+            pieChart.data = pieData
+            pieChart.description.isEnabled = false
+            pieChart.setUsePercentValues(false)
+            pieChart.setDrawSliceText(false)
+            pieChart.centerText = ""
+            pieChart.invalidate()
+            pieChart
+        }
+    )
+}
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
