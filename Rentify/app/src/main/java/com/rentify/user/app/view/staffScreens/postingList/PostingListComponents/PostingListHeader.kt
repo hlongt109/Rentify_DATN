@@ -1,12 +1,18 @@
 package com.rentify.user.app.view.staffScreens.postingList.PostingListComponents
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
@@ -24,95 +30,159 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.model.Post
-import com.rentify.user.app.view.contract.contractComponents.ContractSearchBar
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import org.checkerframework.checker.units.qual.m
 
-@OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
-fun PostingListTopBar(navController: NavHostController, viewModel: PostViewModel) {
-    val searchQuery by viewModel.searchQuery // Lấy trạng thái tìm kiếm từ ViewModel
+fun AppointmentAppBar(
+    onBackClick: () -> Unit,
 
+) {
+    val viewModel: PostViewModel = viewModel()
+    var searchQuery by viewModel.searchQuery // Lấy trạng thái tìm kiếm từ ViewModel
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
-            .padding(top = 10.dp)
-            .background(Color.White),
-        contentAlignment = Alignment.Center
+            .background(Color(0xFFFFFFFF)) // Background color
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            IconButton(onClick = { navController.navigate("HOME_STAFF") }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBackIosNew,
-                    contentDescription = "Back"
-                )
-            }
-            PostingListSearchBar(
-                searchQuery = searchQuery,
-                onSearchQueryChange = { query ->
-                    viewModel.onSearchQueryChange(query) // Cập nhật trạng thái tìm kiếm khi thay đổi
-                }
-            )
-            IconButton(onClick = { /* Xử lý sự kiện khi nhấn nút sort */ }) {
-                Icon(
-                    imageVector = Icons.Default.Sort,
-                    contentDescription = "Sort"
-                )
-            }
-        }
-    }
-}
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
-@Composable
-fun PostingListSearchBar(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
-) {
-    TextField(
-        singleLine = true,
-        value = searchQuery,
-        onValueChange = onSearchQueryChange, // Gọi callback khi giá trị thay đổi
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Filled.Search,
-                tint = Color.Gray,
-                contentDescription = "Nhập thông tin tìm kiếm"
-            )
-        },
-        trailingIcon = {
-            if (searchQuery.isNotEmpty()) {
-                IconButton(onClick = { onSearchQueryChange("") }) {
-                    Icon(
-                        imageVector = Icons.Filled.Clear,
-                        contentDescription = "Clear"
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    androidx.compose.material.IconButton(
+                        onClick = { onBackClick() }
+                    ) {
+                        androidx.compose.material.Icon(
+                            imageVector = Icons.Filled.ArrowBackIosNew,
+                            contentDescription = "Back"
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và text
+
+                    androidx.compose.material.Text(
+                        text = "Danh sách bài đăng",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.h6
                     )
                 }
+//                IconButton(onClick = canlendarClick) {
+//                    Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = "Calendar", tint = Color(0xff5d5d5d))
+//                }
+            }
+            SearchBarRentalPostRoom(
+                searchText = searchQuery,
+                onSearchTextChange = { searchQuery = it },
+                onSearch = {
+                    // Thực hiện logic tìm kiếm
+                    Log.d("SearchBar", "Tìm kiếm với từ khóa: $searchQuery")
+                }
+            )
+        }
+
+    }
+}
+@Composable
+fun SearchBarRentalPostRoom(
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    onSearch: () -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) } // Trạng thái focus
+    val focusRequester = remember { FocusRequester() }
+
+    BasicTextField(
+        value = searchText,
+        onValueChange = { onSearchTextChange(it) }, // Cập nhật text khi thay đổi
+        textStyle = TextStyle(color = Color.Gray, fontSize = 16.sp),
+        modifier = Modifier
+            .padding(horizontal = 20.dp, vertical = 5.dp)
+            .focusRequester(focusRequester) // Đăng ký focus requester
+            .onFocusChanged { focusState -> isFocused = focusState.isFocused }, // Theo dõi focus
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(Color(0xFFf7f7f7), RoundedCornerShape(15.dp)),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Icon tìm kiếm
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Icon",
+                        tint = Color.Black,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Placeholder khi trống và không focus
+                    if (searchText.isEmpty() && !isFocused) {
+                        Text(
+                            text = "Nhập thông tin tìm kiếm...",
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    }
+
+                    // Nội dung của TextField
+                    Box(modifier = Modifier.weight(1f)) {
+                        innerTextField()
+                    }
+
+                    // Icon xóa (trailing icon)
+                    if (searchText.isNotEmpty()) {
+                        IconButton(onClick = { onSearchTextChange("") }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Clear",
+                                tint = Color.Gray
+                            )
+                        }
+                    }
+                }
             }
         },
-        placeholder = {
-            Text(
-                text = "Nhập thông tin tìm kiếm...",
-                color = Color.Gray,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center
-            )
-        },
-        modifier = Modifier
-            .padding(vertical = 10.dp)
-            .clip(RoundedCornerShape(15.dp))
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search // Đặt hành động IME là Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = { onSearch() } // Thực hiện tìm kiếm khi nhấn nút "Search" trên bàn phím
+        )
     )
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,11 +58,23 @@ fun HeaderSection(navController: NavHostController) {
                     .clickable { navController.navigate(MainActivity.ROUTER.PersonalStaff.name) }
             )
         }
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = null,
-            modifier = Modifier.size(40.dp, 40.dp)
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = null,
+                modifier = Modifier.size(40.dp, 40.dp)
+            )
+
+            androidx.compose.material.Text(
+                text = "Quản lý đơn giản, mọi việc dễ dàng",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+        }
+
         Row(
             modifier = Modifier
                 .width(100.dp)

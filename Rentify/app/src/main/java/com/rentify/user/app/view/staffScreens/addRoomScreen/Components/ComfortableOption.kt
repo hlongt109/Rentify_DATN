@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import com.rentify.user.app.R
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
 import com.google.accompanist.flowlayout.FlowRow
 
 
@@ -39,19 +40,20 @@ fun ComfortableLabel() {
             .border(
                 width = 2.dp, color = Color(0xFFeeeeee), shape = RoundedCornerShape(9.dp)
             )
-            .padding(5.dp),
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             painter = painterResource(id = R.drawable.comfortable),
             contentDescription = null,
-            modifier = Modifier.size(30.dp, 30.dp)
+            modifier = Modifier.size(25.dp)
         )
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = "Tiện nghi",
             color = Color.Black,
             fontSize = 13.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }

@@ -83,14 +83,18 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 //import com.google.android.exoplayer2.MediaItem
 //import com.google.android.exoplayer2.ui.PlayerView
-import com.rentify.user.app.model.PostingDetail
 import androidx.compose.material.CircularProgressIndicator
 
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.AppointmentAppBar
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableLabel
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.CustomTextField
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.TriangleShape
+
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
+import com.rentify.user.app.view.userScreens.AddPostScreen.Components.VideoThumbnail
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -102,7 +106,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.io.File
 import java.io.IOException
@@ -174,7 +177,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
     }
 
     postDetail?.let { detail ->
-          // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
+        // Gán giá trị cũ từ postDetail nếu chưa chỉnh sửa
         if (!isEdited) {
             title = detail.title ?: ""
             content = detail.content ?: ""
@@ -207,34 +210,15 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color(0xffffffff))
-                    .padding(10.dp)
-
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                AppointmentAppBar( onBackClick = {
+                    // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                    navController.navigate("POSTING_STAFF")
+                    {
+                    //    popUpTo("ADDCONTRAC_STAFF") { inclusive = true }
 
-                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = {   navController.navigate("POSTING_STAFF")}) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
                     }
-                    Text(
-                        text = "Sửa bài đăng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                    }
-                }
+                })
             }
             Column(
                 modifier = Modifier
@@ -244,59 +228,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     .padding(15.dp)
             ) {
                 // tiêu đề
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-  // tieeu de
-                    Row {
-                        Text(
-                            text = "Tiêu đề bài đằng",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff7f7f7f),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-                        )
-                        Text(
 
-                            text = " *",
-                            color = Color(0xffff1a1a),
-                            fontSize = 16.sp,
-
-                            )
-                    }
-                    TextField(
-                        value = title,
-                        onValueChange = { newValue ->
-                            title = newValue // Cập nhật giá trị title khi người dùng thay đổi
-                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color(0xFFf7f7f7),
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Nhập tiêu đề bài đăng",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                }
 
                 postDetail?.let {
                     SelectMedia(
@@ -309,60 +241,33 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         detail = it
                     )
                 }
-
-                //  Nội dung
-                Column(
+                ///
+                // tieeu de
+                CustomTextField(
+                    label = "Tiêu đề bài đằng",
+                    value = title,
+                    onValueChange = { newValue ->
+                        title = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                        isEdited = true  },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                        Text(
-                            text = "Nội dung",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff7f7f7f),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-                        )
-                        Text(
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-
-                            )
-                    }
-                    TextField(
-                        value = content,
-                        onValueChange = { newValue ->
-                            content = newValue // Cập nhật giá trị title khi người dùng thay đổi
-                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color(0xFFf7f7f7),
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Nhập nội dung",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                }
+                        .padding(5.dp),
+                    placeholder = "Nhập tiêu đề bài đăng",
+                    isReadOnly = false
+                )
+                //  Nội dung
+                CustomTextField(
+                    label = "Nội dung",
+                    value = content,
+                    onValueChange = { newValue ->
+                        content = newValue // Cập nhật giá trị title khi người dùng thay đổi
+                        isEdited = true  },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    placeholder = "Nhập nội dung",
+                    isReadOnly = false
+                )
                 Spacer(modifier = Modifier.height(3.dp))
                 Column {
                     ComfortableLabel()
@@ -372,7 +277,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         onBuildingSelected = { selectedBuilding ->
                             viewModel.setSelectedBuilding(selectedBuilding) // Cập nhật tòa nhà đã chọn
                             Log.d("toa nha looo", "Updated selected building: $selectedBuilding1")
-                          //  onBuildingUpdated(buildingId) // Gửi callback ra ngoài
+                            //  onBuildingUpdated(buildingId) // Gửi callback ra ngoài
                         }
                     )
                 }
@@ -414,10 +319,28 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
+                        val maxPhotos = 10
+                        val maxVideos = 3
+                        if (selectedImages.size > maxPhotos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxPhotos ảnh!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
 
+                        if (selectedVideos.size > maxVideos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxVideos video!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
                         val videoParts = selectedVideos.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "video/mp4"
-                           prepareMultipartBody(
+                            prepareMultipartBody(
                                 context,
                                 uri,
                                 "video",
@@ -427,7 +350,7 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                         }
                         val photoParts = selectedImages.mapNotNull { uri ->
                             val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-                         prepareMultipartBody(
+                            prepareMultipartBody(
                                 context,
                                 uri,
                                 "photo",
@@ -447,22 +370,25 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                         buildingId = buildingId,
                                         roomId = selectedRoom1,
                                         title = title,
+                                        address = "",
                                         content = content,
                                         status = "0",
                                         postType = "rent",
                                         videoFile = videoParts,
                                         photoFile = photoParts
                                     )
-
                                     // Sau khi cập nhật thành công, tải lại dữ liệu bài đăng
 //                                    val updatedPost = withContext(Dispatchers.IO) {
 //                                        viewModel.getPostDetail(postId) // Gọi API tải lại dữ liệu
 //                                    }
+                                    Toast.makeText(context, "Sửa thành công", Toast.LENGTH_SHORT).show()
 
                                     // Chuyển màn hình sau khi tải lại dữ liệu thành công
                                     navController.navigate("post_detail/$postId") {
                                         popUpTo("update_post_screen/$postId") { inclusive = true }
+
                                     }
+
                                 } catch (e: Exception) {
                                     isError = true
                                     Toast.makeText(
@@ -518,8 +444,8 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                 }
             }
         }
-        }
     }
+}
 
 
 @Composable
@@ -764,11 +690,11 @@ class TriangleShape : Shape {
 @Composable
 fun SelectMedia(
     onMediaSelected: (List<Uri>, List<Uri>) -> Unit,
-    detail: PostingDetail // Truyền đối tượng detail chứa ảnh và video
+    detail: PostingList // Truyền đối tượng detail chứa ảnh và video
 ) {
     val selectedImages = remember { mutableStateListOf<Uri>() }
     val selectedVideos = remember { mutableStateListOf<Uri>() }
-        val baseUrl = "http://192.168.2.104:3000/"
+    val baseUrl = "http://192.168.2.104:3000/"
 
 // Chuyển đổi các đường dẫn ảnh và video từ detail thành Uri, thêm base URL vào trước mỗi đường dẫn
     val imagesFromDetail = detail.photos?.map { Uri.parse( baseUrl+it) } ?: listOf()
@@ -824,103 +750,154 @@ fun SelectMedia(
             }
             Spacer(modifier = Modifier.width(15.dp))
             Column {
-                Text(
-                    text = "Ảnh Phòng trọ",
-                    color = Color.Black,
-                    fontSize = 14.sp
-                )
-                Text(
-                    text = "Tối đa 10 ảnh",
-                    color = Color(0xFFBFBFBF),
-                    fontSize = 13.sp
-                )
-            }
-        }
-
-        // Hiển thị ảnh đã chọn từ detail
-        LazyRow {
-            items(selectedImages) { uri ->
-                Box(modifier = Modifier.padding(4.dp)) {
-                    Image(
-                        painter = rememberImagePainter(uri),
-                        contentDescription = null,
-                        modifier = Modifier.size(80.dp)
+                // Chỉ hiển thị Text khi selectedImages rỗng
+                if (selectedImages.isEmpty()) {
+                    Text(
+                        text = "Ảnh Phòng trọ",
+                        color = Color.Black,
+                        fontSize = 14.sp
                     )
-                    // Nút xóa
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp) // Kích thước nút nhỏ hơn
-                            .background(Color.Red, shape = CircleShape)
-                            .align(Alignment.TopEnd)
-                            .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
-                        contentAlignment = Alignment.Center
+                    Text(
+                        text = "Tối đa 10 ảnh",
+                        color = Color(0xFFBFBFBF),
+                        fontSize = 13.sp
+                    )
+                }
+
+                // Hiển thị LazyRow nếu có ảnh
+                if (selectedImages.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.padding(top = 8.dp) // Khoảng cách giữa LazyRow và các thành phần khác
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Xóa",
-                            tint = Color.White,
-                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
-                        )
+                        items(selectedImages) { uri ->
+                            Box(modifier = Modifier.padding(4.dp)) {
+                                Image(
+                                    painter = rememberImagePainter(uri),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(120.dp)
+                                )
+                                // Nút xóa
+                                Box(
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .background(Color.Red, shape = CircleShape)
+                                        .align(Alignment.TopEnd)
+                                        .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Xóa",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
+
+//        // Hiển thị ảnh đã chọn từ detail
+//        LazyRow {
+//            items(selectedImages) { uri ->
+//                Box(modifier = Modifier.padding(4.dp)) {
+//                    Image(
+//                        painter = rememberImagePainter(uri),
+//                        contentDescription = null,
+//                        modifier = Modifier.size(80.dp)
+//                    )
+//                    // Nút xóa
+//                    Box(
+//                        modifier = Modifier
+//                            .size(16.dp) // Kích thước nút nhỏ hơn
+//                            .background(Color.Red, shape = CircleShape)
+//                            .align(Alignment.TopEnd)
+//                            .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Close,
+//                            contentDescription = "Xóa",
+//                            tint = Color.White,
+//                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
+//                        )
+//                    }
+//                }
+//            }
+//        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Button chọn video
-        Column(
+        Row(
             modifier = Modifier
-                .clickable { launcherVideo.launch(arrayOf("video/*")) }
-                .fillMaxWidth()
-                .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                .background(Color.White)
-                .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
-                .padding(25.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(5.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.video),
-                contentDescription = null,
-                modifier = Modifier.size(30.dp)
-            )
-            Spacer(modifier = Modifier.height(7.dp))
-            Text(
-                text = "Video",
-                color = Color.Black,
-                fontSize = 13.sp
-            )
-        }
+            // Button chọn video
+            Column(
+                modifier = Modifier
+                    .clickable { launcherVideo.launch(arrayOf("video/*")) }
+                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .border(0.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+                    .padding(if (selectedVideos.isEmpty()) 25.dp else 22.dp) // Thu nhỏ khi có video
+                    .weight(1f), // Chiếm khoảng không còn lại
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.video),
+                    contentDescription = null,
+                    modifier = Modifier.size(if (selectedVideos.isEmpty()) 30.dp else 35.dp) // Thu nhỏ khi có video
+                )
 
-        // Hiển thị video đã chọn từ detail
-        LazyRow {
-            items(selectedVideos) { uri ->
-                Box(modifier = Modifier.padding(4.dp)) {
-                    // Hiển thị thumbnail video
-                    VideoThumbnail(uri)
-                    // Nút xóa
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp) // Kích thước nút nhỏ hơn
-                            .background(Color.Red, shape = CircleShape)
-                            .align(Alignment.TopEnd)
-                            .clickable { selectedVideos.remove(uri) }, // Xóa video khi nhấn
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Xóa",
-                            tint = Color.White,
-                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
-                        )
+                if (selectedVideos.isEmpty()) { // Hiển thị text khi chưa có video
+                    Spacer(modifier = Modifier.height(7.dp))
+                    Text(
+                        text = "Video",
+                        color = Color.Black,
+                        fontSize = 13.sp
+                    )
+                }
+            }
+
+            // Hiển thị danh sách video đã chọn (LazyRow)
+            if (selectedVideos.isNotEmpty()) {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(3f) // Chiếm không gian rộng hơn cho LazyRow
+                ) {
+                    items(selectedVideos) { uri ->
+                        Box(modifier = Modifier.padding(4.dp)) {
+                            // Hiển thị thumbnail video
+                            VideoThumbnail(uri)
+                            // Nút xóa
+                            Box(
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .background(Color.Red, shape = CircleShape)
+                                    .align(Alignment.TopEnd)
+                                    .clickable { selectedVideos.remove(uri) }, // Xóa video khi nhấn
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Xóa",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
-    }
-}
 
+    }}
 @Composable
 fun VideoThumbnail(uri: Uri) {
     val context = LocalContext.current

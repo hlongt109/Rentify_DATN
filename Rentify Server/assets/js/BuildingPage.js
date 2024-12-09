@@ -47,8 +47,7 @@ const renderTable = (filteredBuildings = building) => {
         row.innerHTML = `
         <td style="vertical-align: middle;">${item.nameBuilding}</td>
         <td style="vertical-align: middle;">${item.manager_id ? item.manager_id.username || "" : ""}</td>
-<td style="vertical-align: middle;">${item.manager_id ? item.manager_id.phoneNumber || "" : ""}</td>
-
+        <td style="vertical-align: middle;">${item.manager_id ? item.manager_id.phoneNumber || "" : ""}</td>
         <td style="vertical-align: middle;">${item.address}</td>
         <td style="vertical-align: middle;">${item.number_of_floors}</td>
         <td style="vertical-align: middle;">${item.availableRooms} phòng</td>

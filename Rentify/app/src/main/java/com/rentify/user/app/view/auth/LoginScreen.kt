@@ -100,7 +100,7 @@ fun LoginScreenApp(navigator: NavController) {
                 successMessage?.let {
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 }
-                navigator.navigate(ROUTER.HOME.name)
+                navigator.navigate("BottomTest")
             } else if (role == "staffs") {
                 successMessage?.let {
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -154,7 +154,7 @@ fun LoginScreenApp(navigator: NavController) {
                     )
                 //loi cho email
                 errorEmail?.let { ShowReport.ShowError(message = it) }
-                Spacer(modifier = Modifier.padding(top = 30.dp))
+                Spacer(modifier = Modifier.padding(top = 10.dp))
                 //password
                 TextFieldComponent(
                     value = password,

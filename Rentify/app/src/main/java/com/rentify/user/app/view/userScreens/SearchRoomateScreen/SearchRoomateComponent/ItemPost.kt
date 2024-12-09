@@ -95,8 +95,6 @@ fun PostListRoomateScreen(navController: NavController, postType: String) {
         viewModel.fetchPostsByType(postType)
         Log.d("Debug", "LaunchedEffect triggered with postType: $postType")
     }
-
-
     if (posts.isEmpty()) {
         Text(
             text = "Không có bài đăng nào",
@@ -249,12 +247,6 @@ fun PostMediaSection1(mediaList: List<String>) {
 
         val pagerState = rememberPagerState() // Quản lý trạng thái pager
         Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "Media",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-            )
             HorizontalPager(
                 count = mediaList.size,
                 state = pagerState,
@@ -275,6 +267,7 @@ fun PostMediaSection1(mediaList: List<String>) {
                         },
                     contentAlignment = Alignment.Center
                 ) {
+
                     if (media.endsWith(".mp4")) {
                             // Play button overlay
                             Icon(
@@ -289,7 +282,7 @@ fun PostMediaSection1(mediaList: List<String>) {
                     } else {
                         // Hiển thị ảnh
                         Image(
-                            painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
+                            painter = rememberImagePainter("http://10.0.2.2:3000/$media"),
                             contentDescription = "Post Image",
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -381,14 +374,14 @@ fun PostMediaDialog1(
                                         .rotate(if (isLandscape) 90f else 0f)
                                 ) {
                                     VideoPlayer1(
-                                        videoUrl = "http://192.168.2.104:3000/$media",
+                                        videoUrl = "http://10.0.2.2:3000/$media",
                                         isPlaying = currentPlayingIndex.value == pageIndex
                                     )
                                 }
                             } else {
                                 // Render ảnh
                                 Image(
-                                    painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
+                                    painter = rememberImagePainter("http://10.0.2.2:3000/$media"),
                                     contentDescription = "Post Image",
                                     modifier = Modifier
                                         .fillMaxSize()

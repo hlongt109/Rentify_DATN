@@ -15,9 +15,6 @@ const buildingData = urlParams.get('data') ? JSON.parse(decodeURIComponent(urlPa
 const fetchService = async () => {
     try {
         const response = await axios.get(`/api/get-services/${landlord_id}`);
-        console.log(response.data); // Kiểm tra cấu trúc dữ liệu
-
-        // Kiểm tra xem dữ liệu trả về có phải là mảng hay không
         if (Array.isArray(response.data)) {
             services = response.data;
             renderServices();
@@ -32,9 +29,6 @@ const fetchService = async () => {
 const fetchStaffs = async () => {
     try {
         const response = await axios.get(`/api/get-staffs/${landlord_id}`);
-        console.log(response.data); // Kiểm tra cấu trúc dữ liệu
-
-        // Kiểm tra xem dữ liệu trả về có phải là mảng hay không
         if (Array.isArray(response.data.data)) {
             staffs = response.data.data;
             renderStaffs();
@@ -48,30 +42,45 @@ const fetchStaffs = async () => {
 
 const renderServices = (selectedServices = []) => {
     const container = document.getElementById("services-container");
-    container.innerHTML = ""; // Xóa nội dung cũ
-
+    container.innerHTML = "";
     services.forEach((service) => {
-        const serviceItem = document.createElement("div");
-        serviceItem.className = "service-item";
-        serviceItem.textContent = service.name;
-        serviceItem.dataset.id = service._id;
+        const checkboxWrapper = document.createElement("div");
+        checkboxWrapper.className = "checkbox-wrapper-13";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `service-${service._id}`;
+        checkbox.dataset.id = service._id;
 
-        // Đánh dấu các dịch vụ đã chọn
+        // Nếu dịch vụ này đã được chọn, đánh dấu checkbox là checked
         if (selectedServices.some((selected) => selected._id === service._id)) {
-            serviceItem.classList.add("active");
+            checkbox.checked = true;
         }
 
-        // Thêm sự kiện click để chọn/bỏ chọn
-        serviceItem.addEventListener("click", () => {
-            serviceItem.classList.toggle("active");
+        const label = document.createElement("label");
+        label.htmlFor = `service-${service._id}`;
+        label.textContent = service.name;
+
+        // Lắng nghe sự thay đổi của checkbox
+        checkbox.addEventListener("change", () => {
+            const isChecked = checkbox.checked;
+
+            // Cập nhật selectedServices khi checkbox được chọn hoặc bỏ chọn
+            if (isChecked) {
+                selectedServices.push(service);
+            } else {
+                const index = selectedServices.findIndex(
+                    (selected) => selected._id === service._id
+                );
+                if (index !== -1) {
+                    selectedServices.splice(index, 1);
+                }
+            }
         });
 
-        container.appendChild(serviceItem);
+        checkboxWrapper.appendChild(checkbox);
+        checkboxWrapper.appendChild(label);
+        container.appendChild(checkboxWrapper);
     });
-
-    // Ghi log kiểm tra container sau khi render
-    console.log("Dịch vụ đã render:", container.innerHTML);
-    console.log("Dịch vụ đã chọn:", selectedServices);
 };
 
 const renderStaffs = () => {
@@ -93,13 +102,12 @@ const renderStaffs = () => {
         staffList.appendChild(staffItem);
     });
 
-    staffList.style.display = "block"; // Hiển thị danh sách nhân viên
+    staffList.style.display = "block";
 };
 
-// Hiển thị hoặc ẩn danh sách nhân viên khi người dùng click vào input
 document.getElementById("manager_id").addEventListener("focus", () => {
     renderStaffs()
-    fetchStaffs(); // Lấy danh sách nhân viên khi người dùng click vào input
+    fetchStaffs();
 });
 
 document.getElementById("manager_id").addEventListener("blur", () => {
@@ -108,8 +116,6 @@ document.getElementById("manager_id").addEventListener("blur", () => {
     }, 100);
 });
 
-// phần xử lý với địa chỉ
-
 const addressInput = document.getElementById('address');
 const addressList = document.getElementById('address-list');
 
@@ -117,9 +123,6 @@ const addressList = document.getElementById('address-list');
 const fetchAddressSuggestions = async (query) => {
     try {
         const response = await axios.get(`https://nominatim.openstreetmap.org/search?q=${query}&countrycodes=VN&format=json&addressdetails=1`);
-        console.log(response.data); // Kiểm tra dữ liệu trả về
-
-        // Chuyển dữ liệu trả về vào hàm renderAddressSuggestions
         renderAddressSuggestions(response.data);
     } catch (error) {
         console.error('Lỗi khi lấy địa chỉ:', error);
@@ -175,14 +178,27 @@ document.addEventListener('click', (e) => {
 document.getElementById("addBuildingForm").addEventListener("submit", async (event) => {
     event.preventDefault(); // Ngăn form reload trang
 
+    console.log("Bắt đầu submit form"); // Log để biết form đã được submit
+
     const landlord_id = localStorage.getItem('user_id'); // Lấy landlord_id từ localStorage
     const manager_id = document.getElementById("manager_id").dataset._id;
     const nameBuilding = document.getElementById("nameBuilding").value.trim();
     const address = document.getElementById("address").value.trim();
     const number_of_floors = parseInt(document.getElementById("number_of_floors").value);
     const description = document.getElementById("description").value.trim();
-    const serviceElements = document.querySelectorAll(".service-item.active"); // Dịch vụ được chọn
-    const service = Array.from(serviceElements).map((item) => item.dataset.id); // Lấy mảng ID dịch vụ
+
+    console.log("Lấy thông tin cơ bản:", {
+        landlord_id,
+        manager_id,
+        nameBuilding,
+        address,
+        number_of_floors,
+        description,
+    });
+
+    const selectedCheckboxes = document.querySelectorAll("#services-container input[type='checkbox']:checked");
+    const service = Array.from(selectedCheckboxes).map((checkbox) => checkbox.dataset.id);
+    console.log("Danh sách ID dịch vụ:", service);
 
     const serviceElementss = document.querySelectorAll(".service-item input[type='checkbox']:checked");
     const serviceFees = Array.from(serviceElementss).map((checkbox) => {
@@ -192,9 +208,17 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
             price: parseFloat(feeInput.value) || 0, // Lấy giá trị phí
         };
     });
+    console.log("Danh sách phí dịch vụ:", serviceFees);
 
     // Kiểm tra các trường bắt buộc
     if (!manager_id || !nameBuilding || !address || !number_of_floors || service.length === 0) {
+        console.error("Dữ liệu thiếu:", {
+            manager_id,
+            nameBuilding,
+            address,
+            number_of_floors,
+            service,
+        });
         return Toastify({
             text: "Vui lòng điền đầy đủ thông tin!",
             style: {
@@ -216,29 +240,26 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
         number_of_floors,
     };
 
+    console.log("Dữ liệu chuẩn bị gửi:", data);
+
     try {
-        // Nếu đang ở chế độ chỉnh sửa
         let response;
         if (buildingId) {
-            // API PUT cập nhật tòa nhà
+            console.log("Chế độ chỉnh sửa, cập nhật tòa nhà với ID:", buildingId);
             response = await axios.put(`/api/buildings/${buildingId}`, data);
-            if (response.status === 200 || response.status === 201) {
-                // Hiển thị thông báo cập nhật thành công
-                localStorage.setItem('updateBuildingMessage', 'Cập nhật tòa nhà thành công!');
-                window.location.href = "/landlord/BuildingPage";
-            }
         } else {
-            // API POST thêm mới tòa nhà (khi buildingId không tồn tại)
+            console.log("Chế độ thêm mới, gửi dữ liệu:");
             response = await axios.post('/api/add-building', data);
-            if (response.status === 200 || response.status === 201) {
-                // Hiển thị thông báo cập nhật thành công
-                localStorage.setItem('addBuildingMessage', 'Thêm tòa nhà thành công!');
-                window.location.href = "/landlord/BuildingPage";
-            }
         }
 
+        console.log("Phản hồi từ server:", response);
+        if (response.status === 200 || response.status === 201) {
+            const successMessage = buildingId ? 'Cập nhật tòa nhà thành công!' : 'Thêm tòa nhà thành công!';
+            localStorage.setItem('addBuildingMessage', successMessage);
+            window.location.href = "/landlord/BuildingPage";
+        }
     } catch (error) {
-        console.error("Lỗi khi cập nhật tòa nhà:", error);
+        console.error("Lỗi khi cập nhật hoặc thêm mới tòa nhà:", error.response?.data || error.message);
         Toastify({
             text: "Lỗi khi cập nhật tòa nhà!",
             style: {
@@ -254,7 +275,6 @@ const fetchBuildingServiceFees = async () => {
         const response = await axios.get(`/api/building/${buildingId}/service-fees`);
         if (Array.isArray(response.data)) {
             allServiceFees = response.data;
-            console.log(allServiceFees); // Kiểm tra cấu trúc dữ liệu
             renderServiceFees()
         } else {
             console.error('Dữ liệu không phải là mảng:', response.data);
@@ -263,6 +283,12 @@ const fetchBuildingServiceFees = async () => {
         console.error('Lỗi khi lấy phí dịch vụ của tòa nhà:', error);
         return [];
     }
+};
+
+const formatCurrency = (value) => {
+    const number = parseFloat(value.replace(/,/g, '')); // Loại bỏ dấu phẩy trước khi chuyển đổi
+    if (isNaN(number)) return ""; // Nếu không phải số, trả về chuỗi rỗng
+    return new Intl.NumberFormat('vi-VN').format(number); // Định dạng theo kiểu Việt Nam
 };
 
 const mergeServiceFees = () => {
@@ -287,10 +313,8 @@ const renderServiceFees = (selectedServices = []) => {
             checkbox.checked = selectedService ? true : false;
             feeInput.disabled = !checkbox.checked;
             feeInput.value = selectedService ? selectedService.price || "" : "";
-            console.log(`Service: ${service.name}, Checked: ${checkbox.checked}`);
         } else {
             createServiceItem(service, servicesContainer, selectedService);
-            console.log(`Service: ${service.name}, Created new checkbox, Checked: ${!!selectedService}`);
         }
     });
 };
@@ -334,6 +358,7 @@ const createServiceItem = (service, servicesContainer, selectedService = null) =
     label.htmlFor = safeName;
     label.textContent = service.name;
 
+    // Định dạng lại giá trị nhập vào và lưu lại giá trị nguyên thủy
     const feeInput = document.createElement("input");
     feeInput.type = "number";
     feeInput.name = `fee_${safeName}`;
@@ -346,13 +371,30 @@ const createServiceItem = (service, servicesContainer, selectedService = null) =
     if (selectedService) {
         checkbox.checked = false;
         feeInput.disabled = true;
-        feeInput.value = selectedService.price || "";
+        feeInput.value = selectedService ? formatCurrency(selectedService.price || "") : "";
     } else {
         checkbox.checked = false; // Không tích khi thêm mới
         feeInput.disabled = true; // Vô hiệu hóa input phí
-        feeInput.value = ""; // Đảm bảo input trống
+        feeInput.value = selectedService ? formatCurrency(selectedService.price || "") : "";
     }
 
+    feeInput.addEventListener("input", (e) => {
+        const rawValue = e.target.value.replace(/[^0-9]/g, ""); // Loại bỏ ký tự không phải số
+        e.target.value = rawValue; // Cập nhật giá trị không định dạng
+    });
+
+    feeInput.addEventListener("change", (e) => {
+        if (!checkbox.checked) {
+            e.target.value = ""; // Xóa giá trị nếu checkbox không được chọn
+        } else {
+            // Chuyển đổi giá trị thành số (số nguyên hoặc số thập phân)
+            const value = e.target.value.replace(/[^0-9.]/g, ""); // Loại bỏ ký tự không phải số hoặc dấu chấm
+            const parsedValue = parseFloat(value); // Đảm bảo giá trị được chuyển thành số
+            e.target.value = formatCurrency(parsedValue); // Nếu bạn muốn hiển thị lại với định dạng tiền tệ
+        }
+    });
+
+    // Sự kiện cho checkbox
     checkbox.addEventListener("change", () => {
         feeInput.disabled = !checkbox.checked;
         if (!checkbox.checked) {
@@ -365,6 +407,7 @@ const createServiceItem = (service, servicesContainer, selectedService = null) =
     serviceItem.appendChild(label);
     serviceItem.appendChild(feeInput);
     servicesContainer.appendChild(serviceItem);
+
 };
 
 

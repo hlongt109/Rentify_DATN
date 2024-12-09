@@ -168,9 +168,14 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
 //    implementation("com.mapbox.geocoding:mapbox-geocoding-android:3.4.0")
     //thuc hien zalopay
+    implementation ("com.github.0xRahad:RioBottomNavigation:1.0.2")
 
     // Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+
+    implementation ("com.github.furkanaskin:ClickablePieChart:1.0.9")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
 }
 // Allow references to generated code
 kapt {

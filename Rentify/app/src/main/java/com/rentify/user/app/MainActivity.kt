@@ -20,6 +20,7 @@ import com.rentify.user.app.view.auth.components.PreForgotPass
 import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.navigator.BottomNavigation
 import com.rentify.user.app.view.navigator.ROUTER
 import com.rentify.user.app.view.staffScreens.ListRommScreen.ListRoomScreen
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
@@ -53,7 +54,6 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.SeachRoomateDetailScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
-import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SurroundingRoomScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
@@ -191,25 +191,14 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("building_id") ?: ""
                 val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
                 val roomId = backStackEntry.arguments?.getString("room_id") ?: ""
-                PaymentConfirmationScreen(
-                    invoiceId = invoiceId,
-                    amount = amount,
-                    buildingId = buildingId,
-                    roomId = roomId,
-                    navController = navController
-                )
+                PaymentConfirmationScreen(invoiceId = invoiceId ,amount = amount, buildingId = buildingId, roomId = roomId, navController = navController)
             }
 
             composable("Payments/{amount}/{buildingId}/{_id}") { backStackEntry ->
                 val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
                 val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
                 val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
-                PaymentScreen(
-                    invoiceId = invoiceId,
-                    amount = amount,
-                    buildingId = buildingId,
-                    navController = navController
-                )
+                PaymentScreen( invoiceId = invoiceId ,amount = amount, buildingId = buildingId, navController = navController)
             }
 
             composable(ROUTER.ConTract.name) {
@@ -404,9 +393,13 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ROOMMAP.name) {
                 SurroundingRoomScreen(navController = navController)
             }
+            composable(ROUTER.BottomTest.name){
+                BottomNavigation(navController)
+            }
+
         }
     }
-
+    
 
     enum class ROUTER {
         HOME,
@@ -463,6 +456,7 @@ class MainActivity : ComponentActivity() {
         ADDCONTRAC_STAFF,
         ListSupportByRoom,
         QuanLiDichVuUser,
+        BottomTest,
         PREFORGOT,
         ROOMMAP,
     }

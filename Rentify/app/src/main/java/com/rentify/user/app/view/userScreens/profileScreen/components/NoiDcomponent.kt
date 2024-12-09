@@ -1,19 +1,19 @@
 package com.rentify.user.app.view.userScreens.profileScreen.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.RadioButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,10 +21,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.userScreens.roomdetailScreen.components.DatePickerDialog
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
 
@@ -47,7 +47,7 @@ fun PreviewFeetPersonalProfile(){
 @Composable
 fun FeetPersonalProfileuser(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
-    val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
+    val userDetail by viewModel.user.observeAsState()
     val context = LocalContext.current
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
@@ -57,139 +57,201 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
 
-    // Trạng thái cho các Dialog
     val showGenderDialog = remember { mutableStateOf(false) }
     val showDobDialog = remember { mutableStateOf(false) }
     val showAddressDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailById(userId)  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserDetailById(userId)
     }
 
     Column {
+        // Họ và tên
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            androidx.compose.material.Text(
-                text = "Họ và tên ",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
+            Text(
+                text = "Họ và tên",
+                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            androidx.compose.material.Text(
-                text = "${userDetail?.name}",
-                modifier = Modifier
-                    .padding(end = 20.dp),
+            Text(
+                text = userDetail?.name ?: "",
+                modifier = Modifier.padding(end = 20.dp),
                 fontSize = 15.sp
             )
         }
+
+        // Giới tính
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            androidx.compose.material.Text(
-                text = "Giới tính ",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
+            Text(
+                text = "Giới tính",
+                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            androidx.compose.material.Text(
-                text = userDetail?.gender ?: "Thêm giới tính bắt buộc",
+            Row(
                 modifier = Modifier
                     .padding(end = 20.dp)
-                    .clickable { showGenderDialog.value = true },  // Mở dialog khi nhấn
-                fontSize = 15.sp,
-                color = Color.Black
-            )
+                    .clickable { showGenderDialog.value = true }
+            ) {
+                Text(
+                    text = userDetail?.gender ?: "",
+                    modifier = Modifier.padding(end = 20.dp),
+                    fontSize = 15.sp,
+                    color = Color.Black
+                )
+            }
         }
-        Divider() // Separator
 
+        Divider()
+
+        // Ngày sinh
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            androidx.compose.material.Text(
+            Text(
                 text = "Ngày sinh",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
+                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            androidx.compose.material.Text(
-                text = userDetail?.dob ?: "Thêm ngày sinh bắt buộc",
+            Text(
+                text = userDetail?.dob ?: "",
                 modifier = Modifier
                     .padding(end = 20.dp)
-                    .clickable { showDobDialog.value = true },  // Mở dialog khi nhấn
+                    .clickable { showDobDialog.value = true },
                 fontSize = 15.sp,
                 color = Color.Black
             )
         }
-        Divider() // Separator
+        Divider()
 
+        // Địa chỉ
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            androidx.compose.material.Text(
+            Text(
                 text = "Địa chỉ",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
+                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
                 color = Color(0xFF989898)
             )
-            androidx.compose.material.Text(
-                text = userDetail?.address ?: "Thêm địa chỉ bắt buộc",
+            Text(
+                text = userDetail?.address ?: "",
                 modifier = Modifier
                     .padding(end = 20.dp)
-                    .clickable { showAddressDialog.value = true },  // Mở dialog khi nhấn
+                    .clickable { showAddressDialog.value = true },
                 fontSize = 15.sp,
                 color = Color.Black
             )
         }
 
-        // Hiển thị Dialog cho giới tính
-        if (showGenderDialog.value) {
-            UpdateDialog(
-                title = "Cập nhật giới tính",
-                initialValue = userDetail?.gender ?: "",
-                onDismiss = { showGenderDialog.value = false },
-                onConfirm = { updatedValue ->
-                    viewModel.updateUserDetails(userId, gender = updatedValue, dob = userDetail?.dob ?: "", address = userDetail?.address ?: "")
-                    showGenderDialog.value = false
-                }
-            )
-        }
-
-        // Hiển thị Dialog cho ngày sinh
-        if (showDobDialog.value) {
-            UpdateDialog(
-                title = "Cập nhật ngày sinh",
-                initialValue = userDetail?.dob ?: "",
-                onDismiss = { showDobDialog.value = false },
-                onConfirm = { updatedValue ->
-                    viewModel.updateUserDetails(userId, gender = userDetail?.gender ?: "", dob = updatedValue, address = userDetail?.address ?: "")
-                    showDobDialog.value = false
-                }
-            )
-        }
-
-        // Hiển thị Dialog cho địa chỉ
+        // Hiển thị dialog cập nhật địa chỉ
         if (showAddressDialog.value) {
             UpdateDialog(
                 title = "Cập nhật địa chỉ",
                 initialValue = userDetail?.address ?: "",
                 onDismiss = { showAddressDialog.value = false },
                 onConfirm = { updatedValue ->
-                    viewModel.updateUserDetails(userId, gender = userDetail?.gender ?: "", dob = userDetail?.dob ?: "", address = updatedValue)
+                    viewModel.updateUserDetails(
+                        userId,
+                        gender = userDetail?.gender ?: "",
+                        dob = userDetail?.dob ?: "",
+                        address = updatedValue
+                    )
                     showAddressDialog.value = false
                 }
             )
         }
+
+        // Hiển thị lịch chọn ngày sinh
+        if (showDobDialog.value) {
+            DatePickerDialog(
+                onDismissRequest = { showDobDialog.value = false },
+                onDateSelected = { selectedDate ->
+                    viewModel.updateUserDetails(
+                        userId,
+                        gender = userDetail?.gender ?: "",
+                        dob = selectedDate,
+                        address = userDetail?.address ?: ""
+                    )
+                    showDobDialog.value = false
+                }
+            )
+        }
+
+        // Hiển thị hộp thoại giới tính
+        if (showGenderDialog.value) {
+            GenderDialog(
+                currentGender = userDetail?.gender ?: "",
+                onDismiss = { showGenderDialog.value = false },
+                onConfirm = { updatedGender ->
+                    viewModel.updateUserDetails(
+                        userId,
+                        gender = updatedGender,
+                        dob = userDetail?.dob ?: "",
+                        address = userDetail?.address ?: ""
+                    )
+                    showGenderDialog.value = false
+                }
+            )
+        }
     }
+}
+
+@Composable
+fun GenderDialog(
+    currentGender: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    val genders = listOf("Nam", "Nữ")
+    var selectedGender by remember { mutableStateOf(currentGender) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Cập nhật giới tính", fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                genders.forEach { gender ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedGender = gender },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (gender == selectedGender),
+                            onClick = { selectedGender = gender }
+                        )
+                        Text(text = gender, modifier = Modifier.padding(start = 8.dp))
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(selectedGender) }) {
+                Text("Cập nhật")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Hủy")
+            }
+        }
+    )
 }
 
 @Composable
@@ -201,29 +263,30 @@ fun UpdateDialog(
 ) {
     var text by remember { mutableStateOf(initialValue) }
 
-    androidx.compose.material.AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title, fontWeight = FontWeight.Bold) },
         text = {
-            androidx.compose.material.OutlinedTextField(
+            OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text("Nhập giá trị mới") },
+                label = { Text("Nhập địa chỉ mới") },
                 modifier = Modifier.fillMaxWidth()
             )
         },
         confirmButton = {
-            androidx.compose.material.TextButton(onClick = { onConfirm(text) }) {
+            TextButton(onClick = { onConfirm(text) }) {
                 Text("Cập nhật")
             }
         },
         dismissButton = {
-            androidx.compose.material.TextButton(onClick = onDismiss) {
+            TextButton(onClick = onDismiss) {
                 Text("Hủy")
             }
         }
     )
 }
+
 
 @Composable
 fun FeetPersonalProfileUSER(navController: NavHostController){

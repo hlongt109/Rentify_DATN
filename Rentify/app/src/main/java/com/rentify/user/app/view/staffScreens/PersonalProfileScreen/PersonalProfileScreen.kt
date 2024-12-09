@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.B
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.BodyPersonalProfile1
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.FeetPersonalProfile
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.FeetPersonalProfile1
+import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.FeetPersonalProfile2
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.HeadPersonalProfile
 
 // _vanphuc : màn hình thông tin cá nhân
@@ -30,6 +33,8 @@ fun PersonalProfileScreen(navController: NavHostController){
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
             .background(color = Color.White)
     ){
@@ -38,6 +43,7 @@ fun PersonalProfileScreen(navController: NavHostController){
         FeetPersonalProfile(navController)
         BodyPersonalProfile1(navController)
         FeetPersonalProfile1(navController)
+        FeetPersonalProfile2(navController)
     }
 }
 

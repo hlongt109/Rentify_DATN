@@ -1,11 +1,14 @@
 package com.rentify.user.app.view.staffScreens.addRoomScreen.Components
 
-
+import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -35,110 +38,80 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import com.rentify.user.app.R
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.PlayerView
+import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
-
-
-
 
 @Composable
 fun SelectMedia(
-    onMediaSelected: (List<Uri>, List<Uri>) -> Unit
+    onMediaSelected: (List<Uri>, List<Uri>) -> Unit,
+    existingImages: List<Uri> = emptyList(),
+    existingVideos: List<Uri> = emptyList()
 ) {
-    var selectedImages by rememberSaveable{ mutableStateOf(listOf<Uri>())}
-    var selectedVideos by rememberSaveable {mutableStateOf(listOf<Uri>())}
+    var selectedImages by rememberSaveable { mutableStateOf(existingImages) }
+    var selectedVideos by rememberSaveable { mutableStateOf(existingVideos) }
 
+    LaunchedEffect(existingImages, existingVideos) {
+        selectedImages = existingImages
+        selectedVideos = existingVideos
+    }
 
     val context = LocalContext.current
     val launcherImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
             uris?.let {
-                val remainingSpace = 10 - selectedImages.size
-                if (remainingSpace > 0) {
-                    selectedImages = selectedImages + uris
-                    onMediaSelected(selectedImages, selectedVideos)
-                    Log.d("ImageUploadSelect", "Selected image URI: $uris")
-                }
-                if (it.size > remainingSpace) {
-                    Toast.makeText(context, "Giới hạn tối đa 10 ảnh.", Toast.LENGTH_SHORT).show()
-                }
+                selectedImages = it.take(10)  // Chỉ lấy tối đa 10 ảnh
+                onMediaSelected(selectedImages, selectedVideos)
             }
         }
     )
     val launcherVideo = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) {uri: Uri? ->
+    ) { uri: Uri? ->
         uri?.let {
-            try {
-                // Lưu URI trực tiếp
-                selectedVideos = selectedVideos + uri
-                onMediaSelected(selectedImages, selectedVideos)
-                Log.d("VideoUploadSelect", "Selected video URI: $uri")
-            } catch (e: Exception) {
-                Log.e("VideoUploadError", "Error selecting video: ${e.message}")
-            }
+            selectedVideos = listOf(it)  // Chỉ giữ lại video mới được chọn
+            onMediaSelected(selectedImages, selectedVideos)
         }
     }
-
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Phần chọn ảnh
         Row(
-            modifier = Modifier.padding(5.dp),
+            modifier = Modifier.padding(horizontal = 5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier
-                    .clickable { launcherImage.launch(arrayOf("image/*"))}
-                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                    .background(Color.White)
-                    .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
-                    .padding(25.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.image),
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(15.dp))
             Column {
-                if (selectedImages.isEmpty()) {
-                    Text(
-                        text = "Thêm ảnh từ máy",
-                        color = Color.Black,
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        text = "Giới hạn 10 ảnh",
-                        color = Color(0xFFBFBFBF),
-                        fontSize = 13.sp
-                    )
-                }
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(selectedImages) { imageUri ->
                         Box(
-                            modifier = Modifier
-                                .size(100.dp)
-                                .padding(4.dp)
+                            modifier = Modifier.size(200.dp)
                         ) {
-                            Image(
-                                painter = rememberImagePainter(imageUri),
+                            AsyncImage(
+                                model = imageUri,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .clip(RoundedCornerShape(10.dp))
+                                    .clip(RoundedCornerShape(10.dp)),
+                                contentScale = ContentScale.Crop
                             )
                             Box(
                                 modifier = Modifier
@@ -160,82 +133,115 @@ fun SelectMedia(
                             }
                         }
                     }
-                }
-            }
-        }
 
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-
-        // Phần chọn video
-        Column(
-            modifier = Modifier
-                .clickable { launcherVideo.launch("video/*") }
-                .fillMaxWidth()
-                .shadow(3.dp, shape = RoundedCornerShape(10.dp))
-                .background(Color.White)
-                .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
-                .padding(25.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (selectedVideos.isEmpty()) {
-                Image(
-                    painter = painterResource(id = R.drawable.video),
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp)
-                )
-                Spacer(modifier = Modifier.height(7.dp))
-                Text(
-                    text = "Video",
-                    color = Color.Black,
-                    fontSize = 13.sp
-                )
-            }
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                items(selectedVideos) { videoUri ->
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(4.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Gray, shape = RoundedCornerShape(8.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Video",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(20.dp)
-                                .align(Alignment.TopEnd)
-                                .background(Color.Red, shape = RoundedCornerShape(10.dp))
-                                .clickable {
-                                    selectedVideos = selectedVideos.filterNot { it == videoUri }
-                                    onMediaSelected(selectedImages, selectedVideos)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "X",
-                                color = Color.White,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                    item {
+                        selectedVideos.firstOrNull()?.let { videoUri ->
+                            Box(
+                                modifier = Modifier.height(200.dp)
+                            ) {
+                                ExoPlayerViewAddRoom(context, videoUri)
+                                Box(
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .align(Alignment.TopEnd)
+                                        .background(Color.Red, shape = RoundedCornerShape(10.dp))
+                                        .clickable {
+                                            selectedVideos = selectedVideos.filterNot { it == videoUri }
+                                            onMediaSelected(selectedImages, selectedVideos)
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "X",
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Row(modifier = Modifier.padding(horizontal = 5.dp)) {
+            Column(
+                modifier = Modifier
+                    .clickable { launcherImage.launch(arrayOf("image/*")) }
+                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+                    .size(100.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.image),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(
+                    text = "Ảnh",
+                    color = Color.Black,
+                    fontSize = 14.sp
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Column(
+                modifier = Modifier
+                    .clickable { launcherVideo.launch("video/*") }
+                    .shadow(3.dp, shape = RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(10.dp))
+                    .size(100.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.video),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(
+                    text = "Video",
+                    color = Color.Black,
+                    fontSize = 14.sp
+                )
+            }
+        }
     }
+}
+
+
+
+@OptIn(UnstableApi::class)
+@Composable
+fun ExoPlayerViewAddRoom(context: Context, videoUri: Uri) {
+    AndroidView(
+        factory = {
+            val exoPlayer = ExoPlayer.Builder(context).build().apply {
+                setMediaItem(MediaItem.fromUri(videoUri))
+                prepare()
+                playWhenReady = false
+            }
+            PlayerView(context).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                player = exoPlayer
+                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.Black)
+    )
 }

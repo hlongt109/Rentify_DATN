@@ -63,6 +63,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.rentify.user.app.R
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.CustomTextField
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.prepareMultipartBody
 import com.rentify.user.app.view.userScreens.cancelContract.components.ContractInfoRow
@@ -89,9 +90,9 @@ fun ContractDetailScreen(navController: NavController,contractId: String) {
         contractViewModel.fetchContractDetail(contractId)
     }
 
-        val configuration = LocalConfiguration.current
-        val screenHeight = configuration.screenHeightDp
-        val scrollState = rememberScrollState()
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+    val scrollState = rememberScrollState()
     contractDetail?.let { contract ->
         Box(
             modifier = Modifier
@@ -104,7 +105,16 @@ fun ContractDetailScreen(navController: NavController,contractId: String) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                HeaderSection(backgroundColor = Color.White, title = "Xem hợp đồng", navController = navController)
+                AppointmentAppBarc(
+                    onBackClick = {
+                        // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                        navController.navigate("CONTRACT_STAFF")
+                        {
+                            //    popUpTo("ADDCONTRAC_STAFF") { inclusive = true }
+
+                        }
+                    })
+             //   HeaderSection(backgroundColor = Color.White, title = "Xem hợp đồng", navController = navController)
                 Spacer(modifier = Modifier.height(30.dp))
                 Column( modifier = Modifier
                     .verticalScroll(scrollState)
@@ -233,111 +243,27 @@ fun EditContractDialog(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 // Sửa User ID
-                Column(
+                CustomTextField(
+                    label = "UserId",
+                    value = userId,
+                    onValueChange = { userId = it  },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                      Text(
-                            text = "UserId",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff7f7f7f),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-                        )
-                       Text(
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-
-                            )
-                    }
-                    TextField(
-                        value = userId,
-                        onValueChange = { newValue ->
-                            userId = newValue // Cập nhật giá trị title khi người dùng thay đổi
-                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color(0xFFf7f7f7),
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Nhập userId",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                }
+                        .padding(5.dp),
+                    placeholder = "userId1,userId2,...",
+                    isReadOnly = false
+                )
                 // Sửa Content
-                Column(
+                CustomTextField(
+                    label = "Nội dung",
+                    value = content,
+                    onValueChange = { content = it  },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                  Text(
-                            text = "Nội dung",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff7f7f7f),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-                        )
-                     Text(
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-
-                            )
-                    }
-                    TextField(
-                        value = content,
-                        onValueChange = { newValue ->
-                            content = newValue // Cập nhật giá trị title khi người dùng thay đổi
-                            isEdited = true  // Đánh dấu là đã chỉnh sửa
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color(0xFFf7f7f7),
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Nhập nội dung",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                }
+                        .padding(5.dp),
+                    placeholder = "Nhập nội dung",
+                    isReadOnly = false
+                )
 
                 // Thêm hình ảnh
                 SelectMedia { images ->
@@ -378,35 +304,48 @@ fun EditContractDialog(
                     Button(
                         onClick = {
                             if (isFieldEmpty(userId)) {
-                            // Hiển thị thông báo lỗi nếu title trống
-                            Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
-                            return@Button }
-                        if (isFieldEmpty(content)) {
-                            // Hiển thị thông báo lỗi nếu content trống
-                            Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        val photoParts = selectedPhotos.mapNotNull { uri ->
-                            val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
-                            prepareMultipartBody(
-                                context,
-                                uri,
-                                "photos_contract",
-                                ".jpg",
-                                mimeType
-                            )
-                        }
+                                // Hiển thị thông báo lỗi nếu title trống
+                                Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
+                                return@Button }
+                            if (isFieldEmpty(content)) {
+                                // Hiển thị thông báo lỗi nếu content trống
+                                Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            val maxPhotos = 10
 
-                        contractId?.let {
-                            contractViewModel.updateContract_STAFF(
-                                contractId = contractId,
-                                userId = userId,
-                                content = content,
-                                photos = photoParts
-                            )
+                            if (selectedPhotos.size > maxPhotos) {
+                                Toast.makeText(
+                                    context,
+                                    "Chỉ cho phép tối đa $maxPhotos ảnh!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@Button
+                            }
 
-                        }
-                        onDismiss() // Đóng Dialog
+                            val photoParts = selectedPhotos.mapNotNull { uri ->
+                                val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+                                prepareMultipartBody(
+                                    context,
+                                    uri,
+                                    "photos_contract",
+                                    ".jpg",
+                                    mimeType
+                                )
+                            }
+
+                            contractId?.let {
+                                contractViewModel.updateContract_STAFF(
+                                    contractId = contractId,
+                                    userId = userId,
+                                    content = content,
+                                    photos = photoParts
+                                )
+
+                            }
+                            Toast.makeText(context, "Sửa thành công", Toast.LENGTH_SHORT).show()
+
+                            onDismiss() // Đóng Dialog
                         },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(

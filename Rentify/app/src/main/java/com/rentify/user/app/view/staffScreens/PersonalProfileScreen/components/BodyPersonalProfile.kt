@@ -27,7 +27,7 @@ fun BodyPersonalProfile(navController: NavHostController) {
             text = "Thông tin định danh",
             modifier = Modifier
                 .padding(20.dp),
-            fontSize = 20.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
     }
@@ -39,7 +39,7 @@ fun BodyPersonalProfile1(navController: NavHostController) {
             text = "Thông tin tài khoản",
             modifier = Modifier
                 .padding(20.dp),
-            fontSize = 20.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
     }

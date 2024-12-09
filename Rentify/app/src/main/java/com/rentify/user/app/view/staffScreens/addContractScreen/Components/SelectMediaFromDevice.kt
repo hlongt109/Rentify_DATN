@@ -287,49 +287,54 @@ fun SelectMedia(
                 )
             }
             Spacer(modifier = Modifier.width(15.dp))
-            Column {
-                Text(
-                    text = "Ảnh hợp đồng",
-                    color = Color.Black,
-                    fontSize = 14.sp
-                )
-                Text(
-                    text = "Tối đa 15 ảnh",
-                    color = Color(0xFFBFBFBF),
-                    fontSize = 13.sp
-                )
-            }
-        }
 
-        LazyRow {
-            items(selectedImages) { uri ->
-                Box(modifier = Modifier.padding(4.dp)) {
-                    Image(
-                        painter = rememberImagePainter(uri),
-                        contentDescription = null,
-                        modifier = Modifier.size(80.dp)
+            Column {
+                // Chỉ hiển thị Text khi selectedImages rỗng
+                if (selectedImages.isEmpty()) {
+                    Text(
+                        text = "Ảnh Phòng trọ",
+                        color = Color.Black,
+                        fontSize = 14.sp
                     )
-                    // Nút xóa
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp) // Kích thước nút nhỏ hơn
-                            .background(Color.Red, shape = CircleShape)
-                            .align(Alignment.TopEnd)
-                            .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Xóa",
-                            tint = Color.White,
-                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
-                        )
-                    }
+                    Text(
+                        text = "Tối đa 10 ảnh",
+                        color = Color(0xFFBFBFBF),
+                        fontSize = 13.sp
+                    )
                 }
-            }
-        }
-    }
-}
+
+                // Hiển thị LazyRow nếu có ảnh
+                if (selectedImages.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.padding(top = 8.dp) // Khoảng cách giữa LazyRow và các thành phần khác
+                    ) {
+                        items(selectedImages) { uri ->
+                            Box(modifier = Modifier.padding(4.dp)) {
+                                Image(
+                                    painter = rememberImagePainter(uri),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(120.dp)
+                                )
+                                // Nút xóa
+                                Box(
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .background(Color.Red, shape = CircleShape)
+                                        .align(Alignment.TopEnd)
+                                        .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Xóa",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }}}}}
 //fun VideoThumbnail(uri: Uri) {
 //    val context = LocalContext.current
 //    val exoPlayer = remember {

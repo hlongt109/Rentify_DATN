@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Room(
     @SerializedName("_id") val id: String = "",
-    val buildingId: String,         // ID của tòa nhà
+    @SerializedName("building_id")val buildingId: String,         // ID của tòa nhà
     val room_name: String?,          // Tên phòng
     val room_type: String,           // Loại phòng
     val description: String,        // Mô tả phòng

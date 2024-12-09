@@ -44,7 +44,7 @@ import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.userScreens.QuanLiDichVu.Components.PhanDauQuanLiDichVu
 import com.rentify.user.app.viewModel.LoginViewModel
-import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
+import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
 import java.text.DecimalFormat
 
 
@@ -63,14 +63,11 @@ fun QuanLiDichVu(navController: NavHostController) {
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
-    val roomViewModel: RoomViewModel = viewModel(
-        factory = RoomViewModel.RoomViewModeFactory(context)
-    )
-    val buildingWithRooms by roomViewModel.buildingWithRooms.observeAsState(emptyList())
+    val viewModel: UserViewModel = viewModel()
     val decimalFormat = DecimalFormat("#,###,###")
-
+    val serviceFees by viewModel.serviceFees.observeAsState(emptyList())
     LaunchedEffect(Unit) {
-        roomViewModel.fetchBuildingsWithRooms(userId)
+        viewModel.getServiceFeesByUser(userId)
     }
 
     val serviceIconMap = mapOf(
@@ -93,8 +90,9 @@ fun QuanLiDichVu(navController: NavHostController) {
     ){
         PhanDauQuanLiDichVu(navController)
 
-        // Lặp qua từng BuildingWithRooms
-        buildingWithRooms.forEach { building ->
+        // Lặp qua từng BuildingId
+        serviceFees?.forEach { serviceFeeItem ->
+            val building = serviceFeeItem.building_id
             building.serviceFees.forEach { serviceFee ->
                 var expanded by remember { mutableStateOf(false) }
                 Card(
@@ -189,6 +187,7 @@ fun QuanLiDichVu(navController: NavHostController) {
         }
     }
 }
+
 
 
 
