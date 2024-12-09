@@ -45,18 +45,20 @@ fun HeaderComponent(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White)
-            .padding(10.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = Color.White),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween // Căn đều các phần tử trong Row
         ) {
+            // Nút quay lại
             IconButton(
-
-                onClick = { navController.navigate("CATEGORYPOST") }
+                modifier = Modifier.width(100.dp),
+                onClick = {    navController.navigate("CATEGORYPOST") {
+                    popUpTo("SEARCHPOSTROOMATE") { inclusive = true } // Loại bỏ màn ADDPOST khỏi ngăn xếp
+                }}
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.back),
@@ -64,6 +66,7 @@ fun HeaderComponent(navController: NavController) {
                     modifier = Modifier.size(30.dp, 30.dp)
                 )
             }
+            // Tiêu đề
             Text(
                 text = "Bài đăng tìm bạn ở ghép",
                 color = Color.Black,
@@ -71,15 +74,14 @@ fun HeaderComponent(navController: NavController) {
                 fontSize = 17.sp
             )
 
-            IconButton(
-
-                onClick = { navController.navigate("ADDPOST?postType=roomate")  }
+            // Bạn có thể thêm các phần tử khác vào đây, nếu cần thiết
+            // Ví dụ: một button hoặc icon nữa
+            Row(
+                modifier = Modifier.width(100.dp), // Đảm bảo chiều rộng của Row con
+                horizontalArrangement = Arrangement.End // Căn cuối cùng cho phần tử trong Row con
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.addr),
-                    contentDescription = null,
-                    modifier = Modifier.size(25.dp, 25.dp)
-                )
+                // Ví dụ là một icon hoặc button ở đây
+                // IconButton(...) hoặc Image(...) nếu cần
             }
         }
     }

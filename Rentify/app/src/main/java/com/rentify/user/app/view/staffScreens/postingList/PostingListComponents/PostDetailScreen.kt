@@ -83,10 +83,14 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
     val screenHeight = configuration.screenHeightDp
  //   val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
 
-    // Chạy khi màn hình được hiển thị lại hoặc khi postId thay đổi
-    LaunchedEffect(postId) {
+    LaunchedEffect(key1 = postId) {
         viewModel.getPostDetail(postId)
-       // isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
+    }
+
+    LaunchedEffect(postDetail) {
+        if (postDetail == null) {
+            viewModel.getPostDetail(postId)
+        }
     }
 
     postDetail?.let { detail ->
@@ -101,29 +105,14 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     .statusBarsPadding()
                     .navigationBarsPadding()
             ){
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = Color(0xfff7f7f7)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = { navController.navigate("POSTING_STAFF")}) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
+                AppointmentAppBarc( onBackClick = {
+                    // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                    navController.navigate("POSTING_STAFF")
+                    {
+                        //    popUpTo("ADDCONTRAC_STAFF") { inclusive = true }
+
                     }
-                    Text(
-                        text = "Chi tiết bài đăng",
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                    }
-                }
+                })
                 Column(
                     modifier = Modifier
                         .padding(16.dp)

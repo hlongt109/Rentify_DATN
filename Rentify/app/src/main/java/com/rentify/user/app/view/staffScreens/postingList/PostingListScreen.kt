@@ -23,8 +23,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.AppointmentAppBar
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
-import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingListTopBar
+
 import com.rentify.user.app.viewModel.LoginViewModel
 
 @Preview(showBackground = true)
@@ -69,7 +70,10 @@ fun PostingListScreen(navController: NavHostController) {
             ) {
                 // Gọi nội dung chính của màn hình
                 Column {
-                    PostingListTopBar(navController, viewModel = viewModel())
+                    AppointmentAppBar( onBackClick = {
+                        // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                        navController.navigate("HOME_STAFF")
+                    })
                     PostListScreen(navController,userId = userId)
                 }
             }

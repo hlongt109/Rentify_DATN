@@ -66,7 +66,6 @@ import retrofit2.http.Part
 import retrofit2.http.PartMap
 import retrofit2.http.Query
 
-
 ////
 data class RegisterRequest(
     val username: String,
@@ -273,7 +272,7 @@ interface APIService {
         @Part("status") status: RequestBody,
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
-    ): Response<PostResponse>
+    ): Response<PostingList>
 
     @GET("staff/posts/list/{user_id}")
     suspend fun getPosts(@Path("user_id") userId: String): ApiResponsee<List<PostingList>>
@@ -293,23 +292,24 @@ interface APIService {
     suspend fun deletePost(@Path("id") postId: String): Response<Unit> // Giả sử API trả về `Unit` khi xóa thành công
 
     @GET("staff/posts/detail/{id}")
-    suspend fun getPostDetail(@Path("id") postId: String): PostingDetail
+    suspend fun getPostDetail(@Path("id") postId: String): PostingList
 
 
     @Multipart
     @PUT("staff/posts/update/{id}")
-    suspend fun updatePostUser(
+    suspend fun updatePost(
         @Path("id") postId: String,
         @Part("user_id") userId: RequestBody?,
         @Part("building_id") buildingId: RequestBody?,
         @Part("room_id") roomId: RequestBody?,
         @Part("title") title: RequestBody?,
+        @Part("address") address: RequestBody?,
         @Part("content") content: RequestBody?,
         @Part("status") status: RequestBody?,
         @Part("post_type") postType: RequestBody?,
         @Part video: List<MultipartBody.Part>?, // Optional video
         @Part photo: List<MultipartBody.Part>?  // Optional photo
-    ): Response<UpdatePostRequest>
+    ): Response<PostingList>
 
     // HỢP ĐỒNG
     @GET("staff/contracts/contracts-by-building")
@@ -381,12 +381,17 @@ interface APIService {
         @Part("status") status: RequestBody,
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
-    ): Response<PostResponse>
-// bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
-@GET("list/type/{post_type}")
-suspend fun getPostsByType(
-    @Path("post_type") postType: String
-): Response<PostListResponse>  // Phản hồi kiểu PostListResponse
+    ): Response<PostingList>
+    @GET("staff/posts/postType/list/{user_id}")
+    suspend fun getPosts_user(
+        @Path("user_id") userId: String,
+        @Query("post_type") postType: String? = null // Thêm post_type vào query parameter
+    ): ApiResponsee<List<PostingList>>
+    // bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
+    @GET("list/type/{post_type}")
+    suspend fun getPostsByType(
+        @Path("post_type") postType: String
+    ): Response<PostListResponse>  // Phản hồi kiểu PostListResponse
     // thiên thực hiện sử lý phần hợp đồng
     @GET("contract-detail/{user_id}")
     suspend fun getContractDetail(@Path("user_id") userId: String): Response<List<ContractResponse>>
@@ -417,7 +422,7 @@ suspend fun getPostsByType(
         @Part("post_type") postType: RequestBody?,
         @Part video: List<MultipartBody.Part>?, // Optional video
         @Part photo: List<MultipartBody.Part>?  // Optional photo
-    ): Response<UpdatePostRequest>
+    ): Response<PostingList>
 
     @GET("room/{roomId}/building")
     suspend fun getBuildingFromRoom(

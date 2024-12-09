@@ -80,7 +80,9 @@ import com.rentify.user.app.repository.LoginRepository.LoginRepository
 
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
+import com.rentify.user.app.view.userScreens.AddPostScreen.Components.AppointmentAppBar
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.BuildingOptions
+import com.rentify.user.app.view.userScreens.AddPostScreen.Components.HeaderComponent
 
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomLabel
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.RoomOption
@@ -274,31 +276,32 @@ fun AddPostScreen(navController: NavHostController) {
                     .padding(10.dp)
 
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-
-                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = {   navController.popBackStack()}) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
-                    }
-                    Text(
-                        text = "Thêm bài đăng tìm ở ghép",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                    }
-                }
+                HeaderComponent(navController)
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//
+//                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    IconButton(onClick = {   navController.popBackStack()}) {
+//                        Image(
+//                            painter = painterResource(id = R.drawable.back),
+//                            contentDescription = null,
+//                            modifier = Modifier.size(30.dp, 30.dp)
+//                        )
+//                    }
+//                    Text(
+//                        text = "Thêm bài đăng tìm ở ghép",
+//                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
+//                        color = Color.Black,
+//                        fontWeight = FontWeight(700),
+//                        fontSize = 17.sp,
+//                    )
+//                    IconButton(onClick = { /*TODO*/ }) {
+//                    }
+//                }
             }
             Column(
                 modifier = Modifier
@@ -307,6 +310,14 @@ fun AddPostScreen(navController: NavHostController) {
                     .background(color = Color(0xfff7f7f7))
                     .padding(15.dp)
             ) {
+
+//video
+                SelectMedia { images, videos ->
+                    selectedImages = images
+                    selectedVideos = videos
+                    Log.d("AddPost", "Received Images: $selectedImages")
+                    Log.d("AddPost", "Received Videos: $selectedVideos")
+                }
                 // tiêu đề
                 Column(
                     modifier = Modifier
@@ -336,10 +347,10 @@ fun AddPostScreen(navController: NavHostController) {
                         onValueChange = { address = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                        .border(
-                            BorderStroke(2.dp, Color(0xFF908b8b)), // Độ dày và màu viền
-                    shape = RoundedCornerShape(12.dp) // Bo góc
-                    ),
+                            .border(
+                                BorderStroke(2.dp, Color(0xFF908b8b)), // Độ dày và màu viền
+                                shape = RoundedCornerShape(12.dp) // Bo góc
+                            ),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
@@ -361,16 +372,8 @@ fun AddPostScreen(navController: NavHostController) {
                             color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
                         ),
 
-                    )
+                        )
                 }
-//video
-                SelectMedia { images, videos ->
-                    selectedImages = images
-                    selectedVideos = videos
-                    Log.d("AddPost", "Received Images: $selectedImages")
-                    Log.d("AddPost", "Received Videos: $selectedVideos")
-                }
-
                 //  Nội dung
                 Column(
                     modifier = Modifier
@@ -382,7 +385,7 @@ fun AddPostScreen(navController: NavHostController) {
                             text = "Nhập mô tả",
                             //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
                             color = Color(0xff363636),
-                             fontWeight = FontWeight(700),
+                            fontWeight = FontWeight(700),
                             fontSize = 13.sp,
                         )
                         Text(
@@ -443,17 +446,60 @@ fun AddPostScreen(navController: NavHostController) {
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
+                        if (selectedImages.isEmpty()) {
+                            Toast.makeText(
+                                context,
+                                "Vui lòng chọn ít nhất 1 ảnh!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button // Dừng thao tác nếu không có ảnh
+                        }
+
+                        if (selectedVideos.isEmpty()) {
+                            Toast.makeText(
+                                context,
+                                "Vui lòng chọn ít nhất 1 video!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button // Dừng thao tác nếu không có video
+                        }
+                        val maxPhotos = 10
+                        val maxVideos = 3
+                        if (selectedImages.size > maxPhotos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxPhotos ảnh!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
+
+                        if (selectedVideos.size > maxVideos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxVideos video!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
+
                         CoroutineScope(Dispatchers.Main).launch {
                             val apiService = RetrofitClient.apiService
                             val isSuccessful = withContext(Dispatchers.IO) {
                                 addPost(context, apiService, selectedImages, selectedVideos)
                             }
 
+                            // Hiển thị thông báo lỗi nếu tạo bài thất bại
                             if (isSuccessful) {
-                                // Chuyển màn khi bài đăng được tạo thành công
-                                navController.navigate("SEARCHPOSTROOMATE")
+                                when (postTypee) {
+                                    "roomate" -> navController.navigate("SEARCHPOSTROOMATE")
+                                    "seek" -> navController.navigate("SEARCHPOSTROOM")
+                                    else -> {
+                                        // Xử lý trường hợp không xác định
+                                        Toast.makeText(context, "Không xác định loại bài đăng", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                             } else {
-                                // Hiển thị thông báo lỗi nếu tạo bài thất bại
                                 Toast.makeText(context, "Failed to create post", Toast.LENGTH_SHORT).show()
                             }
                         }
