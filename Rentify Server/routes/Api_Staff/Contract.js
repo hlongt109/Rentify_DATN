@@ -319,7 +319,7 @@ router.get('/search', async (req, res) => {
             if (roomKeyword) {
                 const rooms = await Room.find({ room_name: new RegExp(roomKeyword, "i") });
                 if (rooms.length > 0) {
-                    roomIds.push(...rooms.map(room => room._id)); // Lưu room_id
+                    roomIds.push(...rooms.map(room => room._id)); // Lưu roo
                 }
             }
         } else {
