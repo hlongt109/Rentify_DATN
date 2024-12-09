@@ -80,8 +80,8 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.rentify.user.app.R
-import com.rentify.user.app.model.FormattedPost
 import com.rentify.user.app.model.Post
+import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.viewModel.UserViewmodel.PostUserViewModel
 
@@ -109,13 +109,14 @@ fun PostListRoomateScreen(navController: NavController, postType: String) {
                 Log.d("UI posts", posts.toString())
                 ItemPost(post = post, navController)
             }
+
         }
     }
 }
 
 
 @Composable
-fun ItemPost(post: FormattedPost, navController: NavController) {
+fun ItemPost(post: PostResponse, navController: NavController) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val maxWidth = screenWidth * 0.7f // Giới hạn 80% chiều rộng màn hình
     var isExpanded by remember { mutableStateOf(false) }
@@ -193,7 +194,7 @@ fun ItemPost(post: FormattedPost, navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
                 ) {
                     Text(
-                        text = "Khu vực : ${post.address?.takeIf { it.isNotBlank() } ?: "Người đăng không ghi địa chỉ, bạn có thể liên hệ"}",
+                        text = "Khu vực : ${post.address?.takeIf {it.isNotBlank() } ?: "Người đăng không ghi địa chỉ, bạn có thể liên hệ"}",
                                 fontSize = 13.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color(0xff7f7f7f),

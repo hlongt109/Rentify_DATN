@@ -12,7 +12,7 @@ import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
-import com.rentify.user.app.model.FormattedPost
+import com.rentify.user.app.model.DataResponse
 import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.ListServiceResponse
 import com.rentify.user.app.model.Model.Bank
@@ -23,10 +23,12 @@ import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.model.Model.StatusBookingRequest
+import com.rentify.user.app.model.Model.UpdateAccUserResponse
 import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.PostListResponse
 import com.rentify.user.app.model.PostingDetail
+import com.rentify.user.app.model.ResponseUser
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.model.Room
@@ -508,6 +510,9 @@ interface APIService {
     @GET("get-user-infor/{userId}")
     suspend fun getInfoUser(@Path("userId") userId: String): Response<ApiResponse>
 
+    @GET("get-user-infor/{userId}")
+    suspend fun getInfoAcc(@Path("userId") userId: String): Response<DataResponse>
+
     @GET("staff/users/serviceFeesUser/{userId}")
     suspend fun getServiceFeesByUser(
         @Path("userId") userId: String
@@ -536,4 +541,11 @@ interface APIService {
         @Path("id") id: String,
         @Body updatedUser: UserResponse?
     ): Response<UpdateTaiKhoanResponse>
+
+    //update account user
+    @PUT("updateAccountUser/{id}")
+    suspend fun updateAccountUser(
+        @Path("id") id: String,
+        @Body updateUser: ResponseUser?
+    ):Response<ResponseUser>
 }

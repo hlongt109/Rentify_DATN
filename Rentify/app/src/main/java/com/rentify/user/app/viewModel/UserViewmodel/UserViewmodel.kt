@@ -8,11 +8,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rentify.user.app.model.Model.Bank
+import com.rentify.user.app.model.Model.UpdateAccUserResponse
 import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
+import com.rentify.user.app.model.ResponseUser
 
 import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -22,6 +25,8 @@ import java.io.File
 class UserViewModel : ViewModel() {
     private val _user = MutableLiveData<UserResponse?>()
     val user: LiveData<UserResponse?> = _user
+    private val _userAcc = MutableLiveData<ResponseUser?>()
+    val userAcc: LiveData<ResponseUser?> = _userAcc
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
     private val apiService = RetrofitService().ApiService
@@ -33,6 +38,9 @@ class UserViewModel : ViewModel() {
     val bankAccount: LiveData<Bank?> = _bankAccount
     private val _updateTaiKhoanResponse = MutableLiveData<UpdateTaiKhoanResponse?>()
     val updateTaiKhoanResponse: LiveData<UpdateTaiKhoanResponse?> = _updateTaiKhoanResponse
+
+    private val _updateAccUserResponse = MutableLiveData<ResponseUser?>()
+    val updateAccUserResponse: LiveData<ResponseUser?> = _updateAccUserResponse
 
     // Hàm lấy thông tin người dùng theo _id (MongoDB _id)
     fun getUserDetailById(userId: String) {
@@ -52,6 +60,26 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
+    fun getUserAccById(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getInfoAcc(userId)  // Gọi API với _id
+                if (response.isSuccessful && response.body() != null) {
+                    // Cập nhật LiveData với thông tin người dùng
+                    _userAcc.postValue(response.body()!!.data)
+                    Log.d("UserViewModel", "User data: ${response.body()}")
+                } else {
+                    _error.postValue("Không thể lấy thông tin người dùng: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Lỗi: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+
     private var _pendingUpdates = 0
 
     fun updateUserDetails(userId: String, gender: String, dob: String, address: String) {
@@ -60,7 +88,7 @@ class UserViewModel : ViewModel() {
             val userDetails = mapOf(
                 "gender" to gender,
                 "dob" to dob,
-                "address" to address
+                "address" to address,
             )
 
             try {
@@ -216,5 +244,24 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun updateUserAccount(id: String, updateUser: ResponseUser?){
+        viewModelScope.launch {
+            try {
+                val response = apiService.updateAccountUser(id, updateUser)
+                if (response.isSuccessful && response.body() != null) {
+                    // Thành công, gọi lại API để tải dữ liệu mới
+                    _updateAccUserResponse.postValue(response.body())
+                    getUserAccById(id) // Lấy lại thông tin người dùng
+                    Log.d("UserViewModel", "Update successful: ${response.body()}")
+                } else {
+                    _error.postValue("Cập nhật thất bại: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Lỗi khi cập nhật tài khoản: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
 
 }

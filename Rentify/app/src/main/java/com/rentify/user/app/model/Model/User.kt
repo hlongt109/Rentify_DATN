@@ -54,6 +54,28 @@ data class UserResponse(
     @SerializedName("updated_at")val updated_at: String
 )
 
+data class ResponseUser(
+    @SerializedName("_id")val _id: String,
+    @SerializedName("username")val username: String,
+    @SerializedName("password")val password: String,
+    @SerializedName("email")val email: String,
+    @SerializedName("phoneNumber")val phoneNumber: String,
+    @SerializedName("role")val role: String, // vai trò (admin, user, nhan vien, . ..)
+    @SerializedName("name")val name: String,
+    @SerializedName("dob")val dob: String, // ngày sinh
+    @SerializedName("gender")val gender: String, // giới tính
+    @SerializedName("address")val address: String,
+    @SerializedName("profile_picture_url")val profile_picture_url: String?,
+    @SerializedName("verified")val verified: Boolean,
+    @SerializedName("updated_at")val updated_at: String
+)
+
+data class DataResponse(
+    val status: Int,
+    val message: String,
+    val data: ResponseUser
+)
+
 // thien thuc hien lay QR landlord va chu toa
 
 data class LandlordOrStaffs(

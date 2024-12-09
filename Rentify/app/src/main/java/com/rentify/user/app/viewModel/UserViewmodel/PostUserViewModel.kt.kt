@@ -1,3 +1,4 @@
+
 package com.rentify.user.app.viewModel.UserViewmodel
 
 import android.util.Log
@@ -7,20 +8,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rentify.user.app.model.Post
+import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
-import com.rentify.user.app.model.FormattedPost
-import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import kotlinx.coroutines.launch
 
 class PostUserViewModel : ViewModel() {
     private val _posts = mutableStateOf<List<PostResponse>>(emptyList())
     val posts: State<List<PostResponse>> get() = _posts
-    private val _postss = mutableStateOf<List<PostingList>>(emptyList())
-    val postss: State<List<PostingList>> = _postss
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -61,7 +59,4 @@ class PostUserViewModel : ViewModel() {
         }
     }
 
-    }
-
-
-
+}

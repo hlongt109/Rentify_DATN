@@ -273,4 +273,74 @@ router.get("/get-user-infor/:userId", async (req, res) => {
   }
 });
 
+router.put("/updateAccountUser/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      username,
+      email,
+      phoneNumber,
+      role,
+      name,
+      dob,
+      gender,
+      address,
+      profile_picture_url,
+      bankAccount,
+    } = req.body; // Lấy các thông tin cần chỉnh sửa từ body
+
+    // Kiểm tra vai trò hợp lệ
+    const validRoles = ["admin", "landlord", "staffs", "user", "ban"];
+    if (role && !validRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Vai trò không hợp lệ",
+      });
+    }
+
+    // Tạo đối tượng cập nhật
+    const updateData = {
+      username,
+      email,
+      phoneNumber,
+      role,
+      name,
+      dob,
+      gender,
+      address,
+      profile_picture_url,
+      updated_at: new Date().toISOString(), // Cập nhật thời gian
+    };
+
+    // Kiểm tra xem có cần cập nhật tài khoản ngân hàng không
+    if (bankAccount) {
+      updateData.bankAccount = bankAccount; // Cập nhật thông tin tài khoản ngân hàng nếu có
+    }
+
+    // Tìm và cập nhật thông tin người dùng
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true } // Trả về thông tin người dùng đã cập nhật
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng để cập nhật",
+      });
+    }
+
+    // Trả về đối tượng người dùng đã cập nhật mà không có "success", "message", "data"
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Lỗi khi chỉnh sửa thông tin người dùng:", error);
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi chỉnh sửa thông tin người dùng",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;
