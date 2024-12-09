@@ -75,32 +75,6 @@ fun MapboxMapView() {
             getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
         }
     }
-
-//    LaunchedEffect(Unit) {
-//        checkLocationPermission(
-//            context,
-//            onPermissionGranted = {
-//                hasLocationPermission = true
-//                getCurrentLocation(context) { location ->
-//                    currentLocation =
-//                        Point.fromLngLat(location.longitude(), location.latitude())
-//                    mapView.getMapboxMap().easeTo(
-//                        CameraOptions.Builder()
-//                            .center(currentLocation)  // Vị trí mới
-//                            .zoom(15.0)  // Cấp độ thu phóng
-//                            .build(),
-//                        MapAnimationOptions.Builder()
-//                            .duration(1500)  // Thời gian di chuyển (ms)
-//                            .build()
-//                    )
-//                }
-//            },
-//            onPermissionDenied = {
-//                permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-//            }
-//        )
-//    }
-
     LaunchedEffect(Unit) {
         checkLocationPermission(
             context,
