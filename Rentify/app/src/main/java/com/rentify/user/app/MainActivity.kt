@@ -53,6 +53,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.SeachRoomateDetailScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
+import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SurroundingRoomScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
@@ -378,6 +379,10 @@ class MainActivity : ComponentActivity() {
                 ForgotPasswordScreen(navController, email)
             }
 
+            //ggmap
+            composable(ROUTER.ROOMMAP.name){
+                SurroundingRoomScreen(navController = navController)
+            }
         }
     }
     
@@ -437,7 +442,8 @@ class MainActivity : ComponentActivity() {
         ADDCONTRAC_STAFF,
         ListSupportByRoom,
         QuanLiDichVuUser,
-        PREFORGOT
+        PREFORGOT,
+        ROOMMAP,
     }
 }
 

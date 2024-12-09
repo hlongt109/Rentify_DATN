@@ -94,6 +94,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.SupportRepository.ContractRoom
 import com.rentify.user.app.repository.SupportRepository.ContractRoomData
@@ -101,6 +102,7 @@ import com.rentify.user.app.repository.SupportRepository.SupportRepository
 import com.rentify.user.app.ui.theme.building_icon
 import com.rentify.user.app.ui.theme.colorLocation
 import com.rentify.user.app.utils.CheckUnit.toFilePath
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.userScreens.IncidentReport.Components.ContentExpand
@@ -173,7 +175,14 @@ fun AddIncidentReportScreen(navController: NavHostController) {
     val errorContent by supportViewModel.errorContent.observeAsState()
 
     val successMessage by supportViewModel.successMessage.observeAsState()
+    val successAdd by supportViewModel.successMessageAdd.observeAsState()
     val isLoading by supportViewModel.isLoading.observeAsState()
+
+    listRoom.forEach { room ->
+        roomNumber = room.room.room_number
+        roomId = room.room.room_id
+        buildingId = room.room.building.building_id
+    }
 
     LaunchedEffect(userId) {
         supportViewModel.getInfoRoom(userId)
@@ -189,7 +198,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            HeaderComponent(navController = navController)
+            HeaderBar(navController, title = "Báo cáo sự cố")
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -201,7 +210,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        expanded = !expanded
+//                        expanded = !expanded
                     }
                     .border(
                         width = 0.dp,
@@ -268,31 +277,31 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                         }
 
                     }
-                    AnimatedVisibility(
-                        visible = expanded,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = Color.White)
-                                .padding(10.dp)
-                        ) {
-                            listRoom.forEach { item ->
-                                ItemRoomExpand(
-                                    room = item.room,
-                                    onRoomSelected = {
-                                        buildingId = item.room.building.building_id
-                                        roomId = item.room.room_id
-                                        roomNumber = item.room.room_number
-                                        expanded = false
-                                        supportViewModel.clearErrorRoom()
-                                    }
-                                )
-                            }
-                        }
-                    }
+//                    AnimatedVisibility(
+//                        visible = expanded,
+//                        enter = fadeIn() + expandVertically(),
+//                        exit = fadeOut() + shrinkVertically()
+//                    ) {
+//                        Column(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .background(color = Color.White)
+//                                .padding(10.dp)
+//                        ) {
+//                            listRoom.forEach { item ->
+//                                ItemRoomExpand(
+//                                    room = item.room,
+//                                    onRoomSelected = {
+//                                        buildingId = item.room.building.building_id
+//                                        roomId = item.room.room_id
+//                                        roomNumber = item.room.room_number
+//                                        expanded = false
+//                                        supportViewModel.clearErrorRoom()
+//                                    }
+//                                )
+//                            }
+//                        }
+//                    }
                 }
                 errorRoom?.let {
                     ShowReport.ShowError(message = it)
@@ -557,6 +566,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                     Spacer(modifier = Modifier.height(17.dp))
                     Button(
                         onClick = {/**/
+                            if (supportViewModel.isLoading.value == true) return@Button // Ngăn bấm nhiều lần
                             supportViewModel.createSupportReport(
                                 userId,
                                 roomId,
@@ -564,13 +574,15 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 titleSupport = incident,
                                 contentSupport = incidentdescription,
                                 imagePaths = imagePaths,
-                                status = 1,
-                            )
-                            successMessage?.let {
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                navController.navigate(navController.navigateUp())
+                                status = 1
+                            ) {
+                                Toast.makeText(
+                                    context,
+                                    "Tạo báo cáo thành công",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.navigate(MainActivity.ROUTER.INCIDENTREPORT.name)
                             }
-
                         },
                         modifier = Modifier
                             .fillMaxWidth(),

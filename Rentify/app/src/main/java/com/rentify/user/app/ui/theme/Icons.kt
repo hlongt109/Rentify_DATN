@@ -30,3 +30,5 @@ val room = R.drawable.room_2
 val service = R.drawable.service_2
 val error_image = R.drawable.error_image
 val avatar = R.drawable.default_avatar
+val location_permission = R.drawable.location_permission
+val homeMarker = R.drawable.icon_home_map

@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.components.SpacerHeightCompose
 import com.rentify.user.app.R
+import com.rentify.user.app.utils.Component.HeaderBar
 
 @Composable
 fun CategoryPostScreen(navController: NavController) {
@@ -42,39 +43,7 @@ fun CategoryPostScreen(navController: NavController) {
                 .statusBarsPadding()
                 .navigationBarsPadding()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color(0xffffffff))
-                    .padding(10.dp)
-            ) {
-                Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-
-                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                    verticalAlignment = Alignment.CenterVertically,
-                ){
-                    IconButton(   modifier = Modifier.width(100.dp), onClick = {     navController.navigate("PERSONAL") }) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
-
-                    }
-                    Text(
-                        text = "Quản lý bài đăng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-
-                        )
-                }
-            }
-
-
+            HeaderBar(navController, title = "Quản lý bài đăng")
             Column(
                 modifier = Modifier
                     .fillMaxSize()

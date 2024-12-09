@@ -74,7 +74,8 @@ fun LayoutItems(navController: NavHostController) {
         AlertDialog(
             onDismissRequest = { showContractErrorDialog.value = false },
             title = { Text("Thông báo") },
-            text = { Text("Bạn không có hợp đồng hoặc hợp đồng của bạn đã hết hạn.") },
+
+            text = { Text("Bạn cần có hợp đồng để sử dụng chức năng này. Hiện tại, bạn không có hợp đồng hoặc hợp đồng của bạn đã hết hạn.") },
             confirmButton = {
                 TextButton(
                     onClick = { showContractErrorDialog.value = false }

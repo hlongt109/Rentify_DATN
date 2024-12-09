@@ -6,6 +6,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id ("kotlin-parcelize")
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -40,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 }
 
@@ -51,6 +53,9 @@ dependencies {
     implementation ("io.ktor:ktor-client-serialization:2.2.3")
     // thư viện tải ảnh _vanphuc :
     implementation ("com.github.bumptech.glide:glide:4.14.2")
+    implementation(libs.play.services.maps)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.play.services.location)
     annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
     implementation ("androidx.media3:media3-exoplayer:1.0.0")
     implementation ("androidx.media3:media3-ui:1.0.0")
@@ -151,6 +156,16 @@ dependencies {
     implementation ("com.airbnb.android:lottie-compose:6.0.1")
     implementation("io.coil-kt:coil-gif:2.4.0")
 
+    //ggmap
+    implementation ("com.google.accompanist:accompanist-permissions:0.36.0")
+    implementation ("com.google.maps.android:maps-compose:2.11.4")
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.code.gson:gson:2.8.8")
+    //map nhung khong phai gg
+    implementation ("com.mapbox.maps:android:11.8.1")
+    implementation("com.mapbox.extension:maps-compose:11.8.1")
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
+//    implementation("com.mapbox.geocoding:mapbox-geocoding-android:3.4.0")
     //thuc hien zalopay
 
     // Coroutines

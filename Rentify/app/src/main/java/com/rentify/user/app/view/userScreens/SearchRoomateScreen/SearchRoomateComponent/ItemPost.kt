@@ -80,8 +80,8 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.rentify.user.app.R
+import com.rentify.user.app.model.FormattedPost
 import com.rentify.user.app.model.Post
-import com.rentify.user.app.model.PostResponse
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.viewModel.UserViewmodel.PostUserViewModel
 
@@ -109,7 +109,7 @@ fun PostListRoomateScreen(navController: NavController, postType: String) {
             items(posts) { post ->
                 // Sử dụng PostResponse để truyền vào ItemPost
                 Log.d("UI posts", posts.toString())
-                ItemPost(post = post)
+                ItemPost(post = post, navController)
             }
         }
     }
@@ -117,7 +117,7 @@ fun PostListRoomateScreen(navController: NavController, postType: String) {
 
 
 @Composable
-fun ItemPost(post: PostResponse  ) {
+fun ItemPost(post: FormattedPost, navController: NavController) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val maxWidth = screenWidth * 0.7f // Giới hạn 80% chiều rộng màn hình
     var isExpanded by remember { mutableStateOf(false) }
@@ -171,7 +171,11 @@ fun ItemPost(post: PostResponse  ) {
                         Image(
                             painter = painterResource(id = R.drawable.mess),
                             contentDescription = null,
-                            modifier = Modifier.size(25.dp, 25.dp)
+                            modifier = Modifier
+                                .size(25.dp, 25.dp)
+                                .clickable {
+                                    navController.navigate("TINNHAN/${post.user?._id}/${post.user?.name}")
+                                }
                         )
                     }
 
@@ -227,7 +231,7 @@ fun ItemPost(post: PostResponse  ) {
                             .height( 270.dp),
                         verticalArrangement = Arrangement.Center,
                     ) {
-                        PostMediaSection1(mediaList = post.photos + post.videos)
+                        PostMediaSection1(mediaList = (post.photos + (post.videos ?: emptyList())).filterIsInstance<String>())
                         Log.d("PostVideoSection", "Videos: ${post.videos ?: "Empty or Null"}")
                         Spacer(modifier = Modifier.height(25.dp))
                     }

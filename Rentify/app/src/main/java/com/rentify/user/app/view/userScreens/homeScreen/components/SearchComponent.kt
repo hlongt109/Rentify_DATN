@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 
 
@@ -198,6 +199,12 @@ fun LayoutSearch(navController: NavHostController) {
 
                             if (type.type == "Tin đăng tìm phòng") {
                                 navController.navigate("Search_room") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+
+                            if (type.type == "Tìm phòng xung quanh") {
+                                navController.navigate(MainActivity.ROUTER.ROOMMAP.name) // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }

@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -39,6 +41,7 @@ import com.rentify.user.app.repository.ForgotRepository.ForgotRepository
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.ui.theme.colorLocation
 import com.rentify.user.app.ui.theme.greenInput
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.viewModel.LoginViewModel
@@ -74,18 +77,15 @@ fun PreForgotPass(
         modifier = Modifier
             .background(color = Color.White)
             .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
+        HeaderBar(navController)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp)
         ) {
-            Spacer(modifier = Modifier.padding(top = 30.dp))
-            HeaderComponent(
-                backgroundColor = Color.White,
-                title = "",
-                navController = navController
-            )
             Spacer(modifier = Modifier.padding(top = 70.dp))
             Column(
                 modifier = Modifier

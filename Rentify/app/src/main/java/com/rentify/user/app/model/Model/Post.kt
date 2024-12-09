@@ -1,6 +1,7 @@
 package com.rentify.user.app.model
 
 import Contract
+import kotlinx.serialization.Serializable
 
 data class Post1(
     val userId: String,         // ID của người dùng
@@ -39,24 +40,28 @@ data class Post(
 enum class PostType {
     ROOMATE, RENT
 }
-data class PostResponse(
+@kotlinx.serialization.Serializable
+data class FormattedPost(
     val _id: String,
-    val user_id: String,
-    val building_id: String,
-    val room_id: String?,
     val title: String,
     val content: String,
-    val price: Int,
-    val post_type: String,
     val status: Int,
-    val photos: List<String> = listOf(),
-    val  videos: List<String> = listOf(),
-    // Danh sách dịch vụ
-    val createdAt: String? = null,     // Ngày tạo
-    val updatedAt: String? = null,
-    val user: User?,// Ngày cập nhật
-    val room_type: String,
-    val address: String,
+    val videos: List<String>?,
+    val photos: List<String>,
+    val post_type: String,
+    val created_at: String,
+    val updated_at: String? = null,
+    val room_type: String? = null,
+    val price: Int? = null,
+    val user: UserData,
+    val address: String
+)
+
+@Serializable
+data class UserData(
+    val _id: String,
+    val name: String,
+    val email: String
 )
 
 data class PostingDetail(
@@ -124,5 +129,5 @@ data class ContractsResponse(
     val data: List<Contract>
 )
 data class PostListResponse(
-    val formattedPosts: List<PostResponse>   // Danh sách bài viết
+    val formattedPosts: List<FormattedPost>   // Danh sách bài viết
 )

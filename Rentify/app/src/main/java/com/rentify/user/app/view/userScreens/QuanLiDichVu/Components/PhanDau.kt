@@ -25,48 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.rentify.user.app.R
+import com.rentify.user.app.utils.Component.HeaderBar
 
 @Composable
 fun PhanDauQuanLiDichVu(navController: NavHostController){
     Column (
         modifier = Modifier.fillMaxWidth()
-            .height(100.dp)
-            .background(color = Color(0xFF84d8ff))
+            .background(Color.White)
     ){
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 50.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.back),
-                contentDescription = "back",
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp)
-                    .padding(top = 10.dp)
-                    .clip(CircleShape)
-                    .clickable {
-                        navController.popBackStack()
-                    }
-            )
-            Column(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally, // Center horizontally
-                verticalArrangement = Arrangement.Center // Center vertically
-            ) {
-                Text(
-                    text = "Quản Lí dịch vụ ",
-                    modifier = Modifier.padding(end = 20.dp),
-                    fontSize = 25.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    fontFamily = FontFamily.Serif
-                )
-            }
-        }
+       HeaderBar(navController, title = "Quản lý dịch vụ")
     }
 }

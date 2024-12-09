@@ -13,6 +13,7 @@ import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
+import com.rentify.user.app.model.FormattedPost
 import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.ListServiceResponse
 import com.rentify.user.app.model.Model.BookingRequest
@@ -26,8 +27,6 @@ import com.rentify.user.app.model.Model.UpdateInvoiceStatus
 import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostListResponse
-import com.rentify.user.app.model.PostResponse
-
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
@@ -273,7 +272,7 @@ interface APIService {
         @Part("status") status: RequestBody,
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
-    ): Response<PostResponse>
+    ): Response<FormattedPost>
 
     @GET("staff/posts/list/{user_id}")
     suspend fun getPosts(@Path("user_id") userId: String): ApiResponsee<List<PostingList>>
@@ -381,7 +380,7 @@ interface APIService {
         @Part("status") status: RequestBody,
         @Part videos: List<MultipartBody.Part>,
         @Part photos: List<MultipartBody.Part>
-    ): Response<PostResponse>
+    ): Response<FormattedPost>
 // bài đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafgggi đăng theo post typedgafggg
 @GET("list/type/{post_type}")
 suspend fun getPostsByType(
