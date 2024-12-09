@@ -16,6 +16,7 @@ import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.B
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.BodyPersonalProfile1
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.FeetPersonalProfile
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.FeetPersonalProfile1
+import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.FeetPersonalProfile2
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.HeadPersonalProfile
 
 // _vanphuc : màn hình thông tin cá nhân
@@ -38,6 +39,7 @@ fun PersonalProfileScreen(navController: NavHostController){
         FeetPersonalProfile(navController)
         BodyPersonalProfile1(navController)
         FeetPersonalProfile1(navController)
+        FeetPersonalProfile2(navController)
     }
 }
 
