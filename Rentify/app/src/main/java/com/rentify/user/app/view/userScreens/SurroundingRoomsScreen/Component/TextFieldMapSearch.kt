@@ -25,8 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.greenInput
 import com.rentify.user.app.ui.theme.location
@@ -44,7 +46,7 @@ fun TextFieldMapSearch(
         TextField(
             value = value,
             onValueChange = { newValue -> onValueChange(newValue) },
-            placeholder = { Text(text = placeholder) },
+            placeholder = { Text(text = placeholder, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 10.dp)

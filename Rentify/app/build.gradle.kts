@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.graphics.shapes.android)
     annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
     implementation ("androidx.media3:media3-exoplayer:1.0.0")
     implementation ("androidx.media3:media3-ui:1.0.0")

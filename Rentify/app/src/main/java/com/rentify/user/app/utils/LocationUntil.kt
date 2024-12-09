@@ -4,8 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Looper
 import androidx.core.content.ContextCompat
 import com.google.android.gms.common.api.Response
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
@@ -47,23 +51,33 @@ object LocationUntil {
     ) {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
+        // Kiểm tra quyền truy cập
         if (ContextCompat.checkSelfPermission(
                 context,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    location?.let {
+            val locationRequest = LocationRequest.create().apply {
+                priority = LocationRequest.PRIORITY_HIGH_ACCURACY // Chọn mức độ chính xác cao
+                interval = 10000 // Cập nhật mỗi 10 giây (có thể điều chỉnh theo nhu cầu)
+                fastestInterval = 5000 // Cập nhật nhanh nhất là mỗi 5 giây
+            }
+
+            val locationCallback = object : LocationCallback() {
+                override fun onLocationResult(p0: LocationResult) {
+                    p0?.locations?.firstOrNull()?.let {
                         val point = Point.fromLngLat(it.longitude, it.latitude)
                         onLocationUpdated(point)
+                        fusedLocationClient.removeLocationUpdates(this) // Dừng cập nhật vị trí sau khi nhận được kết quả
                     }
                 }
-                .addOnFailureListener {
-                    // Handle failure
-                }
+            }
+
+            // Yêu cầu cập nhật vị trí
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
         }
     }
+
 
     fun calculateDistance(point1: Point, point2: Point): Double {
         val R = 6371000 // Bán kính Trái Đất tính bằng mét
@@ -81,6 +95,24 @@ object LocationUntil {
         return R * c
     }
 
+    // Hàm tính khoảng cách giữa hai điểm (sử dụng Haversine formula)
+    fun isPointInCircle(center: Point, radius: Double, point: Point): Boolean {
+        val earthRadius = 6371.0 // Bán kính trái đất theo km
+        val lat1 = Math.toRadians(center.latitude())
+        val lon1 = Math.toRadians(center.longitude())
+        val lat2 = Math.toRadians(point.latitude())
+        val lon2 = Math.toRadians(point.longitude())
+
+        val dlat = lat2 - lat1
+        val dlon = lon2 - lon1
+
+        val a = Math.sin(dlat / 2).pow(2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon / 2).pow(2)
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+        val distance = earthRadius * c // khoảng cách giữa hai điểm theo km
+
+        return distance <= radius // Kiểm tra nếu khoảng cách nhỏ hơn hoặc bằng bán kính vòng tròn
+    }
 
     // Modify search location to return Mapbox Point
 //    fun searchLocation(

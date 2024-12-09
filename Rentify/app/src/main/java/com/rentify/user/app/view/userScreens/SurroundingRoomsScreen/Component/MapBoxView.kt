@@ -1,6 +1,8 @@
 package com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.Component
 
 import android.Manifest
+import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,25 +22,47 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.permissions.*
 import com.google.android.gms.maps.model.CircleOptions
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.maps.MapView
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.plugin.locationcomponent.*
 import com.mapbox.maps.plugin.gestures.*
 import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.geojson.Point
+import com.mapbox.geojson.Polygon
 import com.mapbox.maps.Map
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
+import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.compose.annotation.rememberIconImage
+import com.mapbox.maps.extension.compose.rememberMapState
+import com.mapbox.maps.extension.style.layers.generated.FillLayer
+import com.mapbox.maps.extension.style.layers.properties.generated.CirclePitchScale
+import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
+import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
+import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.animation.*
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
+import com.mapbox.maps.renderer.widget.WidgetPosition
+import com.rentify.user.app.model.FakeModel.MarkerInfo
 import com.rentify.user.app.network.GeocodingService
+import com.rentify.user.app.ui.theme.homeMarker
 import com.rentify.user.app.utils.LocationUntil.checkLocationPermission
 import com.rentify.user.app.utils.LocationUntil.getCurrentLocation
+import com.rentify.user.app.utils.LocationUntil.isPointInCircle
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 @Composable
@@ -55,17 +79,53 @@ fun MapboxMapView() {
     var markers by remember { mutableStateOf(listOf<Point>()) }
     var currentAddress by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
+    var selectedMarker by remember { mutableStateOf<MarkerInfo?>(null) }
+    // Thay đổi danh sách markers
     val markerPoints = listOf(
-        Point.fromLngLat(106.660172, 10.762622),
-        Point.fromLngLat(106.660535, 10.762535),
-        Point.fromLngLat(-122.0786, 37.3947)
+        MarkerInfo(
+            point = Point.fromLngLat(106.660172, 10.762622),
+            title = "Địa điểm 1",
+            description = "Mô tả chi tiết về địa điểm 1",
+            type = "Nhà hàng",
+            address = "123 Đường ABC, Quận 1, TP.HCM"
+        ),
+        MarkerInfo(
+            point = Point.fromLngLat(106.660535, 10.762535),
+            title = "Địa điểm 2",
+            description = "Mô tả chi tiết về địa điểm 2",
+            type = "Quán cà phê",
+            address = "456 Đường XYZ, Quận 3, TP.HCM"
+        ),
+        MarkerInfo(
+            point = Point.fromLngLat(-122.0786, 37.3947),
+            title = "Địa điểm 3",
+            description = "Mô tả chi tiết về địa điểm 3",
+            type = "Văn phòng",
+            address = "Google Campus, Mountain View, CA"
+        ),
+        MarkerInfo(
+            point = Point.fromLngLat(-122.0765, 37.3984),
+            title = "Địa điểm 4",
+            description = "Mô tả chi tiết về địa điểm 4",
+            type = "Văn phòng",
+            address = "Google Campus, Mountain View, CA"
+        )
     )
 
     val mapViewportState = rememberMapViewportState()
+    val mapviewState = rememberMapState {
+        gesturesSettings = GesturesSettings {
+            pitchEnabled = true
+            doubleTapToZoomInEnabled = true
+            doubleTouchToZoomOutEnabled = true
+        }
+    }
+
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
+        Log.d("CheckPermisstion", "MapboxMapView: #$isGranted")
         hasLocationPermission = isGranted
     }
 
@@ -75,6 +135,23 @@ fun MapboxMapView() {
             getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
         }
     }
+
+    val bitMapIcon = BitmapFactory.decodeResource(context.resources, homeMarker)
+    mapView.getMapboxMap().getStyle { style ->
+        style.addImage("custom-marker", bitMapIcon)
+    }
+    if (bitMapIcon == null) {
+        Log.e("CheckImageMarker", "Bitmap không được tạo thành công")
+    } else {
+        Log.d("CheckImageMarker", "Bitmap đã được tạo: $bitMapIcon")
+    }
+
+
+    //tao pointAnnotationManager
+    val pointAnnotationManager by remember {
+        mutableStateOf(mapView.annotations.createPointAnnotationManager())
+    }
+
     LaunchedEffect(Unit) {
         checkLocationPermission(
             context,
@@ -93,7 +170,7 @@ fun MapboxMapView() {
 
                     //goi api de lay vi tri
                     location?.let {
-                        GeocodingService().reverseGeocode(context,it){address ->
+                        GeocodingService().reverseGeocode(context, it) { address ->
                             currentAddress = address ?: "Không tìm thấy vị trí"
                         }
                     }
@@ -106,8 +183,9 @@ fun MapboxMapView() {
     }
 
     if (!hasLocationPermission) {
-        Box(modifier = Modifier
-            .fillMaxSize(),
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             NotPermissionPosition(
@@ -116,19 +194,68 @@ fun MapboxMapView() {
             )
         }
     } else {
-        Box(contentAlignment = Alignment.BottomEnd) {
+
+        Box(
+            contentAlignment = Alignment.BottomEnd,
+            modifier = Modifier.fillMaxSize()
+        ) {
             MapboxMap(
                 Modifier.fillMaxSize(),
                 mapViewportState = mapViewportState,
+                mapState = mapviewState
             ) {
-                MapEffect(Unit) { mapView ->
-                    mapView.location.updateSettings {
-                        locationPuck = createDefault2DPuck(withBearing = true)
-                        enabled = true
-                        puckBearing = PuckBearing.COURSE
-                        puckBearingEnabled = true
+                val marker =
+                    rememberIconImage(key = "keyMarker", painter = painterResource(homeMarker))
+                currentLocation?.let { point ->
+                    CircleAnnotation(point = point) {
+                        // Style the circle that will be added to the map.
+                        circleRadius = 100.0
+                        circleColor = Color(0x447ff59f)
+                        circleStrokeWidth = 2.0
+                        circleStrokeColor = Color(0xffffffff)
                     }
-                    mapViewportState.transitionToFollowPuckState()
+
+                    MapEffect(Unit) { mapView ->
+                        mapView.location.updateSettings {
+                            locationPuck = createDefault2DPuck(withBearing = true)
+                            enabled = true
+                            puckBearing = PuckBearing.COURSE
+                            puckBearingEnabled = true
+                        }
+                        mapViewportState.transitionToFollowPuckState()
+                    }
+                }
+
+                markerPoints.forEach { point ->
+                    Log.d("CheckPoint", "MapboxMapView: $point")
+                    Log.d("CheckPoint", "Marker trong vòng tròn: $point")
+                    PointAnnotation(
+                        point = point.point,
+                        onClick = { annotation ->
+                            // Xử lý sự kiện click
+                            Log.d("MarkerClick", "Clicked: ${point.title}")
+                            selectedMarker = point
+                            true // Trả về true để ngăn sự kiện lan sang các đối tượng khác
+                        }
+                    ) {
+                        iconImage = marker
+                        iconSize = 0.2
+                        textField = point.title
+                        textOffset = listOf(0.0, -2.0)
+                        textHaloColor = Color.White
+                        textHaloWidth = 2.0
+
+                    }
+                }
+            }
+
+            selectedMarker?.let { marker ->
+                Box(
+                    modifier = Modifier
+                        .zIndex(1000f)
+                        .padding(bottom = 15.dp)
+                ) {
+                    ItemClickedMarker(item = marker)
                 }
             }
             // Thanh tìm kiếm
@@ -136,24 +263,14 @@ fun MapboxMapView() {
                 modifier = Modifier
                     .zIndex(1000f)
                     .padding(10.dp)
-                    .offset(y = -screenHeight.dp / 1.25f)
+                    .offset(y = -screenHeight.dp / 1.26f)
             ) {
                 TextFieldMapSearch(
-                    placeholder = "Tìm kiếm vị trí",
-                    value = if(searchQuery.isEmpty()) currentAddress else searchQuery,
+                    placeholder = currentAddress,
+                    value = searchQuery,
                     onValueChange = { newSearch ->
                         searchQuery = newSearch
-                        currentAddress = ""
-                        // Tìm kiếm vị trí trên Mapbox
-//                    searchLocation(newSearch, context) { location ->
-//                        location?.let {
-//                            currentLocation = Point.fromLngLat(it.longitude, it.latitude)
-//                            mapView.getMapboxMap().setCamera(CameraOptions.Builder()
-//                                .center(currentLocation)
-//                                .zoom(15.0)
-//                                .build())
-//                        }
-//                    }
+
                     },
                     isFocused = remember { mutableStateOf(false) }
                 )
@@ -163,12 +280,12 @@ fun MapboxMapView() {
             Box(
                 modifier = Modifier
                     .padding(end = 15.dp, bottom = 15.dp)
-                    .zIndex(1000f)
+                    .zIndex(100f)
             ) {
                 PositionButton(onClick = {
                     getCurrentLocation(context) { location ->
                         currentLocation = location
-
+                        Log.d("CheckLocation", "MapboxMapView: $location")
                         // Di chuyển viewport đến vị trí hiện tại
                         mapViewportState.easeTo(
                             CameraOptions.Builder()
