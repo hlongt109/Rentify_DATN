@@ -58,7 +58,10 @@ import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.CustomTextField
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.AppointmentAppBar
+
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingOptions
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
@@ -227,31 +230,15 @@ fun AddPostScreens(navController: NavHostController) {
                     .padding(10.dp)
 
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                AppointmentAppBar( onBackClick = {
+                    // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                    navController.navigate("POSTING_STAFF")
+                    {
+                        popUpTo("ADDPOST_staff") { inclusive = true }
 
-                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = {   navController.popBackStack()}) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
                     }
-                    Text(
-                        text = "Thêm bài đăng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                    }
-                }
+                })
+
             }
             Column(
                 modifier = Modifier
@@ -260,57 +247,7 @@ fun AddPostScreens(navController: NavHostController) {
                     .background(color = Color(0xfff7f7f7))
                     .padding(15.dp)
             ) {
-                // tiêu đề
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                        Text(
-                            text = "Tiêu đề bài đằng",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff7f7f7f),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-                        )
-                        Text(
 
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-
-                            )
-                    }
-                    TextField(
-                        value = title,
-                        onValueChange = { title = it },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color(0xFFf7f7f7),
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Nhập tiêu đề bài đăng",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                }
 //video
                 SelectMedia { images, videos ->
                     selectedImages = images
@@ -318,56 +255,28 @@ fun AddPostScreens(navController: NavHostController) {
                     Log.d("AddPost", "Received Images: $selectedImages")
                     Log.d("AddPost", "Received Videos: $selectedVideos")
                 }
-
-                //  Nội dung
-                Column(
+                // tiêu đề
+                CustomTextField(
+                    label = "Tiêu đề bài đằng",
+                    value = title,
+                    onValueChange = { title = it  },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                        Text(
-                            text = "Nội dung",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff7f7f7f),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-                        )
-                        Text(
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-                        )
-                    }
-                    TextField(
-                        value = content,
-                        onValueChange = { content = it },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color(0xFFf7f7f7),
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Nhập nội dung",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                }
+                        .padding(5.dp),
+                    placeholder = "Nhập tiêu đề bài đăng",
+                    isReadOnly = false
+                )
+                //  Nội dung
+                CustomTextField(
+                    label = "Nội dung",
+                    value = content,
+                    onValueChange = { content = it  },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    placeholder = "Nhập nội dung bài đăng",
+                    isReadOnly = false
+                )
                 Spacer(modifier = Modifier.height(3.dp))
                 Column {
                     BuildingLabel()

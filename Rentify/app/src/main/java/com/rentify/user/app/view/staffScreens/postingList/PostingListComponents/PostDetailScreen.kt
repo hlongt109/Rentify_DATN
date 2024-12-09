@@ -105,29 +105,14 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     .statusBarsPadding()
                     .navigationBarsPadding()
             ){
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = Color(0xfff7f7f7)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = { navController.navigate("POSTING_STAFF")}) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
+                AppointmentAppBarc( onBackClick = {
+                    // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                    navController.navigate("POSTING_STAFF")
+                    {
+                        //    popUpTo("ADDCONTRAC_STAFF") { inclusive = true }
+
                     }
-                    Text(
-                        text = "Chi tiết bài đăng",
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                    }
-                }
+                })
                 Column(
                     modifier = Modifier
                         .padding(16.dp)

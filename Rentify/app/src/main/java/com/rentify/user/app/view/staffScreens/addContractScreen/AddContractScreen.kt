@@ -72,7 +72,9 @@ import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.CustomTextField
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
+import com.rentify.user.app.view.staffScreens.addContractScreen.Components.AppointmentAppBar
 import com.rentify.user.app.view.staffScreens.addContractScreen.Components.BuildingOptions
 import com.rentify.user.app.view.staffScreens.addContractScreen.Components.RoomOptions
 import com.rentify.user.app.view.staffScreens.addContractScreen.Components.SelectMedia
@@ -80,6 +82,7 @@ import com.rentify.user.app.view.staffScreens.addContractScreen.Components.Selec
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
 
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
+
 import com.rentify.user.app.viewModel.LoginViewModel
 
 
@@ -255,34 +258,18 @@ fun AddContractScreens(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color(0xffffffff))
-                    .padding(10.dp)
+                    .padding(horizontal = 10.dp)
 
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                AppointmentAppBar( onBackClick = {
+                    // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                    navController.navigate("CONTRACT_STAFF")
+                    {
+                        popUpTo("ADDCONTRAC_STAFF") { inclusive = true }
 
-                        .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = {   navController.popBackStack()}) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
                     }
-                    Text(
-                        text = "Thêm hợp đồng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                    }
-                }
+                })
+
             }
             Column(
                 modifier = Modifier
@@ -291,58 +278,16 @@ fun AddContractScreens(navController: NavHostController) {
                     .background(color = Color(0xfff7f7f7))
                     .padding(15.dp)
             ) {
-                // tiêu đề
-                Column(
+                CustomTextField(
+                    label = "UserId",
+                    value = userId,
+                    onValueChange = { userId = it  },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                        Text(
-                            text = "UserId người dùng trong hợp đồng",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff7f7f7f),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-                        )
-                        Text(
-
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-
-                            )
-                    }
-                    TextField(
-                        value = userId,
-                        onValueChange = { userId = it },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color(0xFFf7f7f7),
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "userId1, userId2,...",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                }
+                        .padding(5.dp),
+                    placeholder = "userId1,userId2,...",
+                    isReadOnly = false
+                )
 //video
                 SelectMedia { images ->
                     selectedImages = images
@@ -351,54 +296,16 @@ fun AddContractScreens(navController: NavHostController) {
                 }
 
                 //  Nội dung
-                Column(
+                CustomTextField(
+                    label = "Nội dung",
+                    value = content,
+                    onValueChange = { content = it  },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp)
-                ) {
-                    Row {
-                        Text(
-                            text = "Nội dung",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xff7f7f7f),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-                        )
-                        Text(
-                            text = " *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xffff1a1a),
-                            // fontWeight = FontWeight(700),
-                            fontSize = 16.sp,
-                        )
-                    }
-                    TextField(
-                        value = content,
-                        onValueChange = { content = it },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color(0xFFcecece),
-                            unfocusedIndicatorColor = Color(0xFFcecece),
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Gray,
-                            unfocusedContainerColor = Color(0xFFf7f7f7),
-                            focusedContainerColor = Color(0xFFf7f7f7),
-                        ),
-                        placeholder = {
-                            Text(
-                                text = "Nhập nội dung",
-                                fontSize = 13.sp,
-                                color = Color(0xFF898888),
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        },
-                        shape = RoundedCornerShape(size = 8.dp),
-                        textStyle = TextStyle(
-                            color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    )
-                }
+                        .padding(5.dp),
+                    placeholder = "Nhập nội dung",
+                    isReadOnly = false
+                )
                 Spacer(modifier = Modifier.height(3.dp))
                 Column(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
                     Text(text = "Chọn ngày bắt đầu", fontSize = 14.sp)
