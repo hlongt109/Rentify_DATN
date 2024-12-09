@@ -177,10 +177,10 @@ class MainActivity : ComponentActivity() {
             composable(
                 "TINNHAN/{userId}/{userName}",
                 arguments = listOf(
-                    navArgument("userId"){type = NavType.StringType},
-                    navArgument("userName"){type = NavType.StringType}
+                    navArgument("userId") { type = NavType.StringType },
+                    navArgument("userName") { type = NavType.StringType }
                 )
-            ) {backStackEntry ->
+            ) { backStackEntry ->
                 val receiverId = backStackEntry.arguments?.getString("userId") ?: ""
                 val receiverName = backStackEntry.arguments?.getString("userName") ?: ""
                 TinnhanScreen(navController = navController, receiverId, name = receiverName)
@@ -191,14 +191,25 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("building_id") ?: ""
                 val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
                 val roomId = backStackEntry.arguments?.getString("room_id") ?: ""
-                PaymentConfirmationScreen(invoiceId = invoiceId ,amount = amount, buildingId = buildingId, roomId = roomId, navController = navController)
+                PaymentConfirmationScreen(
+                    invoiceId = invoiceId,
+                    amount = amount,
+                    buildingId = buildingId,
+                    roomId = roomId,
+                    navController = navController
+                )
             }
 
             composable("Payments/{amount}/{buildingId}/{_id}") { backStackEntry ->
                 val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
                 val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
                 val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
-                PaymentScreen( invoiceId = invoiceId ,amount = amount, buildingId = buildingId, navController = navController)
+                PaymentScreen(
+                    invoiceId = invoiceId,
+                    amount = amount,
+                    buildingId = buildingId,
+                    navController = navController
+                )
             }
 
             composable(ROUTER.ConTract.name) {
@@ -366,26 +377,36 @@ class MainActivity : ComponentActivity() {
             }
 
             //phong forgot
-            composable(ROUTER.PREFORGOT.name){
-                PreForgotPass(navController)
+            composable(
+                ROUTER.PREFORGOT.name + "/{email}/{navigationType}",
+                arguments = listOf(
+                    navArgument("email") { type = NavType.StringType },
+                    navArgument("navigationType") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val email = backStackEntry.arguments?.getString("email") ?: ""
+                val navigationType = backStackEntry.arguments?.getString("navigationType") ?: ""
+                PreForgotPass(navController, email = email, navigationType = navigationType)
             }
             composable(
-                ROUTER.FORGOTPASS.name+"/{email}",
+                ROUTER.FORGOTPASS.name + "/{email}/{navigationType}",
                 arguments = listOf(
-                    navArgument("email"){type = NavType.StringType}
+                    navArgument("email") { type = NavType.StringType },
+                    navArgument("navigationType") { type = NavType.StringType }
                 )
-            ){backStackEntry ->
+            ) { backStackEntry ->
                 val email = backStackEntry.arguments?.getString("email") ?: ""
-                ForgotPasswordScreen(navController, email)
+                val navigationType = backStackEntry.arguments?.getString("navigationType") ?: ""
+                ForgotPasswordScreen(navController, email, navigationType)
             }
 
             //ggmap
-            composable(ROUTER.ROOMMAP.name){
+            composable(ROUTER.ROOMMAP.name) {
                 SurroundingRoomScreen(navController = navController)
             }
         }
     }
-    
+
 
     enum class ROUTER {
         HOME,

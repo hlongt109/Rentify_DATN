@@ -51,7 +51,11 @@ import com.rentify.user.app.view.auth.components.TextLoginContent
 import com.rentify.user.app.viewModel.UserViewmodel.ForgotPasswordViewModel
 
 @Composable
-fun ForgotPasswordScreen(navController: NavController, email: String) {
+fun ForgotPasswordScreen(
+    navController: NavController,
+    email: String,
+    typeTitle: String
+) {
 
     val context = LocalContext.current
     val repository = ForgotRepository(RetrofitService().ApiService)
@@ -73,7 +77,11 @@ fun ForgotPasswordScreen(navController: NavController, email: String) {
     var isConfirmPassword by remember { mutableStateOf(false) }
     Log.d("CheckEmail", "ForgotPasswordScreen: $email")
 
+    val title = when(typeTitle){
+        "changePassword" -> "Đổi mật khẩu"
+        else -> "Quên mật khẩu"
 
+    }
 
     Box(
         modifier = Modifier
@@ -99,7 +107,7 @@ fun ForgotPasswordScreen(navController: NavController, email: String) {
             ) {
 
                 Text(
-                    text = "Quên mật khẩu",
+                    text = title,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -143,7 +151,15 @@ fun ForgotPasswordScreen(navController: NavController, email: String) {
                         forgotViewModel.resetPassword(email, newPassword, confirmPassword){
                             successMessage?.let {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                navController.navigate(MainActivity.ROUTER.LOGIN.name)
+                                when(typeTitle){
+                                    "changePassword" -> {
+                                        navController.navigate(MainActivity.ROUTER.HOME.name)
+                                    }
+
+                                    "resetPass" -> {
+                                        navController.navigate(MainActivity.ROUTER.LOGIN.name)
+                                    }
+                                }
                             }
                         }
                     },

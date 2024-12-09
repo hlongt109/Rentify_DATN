@@ -40,6 +40,7 @@ import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.SupportRepository.SupportRepository
+import com.rentify.user.app.ui.theme.reset_password
 import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.CheckContractUiState
@@ -65,6 +66,8 @@ fun LayoutItems(navController: NavHostController) {
     val showContractErrorDialog = remember { mutableStateOf(false) }
 // Theo dõi trạng thái hợp đồng
     val contractState by supportViewModel.contractUiState.collectAsState()
+    val email = loginViewModel.getUserData().email
+    val navigationType = "changePassword"
     // Kiểm tra hợp đồng khi màn hình được tải
     LaunchedEffect(userId) {
         supportViewModel.checkUserContract(userId)
@@ -186,6 +189,15 @@ fun LayoutItems(navController: NavHostController) {
                         }
                     }
                 )
+
+                CustomRow(
+                    imageId = reset_password,
+                    text = "Đổi mật khẩu",
+                    onClick = {
+                        navController.navigate(MainActivity.ROUTER.PREFORGOT.name+"/$email/$navigationType")
+                    }
+                )
+
                 CustomRow(
                     imageId = R.drawable.out,
                     text = "Đăng xuất",
