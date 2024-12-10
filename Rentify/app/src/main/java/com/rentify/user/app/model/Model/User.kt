@@ -19,7 +19,12 @@ data class User(
     val createdAt: String,
     val updatedAt: String
 )
-
+data class User_contrac(
+    val _id: String,
+    val role: String, // vai trò (admin, user, nhan vien, . ..)
+    val profile_picture_url: String,
+    val name: String,
+)
 // Xử lý user với màn roomDetail
 data class UserOfRoomDetail(
     @SerializedName("landlord")val landlord: Landlord,

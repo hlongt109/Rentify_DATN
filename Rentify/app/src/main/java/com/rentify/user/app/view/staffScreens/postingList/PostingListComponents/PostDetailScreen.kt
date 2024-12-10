@@ -235,7 +235,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     Spacer(modifier = Modifier.height(10.dp))
 // tên tòa và số bài dăng
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 15.dp),
 
                     ) {
                         Image(
@@ -266,7 +268,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 15.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -361,7 +365,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                             popUpTo("post_detail/$postId") { inclusive = true }
                         }
                     },
-                    modifier = Modifier.height(50.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xff5dadff))
                 ) {

@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -35,6 +36,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -64,14 +66,21 @@ fun AppointmentAppBar(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                    .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(8.dp),
                 ) {
                     IconButton(onClick = onBackClick) {
                         Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Back")
                     }
                     Text(
                         text = "Danh sách hợp đồng",
-                        textAlign = TextAlign.Start
+                        textAlign = TextAlign.Start,
+                                maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.h6
                     )
                 }
 //                IconButton(onClick = canlendarClick) {
