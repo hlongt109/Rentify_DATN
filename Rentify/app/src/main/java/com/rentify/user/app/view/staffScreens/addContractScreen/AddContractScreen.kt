@@ -239,7 +239,7 @@ fun AddContractScreens(navController: NavHostController) {
             val content = buffer.readUtf8()
             Log.d("click", "RequestBody content: $content")
         } catch (e: Exception) {
-            Log.e("click", "Error reading RequestBody: ${e.message}")
+            Log.e("click", "Error reading ReuestBody: ${e.message}")
         }
     }
 
