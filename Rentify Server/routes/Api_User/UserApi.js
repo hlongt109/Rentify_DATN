@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+// mongoose library
+const mongoose = require("mongoose");
 // model
 const Account = require("../../models/User");
 //Post
@@ -18,9 +20,7 @@ const transporter = require("../../config/common/mailer");
 //bcrypt bam mat khau
 const bcrypt = require("bcrypt");
 const { verifiedEmail } = require("../../config/common/mailer");
-const { forgotEmail } = require("../../config/common/mailer");
 const Booking = require("../../models/Booking");
-const User = require("../../models/User");
 //url
 const url = "http://localhost:3000/api/confirm-email/";
 
@@ -66,7 +66,7 @@ router.post("/login-user", async (req, res) => {
           return res.status(400).send("Mật khẩu không khớp");
         }
       } else {
-        return res.status(401).send("Tài khoản của bạn chưa được xác minh");
+        return res.status(400).send("Tài khoản của bạn chưa được xác minh");
       }
     } else {
       return res.status(404).send("Tài khoản không tồn tại");
@@ -111,165 +111,46 @@ router.post("/register-user", async (req, res) => {
       email: data.email,
       password: hashPassword,
       name: data.name,
-      username: data.name,
-      phoneNumber: data.phoneNumber,
     });
 
     const result = await user.save();
     console.log(result);
     await verifiedEmail(user.email, url + user._id);
+    console.log(verifiedEmail(user.email, url + user._id));
+
     res.status(200).send({
       message: "Register success",
-      data: result,
+      user: result,
     });
   } catch (error) {
     console.error("Registration failed:", error);
     res.status(500).send("Internal Server Error");
   }
 });
-
-//quen mat khau
-
-// Biến để lưu mã xác nhận tạm thời
-let confirmationStore = {};
-router.post("/forgot-password", async (req, res) => {
-  const { email } = req.body;
+const Building = require('../../models/Building')
+// đoạn này thiên code
+router.get("/landlord/:building_id", async (req, res) => {
   try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: 400, message: "Email không tồn tại" });
+    const { building_id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(building_id)) {
+      return res.status(400).json({ message: "ID tòa nhà không hợp lệ" });
     }
-
-    // Tạo mã xác nhận
-    const confirmationCode = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
-
-    // Lưu mã xác nhận với thời gian hết hạn 10 phút
-    confirmationStore[email] = {
-      code: confirmationCode,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 10 * 60 * 1000, // 10 phút
-    };
-
-    // Gửi email chứa mã xác nhận
-    await forgotEmail(email, confirmationCode);
-    res
-      .status(200)
-      .json({ status: 200, message: "Email xác nhận đã được gửi" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ status: 500, message: "Lỗi hệ thống", error: error.message });
-  }
-});
-
-// API xác nhận mã và cho phép cập nhật mật khẩu
-router.post("/confirm-code", async (req, res) => {
-  const { email, confirmationCode } = req.body;
-
-  try {
-    // Kiểm tra email và mã xác nhận không được để trống
-    if (!email || !confirmationCode) {
-      return res.status(400).json({
-        status: 400,
-        message: "Email và mã xác nhận không được để trống",
-      });
+    const building = await Building.findById(building_id).populate("landlord_id").populate("manager_id");
+    if (!building) {
+      return res.status(404).json({ message: "Không tìm thấy tòa nhà" });
     }
-
-    // Lấy thông tin mã xác nhận đã lưu
-    const storedConfirmation = confirmationStore[email];
-
-    // Kiểm tra mã xác nhận tồn tại
-    if (!storedConfirmation) {
-      return res.status(400).json({
-        status: 400,
-        message: "Mã xác nhận không tồn tại hoặc đã hết hạn",
-      });
+    const landlord = building.landlord_id;
+    const manager = building.manager_id;
+    if (!landlord) {
+      return res.status(404).json({ message: "Không tìm thấy thông tin landlord" });
     }
-
-    // Kiểm tra thời gian hết hạn (10 phút)
-    const currentTime = Date.now();
-    const MAX_CONFIRMATION_TIME = 10 * 60 * 1000; // 10 phút
-    if (currentTime - storedConfirmation.timestamp > MAX_CONFIRMATION_TIME) {
-      // Xóa mã xác nhận đã hết hạn
-      delete confirmationStore[email];
-
-      return res.status(400).json({
-        status: 400,
-        message: "Mã xác nhận đã hết hạn. Vui lòng yêu cầu mã mới",
-      });
-    }
-
-    // Kiểm tra mã xác nhận
-    if (storedConfirmation.code !== confirmationCode) {
-      return res.status(400).json({
-        status: 400,
-        message: "Mã xác nhận không chính xác",
-      });
-    }
-
-    // Xóa mã xác nhận sau khi xác thực thành công
-    delete confirmationStore[email];
-
     res.status(200).json({
-      status: 200,
-      message: "Mã xác nhận hợp lệ. Bạn có thể cập nhật mật khẩu mới.",
-      canResetPassword: true,
+      landlord,
+      manager
     });
   } catch (error) {
-    console.error("Lỗi xác nhận mã:", error);
-    res.status(500).json({
-      status: 500,
-      message: "Lỗi hệ thống",
-      error: error.message,
-    });
-  }
-});
-
-// API cập nhật mật khẩu
-router.put("/reset-password", async (req, res) => {
-  const { email, newPassword } = req.body;
-
-  try {
-    // Tìm người dùng
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: 404, message: "Người dùng không tồn tại" });
-    }
-
-    // Mã hóa mật khẩu mới
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword; // Cập nhật mật khẩu
-    await user.save();
-
-    res
-      .status(200)
-      .json({ status: 200, message: "Mật khẩu đã được cập nhật thành công" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ status: 500, message: "Lỗi hệ thống", error: error.message });
-  }
-});
-
-router.get("/get-user-infor/:userId", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const user = await User.findOne({ _id: userId });
-    res.status(200).json({
-      status: 200,
-      message: "Lấy thông tin thành công",
-      data: user,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ status: 500, message: "Lỗi hệ thống", error: error.message });
+    console.error("Lỗi khi lấy thông tin landlord và danh sách người dùng:", error.message);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 });
 

@@ -5,10 +5,12 @@ import DatePickerField
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 
@@ -198,6 +200,7 @@ fun UserItem(user: User, onDelete: () -> Unit) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddContractScreens(navController: NavHostController) {
@@ -306,13 +309,13 @@ fun AddContractScreens(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .background(color = Color(0xfff7f7f7))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
                 .background(color = Color(0xfff7f7f7))
                 .padding(bottom = screenHeight.dp/7f)
         ) {
@@ -361,9 +364,10 @@ fun AddContractScreens(navController: NavHostController) {
                         // Hiển thị lỗi nếu có
                     }
                 }
+                Spacer(modifier = Modifier.padding(5.dp))
                 Row(horizontalArrangement = Arrangement.Center) {
                     CustomTextField(
-                        label = "UserId",
+                        label = "Nhập userId",
                         value = userId,
                         onValueChange = { userId = it  },
                         modifier = Modifier
@@ -373,6 +377,7 @@ fun AddContractScreens(navController: NavHostController) {
                         placeholder = "Nhập userId người dùng",
                         isReadOnly = false
                     )
+
                     Button(
                         onClick = {
                             // Kiểm tra nếu userId đã có trong danh sách
@@ -414,11 +419,12 @@ fun AddContractScreens(navController: NavHostController) {
                         Text("Kiểm tra")
                     }
                 }
+                Spacer(modifier = Modifier.padding(5.dp))
                 if (userList.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp),
+                            .padding(top = 10.dp, start = 8.dp, bottom = 10.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(userList) { user ->

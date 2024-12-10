@@ -1,5 +1,10 @@
 package com.rentify.user.app.view.userScreens.profileScreen.components
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +13,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.RadioButton
@@ -23,8 +34,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +46,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
+import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.Bank
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.DatePickerDialog
@@ -60,12 +78,75 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
     val showGenderDialog = remember { mutableStateOf(false) }
     val showDobDialog = remember { mutableStateOf(false) }
     val showAddressDialog = remember { mutableStateOf(false) }
-
+    var selectedImageUer by remember { mutableStateOf<Uri?>(null) }
+    val ImageUserLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        selectedImageUer = uri
+    }
     LaunchedEffect(Unit) {
         viewModel.getUserDetailById(userId)
     }
+    LaunchedEffect(Unit) {
+        viewModel.getProfilePictureById(userId)
+    }
 
     Column {
+        // ảnh đại diện
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Kiểm tra ảnh người dùng đã chọn và ảnh từ API
+            val imageUrl = selectedImageUer ?: userDetail?.profile_picture_url?.let {
+                "http://10.0.2.2:3000/$it"
+            } ?: R.drawable.anhdaidien
+
+            // Hiển thị ảnh đại diện
+            if (selectedImageUer != null || userDetail?.profile_picture_url != null) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(60.dp)
+                        .padding(start = 10.dp)
+                        .clip(CircleShape)  // Thay đổi thành CircleShape để hiển thị ảnh tròn
+                        .clickable {
+                            ImageUserLauncher.launch("image/*") // Mở bộ chọn ảnh
+                        },
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    painter = rememberImagePainter(imageUrl),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(60.dp)
+                        .padding(start = 10.dp)
+                        .clip(CircleShape)  // Thay đổi thành CircleShape để hiển thị ảnh tròn
+                        .clickable {
+                            ImageUserLauncher.launch("image/*")
+                        }
+                )
+            }
+
+            // Nút lưu ảnh
+            Text(
+                text = "Lưu ảnh",
+                modifier = Modifier
+                    .padding(start = 20.dp, top = 20.dp, end = 20.dp)
+                    .clickable {
+                        selectedImageUer?.let { imageUri ->
+                            viewModel.updateProfilePicture(userId, imageUri, context)
+                        }
+                        Toast.makeText(context, "Cập nhật ảnh đại diện thành công", Toast.LENGTH_SHORT).show()
+                    },
+                color = Color.Black
+            )
+        }
+
         // Họ và tên
         Row(
             modifier = Modifier

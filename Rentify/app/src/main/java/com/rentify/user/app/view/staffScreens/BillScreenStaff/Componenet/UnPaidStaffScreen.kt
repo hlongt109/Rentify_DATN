@@ -3,6 +3,7 @@ package com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,7 +41,7 @@ import com.rentify.user.app.viewModel.StaffViewModel.InvoiceUiState
 fun UnPaidStaffScreen(
     navController: NavController,
     viewModel: InvoiceStaffViewModel = viewModel(),
-    staffId: String
+    staffId: String,
 ) {
     val unpaidInvoices by viewModel.unpaidInvoices.collectAsState()
     val error by viewModel.errorMessage.observeAsState("") // Nhận thông báo lỗi
@@ -64,52 +65,6 @@ fun UnPaidStaffScreen(
             modifier = Modifier
                 .fillMaxSize(),
         ) {
-
-//            if (isLoading == true) {
-//                CircularProgressIndicator(
-//                    modifier = Modifier.align(Alignment.Center)
-//                )
-//            } else {
-//                if (unpaidInvoices.isEmpty()) {
-//                    Text(
-//                        text = "Không có hóa đơn chưa thanh toán",
-//                        modifier = Modifier.align(Alignment.Center),
-//                        style = MaterialTheme.typography.bodyLarge
-//                    )
-//                } else if (unpaidInvoices.isNotEmpty()) {
-//                    LazyColumn(
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .padding(bottom = 80.dp)
-//                    ) {
-//                        items(unpaidInvoices) { invoice ->
-//                            ItemUnPaidStaff(
-//                                invoice = invoice,
-//                                navController = navController,
-//                                isExpanded = expandedItems.contains(invoice._id),
-//                                onToggleExpand = {
-//                                    if (expandedItems.contains(invoice._id)) {
-//                                        expandedItems.remove(invoice._id)
-//                                    } else {
-//                                        expandedItems.add(invoice._id)
-//                                    }
-//                                },
-//                                viewModel = viewModel,
-//                                staffId = staffId
-//                            )
-//                        }
-//                    }
-//                } else {
-//                    error?.let {
-//                        Text(
-//                            text = it,
-//                            modifier = Modifier.align(Alignment.Center),
-//                            color = Color.Red
-//                        )
-//                    }
-//                }
-//            }
-
             when (uiState) {
                 is InvoiceUiState.Loading -> {
                     //loading
@@ -131,16 +86,16 @@ fun UnPaidStaffScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(bottom = 80.dp)
-                        ){
+                        ) {
                             items(unpaidInvoices) { invoice ->
                                 ItemUnPaidStaff(
                                     invoice = invoice,
                                     navController = navController,
                                     isExpanded = expandedItems.contains(invoice._id),
                                     onToggleExpand = {
-                                        if(expandedItems.contains(invoice._id)){
+                                        if (expandedItems.contains(invoice._id)) {
                                             expandedItems.remove(invoice._id)
-                                        }else{
+                                        } else {
                                             expandedItems.add(invoice._id)
                                         }
                                     },
@@ -153,11 +108,11 @@ fun UnPaidStaffScreen(
                 }
 
                 is InvoiceUiState.Error -> {
-                        Text(
-                            text = (uiState as InvoiceUiState.Error).message ,
-                            modifier = Modifier.align(Alignment.Center),
-                            color = Color.Red
-                        )
+                    Text(
+                        text = (uiState as InvoiceUiState.Error).message,
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.Red
+                    )
                 }
             }
 

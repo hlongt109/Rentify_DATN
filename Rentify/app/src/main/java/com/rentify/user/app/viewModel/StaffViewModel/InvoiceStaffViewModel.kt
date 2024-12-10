@@ -12,6 +12,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rentify.user.app.model.Model.InvoiceUpdate
+import com.rentify.user.app.model.Model.InvoiceUpdateRequest
+import com.rentify.user.app.model.Model.UpdateInvoice
+import com.rentify.user.app.model.Model.UpdateStatus
+import com.rentify.user.app.network.ApiStaff.ApiServiceStaff
 import com.rentify.user.app.network.ApiStaff.RetrofitStaffService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.repository.StaffRepository.BuildingRepository.ServiceFee
@@ -52,6 +57,8 @@ class InvoiceStaffViewModel(
     private val repository: InvoiceRepository = InvoiceRepository(),
 ) : ViewModel() {
 
+    private val api: ApiServiceStaff = RetrofitStaffService.ApiService
+
 
     private val _uiState = MutableStateFlow<InvoiceUiState>(InvoiceUiState.Loading)
     val uiState: StateFlow<InvoiceUiState> = _uiState.asStateFlow()
@@ -65,6 +72,8 @@ class InvoiceStaffViewModel(
     private val _unpaidInvoices = MutableStateFlow<List<Invoice>>(emptyList())
     val unpaidInvoices: StateFlow<List<Invoice>> = _unpaidInvoices.asStateFlow()
 
+    private val _waitInvoices = MutableStateFlow<List<Invoice>>(emptyList())
+    val waitInvoices: StateFlow<List<Invoice>> = _waitInvoices.asStateFlow()
 
     private val _addBillResult = MutableStateFlow<Result<InvoiceResponse>?>(null)
     val addBillResult: StateFlow<Result<InvoiceResponse>?> = _addBillResult
@@ -115,6 +124,46 @@ class InvoiceStaffViewModel(
     private val _roomsWithoutInvoice = MutableStateFlow<List<Room>>(emptyList())
     val roomsWithoutInvoice: StateFlow<List<Room>> = _roomsWithoutInvoice.asStateFlow()
 
+    //lay chi tiet hoa don
+    private val _invoiceDetail = MutableLiveData<UpdateInvoice>()
+    val invoiceDetail: LiveData<UpdateInvoice> get() = _invoiceDetail
+
+    private val _updatedInvoice = MutableLiveData<InvoiceUpdate>()
+    val updatedInvoice: LiveData<InvoiceUpdate> get() = _updatedInvoice
+
+    fun updateInvoice(invoiceId: String, invoiceUpdateRequest: InvoiceUpdateRequest) {
+        _isLoading.postValue(true)
+        viewModelScope.launch {
+            try {
+                val response = api.partialUpdateInvoice(invoiceId, invoiceUpdateRequest)
+                if (response.isSuccessful) {
+                    _updatedInvoice.value = response.body()
+                    _successMessage.value = "Chỉnh sửa hóa đơn thành công"
+                } else {
+                    _errorMessage.value = "Cập nhật hóa đơn thất bại: ${response.errorBody()?.string()}"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Lỗi khi cập nhật hóa đơn: ${e.message}"
+            } finally {
+                _isLoading.postValue(false)
+            }
+        }
+    }
+
+    fun getDetailInvoice(invoiceId: String) {
+        _isLoading.postValue(true)
+        viewModelScope.launch {
+            try {
+                val response = api.getDetailInvoice(invoiceId)
+                Log.d("dcmm", "Invoice details fetched successfully: ${response}")
+                _invoiceDetail.value = response.data
+            } catch (e: Exception) {
+                _errorMessage.postValue("Failed to fetch invoice detail: ${e.message}")
+            } finally {
+                _isLoading.postValue(false)
+            }
+        }
+    }
 
     fun getInvoiceList(staffId: String) {
         viewModelScope.launch {
@@ -127,6 +176,7 @@ class InvoiceStaffViewModel(
                         // Phân loại hóa đơn dựa trên danh sách paid và unpaid
                         _paidInvoices.value = response.data.paid
                         _unpaidInvoices.value = response.data.unpaid
+                        _waitInvoices.value = response.data.wait
                     } else {
                         Log.d("Error", "getInvoiceList: ${response.message}")
                         _uiState.value = InvoiceUiState.Error(response.message ?: "Không có dữ liệu")
@@ -141,30 +191,6 @@ class InvoiceStaffViewModel(
             )
         }
     }
-
-//    fun getInvoiceList(staffId: String){
-//        _isLoading.postValue(true)
-//        viewModelScope.launch {
-//            try {
-//                val response = repository.getListInvoice(staffId)
-//                if(response.isSuccessful){
-//                    val responseBody = response.body()
-//                    if(responseBody != null){
-//                        val result = responseBody.data
-//                        _isLoading.postValue(false)
-//                        if(result != null){
-//                            _paidInvoices.value = result.paid
-//                            _unpaidInvoices.value = result.unpaid
-//                        }else{
-//                            _errorMessage.postValue(responseBody.message)
-//                        }
-//                    }
-//                }
-//            }catch (e: Exception){
-//                Log.d("ErrorInvoice", "getInvoiceList: $e")
-//            }
-//        }
-//    }
 
     fun addBill(
         userId: String,
@@ -320,28 +346,18 @@ class InvoiceStaffViewModel(
                 // Tạo danh sách mô tả dịch vụ
                 val descriptions = listOf(
                     Description(
-                        service_name = "Tiền điện",
+                        service_name = "Điện",
                         quantity = consumeElec,
                         price_per_unit = pricePreUnitElec,
                         total = totalElec
                     ),
                     Description(
-                        service_name = "Tiền nước",
+                        service_name = "Nước",
                         quantity = consumeWater,
                         price_per_unit = pricePreUnitWater,
                         total = totalWater
                     )
                 ) + otherService
-
-
-                // Tạo danh sách hóa đơn chi tiết
-//                val detailInvoices = serviceFees.map { service ->
-//                    DetailInvoice(
-//                        name = service.name,
-//                        fee = service.price,
-//                    )
-//                }
-
 
                 // Tạo hóa đơn
                 val invoice = InvoiceAdd(
@@ -358,8 +374,6 @@ class InvoiceStaffViewModel(
                     describe = describe,
                     type_invoice = "rent"
                 )
-
-
                 // Gọi API để thêm hóa đơn
                 _uiState.value = InvoiceUiState.Loading
                 repository.addBillStaff(invoice).fold(

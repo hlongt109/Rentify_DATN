@@ -35,6 +35,7 @@ import com.rentify.user.app.view.staffScreens.personalScreen.PersonalScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.UpdateBillStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
 import com.rentify.user.app.view.staffScreens.ReportScreen.Components.ListSupportByRoom
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.UpdatePostScreen
@@ -47,7 +48,9 @@ import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractDetailScreen
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractImageScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
+import com.rentify.user.app.view.userScreens.BaiDangYeuThich.BaiDangYeuThich
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.userScreens.DieuKhoanChinhSach.DieuKhoanChinhSach
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.QuanLiDichVu.QuanLiDichVu
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
@@ -177,10 +180,10 @@ class MainActivity : ComponentActivity() {
             composable(
                 "TINNHAN/{userId}/{userName}",
                 arguments = listOf(
-                    navArgument("userId"){type = NavType.StringType},
-                    navArgument("userName"){type = NavType.StringType}
+                    navArgument("userId") { type = NavType.StringType },
+                    navArgument("userName") { type = NavType.StringType }
                 )
-            ) {backStackEntry ->
+            ) { backStackEntry ->
                 val receiverId = backStackEntry.arguments?.getString("userId") ?: ""
                 val receiverName = backStackEntry.arguments?.getString("userName") ?: ""
                 TinnhanScreen(navController = navController, receiverId, name = receiverName)
@@ -191,14 +194,25 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("building_id") ?: ""
                 val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
                 val roomId = backStackEntry.arguments?.getString("room_id") ?: ""
-                PaymentConfirmationScreen(invoiceId = invoiceId ,amount = amount, buildingId = buildingId, roomId = roomId, navController = navController)
+                PaymentConfirmationScreen(
+                    invoiceId = invoiceId,
+                    amount = amount,
+                    buildingId = buildingId,
+                    roomId = roomId,
+                    navController = navController
+                )
             }
 
             composable("Payments/{amount}/{buildingId}/{_id}") { backStackEntry ->
                 val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
                 val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
                 val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
-                PaymentScreen( invoiceId = invoiceId ,amount = amount, buildingId = buildingId, navController = navController)
+                PaymentScreen(
+                    invoiceId = invoiceId,
+                    amount = amount,
+                    buildingId = buildingId,
+                    navController = navController
+                )
             }
 
             composable(ROUTER.ConTract.name) {
@@ -236,6 +250,13 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.HOME_STAFF.name) {
                 HomeScreen(navController = navController)
             }
+            composable(ROUTER.BaiDangYeuThich.name) {
+                BaiDangYeuThich(navController = navController)
+            }
+            composable(ROUTER.DieuKhoanChinhSach.name) {
+                DieuKhoanChinhSach(navController = navController)
+            }
+
             composable(ROUTER.BUILDING.name) {
                 BuildingScreen(navController = navController)
             }
@@ -258,8 +279,10 @@ class MainActivity : ComponentActivity() {
                 UpdateRoomScreen(navController = navController, id = id, buildingId = buildingId)
             }
 
-
-
+            composable("UpdateBillStaff/{invoiceId}") { backStackEntry ->
+                val invoiceId = backStackEntry.arguments?.getString("invoiceId")
+                UpdateBillStaff(navController = navController, invoiceId = invoiceId)
+            }
 
             composable(ROUTER.RENTAL_POST.name) {
                 RentalPostScreen(navController = navController, title = null)
@@ -345,7 +368,6 @@ class MainActivity : ComponentActivity() {
 
             }
 
-
             //những màn hình thiên thêm
             composable(
                 route = "ROOMDETAILS/{roomId}",
@@ -366,26 +388,26 @@ class MainActivity : ComponentActivity() {
             }
 
             //phong forgot
-            composable(ROUTER.PREFORGOT.name){
+            composable(ROUTER.PREFORGOT.name) {
                 PreForgotPass(navController)
             }
             composable(
-                ROUTER.FORGOTPASS.name+"/{email}",
+                ROUTER.FORGOTPASS.name + "/{email}",
                 arguments = listOf(
-                    navArgument("email"){type = NavType.StringType}
+                    navArgument("email") { type = NavType.StringType }
                 )
-            ){backStackEntry ->
+            ) { backStackEntry ->
                 val email = backStackEntry.arguments?.getString("email") ?: ""
                 ForgotPasswordScreen(navController, email)
             }
 
-            composable(ROUTER.BottomTest.name){
+            composable(ROUTER.BottomTest.name) {
                 BottomNavigation(navController)
             }
 
         }
     }
-    
+
 
     enum class ROUTER {
         HOME,
@@ -437,7 +459,8 @@ class MainActivity : ComponentActivity() {
         ADDPOST_staff,
         Search_roommate,
         AppointmentScreen,
-
+        BaiDangYeuThich,
+        DieuKhoanChinhSach,
         //những màn hình thiên thêm
         ADDCONTRAC_STAFF,
         ListSupportByRoom,

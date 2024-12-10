@@ -6,11 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
-import com.rentify.user.app.model.Model.RoomResponse
-import com.rentify.user.app.model.Model.UpdateInvoiceStatus
 import com.rentify.user.app.model.SupportModel.CreateReportResponse
 import com.rentify.user.app.network.RetrofitService
-import com.rentify.user.app.repository.HomeScreenRepository
 import com.rentify.user.app.repository.QRRepository
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
