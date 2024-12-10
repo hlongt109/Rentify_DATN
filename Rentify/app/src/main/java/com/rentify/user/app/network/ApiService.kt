@@ -53,6 +53,7 @@ import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -365,7 +366,10 @@ interface APIService {
         @Query("keyword") keyword: String? = null,
         @Query("manageId") manageId: String? = null // Thêm manageId
     ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
-
+    @GET("staff/contracts/user/{id}")
+    suspend fun getUserById(
+        @Path("id") userId: String
+    ): Response<User>
     ///ADD POST USRT
     @Multipart
     @POST("add")

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ContractInfoRow(label: String, value: String, isImportant: Boolean = false) {
+fun ContractInfoRow(label: String, value: String, isImportant: Boolean = false, ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
