@@ -5,8 +5,9 @@ const mongoose = require('mongoose');
 const Contract = require('../../models/Contract');
 const Building = require('../../models/Building');
 const upload = require('../../config/common/uploadImageBank')
+const uploadUser = require('../../config/common/UploadImageUser')
 const User = require('../../models/User')
-// hiển thị danh sách người dùng _vanphuc
+// #1.hiển thị danh sách người dùng _vanphuc
 router.get('/listusers', async (req, res) => {
     try {
       const users = await User.find(); // Fetch all users from the database
@@ -23,7 +24,7 @@ router.get('/listusers', async (req, res) => {
       });
     }
   });
-// hiển thị chi tiết theo id _vanphuc
+// #2.hiển thị chi tiết theo id _vanphuc
 router.get('/getUser/:id', async (req, res) => {
     try {
         // Lấy id từ params
@@ -51,7 +52,7 @@ router.get('/getUser/:id', async (req, res) => {
         });
     }
 });
-// Bổ sung thông tin cho User _vanphuc :
+// #3.Bổ sung thông tin cho User _vanphuc :
 router.put("/addUserInfo/:id", async (req, res) => {
   try {
     const { id } = req.params; // Lấy ID từ URL
@@ -94,7 +95,7 @@ router.put("/addUserInfo/:id", async (req, res) => {
     });
   }
 });
-// api lấy servicerFees 
+// #4.api lấy servicerFees 
 router.get('/serviceFeesUser/:userId', async (req, res) => {
   try {
       const { userId } = req.params;
@@ -124,7 +125,7 @@ router.get('/serviceFeesUser/:userId', async (req, res) => {
   }
 });
 
-// API to fetch bank account details by userId _vanphuc
+// #5.API to fetch bank account details by userId _vanphuc
 router.get('/getBankAccount/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -159,7 +160,7 @@ router.get('/getBankAccount/:userId', async (req, res) => {
     });
   }
 });
-// update tài khoản ngân hàng 
+// #6.update tài khoản ngân hàng 
 router.put("/updateBankAccount/:userId", upload.array("qr_bank", 5), async (req, res) => {
   try {
     const { userId } = req.params;
@@ -205,7 +206,7 @@ router.put("/updateBankAccount/:userId", upload.array("qr_bank", 5), async (req,
   }
 });
 
-// API chỉnh sửa toàn bộ thông tin người dùng _vanphuc
+// #7.API chỉnh sửa toàn bộ thông tin người dùng _vanphuc
 router.put('/updateTaiKhoan/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -279,7 +280,71 @@ router.put('/updateTaiKhoan/:id', async (req, res) => {
     });
   }
 });
+//#8 add avatar
+router.post('/addImageUser/:id', uploadUser.single('profile_picture_url'), async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // Kiểm tra xem file ảnh có được upload không
+    if (!req.file) {
+      return res.status(400).json({
+        message: 'Không có file nào được tải lên',
+      });
+    }
 
+    // Cập nhật đường dẫn ảnh profile_picture_url
+    const profile_picture_url = req.file.path.replace('public/', ''); // Lưu đường dẫn tương đối
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: { profile_picture_url, updated_at: new Date().toISOString() } },
+      { new: true, select: 'profile_picture_url' } // Chỉ trả về field profile_picture_url
+    );
+
+    // Nếu không tìm thấy người dùng
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: 'Không tìm thấy người dùng để cập nhật hình ảnh',
+      });
+    }
+
+    // Trả về thông tin ảnh đã cập nhật
+    res.status(200).json({
+      profile_picture_url: updatedUser.profile_picture_url,
+    });
+  } catch (error) {
+    console.error('Lỗi khi thêm hình ảnh người dùng:', error);
+    res.status(500).json({
+      message: 'Đã xảy ra lỗi khi thêm hình ảnh người dùng',
+      error: error.message,
+    });
+  }
+});
+// #9. Hiển thị ảnh profile theo ID người dùng
+router.get('/getImageUser/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Tìm người dùng theo ID
+    const user = await User.findById(id).select('profile_picture_url');
+
+    // Nếu không tìm thấy người dùng
+    if (!user) {
+      return res.status(404).json({
+        message: 'Không tìm thấy người dùng',
+      });
+    }
+
+    // Trả về URL của ảnh profile
+    res.status(200).json({
+      profile_picture_url: user.profile_picture_url,
+    });
+  } catch (error) {
+    console.error('Lỗi khi lấy thông tin ảnh profile:', error);
+    res.status(500).json({
+      message: 'Đã xảy ra lỗi khi lấy thông tin ảnh profile',
+      error: error.message,
+    });
+  }
+});
 
 module.exports = router;
