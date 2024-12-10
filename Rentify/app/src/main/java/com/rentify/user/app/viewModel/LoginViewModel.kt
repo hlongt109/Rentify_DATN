@@ -118,7 +118,7 @@ class LoginViewModel(
 
                         role == "user" -> {
                             Log.d("LoginViewModel", "Setting USER route")
-                            MainActivity.ROUTER.HOME.name
+                            MainActivity.ROUTER.BottomTest.name
                         }
 
                         else -> {

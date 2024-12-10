@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -67,16 +69,29 @@ fun AppointmentAppBar(
             ) {
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = onBackClick) {
-                        Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Back")
+                    androidx.compose.material.IconButton(
+                        onClick = { onBackClick() }
+                    ) {
+                        androidx.compose.material.Icon(
+                            imageVector = Icons.Filled.ArrowBackIosNew,
+                            contentDescription = "Back"
+                        )
                     }
-                    Text(
-                        text = "Danh sách bài đăng",
 
-                        textAlign = TextAlign.Start
+                    Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và text
+
+                    androidx.compose.material.Text(
+                        text = "Danh sách bài đăng",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.h6
                     )
                 }
 //                IconButton(onClick = canlendarClick) {

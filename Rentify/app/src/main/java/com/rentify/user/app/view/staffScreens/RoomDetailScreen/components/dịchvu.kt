@@ -50,7 +50,7 @@ fun ServiceOption(
 ) {
     Box(
         modifier = Modifier
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
+            .shadow(3.dp, shape = RoundedCornerShape(9.dp))
             .border(
                 width = 1.dp,
                 color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),

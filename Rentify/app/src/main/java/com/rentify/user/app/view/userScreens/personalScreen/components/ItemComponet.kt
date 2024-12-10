@@ -53,7 +53,9 @@ fun ItemSComponent() {
 }
 
 @Composable
-fun LayoutItems(navController: NavHostController) {
+fun LayoutItems(
+    navController: NavHostController
+) {
     val supportService = RetrofitService()
     val supportRepository = SupportRepository(supportService.ApiService)
     val supportViewModel: SupportViewModel = viewModel(

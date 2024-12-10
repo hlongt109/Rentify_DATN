@@ -43,6 +43,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -62,14 +64,22 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.rentify.user.app.R
+import com.rentify.user.app.model.User
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.CustomTextField
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.prepareMultipartBody
+import com.rentify.user.app.view.staffScreens.addContractScreen.UserItem
+import com.rentify.user.app.view.staffScreens.addContractScreen.validateUserIds
 import com.rentify.user.app.view.userScreens.cancelContract.components.ContractInfoRow
+import com.rentify.user.app.view.userScreens.cancelContract.components.CustomButton
 import com.rentify.user.app.view.userScreens.cancelContract.components.HeaderSection
 import com.rentify.user.app.view.userScreens.contract.components.ViewContractButton
 import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun ContractDetailScreen(navController: NavController,contractId: String) {
@@ -140,33 +150,49 @@ fun ContractDetailScreen(navController: NavController,contractId: String) {
                             ContractInfoRow("Loại hợp đồng", "${contract.duration} tháng")
                             ContractInfoRow("Thời hạn ký kết", "${contract.start_date}")
                             ContractInfoRow("Thời hạn kết thúc", "${contract.end_date}")
-                            ContractInfoRow("Tiền cọc", "${ contract.room_id?.price}")
-                            ContractInfoRow("Tiền thuê", "${ contract.room_id?.price} VND / tháng")
-                            ContractInfoRow("Kỳ thanh toán", "${contract.paymentCycle} hàng tháng")
+                            ContractInfoRow("Tiền cọc", "${ contract.room_id?.price}",isImportant = true) // Màu sắc khác cho tiền cọc
+                            ContractInfoRow("Tiền thuê", "${ contract.room_id?.price} VND / tháng", isImportant = true) // Màu sắc khác cho tiền cọc
+                            ContractInfoRow("Kỳ thanh toán", "${contract.paymentCycle} hàng tháng" )
                         }}
                     Spacer(modifier = Modifier
                         .background(color = Color(0xFFeeeeee))
                         .fillMaxWidth()
-                        .height(25.dp))
+                        .height(10.dp))
                     Box(
                         modifier = Modifier
                             .padding(15.dp)
                             .fillMaxWidth()){
                         Column {
-                            ViewContractButton(onClick = { navController.navigate("contract_image_detail/${contract._id}") })
+                            CustomButton(
+                                onClick = {
+                                    navController.navigate("contract_image_detail/${contract._id}")
+
+                                },
+                                backgroundColor = Color(0xFFFFFFFF), // Nền trắng
+                                imageRes = R.drawable.clipboard,
+                                buttonText = "Xem văn bản hợp đồng",
+                                textColor = Color(0xFF0066CC), // Chữ xanh dương
+                                borderWidth = 1.dp, // Độ rộng viền
+                                borderColor = Color(0xFF0066CC), // Màu viền xanh dương
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .shadow(2.dp, RoundedCornerShape(10.dp))
+                            )
                             Spacer(modifier = Modifier
                                 .background(color = Color(0xFFeeeeee))
                                 .fillMaxWidth()
-                                .height(25.dp))
-                            Button(
-                                onClick = { showDialog = true },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                ,shape = RoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xffffffff))
-                            ) {
-                                Text("Sửa hợp đồng")
-                            }
+                                .height(10.dp))
+                           CustomButton(
+                                        onClick = {  showDialog = true },
+                                        backgroundColor = Color(0xFF4CAF50),
+                                        buttonText = "Sửa hợp đồng",
+                                        textColor = Color.White,
+                                        borderWidth = 0.dp, // Độ rộng viền
+                                        borderColor = Color(0xFF0066CC),
+                                        modifier = Modifier
+                                            .height(50.dp)
+                                            .shadow(2.dp, RoundedCornerShape(10.dp))
+                                    )
                         }
                         if (showDialog) {
                             EditContractDialog(
@@ -211,17 +237,64 @@ fun EditContractDialog(
     val contractDetail by contractViewModel.contractDetail.observeAsState()
     val updateStatus by contractViewModel.error.observeAsState() // Theo dõi trạng thái lỗi từ ViewModel
     var isEdited by remember { mutableStateOf(false) }
-
+    var userList by remember { mutableStateOf<List<User>>(emptyList()) }
+    val errorMessage by contractViewModel.error.observeAsState("")
+    var isFetching by remember { mutableStateOf(false) }
+    val userDetail by contractViewModel.userDetail.collectAsState()
+    val userIds = userList.joinToString(",") { it._id }
+    val scrollState = rememberScrollState()
     // Lấy chi tiết hợp đồng khi hợp đồng ID thay đổi
     LaunchedEffect(contractId) {
-        contractId?.let { contractViewModel.fetchContractDetail(it) }
+        contractId?.let {
+            contractViewModel.fetchContractDetail(it)
+        }
     }
 
-    val scrollState = rememberScrollState()
+    // Fetch user details when contractDetail is updated
+    LaunchedEffect(contractDetail) {
+        contractDetail?.user_id?.forEach { user ->
+            contractViewModel.fetchUserById(user._id)
+            Log.d("LaunchedEffect", "Fetching user with ID: ${user._id}")
+        }
+    }
+    LaunchedEffect(userDetail) {
+        userDetail?.let { user ->
+            isFetching = false
+            // Chỉ thêm người dùng nếu chưa có trong danh sách
+            if (!userList.any { it._id == user._id }) {
+                userList = userList + user
+            }
+        }
+    }
+    LaunchedEffect(contractDetail) {
+        contractDetail?.user_id?.let { userIds ->
+            // Khởi tạo danh sách người dùng từ user_id trong contractDetail
+            userList = userIds.map { user ->
+                User(
+                    _id = user._id,
+                    name = user.name ,// Thêm các thuộc tính khác nếu cần
+                            username = "",
+                    password = "",
+                    email = "",
+                    phoneNumber = "",
+                    role = "",
+                    dob = "",
+                    gender = "",
+                    address = "",
+                    profile_picture_url = "",
+                    verified = true,
+                    landlord_id = "",
+                    createdAt = "",
+                    updatedAt = ""
+                )
+            }
+        }
+    }
+
 
     contractDetail?.let { contract ->
         if (!isEdited) {
-            userId = contract.user_id?.joinToString { it._id } ?: "" // Ghép ID người dùng
+         //   userId = contract.user_id?.joinToString { it._id } ?: "" // Ghép ID người dùng
             content = contract.content
         }
     }
@@ -234,7 +307,6 @@ fun EditContractDialog(
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-
                     .verticalScroll(scrollState)
             ) {
                 Text(
@@ -243,16 +315,84 @@ fun EditContractDialog(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 // Sửa User ID
-                CustomTextField(
-                    label = "UserId",
-                    value = userId,
-                    onValueChange = { userId = it  },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
-                    placeholder = "userId1,userId2,...",
-                    isReadOnly = false
-                )
+//                CustomTextField(
+//                    label = "UserId",
+//                    value = userId,
+//                    onValueChange = { userId = it  },
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(5.dp),
+//                    placeholder = "userId1,userId2,...",
+//                    isReadOnly = false
+//                )
+                Row(horizontalArrangement = Arrangement.Center) {
+                    CustomTextField(
+                        label = "UserId",
+                        value = userId,
+                        onValueChange = { userId = it  },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(8f) // Chiếm 8 phần
+                            .padding(horizontal = 10.dp),
+                        placeholder = "Nhập userId người dùng",
+                        isReadOnly = false
+                    )
+                    Button(
+                        onClick = {
+                            // Kiểm tra nếu userId đã có trong danh sách
+                            if (userList.any { it._id == userId }) {
+                                // Hiển thị thông báo nếu userId đã có
+                                Toast.makeText(context, "Người dùng đã có trong danh sách", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            if (userId.length != 24) {
+                                Toast.makeText(context, "UserId phải có đúng 24 ký tự", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            // Show error message if any
+                            CoroutineScope(Dispatchers.Main).launch {
+                                val result = contractViewModel.fetchUserByIdSuspend(userId)
+                                result.onSuccess { user ->
+                                    // Xử lý thành công: Thêm người dùng vào danh sách
+                                    if (user != null) {
+                                        userList = userList + user
+                                        Toast.makeText(context, "Người dùng đã được thêm thành công!", Toast.LENGTH_SHORT).show()
+                                        return@launch
+                                    }
+                                }.onFailure { error ->
+                                    // Hiển thị lỗi qua Toast
+                                    Toast.makeText(context,"Người dùng không tồn tại, hãy kiểm tra lại ", Toast.LENGTH_SHORT).show()
+                                    isFetching = false
+                                    return@launch
+                                }}
+                            // Nếu chưa có, thực hiện gọi API
+                            isFetching = true
+                            contractViewModel.fetchUserById(userId)
+                            userId = ""
+                        },
+                        colors = ButtonDefaults.buttonColors(Color(0xff209FA8)),
+                        enabled = userId.isNotEmpty() && !isFetching, // Enable button only when userId is not empty and fetching is not in progress
+                        modifier = Modifier .padding(top = 28.dp).height(53.dp),// Chiếm 2 phần
+                        shape = RoundedCornerShape(8.dp),
+                    ) {
+                        androidx.compose.material3.Text("Kiểm tra")
+                    }
+                }
+                if (userList.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(userList) { user ->
+                            UserItem(user, onDelete = {
+                                userList = userList.filterNot { it._id == user._id }
+                            })
+                        }
+                    }
+                }
+
                 // Sửa Content
                 CustomTextField(
                     label = "Nội dung",
@@ -303,10 +443,16 @@ fun EditContractDialog(
                     }
                     Button(
                         onClick = {
-                            if (isFieldEmpty(userId)) {
+                            if (isFieldEmpty(userIds)) {
                                 // Hiển thị thông báo lỗi nếu title trống
                                 Toast.makeText(context, "Userid không thể trống", Toast.LENGTH_SHORT).show()
-                                return@Button }
+                                return@Button        }
+                            val userIdsList = userIds.split(",").map { it.trim() }
+                            val isValid = validateUserIds(userIdsList)
+                            if (!isValid) {
+                                Toast.makeText(context, "Một hoặc nhiều userId không hợp lệ, mỗi userId phải có đủ 24 ký tự!", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
                             if (isFieldEmpty(content)) {
                                 // Hiển thị thông báo lỗi nếu content trống
                                 Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
@@ -337,11 +483,10 @@ fun EditContractDialog(
                             contractId?.let {
                                 contractViewModel.updateContract_STAFF(
                                     contractId = contractId,
-                                    userId = userId,
+                                    userId = userIds,
                                     content = content,
                                     photos = photoParts
                                 )
-
                             }
                             Toast.makeText(context, "Sửa thành công", Toast.LENGTH_SHORT).show()
 

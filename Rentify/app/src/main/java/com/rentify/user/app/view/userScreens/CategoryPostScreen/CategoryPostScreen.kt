@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,43 +58,7 @@ fun CategoryPostScreen(navController: NavController) {
                 .background(color = Color(0xffffffff))
                 .padding(10.dp)
         ) {
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-
-                    .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween //
-            ){
-                IconButton(   modifier = Modifier.width(100.dp), onClick = {
-                    navController.navigate("PERSONAL")
-                    {
-                        popUpTo("CATEGORYPOST") { inclusive = true } // Loại bỏ màn ADDPOST khỏi ngăn xếp
-                    }
-                }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.back),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp, 30.dp)
-                    )
-
-                }
-                Text(
-                    text = "Quản lý bài đăng",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color.Black,
-                    fontWeight = FontWeight(700),
-                    fontSize = 17.sp,
-
-                    )
-                Row(
-                    modifier = Modifier.width(100.dp), // Đảm bảo chiều rộng của Row con
-                    horizontalArrangement = Arrangement.End // Căn cuối cùng cho phần tử trong Row con
-                ) {
-                    // Ví dụ là một icon hoặc button ở đây
-                    // IconButton(...) hoặc Image(...) nếu cần
-                }
-            }
+            CategoryTopBar(navController)
         }
 
 
@@ -168,4 +136,36 @@ fun CategoryPostScreen(navController: NavController) {
 @Composable
 fun GreetingLayoutCategoryPostScreen() {
     CategoryPostScreen(navController = rememberNavController())
+}
+
+@Composable
+fun CategoryTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(
+            onClick = { navController.popBackStack() }
+        ) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew,
+                contentDescription = "Back"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và text
+
+        androidx.compose.material.Text(
+            text = "Quản lý bài đăng",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
+    }
 }

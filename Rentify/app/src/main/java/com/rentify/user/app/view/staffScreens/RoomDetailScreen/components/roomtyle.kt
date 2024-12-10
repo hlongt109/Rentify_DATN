@@ -80,44 +80,49 @@ fun RoomTypeOptionschitiet(
     apiSelectedRoomTypes: List<String>, // Dữ liệu từ API
     onRoomTypeSelected: (String) -> Unit
 ) {
-    val selectedRoomTypes = remember { mutableStateOf(apiSelectedRoomTypes) } // Trạng thái lưu các mục được chọn
+    // Trạng thái lưu loại phòng được chọn (chỉ một phòng được chọn tại một thời điểm)
+    val selectedRoomType = remember { mutableStateOf(apiSelectedRoomTypes.firstOrNull() ?: "") }
 
     Row(
         modifier = Modifier.padding(5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Tùy chọn Phòng Đơn
         RoomTypeOption(
             text = "Phòng Đơn",
-            isSelected = selectedRoomTypes.value.contains("Phòng Đơn"),
+            isSelected = selectedRoomType.value == "Phòng Đơn",
             onClick = {
-//                updateSelectedRoomTypes("Phòng Đơn", selectedRoomTypes)
-//                onRoomTypeSelected("Phòng Đơn")
+                selectedRoomType.value = "Phòng Đơn"
+                onRoomTypeSelected("Phòng Đơn")
             }
         )
 
         Spacer(modifier = Modifier.width(10.dp))
 
+        // Tùy chọn HomeStay
         RoomTypeOption(
             text = "HomeStay",
-            isSelected = selectedRoomTypes.value.contains("HomeStay"),
+            isSelected = selectedRoomType.value == "HomeStay",
             onClick = {
-//                updateSelectedRoomTypes("HomeStay", selectedRoomTypes)
-//                onRoomTypeSelected("HomeStay")
+                selectedRoomType.value = "HomeStay"
+                onRoomTypeSelected("HomeStay")
             }
         )
 
         Spacer(modifier = Modifier.width(10.dp))
 
+        // Tùy chọn Studio
         RoomTypeOption(
             text = "Studio",
-            isSelected = selectedRoomTypes.value.contains("Studio"),
+            isSelected = selectedRoomType.value == "Studio",
             onClick = {
-//                updateSelectedRoomTypes("Studio", selectedRoomTypes)
-//                onRoomTypeSelected("Studio")
+                selectedRoomType.value = "Studio"
+                onRoomTypeSelected("Studio")
             }
         )
     }
 }
+
 
 // Hàm cập nhật danh sách các mục đã chọn
 fun updateSelectedRoomTypes(
@@ -144,13 +149,13 @@ fun RoomTypeOption(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             )
-            .shadow(3.dp, shape = RoundedCornerShape(6.dp))
+            .shadow(2.dp, shape = RoundedCornerShape(9.dp))
             .border(
                 width = 1.dp,
                 color = if (isSelected) Color(0xFF44acfe) else Color(0xFFeeeeee),
                 shape = RoundedCornerShape(9.dp)
             )
-            .background(color = Color.White, shape = RoundedCornerShape(6.dp))
+            .background(color = Color.White, shape = RoundedCornerShape(9.dp))
             .padding(0.dp)
     ) {
         Text(

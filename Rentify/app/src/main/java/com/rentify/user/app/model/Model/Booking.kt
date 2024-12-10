@@ -15,6 +15,7 @@ data class Booking (
 data class BookingRequest(
     val user_id: String,
     val room_id: String,
+    val building_id: String,
     val manager_id: String,
     val check_in_date: String
 )

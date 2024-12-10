@@ -1,13 +1,23 @@
 package com.rentify.user.app.viewModel.UserViewmodel
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rentify.user.app.model.Model.Bank
+import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
+
+import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.network.RetrofitService
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class UserViewModel : ViewModel() {
     private val _user = MutableLiveData<UserResponse?>()
@@ -17,7 +27,13 @@ class UserViewModel : ViewModel() {
     private val apiService = RetrofitService().ApiService
     private val _updateSuccess = MutableLiveData<Boolean>()
     val updateSuccess: LiveData<Boolean> = _updateSuccess
-    
+    private val _serviceFees = MutableLiveData<List<ServiceFeesItem>?>()
+    val serviceFees: LiveData<List<ServiceFeesItem>?> = _serviceFees
+    private val _bankAccount = MutableLiveData<Bank?>()  // Cập nhật thành đối tượng Bank
+    val bankAccount: LiveData<Bank?> = _bankAccount
+    private val _updateTaiKhoanResponse = MutableLiveData<UpdateTaiKhoanResponse?>()
+    val updateTaiKhoanResponse: LiveData<UpdateTaiKhoanResponse?> = _updateTaiKhoanResponse
+
     // Hàm lấy thông tin người dùng theo _id (MongoDB _id)
     fun getUserDetailById(userId: String) {
         viewModelScope.launch {
@@ -36,8 +52,11 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+    private var _pendingUpdates = 0
+
     fun updateUserDetails(userId: String, gender: String, dob: String, address: String) {
         viewModelScope.launch {
+            _pendingUpdates++
             val userDetails = mapOf(
                 "gender" to gender,
                 "dob" to dob,
@@ -47,19 +66,155 @@ class UserViewModel : ViewModel() {
             try {
                 val response = apiService.updateUserInfo(userId, userDetails)
                 if (response.isSuccessful && response.body() != null) {
-                    _updateSuccess.postValue(true) // Báo thành công
-                    _user.postValue(response.body()) // Cập nhật dữ liệu người dùng
+                    _user.postValue(response.body())
                     Log.d("UserViewModel", "Updated user: ${response.body()}")
                 } else {
-                    _updateSuccess.postValue(false) // Báo lỗi
                     _error.postValue("Cập nhật thất bại: ${response.message()}")
                     Log.e("UserViewModel", "Response error: ${response.message()}")
                 }
             } catch (e: Exception) {
-                _updateSuccess.postValue(false) // Báo lỗi
                 _error.postValue("Lỗi khi cập nhật: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            } finally {
+                _pendingUpdates--
+                if (_pendingUpdates == 0) {
+                    getUserDetailById(userId) // Chỉ tải lại dữ liệu khi tất cả các cập nhật hoàn tất
+                }
+            }
+        }
+    }
+
+    // phí dịch vụ người dùng
+    fun getServiceFeesByUser(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getServiceFeesByUser(userId)  // Gọi API với userId
+                if (response.isSuccessful && response.body() != null) {
+                    _serviceFees.postValue(response.body())  // Cập nhật LiveData với danh sách phí dịch vụ
+                    Log.d("UserViewModel", "Service fees: ${response.body()}")
+                } else {
+                    _error.postValue("Không thể lấy phí dịch vụ: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Lỗi: ${e.message}")
                 Log.e("UserViewModel", "Exception: ${e.message}")
             }
         }
     }
+    // hiển thị thông tin tài khoản
+    fun getBankAccountByUser(userId: String) {
+        viewModelScope.launch {
+            try {
+                // Gọi API để lấy thông tin tài khoản ngân hàng
+                val response = apiService.getBankAccount(userId)
+
+                if (response.isSuccessful && response.body() != null) {
+                    // Nếu thành công, cập nhật LiveData với đối tượng Bank
+                    _bankAccount.postValue(response.body())
+                    Log.d("UserViewModel", "Bank account: ${response.body()}")
+                } else {
+                    // Nếu API trả về lỗi, cập nhật LiveData lỗi
+                    _error.postValue("Không thể lấy thông tin tài khoản ngân hàng: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                // Nếu có lỗi xảy ra, cập nhật LiveData với thông báo lỗi
+                _error.postValue("Lỗi: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+    private val pendingUpdates = MutableLiveData(0)
+
+    fun updateBankAccount(userId: String, bank: Bank) {
+        pendingUpdates.value = pendingUpdates.value?.plus(1) // Tăng số lượng yêu cầu chờ
+        viewModelScope.launch {
+            try {
+                val response = apiService.updateBankAccount(userId, bank)
+                if (response.isSuccessful && response.body() != null) {
+                    _bankAccount.postValue(response.body())
+                    _updateSuccess.postValue(true)
+                } else {
+                    _updateSuccess.postValue(false)
+                    _error.postValue("Cập nhật tài khoản ngân hàng thất bại: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _updateSuccess.postValue(false)
+                _error.postValue("Lỗi khi cập nhật tài khoản ngân hàng: ${e.message}")
+            } finally {
+                decrementPendingUpdatesAndRefresh(userId)
+            }
+        }
+    }
+
+    fun updateBankAccountWithImage(
+        userId: String,
+        bank: Bank,
+        imageUri: Uri?,
+        context: Context
+    ) {
+        pendingUpdates.value = pendingUpdates.value?.plus(1) // Tăng số lượng yêu cầu chờ
+        viewModelScope.launch {
+            try {
+                if (imageUri == null) {
+                    updateBankAccount(userId, bank)
+                } else {
+                    val contentResolver = context.contentResolver
+                    val inputStream = contentResolver.openInputStream(imageUri)
+                    val tempFile = File(context.cacheDir, "qr_bank_${System.currentTimeMillis()}.jpg")
+                    inputStream?.use { tempFile.outputStream().use { output -> it.copyTo(output) } }
+
+                    val imagePart = MultipartBody.Part.createFormData(
+                        "qr_bank",
+                        tempFile.name,
+                        tempFile.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                    )
+
+                    val response = apiService.updateBankAccountWithImage(userId, imagePart)
+                    if (response.isSuccessful && response.body() != null) {
+                        _bankAccount.postValue(response.body())
+                        _updateSuccess.postValue(true)
+                    } else {
+                        _updateSuccess.postValue(false)
+                        _error.postValue("Cập nhật tài khoản ngân hàng thất bại: ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                _updateSuccess.postValue(false)
+                _error.postValue("Lỗi khi cập nhật tài khoản ngân hàng: ${e.message}")
+            } finally {
+                decrementPendingUpdatesAndRefresh(userId)
+            }
+        }
+    }
+
+    private fun decrementPendingUpdatesAndRefresh(userId: String) {
+        pendingUpdates.value = pendingUpdates.value?.minus(1)
+        if (pendingUpdates.value == 0) {
+            getBankAccountByUser(userId) // Load lại dữ liệu sau khi hoàn tất tất cả cập nhật
+        }
+    }
+
+    fun updateTaiKhoan(id: String, updatedUser: UserResponse?) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.updateTaiKhoan(id, updatedUser)
+                if (response.isSuccessful && response.body() != null) {
+                    // Thành công, gọi lại API để tải dữ liệu mới
+                    _updateTaiKhoanResponse.postValue(response.body())
+                    getUserDetailById(id) // Lấy lại thông tin người dùng
+                    Log.d("UserViewModel", "Update successful: ${response.body()}")
+                } else {
+                    _error.postValue("Cập nhật thất bại: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Lỗi khi cập nhật tài khoản: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+
+
 }

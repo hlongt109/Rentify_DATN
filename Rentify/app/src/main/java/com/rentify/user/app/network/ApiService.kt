@@ -2,7 +2,6 @@ package com.rentify.user.app.network
 
 import Contract
 import ContractResponse
-import android.telecom.Call
 import com.rentify.user.app.model.Model.District
 import com.rentify.user.app.model.Model.Province
 import com.rentify.user.app.model.Model.Ward
@@ -15,6 +14,7 @@ import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
 import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.ListServiceResponse
+import com.rentify.user.app.model.Model.Bank
 import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
@@ -22,9 +22,8 @@ import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.model.Model.StatusBookingRequest
-import com.rentify.user.app.model.Model.UpdateInvoiceStatus
+import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
-import com.rentify.user.app.model.Post
 import com.rentify.user.app.model.PostListResponse
 import com.rentify.user.app.model.PostResponse
 
@@ -37,7 +36,7 @@ import com.rentify.user.app.model.SupportModel.SupportResponse
 
 import com.rentify.user.app.model.User
 import com.rentify.user.app.model.UserOfRoomDetail
-import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.model.ServiceFees.ServiceFeesItem
 import com.rentify.user.app.model.SupportModel.CreateReportResponse
 import com.rentify.user.app.model.UserResponse
 import com.rentify.user.app.repository.ForgotRepository.ForgotRequest
@@ -51,10 +50,10 @@ import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.repository.SupportRepository.APISupportResponse
 import com.rentify.user.app.repository.SupportRepository.AddSupport
 import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
-import com.rentify.user.app.repository.SupportRepository.CreateSupportResponse
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -65,6 +64,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.PartMap
 import retrofit2.http.Query
+
 
 ////
 data class RegisterRequest(
@@ -363,10 +363,13 @@ interface APIService {
 //    ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
     @GET("staff/contracts/search")
     suspend fun searchContracts(
-        @Query("keyword") keyword: String? =null,
+        @Query("keyword") keyword: String? = null,
         @Query("manageId") manageId: String? = null // Thêm manageId
     ): List<Contract>// Kết quả trả về là danh sách hợp đồng  var
-
+    @GET("staff/contracts/user/{id}")
+    suspend fun getUserById(
+        @Path("id") userId: String
+    ): Response<User>
     ///ADD POST USRT
     @Multipart
     @POST("add")
@@ -468,9 +471,11 @@ interface APIService {
         @Path("id") userId: String,
         @Body userDetails: Map<String, String>
     ): Response<UserResponse>
+
     //bao cao su co
     @GET("getSupportsByUserId/{userId}")
     suspend fun getSupportsByUserId(@Path("userId") userId: String): Response<APISupportResponse>
+
     //them
     @Multipart
     @POST("create-report")
@@ -483,9 +488,11 @@ interface APIService {
         @Part("status") status: RequestBody,
         @Part images: List<MultipartBody.Part>
     ): Response<AddSupport>
+
     //lay thong tin phong trong hop dong theo userId
     @GET("get-room-by-contract/{userId}")
     suspend fun getRoomByContract(@Path("userId") userId: String): Response<ContractRoomResponse>
+
     //check co hợp đồng hay không
     @GET("check-contract/{userId}")
     suspend fun checkContract(@Path("userId") userId: String): Response<com.rentify.user.app.repository.SupportRepository.ContractResponse>
@@ -494,12 +501,44 @@ interface APIService {
     //gui mail xac nhan
     @POST("forgot-password")
     suspend fun postMailForgot(@Body forgotRequest: ForgotRequest): Response<ForgotResponse>
+
     //xac nhan ma
     @POST("confirm-code")
     suspend fun confirmCode(@Body confirmCode: MailConfirmForgot): Response<ForgotResponse>
+
     @PUT("reset-password")
     suspend fun resetPassword(@Body resetPassword: ResetPassword): Response<ForgotResponse>
+
     //lay thong tin nguoi dung
     @GET("get-user-infor/{userId}")
     suspend fun getInfoUser(@Path("userId") userId: String): Response<ApiResponse>
+
+    @GET("staff/users/serviceFeesUser/{userId}")
+    suspend fun getServiceFeesByUser(
+        @Path("userId") userId: String
+    ): Response<List<ServiceFeesItem>>
+
+    @GET("staff/users/getBankAccount/{userId}")
+    suspend fun getBankAccount(
+        @Path("userId") userId: String
+    ): Response<Bank>
+
+    @PUT("staff/users/updateBankAccount/{userId}")
+    suspend fun updateBankAccount(
+        @Path("userId") userId: String,
+        @Body bank: Bank
+    ): Response<Bank>
+
+    @Multipart
+    @PUT("staff/users/updateBankAccount/{userId}")
+    suspend fun updateBankAccountWithImage(
+        @Path("userId") userId: String,
+        @Part qr_bank: MultipartBody.Part,
+    ): Response<Bank>
+
+    @PUT("staff/users/updateTaiKhoan/{id}")
+    suspend fun updateTaiKhoan(
+        @Path("id") id: String,
+        @Body updatedUser: UserResponse?
+    ): Response<UpdateTaiKhoanResponse>
 }

@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.view.userScreens.laundryScreen.components.ItemgiatComponent
@@ -23,14 +24,14 @@ fun LaundryPreview(){
     LaundryScreen(navController= rememberNavController())
 }
 @Composable
-fun LaundryScreen(navController: NavHostController){
+fun LaundryScreen(navController: NavController){
     Column (
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
     ){
 
-        TenComponent(navController)
-        ItemgiatComponent(navController)
+//        TenComponent(navController)
+//        ItemgiatComponent(navController)
     }
 }

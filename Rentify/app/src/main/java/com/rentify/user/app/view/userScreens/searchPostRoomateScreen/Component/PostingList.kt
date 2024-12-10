@@ -145,7 +145,7 @@ fun PostingListCard(
                         contentDescription = null,
                         modifier = Modifier.size(25.dp, 25.dp)
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(15.dp))
                     Image(
                         painter = painterResource(id = R.drawable.mess),
                         contentDescription = null,
@@ -205,9 +205,13 @@ fun PostingListCard(
                     // .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.PostMediaSection1(
-                        mediaList = postlist.photos + postlist.videos
-                    )
+
+                    if (postlist.photos.isNotEmpty() && postlist.videos.isNotEmpty()) {
+                        com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.PostMediaSection1(
+                            mediaList = postlist.photos + postlist.videos
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(5.dp))
                     Box(modifier = Modifier.padding(horizontal = 10.dp)) {
                         androidx.compose.material3.Button(

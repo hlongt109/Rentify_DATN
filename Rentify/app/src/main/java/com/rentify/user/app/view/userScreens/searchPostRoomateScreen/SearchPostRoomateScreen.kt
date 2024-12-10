@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,8 +23,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
@@ -48,6 +51,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -124,7 +128,7 @@ fun SearchPostRoomateScreen(navController: NavController) {
                         .background(color = Color(0xfff7f7f7))
 
                 ) {
-                    HeaderComponent(navController)
+                    SearchPostRoommateTopBar(navController)
                     CustomTabBar(
                         items = tabs,
                         selectedIndex = selectedTabIndex,
@@ -182,6 +186,38 @@ fun HiddenPostsScreen(
     onDeletePost: (String) -> Unit
 ) {
     PostListWithSwipe(navController = navController, posts = posts, onDeletePost = onDeletePost)
+}
+
+@Composable
+fun SearchPostRoommateTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(
+            onClick = { navController.popBackStack() }
+        ) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew,
+                contentDescription = "Back"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và text
+
+        androidx.compose.material.Text(
+            text = "Tìm người ở ghép",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
+    }
 }
 
 

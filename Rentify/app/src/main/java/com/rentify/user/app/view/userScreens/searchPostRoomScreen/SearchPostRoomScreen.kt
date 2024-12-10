@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -16,8 +17,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
@@ -35,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -105,7 +109,7 @@ fun SearchPostRoonmScreen
                         .background(color = Color(0xfff7f7f7))
 
                 ) {
-                    HeaderComponent(navController)
+                    SearchPostRoomTopBar(navController)
                     CustomTabBar(
                         items = tabs,
                         selectedIndex = selectedTabIndex,
@@ -138,5 +142,34 @@ fun SearchPostRoonmScreen
     )
 }
 
+@Composable
+fun SearchPostRoomTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(
+            onClick = { navController.popBackStack() }
+        ) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew,
+                contentDescription = "Back"
+            )
+        }
 
+        Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và text
 
+        androidx.compose.material.Text(
+            text = "Bài đăng tìm phòng ",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
+    }
+}

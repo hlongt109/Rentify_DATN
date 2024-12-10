@@ -25,6 +25,7 @@ import com.rentify.user.app.view.userScreens.homeScreen.components.LayoutBanner2
 import com.rentify.user.app.view.userScreens.homeScreen.components.LayoutSearch
 import com.rentify.user.app.view.userScreens.personalScreen.components.LayoutItemName
 import com.rentify.user.app.view.userScreens.personalScreen.components.LayoutItems
+import com.rentify.user.app.view.userScreens.personalScreen.components.LayoutMenu
 import com.rentify.user.app.view.userScreens.personalScreen.components.MenuComponent
 
 
@@ -35,7 +36,9 @@ fun PersonalScreen() {
 }
 
 @Composable
-fun LayoutPersonal(navController: NavHostController) {
+fun LayoutPersonal(
+    navController: NavHostController
+) {
 
     val scrollState= rememberScrollState()
     val configuration = LocalConfiguration.current
@@ -61,8 +64,9 @@ fun LayoutPersonal(navController: NavHostController) {
             }
         }
         Spacer(modifier = Modifier.padding(20.dp))
-        MenuComponent()
+        LayoutMenu(navController)
         Spacer(modifier = Modifier.padding(3.dp))
         LayoutItems(navController)
+        Spacer(modifier = Modifier.padding(35.dp))
     }
 }
