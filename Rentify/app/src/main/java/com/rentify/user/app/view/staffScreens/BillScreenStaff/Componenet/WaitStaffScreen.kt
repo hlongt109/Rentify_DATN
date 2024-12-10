@@ -3,7 +3,6 @@ package com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,12 +37,12 @@ import com.rentify.user.app.viewModel.StaffViewModel.InvoiceStaffViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.InvoiceUiState
 
 @Composable
-fun UnPaidStaffScreen(
+fun WaitStaffScreen(
     navController: NavController,
     viewModel: InvoiceStaffViewModel = viewModel(),
     staffId: String,
 ) {
-    val unpaidInvoices by viewModel.unpaidInvoices.collectAsState()
+    val unpaidInvoices by viewModel.waitInvoices.collectAsState()
     val error by viewModel.errorMessage.observeAsState("") // Nhận thông báo lỗi
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.observeAsState()
