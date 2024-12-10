@@ -15,50 +15,59 @@ data class User(
     val address: String,
     val profile_picture_url: String,
     val verified: Boolean,
-    val landlord_id : String,
+    val landlord_id: String,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
-
+data class User_contrac(
+    val _id: String,
+    val role: String, // vai trò (admin, user, nhan vien, . ..)
+    val profile_picture_url: String,
+    val name: String,
+)
 // Xử lý user với màn roomDetail
 data class UserOfRoomDetail(
-    @SerializedName("landlord")val landlord: Landlord,
-    @SerializedName("totalRooms")val totalRooms: Int
+    @SerializedName("landlord") val landlord: Landlord,
+    @SerializedName("totalRooms") val totalRooms: Int,
 )
 
 data class Landlord(
-    @SerializedName("_id")val _id: String,
-    @SerializedName("address")val address: String,
-    @SerializedName("email")val email: String,
-    @SerializedName("name")val name: String,
-    @SerializedName("phoneNumber")val phoneNumber: String,
-    @SerializedName("profile_picture_url")val profile_picture_url: String
+    @SerializedName("_id") val _id: String,
+    @SerializedName("address") val address: String,
+    @SerializedName("email") val email: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("phoneNumber") val phoneNumber: String,
+    @SerializedName("profile_picture_url") val profile_picture_url: String,
 )
 
 // lay use de xu ly profile
 data class UserResponse(
-    @SerializedName("_id")val _id: String,
-    @SerializedName("username")val username: String,
-    @SerializedName("password")val password: String,
-    @SerializedName("email")val email: String,
-    @SerializedName("phoneNumber")val phoneNumber: String,
-    @SerializedName("role")val role: String, // vai trò (admin, user, nhan vien, . ..)
-    @SerializedName("name")val name: String,
-    @SerializedName("dob")val dob: String, // ngày sinh
-    @SerializedName("gender")val gender: String, // giới tính
-    @SerializedName("address")val address: String,
-    @SerializedName("profile_picture_url")val profile_picture_url: String,
-    @SerializedName("verified")val verified: Boolean,
-    @SerializedName("landlord_id")val landlord_id : String,
-    @SerializedName("created_at")val created_at: String,
-    @SerializedName("updated_at")val updated_at: String
+    @SerializedName("_id") val _id: String,
+    @SerializedName("username") val username: String,
+    @SerializedName("password") val password: String,
+    @SerializedName("email") val email: String,
+    @SerializedName("phoneNumber") val phoneNumber: String,
+    @SerializedName("role") val role: String, // vai trò (admin, user, nhan vien, . ..)
+    @SerializedName("name") val name: String,
+    @SerializedName("dob") val dob: String, // ngày sinh
+    @SerializedName("gender") val gender: String, // giới tính
+    @SerializedName("address") val address: String,
+    @SerializedName("profile_picture_url") val profile_picture_url: String,
+    @SerializedName("verified") val verified: Boolean,
+    @SerializedName("landlord_id") val landlord_id: String,
+    @SerializedName("created_at") val created_at: String,
+    @SerializedName("updated_at") val updated_at: String,
+)
+
+data class ProfilePictureResponse(
+    val profile_picture_url: String,
 )
 
 // thien thuc hien lay QR landlord va chu toa
 
 data class LandlordOrStaffs(
     val landlord: LandlordResponse,
-    val manager: LandlordResponse
+    val manager: LandlordResponse,
 )
 
 data class LandlordResponse(
@@ -76,12 +85,12 @@ data class LandlordResponse(
     val role: String,
     val updated_at: String,
     val username: String,
-    val verified: Boolean
+    val verified: Boolean,
 )
 
 data class BankAccount(
     val bank_name: String,
     val bank_number: Long,
     val qr_bank: List<String>,
-    val username: String
+    val username: String,
 )

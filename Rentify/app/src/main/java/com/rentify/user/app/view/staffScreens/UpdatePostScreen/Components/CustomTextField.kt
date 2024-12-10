@@ -57,7 +57,7 @@ fun CustomTextField(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(53.dp)
                 .background(
                     color = Color.Transparent, shape = RoundedCornerShape(8.dp)
                 )
