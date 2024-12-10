@@ -171,6 +171,9 @@ document.addEventListener('click', (e) => {
     }
 });
 
+let latAddress;
+let lonAddress;
+
 // add building 
 document.getElementById("addBuildingForm").addEventListener("submit", async (event) => {
     event.preventDefault(); // Ngăn form reload trang
@@ -204,6 +207,13 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
         }).showToast();
     }
 
+    if (!latAddress || !lonAddress) {
+        alert("Bạn chưa lấy vị trí!");
+        return;
+    }
+
+    const toaDo = [latAddress, lonAddress]
+
     // Dữ liệu gửi
     const data = {
         landlord_id,
@@ -212,6 +222,7 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
         serviceFees,
         nameBuilding,
         address,
+        toaDo,
         description,
         number_of_floors,
     };
@@ -314,6 +325,14 @@ const init = async () => {
         document.getElementById('number_of_floors').value = buildingData.number_of_floors;
         document.getElementById('description').value = buildingData.description;
 
+        if (buildingData.toaDo && buildingData.toaDo.length > 0) {
+            // Only run this code if buildingData.toaDo exists and has coordinates
+            document.getElementById("box-map").style.display = "block";
+            latAddress = buildingData.toaDo[0];
+            lonAddress = buildingData.toaDo[1];
+            showMap(buildingData.toaDo[0], buildingData.toaDo[1]);
+        }
+
         const submitButton = document.querySelector('button[type="submit"]');
         submitButton.textContent = "Cập Nhật Toà Nhà";
     }
@@ -392,5 +411,69 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+// get tọa độ
+const mapboxToken = 'sk.eyJ1IjoicGhvbmdiYW90byIsImEiOiJjbTRmd2w5dGsxODlvMmxwZnY4NDFybGYzIn0.v5PXUGm7q7E-3lU17pWLhw';
+
+async function getCoordinatesFromAddress(address) {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxToken}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.features.length > 0) {
+            const location = data.features[0].geometry.coordinates;
+            console.log(`Latitude: ${location[1]}, Longitude: ${location[0]}`);
+            return { lat: location[1], lon: location[0] };
+        } else {
+            console.error("No results found for the given address.");
+        }
+    } catch (error) {
+        console.error("Error fetching coordinates:", error);
+    }
+}
+
+// Fetch coordinates when button is clicked
+document.getElementById("getCoordinates").addEventListener("click", async () => {
+    const address = document.getElementById("address").value;
+    if (address.trim() === "") {
+        const messageElement = document.getElementById("box-map");
+        messageElement.textContent = "Bạn chưa nhập địa chỉ";
+        messageElement.style.display = "block";
+        return;
+    }
+    const location = await getCoordinatesFromAddress(address);
+    latAddress = location.lat;
+    lonAddress = location.lon;
+    document.getElementById("box-map").style.display = "block";
+    if (location) {
+        console.log("Coordinates:", location);
+        // document.getElementById("latitude").value = location.lat;
+        // document.getElementById("longitude").value = location.lon;
+        showMap(location.lat, location.lon);
+    } else {
+        const messageElement = document.getElementById("box-map");
+        if (messageElement) {
+            messageElement.textContent = "Bạn chưa nhập địa chỉ";
+            messageElement.style.display = "block";
+        }
+    }
+});
+
+// Show map using Mapbox
+function showMap(lat, lon) {
+    // Initialize the map with Mapbox
+    const map = L.map('map').setView([lat, lon], 15);
+    const nameBuilding = document.getElementById("nameBuilding").value.trim();
+
+    // Use Mapbox tiles instead of OpenStreetMap
+    L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`, {
+        attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> contributors'
+    }).addTo(map);
+
+    L.marker([lat, lon]).addTo(map)
+        .bindPopup(`${nameBuilding}`)
+        .openPopup();
+}
 
 window.onload = init;

@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
 </head>
 
 <body>
@@ -40,6 +46,7 @@
                     <input type="text" id="address" name="address" class="form-control" placeholder="Nhập địa chỉ"
                         required>
                     <ul id="address-list" class="dropdown-menu"></ul>
+
                 </div>
 
                 <!-- Number of Floors -->
@@ -50,16 +57,29 @@
                 </div>
             </div>
 
-            <!-- Description -->
-            <div class="mb-3">
-                <label for="description" class="form-label">Mô Tả</label>
-                <textarea id="description" name="description" class="form-control" rows="3"
-                    placeholder="Mô tả ngắn gọn về toà nhà" required></textarea>
+            <!-- Nút lấy tọa độ -->
+            <div class="row" id="box-get">
+                <div class="col-md-6">
+                    <button type="button" id="getCoordinates" class="btn btn-primary">Lấy Vị Trí</button>
+                </div>
+            </div>
+
+            <!-- Description, Map -->
+            <div class="row mb-3">
+                <div id="box-map" class="col-md-6" style="padding: 15px; color: red;  display: none; border-radius: 5px; overflow: hidden;">
+                    <div id="map" style="height: 250px;"></div>
+                </div>
+     
+                <div class="col-md-6" style="padding: 15px;">
+                    <label for="description" class="form-label">Mô Tả</label>
+                    <textarea id="description" name="description" class="form-control" rows="3"
+                        placeholder="Mô tả ngắn gọn về toà nhà" required></textarea>
+                </div>
             </div>
 
             <!-- Dịch Vụ -->
             <div class="mb-3">
-<label for="services" class="form-label">Dịch Vụ</label>
+                <label for="services" class="form-label">Dịch Vụ</label>
                 <div id="services-container" class="d-flex flex-wrap">
                     <!-- Các dịch vụ sẽ được chèn động tại đây -->
                 </div>
@@ -73,7 +93,7 @@
                     <input type="text" id="new-service" class="form-control" placeholder="Nhập tên dịch vụ mới" />
                     <button type="button" id="add-service" class="btn btn-secondary ms-3">Thêm Dịch Vụ</button>
                 </div>
-            </div>            
+            </div>
 
 
             <!-- Phí Dịch Vụ -->

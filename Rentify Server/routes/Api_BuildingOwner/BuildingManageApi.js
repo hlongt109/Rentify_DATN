@@ -78,6 +78,7 @@ router.post('/add-building', async (req, res) => {
             serviceFees, // Thêm phí dịch vụ
             nameBuilding,
             address,
+            toaDo,
             description,
             number_of_floors
         } = req.body;
@@ -112,6 +113,7 @@ router.post('/add-building', async (req, res) => {
             serviceFees, // Lưu phí dịch vụ vào cơ sở dữ liệu
             nameBuilding,
             address,
+            toaDo,
             description,
             number_of_floors,
             created_at: new Date().toISOString(),
@@ -135,6 +137,7 @@ router.put('/buildings/:id', async (req, res) => {
     const { id } = req.params;
     const {
         address,
+        toaDo,
         description,
         number_of_floors,
         nameBuilding,
@@ -199,6 +202,7 @@ router.put('/buildings/:id', async (req, res) => {
             {
                 nameBuilding,
                 address,
+                toaDo,
                 description,
                 number_of_floors,
                 service, // Cập nhật dịch vụ

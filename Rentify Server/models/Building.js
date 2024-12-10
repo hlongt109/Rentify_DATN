@@ -27,6 +27,7 @@ const Building = new Schema({
   serviceFees: [serviceFeeSchema],
   nameBuilding: { type: String },
   address: { type: String },
+  toaDo: [Number],
   description: { type: String },
   number_of_floors: { type: Number },
   created_at: { type: String },
