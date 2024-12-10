@@ -47,7 +47,9 @@ import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractDetailScreen
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractImageScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
+import com.rentify.user.app.view.userScreens.BaiDangYeuThich.BaiDangYeuThich
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.userScreens.DieuKhoanChinhSach.DieuKhoanChinhSach
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.QuanLiDichVu.QuanLiDichVu
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
@@ -236,6 +238,13 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.HOME_STAFF.name) {
                 HomeScreen(navController = navController)
             }
+            composable(ROUTER.BaiDangYeuThich.name) {
+                BaiDangYeuThich(navController = navController)
+            }
+            composable(ROUTER.DieuKhoanChinhSach.name) {
+                DieuKhoanChinhSach(navController = navController)
+            }
+
             composable(ROUTER.BUILDING.name) {
                 BuildingScreen(navController = navController)
             }
@@ -437,7 +446,8 @@ class MainActivity : ComponentActivity() {
         ADDPOST_staff,
         Search_roommate,
         AppointmentScreen,
-
+        BaiDangYeuThich,
+        DieuKhoanChinhSach,
         //những màn hình thiên thêm
         ADDCONTRAC_STAFF,
         ListSupportByRoom,
