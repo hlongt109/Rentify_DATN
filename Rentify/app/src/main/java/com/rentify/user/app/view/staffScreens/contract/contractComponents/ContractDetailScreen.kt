@@ -325,9 +325,10 @@ fun EditContractDialog(
 //                    placeholder = "userId1,userId2,...",
 //                    isReadOnly = false
 //                )
+                Spacer(modifier = Modifier.padding(5.dp))
                 Row(horizontalArrangement = Arrangement.Center) {
                     CustomTextField(
-                        label = "UserId",
+                        label = "Nhập userId",
                         value = userId,
                         onValueChange = { userId = it  },
                         modifier = Modifier
@@ -378,6 +379,7 @@ fun EditContractDialog(
                         androidx.compose.material3.Text("Kiểm tra")
                     }
                 }
+                Spacer(modifier = Modifier.padding(5.dp))
                 if (userList.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier
