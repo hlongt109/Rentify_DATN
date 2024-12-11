@@ -65,7 +65,7 @@ router.use("", roomManager);
 router.use("/", statisticMgrAPi)
 router.use("", post_UserApi);
 router.use("/", invoiceMgr)
-router.use("/", authApi);
+router.use("", authApi);
 router.use("/", notificationAdmin);
 router.use("/", reportApiAdmin);
 router.use("", QuanLy);
