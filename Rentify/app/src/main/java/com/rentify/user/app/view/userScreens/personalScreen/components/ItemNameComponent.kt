@@ -83,10 +83,11 @@ fun LayoutItemName(navController: NavHostController) {
             AsyncImage(
                 model = uriAnh,
                 contentDescription = "Profile Picture",
+                placeholder = painterResource(R.drawable.user), // Ảnh placeholder
+                error = painterResource(R.drawable.user), // Ảnh lỗi
                 modifier = Modifier
                     .size(50.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.LightGray),
+                    .clip(RoundedCornerShape(50.dp)),
                 contentScale = ContentScale.Crop
             )
         }

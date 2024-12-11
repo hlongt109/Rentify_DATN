@@ -379,5 +379,28 @@ router.get('/search', async (req, res) => {
 });
 
 
+router.get("/user/:id", async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        // Tìm người dùng theo ID và role là "user"
+        const user = await User.findOne({ _id: userId, role: "user" }).select("_id name role profile_picture_url");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found or not a user" });
+        }
+
+        // Trả về thông tin người dùng
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+role: user.role,
+            profile_picture_url: user.profile_picture_url,
+        });
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 module.exports = router;

@@ -2,7 +2,6 @@ package com.rentify.user.app.repository
 
 import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
-import com.rentify.user.app.model.Model.UpdateInvoiceStatus
 import com.rentify.user.app.model.SupportModel.CreateReportResponse
 import com.rentify.user.app.network.APIService
 import okhttp3.MultipartBody

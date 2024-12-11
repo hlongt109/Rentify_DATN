@@ -65,6 +65,7 @@ fun TextFiledComponent(
     listBuilding: List<Building>? = null,
     listRoom: List<Room>? = null,
     enable: Boolean = false,
+    check: Boolean = false,
     onExpandedChange: ((Boolean) -> Unit)? = null,
     onExpandedRoom: ((Boolean) -> Unit)? = null,
     onBuildingSelected: ((String) -> Unit)? = null,
@@ -116,7 +117,7 @@ fun TextFiledComponent(
                 )
                 .focusable()
                 .onFocusChanged { focusState -> isFocused.value = focusState.isFocused }
-                .clickable {
+                .clickable(enabled  = !check) {
                     // Xử lý click cho cả trường hợp chọn ngày và chọn building/room
                     onClick?.invoke()
                     if (listBuilding != null) {

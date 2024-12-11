@@ -22,7 +22,8 @@ data class InvoiceResponse(
 
 data class InvoiceData(
     val paid: List<Invoice>,
-    val unpaid: List<Invoice>
+    val unpaid: List<Invoice>,
+    val wait: List<Invoice>
 )
 
 data class InvoiceConfirmPaid(
@@ -54,7 +55,8 @@ data class Invoice(
     val due_date: String,
     val payment_status: String,
     val created_at: String,
-    val detail_invoice: List<Any> = emptyList()
+    val detail_invoice: List<Any> = emptyList(),
+    val image_paymentofuser : String
 )
 data class Description(
     val service_name: String,

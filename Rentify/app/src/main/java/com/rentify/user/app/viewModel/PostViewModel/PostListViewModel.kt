@@ -114,8 +114,8 @@ class PostViewModel : ViewModel() {
 
     private val _updateStatus = MutableLiveData<Boolean?>() // Sử dụng Boolean? để kiểm tra null
     val updateStatus: LiveData<Boolean?> = _updateStatus
-    private var _pendingUpdates = 0
-    // Cập nhật bài viết
+private val _pendingUpdates = MutableLiveData(0) // Số lần cập nhật đang chờ xử lý
+
     fun updatePost(
         postId: String,
         userId: String?,
@@ -130,8 +130,10 @@ class PostViewModel : ViewModel() {
         photoFile: List<MultipartBody.Part>?
     ) {
         viewModelScope.launch {
-            _pendingUpdates++
+            _pendingUpdates.value = (_pendingUpdates.value ?: 0) + 1 // Tăng số cập nhật đang chờ xử lý
+
             try {
+                // Chuẩn bị dữ liệu gửi đi
                 val userIdBody = userId?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val buildingIdBody = buildingId?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val roomIdBody = roomId?.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -141,6 +143,7 @@ class PostViewModel : ViewModel() {
                 val statusBody = status?.toRequestBody("text/plain".toMediaTypeOrNull())
                 val postTypeBody = postType?.toRequestBody("text/plain".toMediaTypeOrNull())
 
+                // Gửi yêu cầu cập nhật
                 val response = RetrofitClient.apiService.updatePost(
                     postId,
                     userIdBody,
@@ -159,21 +162,32 @@ class PostViewModel : ViewModel() {
                     _postDetail.value = response.body()
                     _updateStatus.value = true // Thành công
                     getPostDetail(postId)
-                    Log.d("CheckUpdate", "updatePost: ${response.body()}")
                     _errorMessage.postValue("Cập nhật bài viết thành công.")
+                    Log.d("CheckUpdate", "updatePost: ${response.body()}")
+
                     if (userId != null) {
                         getPostingList_user(userId, postType = postType)
-                     //   getPostDetail(postId)
-                        Log.d("CheckUpdate", "_postDetail.value: ${_postDetail.value}")
                     }
                     resetUpdateStatus()
                 } else {
                     _updateStatus.value = false // Thất bại
-                    _errorMessage.postValue("Cập nhật dfdfgfsdftbbhất bại: ${response.message()}")
+                    _errorMessage.postValue("Cập nhật thất bại: ${response.message()}")
                 }
             } catch (e: Exception) {
-                _updateStatus.value = false // Thất bại
+                _updateStatus.value = false // Lỗi
                 _errorMessage.postValue("Lỗi khi cập nhật bài viết: ${e.message}")
+            } finally {
+                // Giảm số cập nhật chờ xử lý
+                val pending = (_pendingUpdates.value ?: 1) - 1
+                _pendingUpdates.value = pending
+
+                // Chỉ tải lại dữ liệu khi tất cả cập nhật hoàn tất
+                if (pending == 1) {
+                    getPostDetail(postId) // Tải lại thông tin bài đăng
+                    if (userId != null) {
+                        getPostingList_user(userId, postType = postType)
+                    }
+                }
             }
         }
     }
