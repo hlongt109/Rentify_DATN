@@ -32,6 +32,7 @@ import com.rentify.user.app.model.ProfilePictureResponse
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.ServiceAdmin.AdminService
 import com.rentify.user.app.model.ServiceOfBuilding
 import com.rentify.user.app.model.SupportModel.SupportResponse
 
@@ -550,9 +551,13 @@ interface APIService {
         @Part profilePicture: MultipartBody.Part
     ): Response<ProfilePictureResponse>
 
-    // hiển thị
     @GET("staff/users/getImageUser/{id}")
     suspend fun getImageUser(
         @Path("id") userId: String
     ): Response<ProfilePictureResponse>
+
+    @GET("service_adm/{admin_id}")
+    suspend fun service_adm(
+        @Path("admin_id") adminId: String
+    ): Response<AdminService>
 }

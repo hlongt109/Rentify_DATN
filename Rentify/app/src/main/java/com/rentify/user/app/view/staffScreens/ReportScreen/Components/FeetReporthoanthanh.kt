@@ -1,7 +1,6 @@
 package com.rentify.user.app.view.staffScreens.ReportScreen.Components
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -27,8 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -53,28 +50,125 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.rentify.user.app.R
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import com.rentify.user.app.viewModel.SupportViewmodel.SupportViewModel
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ListSupportByRoomPreview() {
-    ListSupportByRoom(navController = rememberNavController(),
-        buildingId = "sample_building_id",1
-    )
-}
+fun FeetReporthoanthanh(
+    navController: NavHostController
+) {
+    val supportViewModel: SupportViewModel = viewModel()
+    val selectedSupport by supportViewModel.selectedSupport.observeAsState()
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val context = LocalContext.current
+        val viewModel: RoomViewModel = viewModel(
+            factory = RoomViewModel.RoomViewModeFactory(context)
+        )
+        val buildingWithRooms by viewModel.buildingWithRooms.observeAsState(emptyList())
 
+        // Biến trạng thái để theo dõi tòa nhà được chọn
+        var selectedBuildingId by remember { mutableStateOf<String?>(null) }
+
+        // Điều kiện hiển thị
+        if (selectedBuildingId == null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                if (buildingWithRooms.isNotEmpty()) {
+                    buildingWithRooms.forEach { building ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable {
+                                    // Cập nhật trạng thái khi nhấn vào tòa nhà
+                                    selectedBuildingId = building._id
+                                }
+                        ) {
+                            Column {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(70.dp)
+                                        .background(color = Color.White)
+                                        .padding(10.dp)
+                                ) {
+                                    // Icon hoặc hình ảnh của tòa nhà
+                                    Image(
+                                        painter = painterResource(id = R.drawable.building), // Hình ảnh đại diện tòa nhà
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFF5F5F5))
+                                            .padding(5.dp)
+                                    )
+                                    Text(
+                                        text = building.nameBuilding, // Tên tòa nhà
+                                    )
+                                    Text(
+                                        text = "Đã hoàn thành 🥇",
+                                        color = Color.Green,
+                                        modifier = Modifier.padding(start = 20.dp)// Tên tòa nhà
+                                    )
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(start = 10.dp)
+                                            .weight(1f)
+                                    ) {
+                                    }
+                                    // Mũi tên điều hướng
+                                    Image(
+                                        painter = painterResource(id = R.drawable.baseline_navigate_next_24),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Khi không có tòa nhà nào
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No buildings available",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.Gray
+                            )
+                        )
+                    }
+                }
+            }
+        } else {
+            ListSupportByRoomHoanThanh(navController, buildingId = selectedBuildingId!!,0)
+        }
+    }
+}
 @Composable
-fun ListSupportByRoom(
+fun ListSupportByRoomHoanThanh(
     navController: NavHostController,
     buildingId: String?,
     status: Int ?= 1,
@@ -308,31 +402,6 @@ fun ListSupportByRoom(
                             Log.d("TAG", "FeetReportyeucau: ${supportDetail?.image}")
                             //==============================================
                             Spacer(modifier = Modifier.height(25.dp))
-                            if(supportDetail?.status == 1){
-                                Button(
-                                    onClick = {
-                                        supportDetail?.let { detail ->
-                                            val updatedSupport = detail.copy(status = 0)
-                                            supportViewModel.updateSupportDetail(detail._id, updatedSupport, buildingId!!, status!!)
-                                            supportViewModel.fetchSupport(buildingId, status)
-                                            supportViewModel.setSelectedSupport(updatedSupport)
-                                            Toast.makeText(context, "Đã khắc phục sự cố", Toast.LENGTH_SHORT).show()
-                                        }
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(10.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xfffb6b53)
-                                    )
-                                ) {
-                                    Text(
-                                        modifier = Modifier.padding(6.dp),
-                                        text = "Đã khắc phục sự cố",
-                                        fontSize = 16.sp,
-                                        color = Color(0xffffffff)
-                                    )
-                                }
-                            }
                         }
                     }
                 }
@@ -340,114 +409,3 @@ fun ListSupportByRoom(
         }
     }
 }
-
-@Composable
-fun FeetReporthoanthanh(
-    navController: NavHostController
-) {
-    val supportViewModel: SupportViewModel = viewModel()
-    val selectedSupport by supportViewModel.selectedSupport.observeAsState()
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val context = LocalContext.current
-        val viewModel: RoomViewModel = viewModel(
-            factory = RoomViewModel.RoomViewModeFactory(context)
-        )
-        val buildingWithRooms by viewModel.buildingWithRooms.observeAsState(emptyList())
-
-        // Biến trạng thái để theo dõi tòa nhà được chọn
-        var selectedBuildingId by remember { mutableStateOf<String?>(null) }
-
-        // Điều kiện hiển thị
-        if (selectedBuildingId == null) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                if (buildingWithRooms.isNotEmpty()) {
-                    buildingWithRooms.forEach { building ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                                .clip(RoundedCornerShape(12.dp))
-                                .clickable {
-                                    // Cập nhật trạng thái khi nhấn vào tòa nhà
-                                    selectedBuildingId = building._id
-                                }
-                        ) {
-                            Column {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(70.dp)
-                                        .background(color = Color.White)
-                                        .padding(10.dp)
-                                ) {
-                                    // Icon hoặc hình ảnh của tòa nhà
-                                    Image(
-                                        painter = painterResource(id = R.drawable.building), // Hình ảnh đại diện tòa nhà
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(50.dp)
-                                            .clip(CircleShape)
-                                            .background(Color(0xFFF5F5F5))
-                                            .padding(5.dp)
-                                    )
-                                    Text(
-                                        text = building.nameBuilding, // Tên tòa nhà
-                                    )
-                                    Text(
-                                        text = "Đã hoàn thành 🥇",
-                                        color = Color.Green,
-                                        modifier = Modifier.padding(start = 20.dp)// Tên tòa nhà
-                                    )
-                                    Column(
-                                        modifier = Modifier
-                                            .padding(start = 10.dp)
-                                            .weight(1f)
-                                    ) {
-                                    }
-                                    // Mũi tên điều hướng
-                                    Image(
-                                        painter = painterResource(id = R.drawable.baseline_navigate_next_24),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    // Khi không có tòa nhà nào
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "No buildings available",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.Gray
-                            )
-                        )
-                    }
-                }
-            }
-        } else {
-            // Hiển thị ListSupportByRoom
-            ListSupportByRoom(navController, buildingId = selectedBuildingId!!,0)
-        }
-    }
-}
-
