@@ -21,7 +21,7 @@ data class LoginResponse(
     val dob: String, // Ngày sinh
     val gender: String, // Giới tính
     val address: String,
-    val profilePictureUrl: String,
+    val profile_picture_url: String,
     val username: String,
     val createdAt: String,
     val updatedAt: String

@@ -18,13 +18,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Card
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
@@ -53,6 +56,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -142,8 +146,6 @@ fun AddBillStaff(navController: NavController) {
     Log.d("ListBuilding", "AddBillStaff: $listBuilding")
 
     //khai bao 1 ty thu
-
-
     var building by remember { mutableStateOf("") }
     var room by remember { mutableStateOf("") }
     var priceRoom by remember { mutableStateOf(0.0) }
@@ -223,17 +225,13 @@ fun AddBillStaff(navController: NavController) {
             .verticalScroll(state = rememberScrollState())
             .padding(bottom = 20.dp)
     ) {
-        HeaderComponent(
-            title = "Thêm hóa đơn",
-            backgroundColor = Color.White,
-            navController = navController
-        )
+        AddBillManagerTopBar(navController = navController)
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(15.dp)
+                .padding(top = 0.dp, bottom = 15.dp, start = 15.dp, end = 15.dp)
         ) {
             //toa nha
             TextFiledComponent(
@@ -281,8 +279,10 @@ fun AddBillStaff(navController: NavController) {
                     isExpandedRoom = it
                 },
                 onRoomSelected = { selectedRoom ->
-                    priceRoom = selectedRoom.price.toDouble()
-                    formattedPriceRoom = CheckUnit.formattedPrice(selectedRoom.price.toFloat())
+                    val originalPrice = selectedRoom.price.toDouble()
+                    val saleDiscount = selectedRoom.sale.toDouble() ?: 0.0 // Nếu `sale` null thì mặc định là 0
+                    priceRoom = originalPrice - saleDiscount
+                    formattedPriceRoom = CheckUnit.formattedPrice(priceRoom.toFloat())
                 },
                 onExpandedRoomNull = {
                     isExpandedRoomNull = it
@@ -395,7 +395,7 @@ fun AddBillStaff(navController: NavController) {
                 ) {
                     Column {
                         TextFieldSmall(
-                            value = if (oldWaterNumber == 0) "" else oldWaterText,
+                            value = if (oldWaterNumber == null) "" else oldWaterText,
                             onValueChange = { newText ->
                                 oldWaterText = newText
                                 oldWaterNumber = newText.toIntOrNull() ?: 0
@@ -629,7 +629,6 @@ fun AddBillStaff(navController: NavController) {
                         modifier = Modifier.padding(vertical = 4.dp),
                         fontWeight = FontWeight.Medium
                     )
-//
                 }
             }
         }
@@ -677,9 +676,35 @@ fun AddBillStaff(navController: NavController) {
             )
         }
     }
+}
 
-    //
+@Composable
+fun AddBillManagerTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(onClick = { navController.popBackStack() }) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew, contentDescription = "Back"
+            )
+        }
 
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = "Thêm hoá đơn",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
+    }
 }
 
 @Preview(showBackground = true)

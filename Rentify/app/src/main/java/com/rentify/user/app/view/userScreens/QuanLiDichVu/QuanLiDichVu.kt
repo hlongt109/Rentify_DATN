@@ -85,9 +85,9 @@ fun QuanLiDichVu(navController: NavHostController) {
 
     Column(
         modifier = Modifier
-            .statusBarsPadding()
             .navigationBarsPadding()
-    ){
+            .statusBarsPadding()
+    ) {
         PhanDauQuanLiDichVu(navController)
 
         // Lặp qua từng BuildingId
@@ -101,9 +101,8 @@ fun QuanLiDichVu(navController: NavHostController) {
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .clickable { expanded = !expanded },
                     shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(8.dp),
+                    elevation = CardDefaults.cardElevation(3.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(1.dp, Color.LightGray)
                 ) {
                     Column(
                         modifier = Modifier

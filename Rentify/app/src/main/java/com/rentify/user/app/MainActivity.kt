@@ -13,7 +13,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.mapbox.geojson.Point
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
@@ -36,7 +35,9 @@ import com.rentify.user.app.view.staffScreens.personalScreen.PersonalScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.UpdateBillStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.ReportScreen.Components.DaHoanThanh
 import com.rentify.user.app.view.staffScreens.ReportScreen.Components.ListSupportByRoom
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.UpdatePostScreen
 import com.rentify.user.app.view.staffScreens.addContractScreen.AddContractScreens
@@ -48,7 +49,9 @@ import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractDetailScreen
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractImageScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
+import com.rentify.user.app.view.userScreens.BaiDangYeuThich.BaiDangYeuThich
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.userScreens.DieuKhoanChinhSach.DieuKhoanChinhSach
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
 import com.rentify.user.app.view.userScreens.QuanLiDichVu.QuanLiDichVu
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
@@ -74,6 +77,7 @@ import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
 import com.rentify.user.app.view.userScreens.rentalPost.RentalPostScreen
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails2
+import com.rentify.user.app.view.userScreens.saleRoomScreen.SaleRoomPostScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.PostDetailUserScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
@@ -250,6 +254,13 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.HOME_STAFF.name) {
                 HomeScreen(navController = navController)
             }
+            composable(ROUTER.BaiDangYeuThich.name) {
+                BaiDangYeuThich(navController = navController)
+            }
+            composable(ROUTER.DieuKhoanChinhSach.name) {
+                DieuKhoanChinhSach(navController = navController)
+            }
+
             composable(ROUTER.BUILDING.name) {
                 BuildingScreen(navController = navController)
             }
@@ -272,11 +283,17 @@ class MainActivity : ComponentActivity() {
                 UpdateRoomScreen(navController = navController, id = id, buildingId = buildingId)
             }
 
-
-
+            composable("UpdateBillStaff/{invoiceId}") { backStackEntry ->
+                val invoiceId = backStackEntry.arguments?.getString("invoiceId")
+                UpdateBillStaff(navController = navController, invoiceId = invoiceId)
+            }
 
             composable(ROUTER.RENTAL_POST.name) {
                 RentalPostScreen(navController = navController, title = null)
+            }
+
+            composable(ROUTER.SaleRoomScreen.name) {
+                SaleRoomPostScreen(navController = navController, title = null)
             }
 
             composable(
@@ -359,7 +376,6 @@ class MainActivity : ComponentActivity() {
 
             }
 
-
             //những màn hình thiên thêm
             composable(
                 route = "ROOMDETAILS/{roomId}",
@@ -380,6 +396,9 @@ class MainActivity : ComponentActivity() {
             }
 
             //phong forgot
+            composable(ROUTER.PREFORGOT.name) {
+                PreForgotPass(navController)
+            }
             composable(
                 ROUTER.PREFORGOT.name + "/{email}/{navigationType}",
                 arguments = listOf(
@@ -403,6 +422,9 @@ class MainActivity : ComponentActivity() {
                 ForgotPasswordScreen(navController, email, navigationType)
             }
 
+            composable(ROUTER.BottomTest.name) {
+                BottomNavigation(navController)
+            }
             //ggmap
             composable(
                 ROUTER.ROOMMAP.name + "/{latitude},{longitude}",
@@ -479,12 +501,14 @@ class MainActivity : ComponentActivity() {
         ADDPOST_staff,
         Search_roommate,
         AppointmentScreen,
-
+        BaiDangYeuThich,
+        DieuKhoanChinhSach,
         //những màn hình thiên thêm
         ADDCONTRAC_STAFF,
         ListSupportByRoom,
         QuanLiDichVuUser,
         BottomTest,
+        SaleRoomScreen,
         PREFORGOT,
         ROOMMAP,
         SEARCHMAP

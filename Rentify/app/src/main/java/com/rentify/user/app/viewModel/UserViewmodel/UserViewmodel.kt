@@ -27,22 +27,34 @@ class UserViewModel : ViewModel() {
     val user: LiveData<UserResponse?> = _user
     private val _userAcc = MutableLiveData<ResponseUser?>()
     val userAcc: LiveData<ResponseUser?> = _userAcc
+
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
+
     private val apiService = RetrofitService().ApiService
     private val _updateSuccess = MutableLiveData<Boolean>()
+
     val updateSuccess: LiveData<Boolean> = _updateSuccess
     private val _serviceFees = MutableLiveData<List<ServiceFeesItem>?>()
+
     val serviceFees: LiveData<List<ServiceFeesItem>?> = _serviceFees
-    private val _bankAccount = MutableLiveData<Bank?>()  // Cập nhật thành đối tượng Bank
+    private val _bankAccount = MutableLiveData<Bank?>()
+
     val bankAccount: LiveData<Bank?> = _bankAccount
     private val _updateTaiKhoanResponse = MutableLiveData<UpdateTaiKhoanResponse?>()
+
     val updateTaiKhoanResponse: LiveData<UpdateTaiKhoanResponse?> = _updateTaiKhoanResponse
+    private val _updateProfilePictureSuccess = MutableLiveData<Boolean>()
 
     private val _updateAccUserResponse = MutableLiveData<ResponseUser?>()
     val updateAccUserResponse: LiveData<ResponseUser?> = _updateAccUserResponse
 
+    val updateProfilePictureSuccess: LiveData<Boolean> = _updateProfilePictureSuccess
+    private val _profilePictureUrl = MutableLiveData<String>()
+
+    val profilePictureUrl: LiveData<String> = _profilePictureUrl
     // Hàm lấy thông tin người dùng theo _id (MongoDB _id)
+
     fun getUserDetailById(userId: String) {
         viewModelScope.launch {
             try {
@@ -244,6 +256,70 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun updateProfilePicture(userId: String, imageUri: Uri?, context: Context) {
+        viewModelScope.launch {
+            try {
+                // Kiểm tra xem ảnh có hợp lệ không
+                if (imageUri == null) {
+                    _error.postValue("Ảnh không hợp lệ")
+                    return@launch
+                }
+
+                // Chuyển đổi Uri thành File tạm thời
+                val contentResolver = context.contentResolver
+                val inputStream = contentResolver.openInputStream(imageUri)
+                val tempFile = File(context.cacheDir, "profile_picture_${System.currentTimeMillis()}.jpg")
+                inputStream?.use { tempFile.outputStream().use { output -> it.copyTo(output) } }
+
+                // Tạo MultipartBody.Part để gửi ảnh
+                val imagePart = MultipartBody.Part.createFormData(
+                    "profile_picture_url",
+                    tempFile.name,
+                    tempFile.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                )
+
+                // Gọi API để cập nhật ảnh hồ sơ
+                val response = apiService.addImageUser(userId, imagePart)
+
+                if (response.isSuccessful && response.body() != null) {
+                    // Thành công, cập nhật thông tin ảnh
+                    _updateProfilePictureSuccess.postValue(true)
+                    Log.d("UserViewModel", "Cập nhật ảnh hồ sơ thành công: ${response.body()?.profile_picture_url}")
+                } else {
+                    _updateProfilePictureSuccess.postValue(false)
+                    _error.postValue("Cập nhật ảnh thất bại: ${response.message()}")
+                    Log.e("UserViewModel", "Response error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _updateProfilePictureSuccess.postValue(false)
+                _error.postValue("Lỗi khi cập nhật ảnh hồ sơ: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
+
+    // hiển thị ảnh đại điện
+    fun getProfilePictureById(userId: String) {
+        viewModelScope.launch {
+            try {
+                // Gọi API để lấy ảnh hồ sơ của người dùng
+                val response = apiService.getImageUser(userId)
+                if (response.isSuccessful && response.body() != null) {
+                    // Nếu thành công, cập nhật LiveData với URL ảnh hồ sơ
+                    _profilePictureUrl.postValue(response.body()?.profile_picture_url)
+                    Log.d("UserViewModel", "Profile picture URL: ${response.body()?.profile_picture_url}")
+                } else {
+                    // Nếu có lỗi từ API, cập nhật LiveData với thông báo lỗi
+                    _error.postValue("Không thể lấy ảnh hồ sơ: ${response.message()}")
+                    Log.e("UserViewModel", "Error response: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                // Nếu có lỗi xảy ra, cập nhật LiveData với thông báo lỗi
+                _error.postValue("Lỗi khi lấy ảnh hồ sơ: ${e.message}")
+                Log.e("UserViewModel", "Exception: ${e.message}")
+            }
+        }
+    }
     fun updateUserAccount(id: String, updateUser: ResponseUser?){
         viewModelScope.launch {
             try {

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -47,12 +48,16 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.rentify.user.app.R
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
@@ -228,25 +233,47 @@ fun ItemUnPaidStaff(
                                 )
                             }
 
+                            if (invoice.room_id.sale != null && invoice.room_id.sale != 0){
+                                PaymentSaleDetailRow(
+                                    "Giảm giá",
+                                    CheckUnit.formattedPrice(invoice.room_id.sale.toFloat())
+                                )
+                            }
+
                             Spacer(modifier = Modifier.height(12.dp))
 
-//                            Button(
-//                                onClick = {},
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .height(50.dp),
-//                                colors = ButtonDefaults.buttonColors(
-//                                    containerColor = colorLocation
-//                                ),
-//                                shape = RoundedCornerShape(8.dp)
-//                            ) {
-//                                Text(
-//                                    text = "Chỉnh sửa hóa đơn",
-//                                    color = Color.White,
-//                                    modifier = Modifier.padding(vertical = 4.dp),
-//                                    fontWeight = FontWeight.Medium
-//                                )
-//                            }
+                            if(invoice.image_paymentofuser != null && invoice.image_paymentofuser != ""){
+                                val imageUrls = "http://10.0.2.2:3000/${invoice.image_paymentofuser.replace("\\", "/")}"
+                                AsyncImage(
+                                    model = imageUrls,
+                                    contentDescription = "",
+                                    placeholder = painterResource(R.drawable.error), // Ảnh placeholder
+                                    error = painterResource(R.drawable.error), // Ảnh lỗi
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                            }
+
+                            if(invoice.payment_status != "wait"){
+                                Button(
+                                    onClick = { navController.navigate("UpdateBillStaff/${invoice._id}") },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = colorLocation
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = "Chỉnh sửa hóa đơn",
+                                        color = Color.White,
+                                        modifier = Modifier.padding(vertical = 4.dp),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
 
                             Button(
                                 onClick =
@@ -318,6 +345,37 @@ private fun PaymentDetailRow(label: String, value: String) {
             text = value,
             fontSize = 13.sp,
             color = ColorBlack,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+fun PaymentSaleDetailRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .drawBehind {
+                drawLine(
+                    color = colorInput_2,
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 1.dp.toPx()
+                )
+            }
+            .padding(top = 10.dp, bottom = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            fontSize = 13.sp,
+            color = ColorBlack,
+            fontWeight = FontWeight.Medium
+        )
+        Text(
+            text = value,
+            fontSize = 13.sp,
+            color = Color.Red,
             fontWeight = FontWeight.Medium
         )
     }

@@ -50,7 +50,7 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
     })
       .populate({
         path: "room_id",
-        select: "room_name price service limit_person",
+        select: "room_name price service limit_person sale",
         populate: {
           path: "service",
           select: "name description price",
@@ -73,6 +73,9 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
     const unpaidInvoices = invoices.filter(
       (invoice) => invoice.payment_status === "unpaid"
     );
+    const waitInvoices = invoices.filter(
+      (invoice) => invoice.payment_status === "wait"
+    );
 
     // Trả kết quả
     return res.status(200).json({
@@ -81,6 +84,7 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
       data: {
         paid: paidInvoices,
         unpaid: unpaidInvoices,
+        wait: waitInvoices
       },
     });
   } catch (error) {
@@ -376,18 +380,120 @@ router.put("/updateInvoice/:invoiceId", async (req, res) => {
   }
 });
 
-// Xem chi tiết hóa đơn theo ID
-router.get("/detail/:id", async (req, res) => {
+// Lấy hóa đơn chi tiết theo ID
+router.get("/invoiceDetail/:invoiceId", async (req, res) => {
   try {
-    const invoice = await Invoice.findById(req.params.id);
+    const { invoiceId } = req.params;
+
+    // Tìm hóa đơn theo ID và populate các trường liên quan
+    const invoice = await Invoice.findById(invoiceId)
+      .populate({
+        path: "room_id",
+        select: "room_name price service limit_person",
+        populate: {
+          path: "service",
+          select: "name description price",
+        },
+      })
+      .populate("user_id", "name phoneNumber");
+
+    // Kiểm tra nếu không tìm thấy hóa đơn
     if (!invoice) {
-      return res.status(404).json({ message: "Invoice not found" });
+      return res.status(404).json({
+        status: 404,
+        message: "Không tìm thấy hóa đơn",
+      });
     }
-    res.json(invoice);
+
+    // Trả về kết quả
+    return res.status(200).json({
+      status: 200,
+      message: "Lấy chi tiết hóa đơn thành công",
+      data: invoice,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching invoice details:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Đã có lỗi xảy ra khi lấy chi tiết hóa đơn",
+      error: error.message,
+    });
   }
 });
+
+// API cập nhật hóa đơn không cập nhật các trường building_id, room_id, type_invoice, transaction_type, image_paymentofuser, payment_status
+router.put("/partialUpdateInvoice/:invoiceId", async (req, res) => {
+  try {
+    const { invoiceId } = req.params;
+    const { description, describe, amount, due_date } = req.body;
+
+    // Kiểm tra invoiceId có hợp lệ không
+    if (!invoiceId) {
+      return res.status(400).json({
+        status: 400,
+        message: "ID hóa đơn không được để trống",
+      });
+    }
+
+    // Tìm hóa đơn cần cập nhật
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) {
+      return res.status(404).json({
+        status: 404,
+        message: "Không tìm thấy hóa đơn",
+      });
+    }
+
+    // Kiểm tra nếu hóa đơn đã thanh toán
+    if (invoice.payment_status === "paid") {
+      return res.status(400).json({
+        status: 400,
+        message: "Không thể cập nhật hóa đơn đã thanh toán",
+      });
+    }
+
+    // Cập nhật thông tin hóa đơn
+    const updateData = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (description) updateData.description = description;
+    if (describe) updateData.describe = describe;
+    if (amount) updateData.amount = amount;
+    if (due_date) updateData.due_date = due_date;
+
+    // Thực hiện cập nhật
+    const updatedInvoice = await Invoice.findByIdAndUpdate(
+      invoiceId,
+      updateData,
+      { new: true }
+    )
+      .populate({
+        path: "room_id",
+        select: "room_name price service limit_person",
+        populate: {
+          path: "service",
+          select: "name description price",
+        },
+      })
+      .populate("user_id", "name phoneNumber");
+
+    return res.status(200).json({
+      status: 200,
+      message: "Cập nhật hóa đơn thành công",
+      data: updatedInvoice,
+    });
+  } catch (error) {
+    console.error("Error updating invoice:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Đã có lỗi xảy ra khi cập nhật hóa đơn",
+      error: error.message,
+    });
+  }
+});
+
+
 // Tìm kiếm hóa đơn
 router.get("/search", async (req, res) => {
   const { user_id, room_id, payment_status } = req.query;

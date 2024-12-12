@@ -126,7 +126,6 @@ fun SearchPostRoomateScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxSize()
                         .background(color = Color(0xfff7f7f7))
-
                 ) {
                     SearchPostRoommateTopBar(navController)
                     CustomTabBar(

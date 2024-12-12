@@ -188,6 +188,12 @@ fun LayoutSearch(navController: NavHostController) {
                         .padding(top = 5.dp)
                         .clickable {
                             statusType = type.type
+                            if (type.type == "Săn phòng giảm giá") {
+                                navController.navigate("SaleRoomScreen") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+
                             if (type.type == "Tìm người ở ghép") {
                                 navController.navigate("Search_roommate") // Điều hướng đến TogetherScreen
                             } else {

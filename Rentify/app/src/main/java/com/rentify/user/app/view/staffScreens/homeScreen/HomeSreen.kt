@@ -30,16 +30,22 @@ import com.rentify.user.app.R
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.MainActivity
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.ui.theme.location
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.HeaderSection
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.ListFunction
+import com.rentify.user.app.viewModel.LoginViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +55,17 @@ fun HomeScreen(navController: NavHostController) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+    val name = loginViewModel.getUserData().name
+    var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
 
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     val onComfortableSelected: (String) -> Unit = { option ->
@@ -76,7 +93,7 @@ fun HomeScreen(navController: NavHostController) {
             }
 
             "Tin nhắn" -> {
-                navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+                navController.navigate("MESSENGER")
             }
 
             "Bài đăng" -> {
@@ -159,8 +176,8 @@ data class Slice(val value: Float, val color: Int, val label: String)
 @Composable
 fun ClickablePieChartDemo() {
     val slices = arrayListOf(
-        Slice(40f, 0xFF6200EE.toInt(), "Hoá đơn đã thu"),
-        Slice(30f, 0xFF03DAC5.toInt(), "Hoá đơn chưa thu"),
+        Slice(10f, 0xFF6200EE.toInt(), "Phongf trong"),
+        Slice(15f, 0xFF03DAC5.toInt(), "Da cho thue"),
     )
 
     AndroidView(

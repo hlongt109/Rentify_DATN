@@ -54,9 +54,11 @@ fun ViewContractButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
-            .padding(20.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(10.dp),
+
+            .fillMaxWidth()
+        .height(50.dp)
+        .shadow(2.dp, RoundedCornerShape(10.dp)),
+      //  shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xffffffff))
     ) {
         Row {

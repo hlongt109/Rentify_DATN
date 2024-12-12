@@ -68,7 +68,7 @@ const removeVietnameseTones = (str) => {
 router.get('/search-rooms', async (req, res) => {
     try {
         const { address, minPrice, maxPrice, roomType, sortBy, page = 1, pageSize = 10, random } = req.query;
-        let searchConditions = {};
+        let searchConditions = {status: 0};
 
         // Thêm điều kiện giá
         if (minPrice) {
@@ -83,10 +83,12 @@ router.get('/search-rooms', async (req, res) => {
 
         // Thêm điều kiện loại phòng
         if (roomType) {
-            const normalizedRoomType = removeVietnameseTones(roomType.toLowerCase());
-            searchConditions.room_type = { $regex: normalizedRoomType, $options: 'i' };
+            searchConditions.room_type = {
+                $regex: roomType,
+                $options: 'i'  // Bỏ qua chữ hoa/thường
+            };
         }
-
+               
         // Điều kiện sắp xếp
         let sortCondition = {};
         if (sortBy === 'price_asc') {
@@ -184,6 +186,92 @@ router.get('/search-rooms', async (req, res) => {
     }
 });
 
+// Lấy các phòng có trường sale tồn tại
+router.get('/get-rooms-with-sale', async (req, res) => {
+    try {
+        const { address, minPrice, maxPrice, roomType, sortBy, page = 1, pageSize = 6 } = req.query;
+        let searchConditions = {
+            sale: { $exists: true, $ne: null }, // Điều kiện chỉ lấy các phòng có sale
+            status: 0
+        };
+
+        // Thêm điều kiện giá
+        if (minPrice) {
+            if (!searchConditions.price) searchConditions.price = {};
+            searchConditions.price.$gte = Number(minPrice);
+        }
+
+        if (maxPrice) {
+            if (!searchConditions.price) searchConditions.price = {};
+            searchConditions.price.$lte = Number(maxPrice);
+        }
+
+        // Thêm điều kiện loại phòng
+        if (roomType) {
+            searchConditions.room_type = {
+                $regex: roomType,
+                $options: 'i'  // Bỏ qua chữ hoa/thường
+            };
+        }     
+
+        // Điều kiện sắp xếp
+        let sortCondition = {};
+        if (sortBy === 'price_asc') {
+            sortCondition.price = 1;
+        } else if (sortBy === 'price_desc') {
+            sortCondition.price = -1;
+        }
+
+        // Tính toán phân trang
+        const skip = (page - 1) * pageSize;
+        const limit = parseInt(pageSize);
+
+        // Truy vấn dữ liệu từ MongoDB
+        const rooms = await room.find(searchConditions)
+            .sort(sortCondition)
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'building_id',
+                select: 'nameBuilding address images description status',
+            });
+
+        if (rooms.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy phòng nào có sale phù hợp với tiêu chí tìm kiếm",
+            });
+        }
+
+        // Nếu có `address`, lọc lại dữ liệu sau khi lấy từ DB
+        let filteredRooms = rooms;
+        if (address) {
+            const normalizedAddress = removeVietnameseTones(address.toLowerCase());
+            filteredRooms = rooms.filter((room) => {
+                const buildingAddress = removeVietnameseTones(room.building_id.address.toLowerCase());
+                return buildingAddress.includes(normalizedAddress);
+            });
+        }
+
+        if (filteredRooms.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy phòng nào có sale phù hợp với tiêu chí tìm kiếm",
+            });
+        }
+
+        // Trả về danh sách phòng đã lọc cùng thông tin phân trang
+        res.status(200).json({
+            rooms: filteredRooms,
+            totalRooms: await room.countDocuments(searchConditions), // Trả về tổng số phòng phù hợp
+            totalPages: Math.ceil(await room.countDocuments(searchConditions) / pageSize),
+            currentPage: page
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Đã có lỗi xảy ra khi lấy danh sách phòng có sale",
+            error: error.message,
+        });
+    }
+});
 
 router.get("/get-random-rooms", async (req, res) => {
     try {

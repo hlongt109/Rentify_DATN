@@ -10,11 +10,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.rentify.user.app.model.Building
 import com.rentify.user.app.model.Room_post
+import com.rentify.user.app.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.HttpException
+import retrofit2.Response
 
 class ContractViewModel : ViewModel() {
 
@@ -32,6 +37,69 @@ class ContractViewModel : ViewModel() {
     // LiveData danh sách phòng
     private val _rooms = MutableLiveData<List<Room_post>>()
     val rooms: LiveData<List<Room_post>> get() = _rooms
+
+
+    private val _userDetail = MutableStateFlow<User?>(null)
+    val userDetail: StateFlow<User?> get() = _userDetail
+
+    fun fetchUserById(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getUserById(userId)
+
+                if (response.isSuccessful) {
+                    val user = response.body()
+
+                    if (user != null) {
+                        // Kiểm tra vai trò của người dùng
+                        if (user.role == "user") {
+                            _userDetail.value = user
+                            _error.value = "" // Reset lỗi nếu thành công
+                            Log.d("fetchUserById", "Người dùng hợp lệ: $user")
+                        } else {
+                            val errorMessage = "Người dùng không có vai trò hợp lệ (phải là user)."
+                            _error.value = errorMessage
+                            Log.e("fetchUserById", errorMessage)
+                        }
+                    } else {
+                        val errorMessage = "Không tìm thấy người dùng với ID này."
+                        _error.value = errorMessage
+                        Log.e("fetchUserById", errorMessage)
+                    }
+                } else {
+                    val errorMessage = "Lỗi: ${response.code()} - ${response.message()}"
+                    _error.value = errorMessage
+                    Log.e("fetchUserById", errorMessage)
+                }
+            } catch (e: HttpException) {
+                val errorMessage = "Lỗi HTTP: ${e.message()}"
+                _error.value = errorMessage
+                Log.e("fetchUserById", errorMessage, e)
+            } catch (e: Exception) {
+                val errorMessage = "Lỗi không xác định: ${e.message}"
+                _error.value = errorMessage
+                    Log.e("fetchUserById", errorMessage, e)
+            }
+        }
+    }
+
+    suspend fun fetchUserByIdSuspend(userId: String): Result<User?> {
+        return try {
+            val response = RetrofitClient.apiService.getUserById(userId)
+            if (response.isSuccessful) {
+                val user = response.body()
+                if (user != null && user.role == "user") {
+                    Result.success(user)
+                } else {
+                    Result.failure(Exception("Người dùng không có vai trò hợp lệ (phải là user)."))
+                }
+            } else {
+                Result.failure(Exception("Lỗi: ${response.code()} - ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Lỗi không xác định: ${e.message}"))
+        }
+    }
 
 
     // Lấy danh sách tòa nhà

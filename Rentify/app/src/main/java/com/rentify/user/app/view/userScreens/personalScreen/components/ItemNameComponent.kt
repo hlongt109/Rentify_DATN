@@ -33,8 +33,11 @@ import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
 import android.widget.Toast
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import coil.compose.AsyncImage
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ItemNameComponent() {
@@ -75,14 +78,19 @@ fun LayoutItemName(navController: NavHostController) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.user),
-            contentDescription = null,
-            modifier = Modifier
-                .width(50.dp)
-                .height(50.dp)
-                .clip(CircleShape)
-        )
+        userDetail?.profile_picture_url?.let { photoUrl ->
+            val uriAnh = "http://10.0.2.2:3000/$photoUrl"
+            AsyncImage(
+                model = uriAnh,
+                contentDescription = "Profile Picture",
+                placeholder = painterResource(R.drawable.user), // Ảnh placeholder
+                error = painterResource(R.drawable.user), // Ảnh lỗi
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(50.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
         Column(
             modifier = Modifier
                 .weight(1f)
