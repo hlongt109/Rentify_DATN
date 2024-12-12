@@ -78,7 +78,7 @@ class ContractViewModel : ViewModel() {
             } catch (e: Exception) {
                 val errorMessage = "Lỗi không xác định: ${e.message}"
                 _error.value = errorMessage
-                Log.e("fetchUserById", errorMessage, e)
+                    Log.e("fetchUserById", errorMessage, e)
             }
         }
     }
