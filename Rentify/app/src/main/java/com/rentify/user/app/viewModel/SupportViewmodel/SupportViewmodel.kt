@@ -12,7 +12,6 @@ import retrofit2.Response
 class SupportViewModel : ViewModel() {
     // Retrofit API service instance
     private val apiService = RetrofitService().ApiService
-
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
@@ -26,6 +25,8 @@ class SupportViewModel : ViewModel() {
 
     private val _listSupport = MutableLiveData<List<SupportResponse?>>()
     val listSupport: LiveData<List<SupportResponse?>> get() = _listSupport
+    private val _listSupportMap = MutableLiveData<Map<String, List<SupportResponse?>>>()//
+    val listSupportMap: LiveData<Map<String, List<SupportResponse?>>> = _listSupportMap//
 
     // LiveData for error messages
     private val _errorMessage = MutableLiveData<String>()
@@ -39,9 +40,12 @@ class SupportViewModel : ViewModel() {
             try {
                 val response = apiService.getListSupport(building_id, status)
                 if (response.isSuccessful && response.body() != null) {
-                    _listSupport.value = response.body()
-
-                } else {
+                    val filteredList = response.body()?.filter { it?.status == status } ?: emptyList()
+                    val currentMap = _listSupportMap.value.orEmpty().toMutableMap()
+                    currentMap[building_id] = filteredList
+                    _listSupportMap.postValue(currentMap)
+                }
+                else {
                     _errorMessage.postValue("Failed to load support: ${response.message()}")
                 }
             } catch (e: Exception) {
