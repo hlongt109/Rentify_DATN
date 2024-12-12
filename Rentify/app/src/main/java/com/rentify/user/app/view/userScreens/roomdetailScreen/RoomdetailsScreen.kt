@@ -167,7 +167,11 @@ fun LayoutRoomdetails(
                 val phoneNumber = userDetail.value?.phoneNumber ?: ""
 
                 datLichXemPhong(
-                    staffId = userId,
+                    staffId = when {
+                        true -> detail.building_id.manager_id._id
+                        true -> detail.building_id.landlord_id._id
+                        else -> ""  // Nếu không có tên cả manager và landlord
+                    },
                     userName = userName,  // Thay thế bằng giá trị thích hợp
                     phoneNumber = phoneNumber,  // Thay thế bằng giá trị thích hợp
                     staffName = when {
@@ -300,6 +304,18 @@ fun LayoutRoomdetails(
                 Spacer(modifier = Modifier.padding(5.dp))
                 LayoutInterior(listAmenities = roomDetail.value?.service ?: emptyList())
                 Spacer(modifier = Modifier.padding(5.dp))
+                roomDetail.value?.let { detail ->
+                    staffId = when {
+                        true -> detail.building_id.manager_id._id
+                        true -> detail.building_id.landlord_id._id
+                        else -> ""  // Nếu không có tên cả manager và landlord
+                    }
+                    staffName = when {
+                        true -> detail.building_id.manager_id.name
+                        true -> detail.building_id.landlord_id.name
+                        else -> ""  // Nếu không có tên cả manager và landlord
+                    }
+                }
                 baidangPreview(navController, staffId, staffName)
             }
         }

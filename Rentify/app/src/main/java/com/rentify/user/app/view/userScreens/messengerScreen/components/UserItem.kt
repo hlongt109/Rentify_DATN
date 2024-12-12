@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,7 +51,7 @@ fun UserItem(
     userData.value.let {
         staffId = it?._id?:""
         name = it?.name?:""
-        avatar = it?.profilePictureUrl?:""
+        avatar = it?.profile_picture_url?:""
     }
 
     LaunchedEffect(userId) {
@@ -61,7 +62,7 @@ fun UserItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+            .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
     ) {
         Row(
@@ -70,11 +71,6 @@ fun UserItem(
                 .fillMaxWidth()
                 .height(80.dp)
                 .background(color = Color.White)
-                .border(
-                    width = 1.dp,
-                    color = Color(0xFFF0F0F0),
-                    shape = RoundedCornerShape(12.dp)
-                )
                 .clickable {
                     navController.navigate("TINNHAN/${staffId}/${name}")
                 }
@@ -90,9 +86,10 @@ fun UserItem(
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(70.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
-                    .clip(CircleShape)
                     .padding(start = 20.dp)
+                    .size(50.dp) // Kích thước nhỏ hơn so với ảnh ban đầu
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
@@ -108,18 +105,6 @@ fun UserItem(
                     )
                 }
             }
-//            Text(
-//                text = "Người cho thuê",
-//                fontSize = 14.sp,
-//                color = Color.White,
-//                modifier = Modifier
-//                    .padding(end = 10.dp)
-//                    .background(
-//                        color = Color(0xff44acfe), // Màu nền xanh nhạt
-//                        shape = RoundedCornerShape(8.dp)
-//                    )
-//                    .padding(horizontal = 8.dp, vertical = 4.dp) // Padding cho nhãn "Admin"
-//            )
         }
     }
 }

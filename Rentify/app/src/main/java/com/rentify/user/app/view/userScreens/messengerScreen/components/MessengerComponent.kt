@@ -68,29 +68,19 @@ fun MessengerComponent(
     Log.d("MessageComponent", "Current User ID: $currentUserId")
     val usersList = remember { mutableStateOf<List<chatUser>>(emptyList()) }
     val chatList by viewModel.chatList.observeAsState(emptyList())
-//    LaunchedEffect(Unit) {
-//        viewModel.getListUser({ usersList ->
-//            users.value = usersList.filter { it.id != currentUserId }
-//        }, loginViewModel)
-//    }
+
     LaunchedEffect(Unit) {
         viewModel.getChatList(
             userId = currentUserId,
-//            onUsersLoaded = { users ->
-//                // Xử lý danh sách users đã nhắn tin
-//                usersList.value = users.filter { it.id != currentUserId }
-//                Log.d("TinnhanScreen", "Users: ${usersList.value}")
-//            },
-//            loginViewModel = loginViewModel,
-//            database = FirebaseDatabase.getInstance()
         )
     }
     Column {
+        Spacer(modifier = Modifier.padding(5.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                .padding(horizontal = 16.dp)
+                .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
             Row(
@@ -99,11 +89,6 @@ fun MessengerComponent(
                     .fillMaxWidth()
                     .height(80.dp)
                     .background(color = Color.White)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFF0F0F0),
-                        shape = RoundedCornerShape(12.dp)
-                    )
                     .clickable {
                         navController.navigate("TINNHAN")
                     }
