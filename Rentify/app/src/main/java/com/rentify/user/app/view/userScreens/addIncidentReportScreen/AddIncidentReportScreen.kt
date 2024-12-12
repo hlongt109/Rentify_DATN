@@ -94,12 +94,15 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.SupportRepository.ContractRoom
 import com.rentify.user.app.repository.SupportRepository.ContractRoomData
 import com.rentify.user.app.repository.SupportRepository.SupportRepository
 import com.rentify.user.app.ui.theme.building_icon
+import com.rentify.user.app.ui.theme.colorLocation
 import com.rentify.user.app.utils.CheckUnit.toFilePath
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.userScreens.IncidentReport.Components.ContentExpand
@@ -171,6 +174,16 @@ fun AddIncidentReportScreen(navController: NavHostController) {
     val errorTitle by supportViewModel.errorTitle.observeAsState()
     val errorContent by supportViewModel.errorContent.observeAsState()
 
+    val successMessage by supportViewModel.successMessage.observeAsState()
+    val successAdd by supportViewModel.successMessageAdd.observeAsState()
+    val isLoading by supportViewModel.isLoading.observeAsState()
+
+    listRoom.forEach { room ->
+        roomNumber = room.room.room_number
+        roomId = room.room.room_id
+        buildingId = room.room.building.building_id
+    }
+
     LaunchedEffect(userId) {
         supportViewModel.getInfoRoom(userId)
     }
@@ -185,7 +198,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            HeaderComponent(navController = navController)
+            HeaderBar(navController, title = "Báo cáo sự cố")
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -197,7 +210,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        expanded = !expanded
+//                        expanded = !expanded
                     }
                     .border(
                         width = 0.dp,
@@ -264,31 +277,31 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                         }
 
                     }
-                    AnimatedVisibility(
-                        visible = expanded,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = Color.White)
-                                .padding(10.dp)
-                        ) {
-                            listRoom.forEach { item ->
-                                ItemRoomExpand(
-                                    room = item.room,
-                                    onRoomSelected = {
-                                        buildingId = item.room.building.building_id
-                                        roomId = item.room.room_id
-                                        roomNumber = item.room.room_number
-                                        expanded = false
-                                        supportViewModel.clearErrorRoom()
-                                    }
-                                )
-                            }
-                        }
-                    }
+//                    AnimatedVisibility(
+//                        visible = expanded,
+//                        enter = fadeIn() + expandVertically(),
+//                        exit = fadeOut() + shrinkVertically()
+//                    ) {
+//                        Column(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .background(color = Color.White)
+//                                .padding(10.dp)
+//                        ) {
+//                            listRoom.forEach { item ->
+//                                ItemRoomExpand(
+//                                    room = item.room,
+//                                    onRoomSelected = {
+//                                        buildingId = item.room.building.building_id
+//                                        roomId = item.room.room_id
+//                                        roomNumber = item.room.room_number
+//                                        expanded = false
+//                                        supportViewModel.clearErrorRoom()
+//                                    }
+//                                )
+//                            }
+//                        }
+//                    }
                 }
                 errorRoom?.let {
                     ShowReport.ShowError(message = it)
@@ -553,6 +566,7 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                     Spacer(modifier = Modifier.height(17.dp))
                     Button(
                         onClick = {/**/
+                            if (supportViewModel.isLoading.value == true) return@Button // Ngăn bấm nhiều lần
                             supportViewModel.createSupportReport(
                                 userId,
                                 roomId,
@@ -560,8 +574,15 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 titleSupport = incident,
                                 contentSupport = incidentdescription,
                                 imagePaths = imagePaths,
-                                status = 1,
-                            )
+                                status = 1
+                            ) {
+                                Toast.makeText(
+                                    context,
+                                    "Tạo báo cáo thành công",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.navigate(MainActivity.ROUTER.INCIDENTREPORT.name)
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -584,7 +605,23 @@ fun AddIncidentReportScreen(navController: NavHostController) {
 
         }
     }
-
+    if (isLoading == true) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(70.dp)
+                    .background(Color.White, shape = RoundedCornerShape(10.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = colorLocation)
+            }
+        }
+    }
 //    val rooms = (roomUiState as RoomSupportUiState.Success).data
 
 }
@@ -616,41 +653,7 @@ fun ItemRoomExpand(
             fontSize = 15.sp
         )
     }
-}
 
-fun getImagePathFromUri(context: Context, uri: Uri): String? {
-    return try {
-        // Sử dụng DocumentFile để làm việc với URI
-        val documentFile = DocumentFile.fromSingleUri(context, uri)
-        documentFile?.let { file ->
-            // Tạo file tạm
-            val tempFile = File(context.cacheDir, "temp_${file.name}")
-            context.contentResolver.openInputStream(uri)?.use { input ->
-                tempFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            tempFile.absolutePath
-        }
-    } catch (e: Exception) {
-        Log.e("UriConversion", "Error converting URI to file path", e)
-        null
-    }
-}
-
-fun isValidImageUri(context: Context, uri: Uri): Boolean {
-    return try {
-        // Kiểm tra quyền truy cập persistent
-        val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        context.contentResolver.takePersistableUriPermission(uri, takeFlags)
-
-        // Kiểm tra loại MIME
-        val mimeType = context.contentResolver.getType(uri)
-        mimeType?.startsWith("image/") == true
-    } catch (e: Exception) {
-        Log.e("ImageSelection", "Error validating URI", e)
-        false
-    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)

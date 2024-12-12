@@ -223,7 +223,7 @@ class LoginViewModel(
             "id" to user._id,
             "email" to user.email,
             "name" to user.name,
-            "avatar" to user.profilePictureUrl,
+            "avatar" to user.profile_picture_url,
             "isOnline" to true,
             "lastLogin" to System.currentTimeMillis()
         )
@@ -263,9 +263,10 @@ class LoginViewModel(
             putString("DOB", userData.dob)
             putString("Gender", userData.gender)
             putString("Address", userData.address)
-            putString("ProfilePictureUrl", userData.profilePictureUrl)
+            putString("ProfilePictureUrl", userData.profile_picture_url)
             putString("CreatedAt", userData.createdAt)
             putString("UpdatedAt", userData.updatedAt)
+            putString("Username", userData.username)
             apply()
         }
         checkLoginStatusAndRoute()
@@ -291,6 +292,7 @@ class LoginViewModel(
             preferences.getString("DOB", "") ?: "",
             preferences.getString("Gender", "") ?: "",
             preferences.getString("Address", "") ?: "",
+            preferences.getString("Username", "") ?: "",
             preferences.getString("ProfilePictureUrl", "") ?: ""
         )
     }
@@ -307,6 +309,7 @@ class LoginViewModel(
         val gender: String,
         val address: String,
         val profilePictureUrl: String,
+        val usename :String
     )
 
     fun getInfoUser(userId: String){

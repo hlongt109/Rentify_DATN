@@ -52,7 +52,11 @@ fun CustomTab(
                 TabRowDefaults.Indicator(
                     Modifier.tabIndicatorOffset(tabPositions[selectedIndex]),
                     height = 4.dp,
-                    color = colorTabBar
+                    color = when {
+                        selectedIndex == 0 -> Color(0xFFc24b2a) // Màu cho tab "Đang yêu cầu"
+                        selectedIndex == 1 -> Color(0xFF79bb75) // Màu cho tab "Đã hoàn thành"
+                        else -> Color(0xFFd8d8d8) // Màu cho các tab khác (mặc định)
+                    }
                 )
             },
             modifier = Modifier
@@ -69,7 +73,7 @@ fun CustomTab(
                             color = when {
                                 selectedIndex == index && index == 0 -> Color(0xFFc24b2a) // Đang yêu cầu
                                 selectedIndex == index && index == 1 -> Color(0xFF79bb75) // Đã hoàn thành
-                                else -> Color(0xFFd8d8d8)
+                                else -> Color(0xFFd8d8d8) // Màu cho tab không chọn
                             },
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold

@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 
 
@@ -59,6 +60,9 @@ fun LayoutSearch(navController: NavHostController) {
         TypeProduct("Tìm người ở ghép", R.drawable.timnguoi),
         TypeProduct("Vận chuyển", R.drawable.vanchuyen)
     )
+
+    val latitude = 0.0
+    val longitude = 0.0
 
     var statusType by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
@@ -184,6 +188,12 @@ fun LayoutSearch(navController: NavHostController) {
                         .padding(top = 5.dp)
                         .clickable {
                             statusType = type.type
+                            if (type.type == "Săn phòng giảm giá") {
+                                navController.navigate("SaleRoomScreen") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+
                             if (type.type == "Tìm người ở ghép") {
                                 navController.navigate("Search_roommate") // Điều hướng đến TogetherScreen
                             } else {
@@ -198,6 +208,12 @@ fun LayoutSearch(navController: NavHostController) {
 
                             if (type.type == "Tin đăng tìm phòng") {
                                 navController.navigate("Search_room") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+
+                            if (type.type == "Tìm phòng xung quanh") {
+                                navController.navigate(MainActivity.ROUTER.ROOMMAP.name+"/$latitude,$longitude") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }

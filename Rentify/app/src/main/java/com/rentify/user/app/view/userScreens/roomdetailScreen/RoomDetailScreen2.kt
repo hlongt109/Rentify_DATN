@@ -251,6 +251,7 @@ fun LayoutRoomdetails2(
                             priceRange = detail.price ?: 0,
                             buildingName = detail.building_id.nameBuilding ?: "Chưa có tên",
                             fullAddress = detail.building_id.address ?: "Chưa có địa chỉ",
+                            sale = detail.sale, // Truyền trường sale
                             onClick = {
                                 coroutineScope.launch {
                                     bottomSheetState.show()

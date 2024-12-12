@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,17 +31,19 @@ import coil.compose.AsyncImage
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.Room
 import com.rentify.user.app.model.Model.RoomResponse
+import com.rentify.user.app.model.Model.RoomSaleResponse
 import java.text.DecimalFormat
 
 
 @Composable
 fun LayoutItemHome(
     navController: NavHostController,
-    room: RoomResponse
+    room: RoomSaleResponse
 ) {
     val (ward, district) = extractAddressDetails(room.building_id.address)
     val imageUrl = "http://10.0.2.2:3000/" + room.photos_room[0]
     val formattedPrice = DecimalFormat("#,###,###").format(room.price)
+    val discountedPrice = room.sale.let { room.price - it } // Tính giá sau giảm (nếu có sale)
 
     // State để theo dõi khi hình ảnh được tải
     val imageLoading = remember { mutableStateOf(true) }
@@ -111,12 +114,37 @@ fun LayoutItemHome(
                     color = Color.Black,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${formattedPrice}đ/tháng",
-                    fontWeight = FontWeight(600),
-                    color = Color.Red,
-                    fontSize = 12.sp,
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    if (discountedPrice != null && discountedPrice < room.price) {
+                        // Hiển thị giá sau giảm và giá gốc
+                        Text(
+                            text = "${DecimalFormat("#,###,###").format(discountedPrice)}đ / tháng",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier,
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "(${formattedPrice}đ gốc)",
+                            fontSize = 10.sp,
+                            color = Color.Gray,
+                            textDecoration = TextDecoration.LineThrough
+                        )
+                    } else {
+                        // Hiển thị giá bình thường
+                        Text(
+                            text = "${formattedPrice}đ / tháng",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier,
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 IconTextRow(
                     iconId = R.drawable.iconhomelocation,

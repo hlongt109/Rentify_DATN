@@ -95,7 +95,7 @@ fun Layoutbaidang(
                     area = "${room.size}m2",
                     peopleCount = person,
                     address = room.building_id.address,
-                    onClick = { navController.navigate("ROOMDETAILS2/${room._id}") }
+                    onClick = { navController.navigate("ROOMDETAILS/${room._id}") }
                 )
                 Spacer(modifier = Modifier.padding(10.dp))
             }

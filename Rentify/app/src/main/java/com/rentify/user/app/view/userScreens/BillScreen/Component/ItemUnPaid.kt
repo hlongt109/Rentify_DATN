@@ -64,6 +64,7 @@ import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2
 import com.rentify.user.app.utils.CheckUnit
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.PaymentSaleDetailRow
 import com.rentify.user.app.view.userScreens.paymentscreen.components.LoadingAsyncImage
 
 @Composable
@@ -201,6 +202,18 @@ fun ItemUnPaid(
                                 PaymentDetailRow(
                                     label = service.service_name,
                                     value = CheckUnit.formattedPrice(service.total.toFloat())
+                                )
+                            }
+
+                            PaymentDetailRow(
+                                label = "Tiền phòng",
+                                value = CheckUnit.formattedPrice(item.room_id.price.toFloat())
+                            )
+
+                            if (item.room_id.sale != null && item.room_id.sale != 0){
+                                PaymentSaleDetailRow(
+                                    "Giảm giá",
+                                    CheckUnit.formattedPrice(item.room_id.sale.toFloat())
                                 )
                             }
 

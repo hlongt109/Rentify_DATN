@@ -22,7 +22,8 @@ data class Room(
     val status: Int,
     val created_at: String,
     val updated_at: String,
-    val __v: Int
+    val __v: Int,
+    val sale: Int
 )
 
 data class Building(

@@ -50,7 +50,7 @@ fun LayoutVideo(
     val listNameDistrict = districtViewModel.districts.value
     val isLoading = districtViewModel.isLoading.value
     val hasMoreData by districtViewModel.hasMoreData.collectAsState()
-    val city = "Hà Nội"
+    val city = "Hồ Chí Minh"
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(Unit) {

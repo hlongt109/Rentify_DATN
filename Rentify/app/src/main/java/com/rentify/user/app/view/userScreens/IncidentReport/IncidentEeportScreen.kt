@@ -53,6 +53,7 @@ import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.SupportRepository.SupportRepository
 import com.rentify.user.app.ui.theme.error_image
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.view.userScreens.IncidentReport.Components.CustomTabBar
 import com.rentify.user.app.view.userScreens.IncidentReport.Components.HeaderComponent
@@ -76,8 +77,11 @@ fun IncidentReportScreen(navController: NavController) {
     val userId = loginViewModel.getUserData().userId
 
     LaunchedEffect(Unit) {
-        supportViewModel.getListSupport(userId)
+        if (supportViewModel.listSupport.value.isNullOrEmpty()) {
+            supportViewModel.getListSupport(userId)
+        }
     }
+
 
     Box(
         modifier = Modifier
@@ -86,10 +90,11 @@ fun IncidentReportScreen(navController: NavController) {
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
+
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            HeaderComponent(navController)
+            HeaderBar(navController, title = "Báo cáo sự cố")
             CustomTabBar(
                 items = tabs,
                 selectedIndex = selectedTabIndex,
@@ -142,7 +147,7 @@ fun IncidentReportScreen(navController: NavController) {
                 Image(
                     painter = painterResource(id = R.drawable.addr),
                     contentDescription = null,
-                    modifier = Modifier.size(30.dp, 30.dp)
+                    modifier = Modifier.size(20.dp, 20.dp)
                 )
             }
 

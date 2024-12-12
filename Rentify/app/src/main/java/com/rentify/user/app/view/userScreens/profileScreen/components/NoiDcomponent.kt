@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,20 +53,23 @@ import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.Bank
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.EditDialog
+import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.components.EditableRow
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.DatePickerDialog
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PreviewFeetPersonalProfile(){
-    FeetPersonalProfileuser(navController= rememberNavController())
-    FeetPersonalProfileUSER(navController= rememberNavController())
+fun PreviewFeetPersonalProfile() {
+    FeetPersonalProfileuser(navController = rememberNavController())
+    FeetPersonalProfileUSER(navController = rememberNavController())
 }
+
 @Composable
 fun FeetPersonalProfileuser(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
-    val userDetail by viewModel.user.observeAsState()
+    val userDetail by viewModel.userAcc.observeAsState()
     val context = LocalContext.current
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
@@ -78,12 +82,15 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
     val showGenderDialog = remember { mutableStateOf(false) }
     val showDobDialog = remember { mutableStateOf(false) }
     val showAddressDialog = remember { mutableStateOf(false) }
+    var showNameDialog = remember { mutableStateOf(false) }
+    var newValue by remember { mutableStateOf("") }
+    var currentField by remember { mutableStateOf("") }
     var selectedImageUer by remember { mutableStateOf<Uri?>(null) }
     val ImageUserLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUer = uri
     }
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailById(userId)
+        viewModel.getUserAccById(userId)
     }
     LaunchedEffect(Unit) {
         viewModel.getProfilePictureById(userId)
@@ -148,21 +155,27 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
         }
 
         // Họ và tên
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp, top = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Họ và tên",
-                modifier = Modifier.padding(start = 20.dp, top = 5.dp),
-                color = Color(0xFF989898)
-            )
-            Text(
-                text = userDetail?.name ?: "",
-                modifier = Modifier.padding(end = 20.dp),
-                fontSize = 15.sp
+        EditableRow(
+            label = "Họ và tên",
+            value = userDetail?.name ?: "Không có",
+            onClick = {
+                currentField = "name"
+                newValue = userDetail?.name ?: ""
+                showNameDialog.value = true
+                Log.d("Debug", "showNameDialog.value: ${showNameDialog.value}")
+            }
+        )
+
+        if (showNameDialog.value) {
+            EditDialog(
+                title = "Chỉnh sửa $currentField",
+                value = newValue,
+                onValueChange = { newValue = it },
+                onSave = {
+                    showNameDialog.value = false
+                    viewModel.updateUserAccount(userId, userDetail?.copy(name = newValue))
+                },
+                onCancel = { showNameDialog.value = false }
             )
         }
 
@@ -238,7 +251,6 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                 color = Color.Black
             )
         }
-
         // Hiển thị dialog cập nhật địa chỉ
         if (showAddressDialog.value) {
             UpdateDialog(
@@ -250,7 +262,7 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                         userId,
                         gender = userDetail?.gender ?: "",
                         dob = userDetail?.dob ?: "",
-                        address = updatedValue
+                        address = updatedValue,
                     )
                     showAddressDialog.value = false
                 }
@@ -266,7 +278,7 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                         userId,
                         gender = userDetail?.gender ?: "",
                         dob = selectedDate,
-                        address = userDetail?.address ?: ""
+                        address = userDetail?.address ?: "",
                     )
                     showDobDialog.value = false
                 }
@@ -283,7 +295,7 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
                         userId,
                         gender = updatedGender,
                         dob = userDetail?.dob ?: "",
-                        address = userDetail?.address ?: ""
+                        address = userDetail?.address ?: "",
                     )
                     showGenderDialog.value = false
                 }
@@ -296,7 +308,7 @@ fun FeetPersonalProfileuser(navController: NavHostController) {
 fun GenderDialog(
     currentGender: String,
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
+    onConfirm: (String) -> Unit,
 ) {
     val genders = listOf("Nam", "Nữ")
     var selectedGender by remember { mutableStateOf(currentGender) }
@@ -340,7 +352,7 @@ fun UpdateDialog(
     title: String,
     initialValue: String,
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
+    onConfirm: (String) -> Unit,
 ) {
     var text by remember { mutableStateOf(initialValue) }
 
@@ -370,9 +382,12 @@ fun UpdateDialog(
 
 
 @Composable
-fun FeetPersonalProfileUSER(navController: NavHostController){
+fun FeetPersonalProfileUSER(
+    navController: NavHostController,
+
+    ) {
     val viewModel: UserViewModel = viewModel()
-    val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
+    val userDetail by viewModel.userAcc.observeAsState() // Quan sát LiveData người dùng
     val context = LocalContext.current
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
@@ -381,39 +396,32 @@ fun FeetPersonalProfileUSER(navController: NavHostController){
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
+    val userData = loginViewModel.getUserData()
+    // Trạng thái Dialog
+    var showEditDialog by remember { mutableStateOf(false) }
+    var currentField by remember { mutableStateOf("") }
+    var newValue by remember { mutableStateOf("") }
+    Log.d("Debug", "userDetail: $userDetail")
+
+    // Lấy thông tin người dùng khi composable được gọi
     LaunchedEffect(Unit) {
-        viewModel.getUserDetailById(userId)  // Lấy dữ liệu người dùng khi composable được gọi
+        viewModel.getUserAccById(userId)
     }
+
     Column {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(bottom = 20.dp, top = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            androidx.compose.material.Text(
-                text = "Số điện thoại",
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp),
-                color = Color(0xFF989898)
-            )
-            androidx.compose.material.Text(
-                text = userDetail?.phoneNumber?:"Thêm thông tin bắt buộc",
-                modifier = Modifier
-                    .padding(end = 20.dp),
-                fontSize = 15.sp
-            )
-        }
+        // Số điện thoại
+        EditableRow(
+            label = "Số điện thoại",
+            value = userDetail?.phoneNumber ?: "Không có",
+            onClick = {
+                currentField = "phoneNumber"
+                newValue = userDetail?.phoneNumber ?: ""
+                showEditDialog = true
+            }
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(1.dp)
-                .padding(start = 20.dp, end = 20.dp)
-                .background(color = Color(0xFFe4e4e4))
-        ) {
-        }
-//        _vanphuc : giới tính
-        Row(
-            modifier = Modifier.fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -424,7 +432,7 @@ fun FeetPersonalProfileUSER(navController: NavHostController){
                 color = Color(0xFF989898)
             )
             androidx.compose.material.Text(
-                text = userDetail?.username?:"Thêm thông tin bắt buộc",
+                text = userDetail?.username ?: "Không có",
                 modifier = Modifier
                     .padding(end = 20.dp),
                 fontSize = 15.sp
@@ -438,9 +446,9 @@ fun FeetPersonalProfileUSER(navController: NavHostController){
                 .background(color = Color(0xFFe4e4e4))
         ) {
         }
-//        _vanphuc : ngay sinh
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -451,7 +459,7 @@ fun FeetPersonalProfileUSER(navController: NavHostController){
                 color = Color(0xFF989898)
             )
             androidx.compose.material.Text(
-                text = userDetail?.email?:"Thêm thông tin bắt buộc",
+                text = "${userDetail?.email}",
                 modifier = Modifier
                     .padding(end = 20.dp),
                 fontSize = 15.sp
@@ -465,9 +473,9 @@ fun FeetPersonalProfileUSER(navController: NavHostController){
                 .background(color = Color(0xFFe4e4e4))
         ) {
         }
-//        _vanphuc : dia chi
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 20.dp, top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -482,6 +490,31 @@ fun FeetPersonalProfileUSER(navController: NavHostController){
                 modifier = Modifier
                     .padding(end = 20.dp),
                 fontSize = 15.sp
+            )
+        }
+        // Hiển thị Dialog chỉnh sửa
+        if (showEditDialog) {
+            EditDialog(
+                title = "Chỉnh sửa $currentField",
+                value = newValue,
+                onValueChange = { newValue = it },
+                onSave = {
+                    showEditDialog = false
+                    when (currentField) {
+                        "phoneNumber" -> viewModel.updateUserAccount(
+                            userId,
+                            userDetail?.copy(phoneNumber = newValue)
+                        )
+
+                        "username" -> viewModel.updateUserAccount(
+                            userId,
+                            userDetail?.copy(username = newValue)
+                        )
+//                        "email" -> viewModel.updateUserAccount(userId, userDetail?.copy(email = newValue))
+//                        "password" -> viewModel.updateUserAccount(userId, userDetail?.copy(password = newValue)) // Đảm bảo mã hóa mật khẩu nếu cần
+                    }
+                },
+                onCancel = { showEditDialog = false }
             )
         }
     }

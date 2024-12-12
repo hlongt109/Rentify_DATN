@@ -25,7 +25,14 @@ data class RoomPage(
     val totalRooms: Int,
     val totalPages: Int,
     val currentPage: Int,
-    val rooms: List<RoomResponse>
+    val rooms: List<RoomSaleResponse>
+)
+
+data class RoomPageSale(
+    val totalRooms: Int,
+    val totalPages: Int,
+    val currentPage: Int,
+    val rooms: List<RoomSaleResponse>
 )
 // Thử nghiệm loadmore
 
@@ -70,7 +77,8 @@ data class RoomDetailResponse(
     @SerializedName("size")val size: String,
     @SerializedName("status")val status: Int,
     @SerializedName("updated_at")val updated_at: String,
-    @SerializedName("video_room")val video_room: List<String>
+    @SerializedName("video_room")val video_room: List<String>,
+    @SerializedName("sale")val sale: Int
 )
 
 data class BuildingOfRoomDetail(
@@ -110,3 +118,23 @@ data class EmptyRoomResponse(
     @SerializedName("room_name")val room_name: String
 )
 // thực hiện chi tiết phong
+
+// lay cac phong sale
+data class RoomSaleResponse(
+    @SerializedName("_id")val _id: String,
+    @SerializedName("amenities")val amenities: List<String>,
+    @SerializedName("building_id")val building_id: BuildingId,
+    @SerializedName("created_at")val created_at: String,
+    @SerializedName("description")val description: String,
+    @SerializedName("limit_person")val limit_person: Int,
+    @SerializedName("photos_room")val photos_room: List<String>,
+    @SerializedName("price")val price: Int,
+    @SerializedName("room_name")val room_name: String,
+    @SerializedName("room_type")val room_type: String,
+    @SerializedName("service")val service: List<String>,
+    @SerializedName("size")val size: String,
+    @SerializedName("status")val status: Int,
+    @SerializedName("updated_at")val updated_at: String,
+    @SerializedName("video_room")val video_room: List<String>,
+    @SerializedName("sale")val sale: Int
+)

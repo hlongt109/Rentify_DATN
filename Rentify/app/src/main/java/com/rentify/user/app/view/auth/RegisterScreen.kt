@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -55,6 +57,7 @@ import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.repository.RegisterRepository.RegisterRepository
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.viewModel.RegisterViewModel
 
@@ -106,27 +109,17 @@ fun RegisterScreen(navController: NavHostController) {
             .background(
                 color = Color(0xffffffff)
             )
-            .padding(15.dp),
+            .navigationBarsPadding()
+            .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         //icone
-        Row(
-            modifier = Modifier.fillMaxWidth(), // Để IconButton nằm bên trái
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = null,
-                    tint = Color.Black
-                )
-            }
-        }
-        //text
-        //Spacer(modifier = Modifier.fillMaxHeight(0.1f)) // Thêm khoảng cách giữa hai Text
+       HeaderBar(navController)
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, end = 15.dp),
         ) {
             Text(
                 text = "Chào mừng bạn đến với Rentify",

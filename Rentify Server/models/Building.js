@@ -29,6 +29,7 @@ const Building = new Schema({
   address: { type: String },
   description: { type: String },
   number_of_floors: { type: Number },
+  toaDo: [Number],
   created_at: { type: String },
   updated_at: { type: String },
 });

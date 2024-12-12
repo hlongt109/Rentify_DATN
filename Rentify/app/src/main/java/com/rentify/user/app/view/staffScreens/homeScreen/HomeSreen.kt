@@ -28,18 +28,27 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.MainActivity
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.ui.theme.location
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.HeaderSection
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.ListFunction
+import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +58,17 @@ fun HomeScreen(navController: NavHostController) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+    val name = loginViewModel.getUserData().name
+    var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
 
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     val onComfortableSelected: (String) -> Unit = { option ->
@@ -76,7 +96,7 @@ fun HomeScreen(navController: NavHostController) {
             }
 
             "Tin nhắn" -> {
-                navController.navigate(MainActivity.ROUTER.ADDROOM.name)
+                navController.navigate("MESSENGER")
             }
 
             "Bài đăng" -> {
@@ -120,7 +140,7 @@ fun HomeScreen(navController: NavHostController) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ClickablePieChartDemo()
+                    ClickablePieChartDemo(userId)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -153,48 +173,123 @@ fun HomeScreen(navController: NavHostController) {
         }
     }
 }
-
-data class Slice(val value: Float, val color: Int, val label: String)
-
+data class RoomSummary(
+    val totalRooms: Int,
+    val available: Int,
+    val rented: Int,
+    val color: Int, val label: String
+)
 @Composable
-fun ClickablePieChartDemo() {
-    val slices = arrayListOf(
-        Slice(40f, 0xFF6200EE.toInt(), "Hoá đơn đã thu"),
-        Slice(30f, 0xFF03DAC5.toInt(), "Hoá đơn chưa thu"),
+fun ClickablePieChartDemo(managerId: String) {
+    val context = LocalContext.current
+    val viewModel: RoomViewModel = viewModel(
+        factory = RoomViewModel.RoomViewModeFactory(context)
     )
 
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp),
-        factory = { context ->
-            val pieChart = com.github.mikephil.charting.charts.PieChart(context)
-            val entries = slices.map {
-                com.github.mikephil.charting.data.PieEntry(it.value, it.label)
-            }
-            val dataSet = PieDataSet(entries, "")
-            dataSet.colors = slices.map { it.color }
-            dataSet.setDrawValues(true)
-            dataSet.valueTextColor = 0xFFFFFFFF.toInt()
-            dataSet.valueTextSize = 13f
-            val valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return value.toInt().toString()
+
+    // Gọi hàm fetchRoomSummary để lấy dữ liệu khi managerId thay đổi
+    LaunchedEffect(managerId) {
+        viewModel.fetchRoomSummary(managerId)
+    }
+
+    val roomSummary by viewModel.roomSummary.observeAsState()
+
+    roomSummary?.let {
+        // Chúng ta tạo hai phần biểu đồ: 1 phần cho phòng chưa thuê và 1 phần cho phòng đã thuê
+        val slices = arrayListOf(
+            RoomSummary(it.totalRooms, it.available, it.rented, 0xFF6200EE.toInt(), "Phòng chưa thuê"),
+            RoomSummary(it.totalRooms, it.available, it.rented, 0xFF03DAC5.toInt(), "Phòng đã thuê")
+        )
+
+        // Tạo biểu đồ tròn với các phần slices
+        AndroidView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
+            factory = { context ->
+                val pieChart = com.github.mikephil.charting.charts.PieChart(context)
+                val entries = slices.map {
+                    // Thay vì sử dụng tổng số phòng, sử dụng các giá trị available và rented
+                    val value = when (it.label) {
+                        "Phòng chưa thuê" -> it.available.toFloat()
+                        "Phòng đã thuê" -> it.rented.toFloat()
+                        else -> 0f
+                    }
+                    com.github.mikephil.charting.data.PieEntry(value, it.label)
                 }
-            }
-            dataSet.valueFormatter = valueFormatter
-            val pieData = PieData(dataSet)
-            pieChart.data = pieData
-            pieChart.description.isEnabled = false
-            pieChart.setUsePercentValues(false)
-            pieChart.setDrawSliceText(false)
-            pieChart.centerText = ""
-            pieChart.invalidate()
-            pieChart
-        }
-    )
-}
 
+                val dataSet = PieDataSet(entries, "")
+                dataSet.colors = slices.map { it.color }
+                dataSet.setDrawValues(true)
+                dataSet.valueTextColor = 0xFFFFFFFF.toInt()
+                dataSet.valueTextSize = 13f
+
+                val valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String {
+                        return value.toInt().toString()
+                    }
+                }
+
+                dataSet.valueFormatter = valueFormatter
+                val pieData = PieData(dataSet)
+                pieChart.data = pieData
+                pieChart.description.isEnabled = false
+                pieChart.setUsePercentValues(false)
+                pieChart.setDrawSliceText(true)
+                pieChart.centerText = ""
+                pieChart.invalidate()
+                pieChart
+            }
+        )
+    }
+}
+//data class Slice(val value: Float, val color: Int, val label: String)
+//data class RoomSummary(
+//    val totalRooms: Int,
+//    val available: Int,
+//    val rented: Int,
+//    val color: Int, val label: String
+//)
+//@Composable
+//fun ClickablePieChartDemo() {
+//    val viewModel: RoomViewModel = viewModel()
+//    val slices = arrayListOf(
+//        Slice(10f, 0xFF6200EE.toInt(), "Phongf trong"),
+//        Slice(15f, 0xFF03DAC5.toInt(), "Da cho thue"),
+//    )
+//
+//    AndroidView(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(300.dp),
+//        factory = { context ->
+//            val pieChart = com.github.mikephil.charting.charts.PieChart(context)
+//            val entries = slices.map {
+//                com.github.mikephil.charting.data.PieEntry(it.value, it.label)
+//            }
+//            val dataSet = PieDataSet(entries, "")
+//            dataSet.colors = slices.map { it.color }
+//            dataSet.setDrawValues(true)
+//            dataSet.valueTextColor = 0xFFFFFFFF.toInt()
+//            dataSet.valueTextSize = 13f
+//            val valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+//                override fun getFormattedValue(value: Float): String {
+//                    return value.toInt().toString()
+//                }
+//            }
+//            dataSet.valueFormatter = valueFormatter
+//            val pieData = PieData(dataSet)
+//            pieChart.data = pieData
+//            pieChart.description.isEnabled = false
+//            pieChart.setUsePercentValues(false)
+//            pieChart.setDrawSliceText(false)
+//            pieChart.centerText = ""
+//            pieChart.invalidate()
+//            pieChart
+//        }
+//    )
+//}
+//
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

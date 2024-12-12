@@ -29,19 +29,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.rentify.user.app.model.Model.RoomResponse
+import com.rentify.user.app.model.Model.RoomSaleResponse
 import kotlinx.coroutines.delay
 import java.text.DecimalFormat
 import kotlin.math.ceil
 
 @Composable
 fun RentalPostList(
-    getRentalPostList: List<RoomResponse>,
+    getRentalPostList: List<RoomSaleResponse>,
     totalRooms: Int,
     currentPage: Int,
     loadMoreRooms: () -> Unit,
@@ -91,7 +93,7 @@ fun RentalPostList(
 
 @Composable
 fun RentalPostCard(
-    room: RoomResponse,
+    room: RoomSaleResponse,
     navController: NavController
 ) {
     val imageLoading = remember { mutableStateOf(true) }
@@ -106,7 +108,9 @@ fun RentalPostCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         val imageUrl = "http://10.0.2.2:3000/" + room.photos_room[0]
-        val formattedPrice = DecimalFormat("#,###,###").format(room.price)
+        val discountedPrice = room.price - room.sale
+        val formattedDiscountedPrice = DecimalFormat("#,###,###").format(discountedPrice)
+        val formattedOriginalPrice = DecimalFormat("#,###,###").format(room.price)
         Column {
             // Hình ảnh phòng
             AsyncImage(
@@ -139,13 +143,37 @@ fun RentalPostCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 // Giá phòng
-                Text(
-                    maxLines = 1,
-                    text = "Từ ${formattedPrice}đ /Tháng" ,
-                    color = Color.Red,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
-                )
+                Column {
+                    if (room.sale > 0) {
+                        // Nếu có giảm giá
+                        Text(
+                            text = "Từ ${formattedDiscountedPrice}đ /Tháng",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(2.dp)) // Khoảng cách giữa giá giảm và giá gốc
+                        Text(
+                            text = "${formattedOriginalPrice}đ",
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            textDecoration = TextDecoration.LineThrough,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        // Nếu không có giảm giá
+                        Text(
+                            text = "Từ ${formattedOriginalPrice}đ /Tháng",
+                            fontSize = 13.sp,
+                            color = Color.Red,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(3.dp))
 

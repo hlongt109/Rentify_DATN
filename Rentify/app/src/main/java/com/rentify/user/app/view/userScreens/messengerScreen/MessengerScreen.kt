@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -39,31 +41,20 @@ fun LayoutMessenger(navController: NavHostController) {
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val currentUserId = loginViewModel.getUserData().userId
-    Log.d("MessageComponent", "Current User ID: $currentUserId")
     val usersList = remember { mutableStateOf<List<chatUser>>(emptyList()) }
-//    LaunchedEffect(Unit) {
-//        viewModel.getListUser({ usersList ->
-//            users.value = usersList.filter { it.id != currentUserId }
-//        }, loginViewModel)
-//    }
+
     LaunchedEffect(Unit) {
         chatViewModel.getChatList(
             userId = currentUserId,
-//            onUsersLoaded = { users ->
-//                // Xử lý danh sách users đã nhắn tin
-//                usersList.value = users.filter { it.id != currentUserId }
-//                Log.d("TinnhanScreen", "Users: ${usersList.value}")
-//            },
-//            loginViewModel = loginViewModel,
-//            database = FirebaseDatabase.getInstance()
         )
     }
     Column (
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ){
-        headcomponent(navController)
         MessengerComponent(navController, chatViewModel)
     }
 

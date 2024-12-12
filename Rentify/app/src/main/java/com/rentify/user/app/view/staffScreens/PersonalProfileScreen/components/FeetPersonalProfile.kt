@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -53,6 +54,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.Bank
 import com.rentify.user.app.network.RetrofitService
@@ -80,7 +82,10 @@ fun FeetPersonalProfile(navController: NavHostController) {
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
-
+    var selectedImageUer by remember { mutableStateOf<Uri?>(null) }
+    val ImageUserLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        selectedImageUer = uri
+    }
     // Trạng thái Dialog
     var showEditDialog by remember { mutableStateOf(false) }
     var currentField by remember { mutableStateOf("") }
@@ -94,6 +99,66 @@ fun FeetPersonalProfile(navController: NavHostController) {
     }
 
     Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Kiểm tra ảnh người dùng đã chọn và ảnh từ API
+            val imageUrl = selectedImageUer ?: userDetail?.profile_picture_url?.let {
+                "http://10.0.2.2:3000/$it"
+            } ?: R.drawable.anhdaidien
+
+            // Hiển thị ảnh đại diện
+            if (selectedImageUer != null || userDetail?.profile_picture_url != null) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(60.dp)
+                        .padding(start = 10.dp)
+                        .clip(CircleShape)  // Thay đổi thành CircleShape để hiển thị ảnh tròn
+                        .clickable {
+                            ImageUserLauncher.launch("image/*") // Mở bộ chọn ảnh
+                        },
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    painter = rememberImagePainter(imageUrl),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(60.dp)
+                        .padding(start = 10.dp)
+                        .clip(CircleShape)  // Thay đổi thành CircleShape để hiển thị ảnh tròn
+                        .clickable {
+                            ImageUserLauncher.launch("image/*")
+                        }
+                )
+            }
+
+            // Nút lưu ảnh
+            androidx.compose.material3.Text(
+                text = "Lưu ảnh",
+                modifier = Modifier
+                    .padding(start = 20.dp, top = 20.dp, end = 20.dp)
+                    .clickable {
+                        selectedImageUer?.let { imageUri ->
+                            viewModel.updateProfilePicture(userId, imageUri, context)
+                        }
+                        Toast.makeText(
+                            context,
+                            "Cập nhật ảnh đại diện thành công",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                color = Color.Black
+            )
+        }
+
         // Họ và tên
         EditableRow(
             label = "Họ và tên",

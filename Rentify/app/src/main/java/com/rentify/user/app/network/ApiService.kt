@@ -12,6 +12,7 @@ import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
+import com.rentify.user.app.model.DataResponse
 import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.ListServiceResponse
 import com.rentify.user.app.model.Model.Bank
@@ -20,18 +21,21 @@ import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.RoomDetailResponse
+import com.rentify.user.app.model.Model.RoomPageSale
 import com.rentify.user.app.model.Model.RoomResponse
+import com.rentify.user.app.model.Model.RoomSaleResponse
 import com.rentify.user.app.model.Model.StatusBookingRequest
+import com.rentify.user.app.model.Model.UpdateAccUserResponse
 import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.PostListResponse
-import com.rentify.user.app.model.PostResponse
-
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.ProfilePictureResponse
+import com.rentify.user.app.model.ResponseUser
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.model.Room
+import com.rentify.user.app.model.ServiceAdmin.AdminService
 import com.rentify.user.app.model.ServiceOfBuilding
 import com.rentify.user.app.model.SupportModel.SupportResponse
 
@@ -51,6 +55,7 @@ import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.repository.SupportRepository.APISupportResponse
 import com.rentify.user.app.repository.SupportRepository.AddSupport
 import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
+import com.rentify.user.app.view.staffScreens.homeScreen.RoomSummary
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -119,7 +124,7 @@ interface APIService {
     suspend fun getRoomDetail(@Path("id") id: String): Response<RoomDetailResponse>
 
     @GET("room/get-random-rooms")
-    suspend fun getListOfRandomRooms(): Response<List<RoomResponse>>
+    suspend fun getListOfRandomRooms(): Response<List<RoomSaleResponse>>
 
     @GET("room/get-random-rooms-page")
     suspend fun getRandomRooms(
@@ -182,7 +187,11 @@ interface APIService {
         @Part photos_room: List<MultipartBody.Part>,
         @Part video_room: List<MultipartBody.Part>
     ): Response<AddRoomResponse>
-
+    // Lấy tổng số phòng theo manager_id
+    @GET("staff/rooms/RoomsSummaryByManager/{manager_id}")
+    suspend fun getRoomsSummaryByManager(
+        @Path("manager_id") managerId: String
+    ): RoomSummary
     @Multipart
     @POST("upload-file")
     suspend fun uploadFile(
@@ -514,6 +523,9 @@ interface APIService {
     @GET("get-user-infor/{userId}")
     suspend fun getInfoUser(@Path("userId") userId: String): Response<ApiResponse>
 
+    @GET("get-user-infor/{userId}")
+    suspend fun getInfoAcc(@Path("userId") userId: String): Response<DataResponse>
+
     @GET("staff/users/serviceFeesUser/{userId}")
     suspend fun getServiceFeesByUser(
         @Path("userId") userId: String
@@ -550,9 +562,37 @@ interface APIService {
         @Part profilePicture: MultipartBody.Part
     ): Response<ProfilePictureResponse>
 
-    // hiển thị
     @GET("staff/users/getImageUser/{id}")
     suspend fun getImageUser(
         @Path("id") userId: String
     ): Response<ProfilePictureResponse>
+
+    // thien lay cac phong dang sale
+    @GET("room/get-rooms-with-sale")
+    suspend fun getRoomsWithSale(
+        @Query("address") address: String?,
+        @Query("minPrice") minPrice: Int?,
+        @Query("maxPrice") maxPrice: Int?,
+        @Query("roomType") roomType: String?,
+        @Query("sortBy") sortBy: String?,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 10,
+        @Query("random") random: String? = null
+    ): Response<RoomPageSale>
+
+    @GET("service_adm/{admin_id}")
+    suspend fun service_adm(
+        @Path("admin_id") adminId: String
+    ): Response<AdminService>
+
+    //update account user
+    @PUT("updateAccountUser/{id}")
+    suspend fun updateAccountUser(
+        @Path("id") id: String,
+        @Body updateUser: ResponseUser?
+    ):Response<ResponseUser>
+
+    //list phong trong map
+    @GET("room/get-map-list-room")
+    suspend fun getListRoomMap():Response<com.rentify.user.app.repository.ListRoomMap.RoomResponse>
 }

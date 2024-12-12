@@ -78,7 +78,8 @@ data class RoomOfInvoice(
     @SerializedName("_id")val _id: String,
     @SerializedName("price")val price: Int,
     @SerializedName("room_name")val room_name: String,
-    @SerializedName("room_type")val room_type: String
+    @SerializedName("room_type")val room_type: String,
+    @SerializedName("sale")val sale: Int,
 )
 
 // thuc hien chuc nang update hoa don

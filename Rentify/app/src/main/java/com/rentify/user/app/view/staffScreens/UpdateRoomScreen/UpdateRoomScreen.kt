@@ -64,6 +64,8 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.rentify.user.app.R
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet
@@ -81,6 +83,7 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLa
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.CustomTextField
 import com.rentify.user.app.view.staffScreens.addRoomScreen.StatusDropdown
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import java.text.DecimalFormat
 
@@ -109,7 +112,13 @@ fun UpdateRoomScreen(
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     var selectedService by remember { mutableStateOf(listOf<String>()) }
     val scrollState = rememberScrollState()
-
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
     var postTitle by remember { mutableStateOf("") }
     var mota by remember { mutableStateOf("") }
     var numberOfRoommates by remember { mutableStateOf("") }
@@ -360,6 +369,7 @@ fun UpdateRoomScreen(
                             photoUris = selectedImages,
                             videoUris = selectedVideos
                         )
+                        viewModel.fetchRoomSummary(userId)
                     },
                     modifier = Modifier
                         .height(50.dp)
