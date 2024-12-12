@@ -63,6 +63,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
@@ -71,6 +73,7 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeO
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMedia
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import java.text.DecimalFormat
 
@@ -84,6 +87,13 @@ fun AddRoomScreen(
     val viewModel: RoomViewModel = viewModel(
         factory = RoomViewModel.RoomViewModeFactory(context = context)
     )
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
@@ -102,7 +112,6 @@ fun AddRoomScreen(
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>()) }
     var selectedVideos by remember { mutableStateOf(listOf<Uri>()) }
-
     // Observe states
     val isLoading by viewModel.isLoading.observeAsState(false)
     val addRoomResponse by viewModel.addRoomResponse.observeAsState()
@@ -348,6 +357,7 @@ fun AddRoomScreen(
                                     amenities = selectedComfortable,
                                     limit_person = limitPerson
                                 )
+                                viewModel.fetchRoomSummary(userId)
                             }
                         }
                     },

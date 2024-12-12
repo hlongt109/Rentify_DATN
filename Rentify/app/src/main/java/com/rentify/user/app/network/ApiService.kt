@@ -55,6 +55,7 @@ import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.repository.SupportRepository.APISupportResponse
 import com.rentify.user.app.repository.SupportRepository.AddSupport
 import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
+import com.rentify.user.app.view.staffScreens.homeScreen.RoomSummary
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -186,7 +187,11 @@ interface APIService {
         @Part photos_room: List<MultipartBody.Part>,
         @Part video_room: List<MultipartBody.Part>
     ): Response<AddRoomResponse>
-
+    // Lấy tổng số phòng theo manager_id
+    @GET("staff/rooms/RoomsSummaryByManager/{manager_id}")
+    suspend fun getRoomsSummaryByManager(
+        @Path("manager_id") managerId: String
+    ): RoomSummary
     @Multipart
     @POST("upload-file")
     suspend fun uploadFile(

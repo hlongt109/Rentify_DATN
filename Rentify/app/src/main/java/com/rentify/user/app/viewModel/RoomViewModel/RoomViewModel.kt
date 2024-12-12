@@ -14,8 +14,10 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.ServiceOfBuilding
+import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
+import com.rentify.user.app.view.staffScreens.homeScreen.RoomSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -405,6 +407,21 @@ class RoomViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
+    private val _roomSummary = MutableLiveData<RoomSummary?>()
+    val roomSummary: LiveData<RoomSummary?> = _roomSummary
+
+    // Hàm để lấy tổng số phòng
+    fun fetchRoomSummary(managerId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getRoomsSummaryByManager(managerId)
+                _roomSummary.postValue(response)
+                Log.e(" _roomSummary.postValue(response)", "Error: ${ _roomSummary.postValue(response)}")
+            } catch (e: Exception) {
+                _error.postValue(e.message)
+            }
+        }
+    }
 }
 
 fun processUriImage(context: Context, uri: Uri, folderName: String, fileName: String): MultipartBody.Part {
@@ -430,5 +447,8 @@ fun processUriImage(context: Context, uri: Uri, folderName: String, fileName: St
 
     val requestBody = tempFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
     return MultipartBody.Part.createFormData(folderName, tempFile.name, requestBody)
+    /////
+
 }
+
 

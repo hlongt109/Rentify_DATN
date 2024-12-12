@@ -18,7 +18,7 @@ class RetrofitService {
         .addInterceptor(logging)
         .build()
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:3000/api/")
+        .baseUrl("http://192.168.2.104:3000/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -47,7 +47,7 @@ object LocationService {
 }
 
 object ApiClient {
-    private const val BASE_URL = "http://10.0.2.2:3000/api/"
+    private const val BASE_URL = "http://192.168.2.104:3000/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -57,7 +57,7 @@ object ApiClient {
     val apiService: APIService = retrofit.create(APIService::class.java)
 }
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:3000/api/"
+    private const val BASE_URL = "http://192.168.2.104:3000/api/"
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
