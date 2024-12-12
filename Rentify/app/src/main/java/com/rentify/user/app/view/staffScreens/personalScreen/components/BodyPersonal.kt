@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,19 +36,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
 
-// _vanphuc: phần thân
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun BodyPersonalPreview() {
     BodyPersonal(navController = rememberNavController())
 }
-
 @Composable
 fun BodyPersonal(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
@@ -76,17 +77,39 @@ fun BodyPersonal(navController: NavHostController) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.anhdaidien),
-                contentDescription = "back",
-                modifier = Modifier
-                    .width(100.dp)
-                    .height(100.dp)
-                    .padding(start = 30.dp)
-                    .clickable {
-                        Toast.makeText(context, "Đổi ảnh đại diện", Toast.LENGTH_LONG).show()
-                    }
-            )
+            // Ảnh từ API
+            userDetail?.profile_picture_url?.let { photoUrl ->
+                val uriAnh = "http://10.0.2.2:3000/$photoUrl"
+                AsyncImage(
+                    model = uriAnh,
+                    contentDescription = "Profile Picture",
+                    error = painterResource(R.drawable.anhdaidien), // Ảnh lỗi
+                    modifier = Modifier
+                        .width(100.dp)  // Giữ kích thước ảnh như cũ
+                        .height(100.dp)
+                        .padding(start = 40.dp, top = 20.dp, bottom = 20.dp)
+                        .clip(CircleShape) // Bo tròn ảnh
+                        .clickable {
+                            Toast.makeText(context, "Đổi ảnh đại diện", Toast.LENGTH_LONG).show()
+                        },
+                    contentScale = ContentScale.Crop
+                )
+            } ?: run {
+                // Hiển thị ảnh mặc định nếu không có ảnh từ API
+                Image(
+                    painter = painterResource(id = R.drawable.anhdaidien),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .width(100.dp)  // Giữ nguyên kích thước ảnh
+                        .height(100.dp)
+                        .padding(start = 30.dp)
+                        .clip(CircleShape) // Bo tròn ảnh
+                        .clickable {
+                            Toast.makeText(context, "Đổi ảnh đại diện", Toast.LENGTH_LONG).show()
+                        }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .padding(start = 10.dp),
@@ -126,5 +149,7 @@ fun BodyPersonal(navController: NavHostController) {
         }
     }
 }
+
+
 
 

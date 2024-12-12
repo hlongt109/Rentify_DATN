@@ -35,7 +35,7 @@ fun LayoutService(navController: NavHostController) {
             .fillMaxWidth()
             .fillMaxHeight()
     ){
-        TeudeComponent()
+        TeudeComponent(navController)
         ItemComponent(navController)
     }
 }
