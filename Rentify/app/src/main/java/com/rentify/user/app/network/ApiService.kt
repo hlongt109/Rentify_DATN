@@ -20,7 +20,9 @@ import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.RoomDetailResponse
+import com.rentify.user.app.model.Model.RoomPageSale
 import com.rentify.user.app.model.Model.RoomResponse
+import com.rentify.user.app.model.Model.RoomSaleResponse
 import com.rentify.user.app.model.Model.StatusBookingRequest
 import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
@@ -119,7 +121,7 @@ interface APIService {
     suspend fun getRoomDetail(@Path("id") id: String): Response<RoomDetailResponse>
 
     @GET("room/get-random-rooms")
-    suspend fun getListOfRandomRooms(): Response<List<RoomResponse>>
+    suspend fun getListOfRandomRooms(): Response<List<RoomSaleResponse>>
 
     @GET("room/get-random-rooms-page")
     suspend fun getRandomRooms(
@@ -555,4 +557,17 @@ interface APIService {
     suspend fun getImageUser(
         @Path("id") userId: String
     ): Response<ProfilePictureResponse>
+
+    // thien lay cac phong dang sale
+    @GET("room/get-rooms-with-sale")
+    suspend fun getRoomsWithSale(
+        @Query("address") address: String?,
+        @Query("minPrice") minPrice: Int?,
+        @Query("maxPrice") maxPrice: Int?,
+        @Query("roomType") roomType: String?,
+        @Query("sortBy") sortBy: String?,
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 10,
+        @Query("random") random: String? = null
+    ): Response<RoomPageSale>
 }

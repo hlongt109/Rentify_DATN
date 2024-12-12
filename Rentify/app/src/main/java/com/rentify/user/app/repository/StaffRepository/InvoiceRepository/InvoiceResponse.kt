@@ -85,7 +85,8 @@ data class RoomDetail(
     val room_name: String,
     val price: Double,
     val service: List<ServiceDetail>,
-    val limit_person: Int
+    val limit_person: Int,
+    val sale: Int
 )
 
 

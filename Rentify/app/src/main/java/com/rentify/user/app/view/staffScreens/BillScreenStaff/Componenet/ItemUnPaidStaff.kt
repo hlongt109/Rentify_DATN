@@ -233,6 +233,13 @@ fun ItemUnPaidStaff(
                                 )
                             }
 
+                            if (invoice.room_id.sale != null && invoice.room_id.sale != 0){
+                                PaymentSaleDetailRow(
+                                    "Giảm giá",
+                                    CheckUnit.formattedPrice(invoice.room_id.sale.toFloat())
+                                )
+                            }
+
                             Spacer(modifier = Modifier.height(12.dp))
 
                             if(invoice.image_paymentofuser != null && invoice.image_paymentofuser != ""){
@@ -338,6 +345,37 @@ private fun PaymentDetailRow(label: String, value: String) {
             text = value,
             fontSize = 13.sp,
             color = ColorBlack,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+fun PaymentSaleDetailRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .drawBehind {
+                drawLine(
+                    color = colorInput_2,
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 1.dp.toPx()
+                )
+            }
+            .padding(top = 10.dp, bottom = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            fontSize = 13.sp,
+            color = ColorBlack,
+            fontWeight = FontWeight.Medium
+        )
+        Text(
+            text = value,
+            fontSize = 13.sp,
+            color = Color.Red,
             fontWeight = FontWeight.Medium
         )
     }

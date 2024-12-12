@@ -5,15 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.model.Model.RoomSaleResponse
 import com.rentify.user.app.network.RetrofitService
-import com.rentify.user.app.repository.RentalPostRoomRepository
+import com.rentify.user.app.repository.SaleRoomRepository
 import kotlinx.coroutines.launch
 
-class RentalPostRoomViewModel : ViewModel() {
+class SaleRoomViewModel : ViewModel() {
     private val apiService = RetrofitService().ApiService
-    private val rentalPostRoomRepository = RentalPostRoomRepository(apiService)
+    private val saleRoomRepository = SaleRoomRepository(apiService)
 
     private val _roomList = MutableLiveData<List<RoomSaleResponse>>()
     val roomList: LiveData<List<RoomSaleResponse>> get() = _roomList
@@ -48,7 +47,7 @@ class RentalPostRoomViewModel : ViewModel() {
                     _roomList.value = emptyList()
                 }
 
-                val response = rentalPostRoomRepository.searchRooms(
+                val response = saleRoomRepository.getRoomsWithSale(
                     address = address,
                     minPrice = minPrice,
                     maxPrice = maxPrice,

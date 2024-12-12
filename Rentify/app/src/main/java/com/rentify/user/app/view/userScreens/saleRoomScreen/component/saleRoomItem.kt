@@ -1,15 +1,21 @@
-package com.rentify.user.app.view.userScreens.rentalPost.rentalPostComponents
-
+package com.rentify.user.app.view.userScreens.saleRoomScreen.component
 
 import androidx.compose.foundation.clickable
-import com.rentify.user.app.R
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -17,10 +23,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,13 +35,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.model.Model.RoomSaleResponse
 import kotlinx.coroutines.delay
@@ -42,7 +54,7 @@ import java.text.DecimalFormat
 import kotlin.math.ceil
 
 @Composable
-fun RentalPostList(
+fun SaleRoomPostList(
     getRentalPostList: List<RoomSaleResponse>,
     totalRooms: Int,
     currentPage: Int,
@@ -119,16 +131,16 @@ fun RentalPostCard(
                 modifier = Modifier.fillMaxWidth().height(120.dp),
                 contentScale = ContentScale.Crop,
                 onLoading = {
-                    imageLoading.value = true // Khi ảnh đang tải, sẽ hiển thị CircularProgressIndicator
+                    imageLoading.value = true
                 },
                 onSuccess = {
-                    imageLoading.value = false // Khi ảnh tải thành công, ẩn CircularProgressIndicator
+                    imageLoading.value = false
                 },
                 onError = {
-                    imageLoading.value = false // Ẩn loading khi có lỗi
+                    imageLoading.value = false
                 },
-                placeholder = painterResource(id = R.drawable.g), // Ảnh mặc định khi đang tải
-                error = painterResource(id = R.drawable.g) // Ảnh thay thế khi tải thất bại
+                placeholder = painterResource(id = R.drawable.g),
+                error = painterResource(id = R.drawable.g)
             )
 
             Column (modifier = Modifier.padding(8.dp)) {

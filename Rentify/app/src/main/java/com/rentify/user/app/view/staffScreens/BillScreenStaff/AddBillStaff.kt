@@ -146,8 +146,6 @@ fun AddBillStaff(navController: NavController) {
     Log.d("ListBuilding", "AddBillStaff: $listBuilding")
 
     //khai bao 1 ty thu
-
-
     var building by remember { mutableStateOf("") }
     var room by remember { mutableStateOf("") }
     var priceRoom by remember { mutableStateOf(0.0) }
@@ -281,8 +279,10 @@ fun AddBillStaff(navController: NavController) {
                     isExpandedRoom = it
                 },
                 onRoomSelected = { selectedRoom ->
-                    priceRoom = selectedRoom.price.toDouble()
-                    formattedPriceRoom = CheckUnit.formattedPrice(selectedRoom.price.toFloat())
+                    val originalPrice = selectedRoom.price.toDouble()
+                    val saleDiscount = selectedRoom.sale.toDouble() ?: 0.0 // Nếu `sale` null thì mặc định là 0
+                    priceRoom = originalPrice - saleDiscount
+                    formattedPriceRoom = CheckUnit.formattedPrice(priceRoom.toFloat())
                 },
                 onExpandedRoomNull = {
                     isExpandedRoomNull = it

@@ -74,6 +74,7 @@ import com.rentify.user.app.view.userScreens.rentScreen.LayoutRent
 import com.rentify.user.app.view.userScreens.rentalPost.RentalPostScreen
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails2
+import com.rentify.user.app.view.userScreens.saleRoomScreen.SaleRoomPostScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.PostDetailUserScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
@@ -288,6 +289,10 @@ class MainActivity : ComponentActivity() {
                 RentalPostScreen(navController = navController, title = null)
             }
 
+            composable(ROUTER.SaleRoomScreen.name) {
+                SaleRoomPostScreen(navController = navController, title = null)
+            }
+
             composable(
                 route = "RENTAL_POST/{title}",
                 arguments = listOf(navArgument("title") {
@@ -467,6 +472,7 @@ class MainActivity : ComponentActivity() {
         QuanLiDichVuUser,
         PREFORGOT,
         BottomTest,
+        SaleRoomScreen,
     }
 }
 
