@@ -50,7 +50,7 @@ router.get("/listInvoiceStaff/:staffId", async (req, res) => {
     })
       .populate({
         path: "room_id",
-        select: "room_name price service limit_person",
+        select: "room_name price service limit_person sale",
         populate: {
           path: "service",
           select: "name description price",

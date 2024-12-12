@@ -11,7 +11,7 @@ router.get('/get-invoices-by-room-and-status/:room_id/:status', async (req, res)
             payment_status: req.params.status 
         }).populate({
             path: 'room_id',
-            select: 'room_name room_type price'
+            select: 'room_name room_type price sale'
         });
         res.status(200).json(invoices);
     } catch (err) {
