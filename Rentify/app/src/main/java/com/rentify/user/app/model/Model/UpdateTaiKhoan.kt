@@ -41,6 +41,24 @@ data class UpdateTaiKhoanResponse(
     @SerializedName("verified") val verified: Boolean
 )
 
+data class UpdateAccUserResponse(
+    @SerializedName("_id") val _id: String,
+    @SerializedName("address") val address: String,
+    @SerializedName("bankAccount") val bankAccount: BankAccount,
+    @SerializedName("created_at") val created_at: String,
+    @SerializedName("dob") val dob: String,
+    @SerializedName("email") val email: String,
+    @SerializedName("gender") val gender: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("password") val password: String,
+    @SerializedName("phoneNumber") val phoneNumber: String,
+    @SerializedName("profile_picture_url") val profile_picture_url: String,
+    @SerializedName("role") val role: String,
+    @SerializedName("updated_at") val updated_at: String,
+    @SerializedName("username") val username: String,
+    @SerializedName("verified") val verified: Boolean
+)
+
 data class BankAccount(
     val bank_name: String,
     val bank_number: Long,

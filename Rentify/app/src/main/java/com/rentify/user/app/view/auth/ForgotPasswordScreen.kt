@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -40,6 +42,7 @@ import com.rentify.user.app.repository.ForgotRepository.ForgotRepository
 import com.rentify.user.app.ui.theme.colorLocation
 import com.rentify.user.app.ui.theme.colorText
 import com.rentify.user.app.ui.theme.greenInput
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.auth.components.GoToRegister
 import com.rentify.user.app.view.auth.components.HeaderComponent
@@ -48,7 +51,11 @@ import com.rentify.user.app.view.auth.components.TextLoginContent
 import com.rentify.user.app.viewModel.UserViewmodel.ForgotPasswordViewModel
 
 @Composable
-fun ForgotPasswordScreen(navController: NavController, email: String) {
+fun ForgotPasswordScreen(
+    navController: NavController,
+    email: String,
+    typeTitle: String
+) {
 
     val context = LocalContext.current
     val repository = ForgotRepository(RetrofitService().ApiService)
@@ -70,24 +77,25 @@ fun ForgotPasswordScreen(navController: NavController, email: String) {
     var isConfirmPassword by remember { mutableStateOf(false) }
     Log.d("CheckEmail", "ForgotPasswordScreen: $email")
 
+    val title = when(typeTitle){
+        "changePassword" -> "Đổi mật khẩu"
+        else -> "Quên mật khẩu"
 
+    }
 
     Box(
         modifier = Modifier
             .background(color = Color.White)
             .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
+        HeaderBar(navController)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp)
         ) {
-            Spacer(modifier = Modifier.padding(top = 30.dp))
-            HeaderComponent(
-                backgroundColor = Color.White,
-                title = "",
-                navController = navController
-            )
             Spacer(modifier = Modifier.padding(top = 50.dp))
             //text chao mung
 //            TextLoginContent()
@@ -99,7 +107,7 @@ fun ForgotPasswordScreen(navController: NavController, email: String) {
             ) {
 
                 Text(
-                    text = "Quên mật khẩu",
+                    text = title,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -143,7 +151,15 @@ fun ForgotPasswordScreen(navController: NavController, email: String) {
                         forgotViewModel.resetPassword(email, newPassword, confirmPassword){
                             successMessage?.let {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                navController.navigate(MainActivity.ROUTER.LOGIN.name)
+                                when(typeTitle){
+                                    "changePassword" -> {
+                                        navController.navigate(MainActivity.ROUTER.HOME.name)
+                                    }
+
+                                    "resetPass" -> {
+                                        navController.navigate(MainActivity.ROUTER.LOGIN.name)
+                                    }
+                                }
                             }
                         }
                     },

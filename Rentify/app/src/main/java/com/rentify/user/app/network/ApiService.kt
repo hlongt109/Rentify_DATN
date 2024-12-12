@@ -12,6 +12,7 @@ import com.rentify.user.app.model.BuildingsResponse
 import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.model.Model.RoomPage
 import com.rentify.user.app.model.ContractsResponse
+import com.rentify.user.app.model.DataResponse
 import com.rentify.user.app.model.LandlordOrStaffs
 import com.rentify.user.app.model.ListServiceResponse
 import com.rentify.user.app.model.Model.Bank
@@ -24,13 +25,13 @@ import com.rentify.user.app.model.Model.RoomPageSale
 import com.rentify.user.app.model.Model.RoomResponse
 import com.rentify.user.app.model.Model.RoomSaleResponse
 import com.rentify.user.app.model.Model.StatusBookingRequest
+import com.rentify.user.app.model.Model.UpdateAccUserResponse
 import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
 import com.rentify.user.app.model.PostListResponse
-import com.rentify.user.app.model.PostResponse
-
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.ProfilePictureResponse
+import com.rentify.user.app.model.ResponseUser
 import com.rentify.user.app.model.RoomsResponse
 import com.rentify.user.app.model.UpdatePostRequest
 import com.rentify.user.app.model.Room
@@ -517,6 +518,9 @@ interface APIService {
     @GET("get-user-infor/{userId}")
     suspend fun getInfoUser(@Path("userId") userId: String): Response<ApiResponse>
 
+    @GET("get-user-infor/{userId}")
+    suspend fun getInfoAcc(@Path("userId") userId: String): Response<DataResponse>
+
     @GET("staff/users/serviceFeesUser/{userId}")
     suspend fun getServiceFeesByUser(
         @Path("userId") userId: String
@@ -575,4 +579,15 @@ interface APIService {
     suspend fun service_adm(
         @Path("admin_id") adminId: String
     ): Response<AdminService>
+
+    //update account user
+    @PUT("updateAccountUser/{id}")
+    suspend fun updateAccountUser(
+        @Path("id") id: String,
+        @Body updateUser: ResponseUser?
+    ):Response<ResponseUser>
+
+    //list phong trong map
+    @GET("room/get-map-list-room")
+    suspend fun getListRoomMap():Response<com.rentify.user.app.repository.ListRoomMap.RoomResponse>
 }

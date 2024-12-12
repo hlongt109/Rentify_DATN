@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -39,6 +41,7 @@ import com.rentify.user.app.repository.ForgotRepository.ForgotRepository
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.ui.theme.colorLocation
 import com.rentify.user.app.ui.theme.greenInput
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.viewModel.LoginViewModel
@@ -46,7 +49,9 @@ import com.rentify.user.app.viewModel.UserViewmodel.ForgotPasswordViewModel
 
 @Composable
 fun PreForgotPass(
-    navController: NavController
+    navController: NavController,
+    navigationType: String? = null,
+    email: String? = null
 ) {
 
     val context = LocalContext.current
@@ -63,29 +68,31 @@ fun PreForgotPass(
     val errorEmail by forgotViewModel.errorEmail.observeAsState()
     val isLoading by forgotViewModel.isLoading.observeAsState()
 
-    var email by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf(email ?: "") }
     var confirmNumber by remember { mutableStateOf("") }
     var isFocusedEmail by remember { mutableStateOf(false) }
     var isConfirmNumber by remember { mutableStateOf(false) }
 
     var showConfirmCodeField by remember { mutableStateOf(false) }
 
+    val screenTitle = when (navigationType) {
+        "changePassword" -> "Đổi mật khẩu"
+        else -> "Quên mật khẩu"
+    }
+
     Box(
         modifier = Modifier
             .background(color = Color.White)
             .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
+        HeaderBar(navController)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp)
         ) {
-            Spacer(modifier = Modifier.padding(top = 30.dp))
-            HeaderComponent(
-                backgroundColor = Color.White,
-                title = "",
-                navController = navController
-            )
             Spacer(modifier = Modifier.padding(top = 70.dp))
             Column(
                 modifier = Modifier
@@ -93,7 +100,7 @@ fun PreForgotPass(
             ) {
 
                 Text(
-                    text = "Quên mật khẩu",
+                    text = screenTitle,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -112,7 +119,7 @@ fun PreForgotPass(
                     ShowReport.ShowError(message = it)
                 }
                 Spacer(modifier = Modifier.padding(top = 15.dp))
-                if(showConfirmCodeField){
+                if (showConfirmCodeField) {
                     TextFieldComponent(
                         value = confirmNumber,
                         onValueChange = { newText ->
@@ -133,19 +140,19 @@ fun PreForgotPass(
                 Spacer(modifier = Modifier.padding(top = 50.dp))
                 Button(
                     onClick = {
-                        if(!showConfirmCodeField){
-                            forgotViewModel.postEmail(email){
+                        if (!showConfirmCodeField) {
+                            forgotViewModel.postEmail(email) {
                                 showConfirmCodeField = true
                                 Log.d("LogSuccess", "PreForgotPass: $successMessageMail")
                                 successMessageMail?.let {
                                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                                 }
                             }
-                        }else{
-                            forgotViewModel.confirmCode(email, confirmNumber){
+                        } else {
+                            forgotViewModel.confirmCode(email, confirmNumber) {
                                 successMessageConfirm?.let {
                                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                    navController.navigate(MainActivity.ROUTER.FORGOTPASS.name+"/$email")
+                                    navController.navigate(MainActivity.ROUTER.FORGOTPASS.name + "/$email/$navigationType")
                                 }
                             }
                         }
@@ -183,7 +190,7 @@ fun PreForgotPass(
                     .size(70.dp)
                     .background(Color.White, shape = RoundedCornerShape(10.dp)),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 CircularProgressIndicator(color = colorLocation)
             }
         }

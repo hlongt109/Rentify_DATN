@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mapbox.geojson.Point
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
@@ -57,6 +58,8 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.SeachRoomateDetailScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
+import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SearchMapScreen
+import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SurroundingRoomScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
@@ -397,19 +400,53 @@ class MainActivity : ComponentActivity() {
                 PreForgotPass(navController)
             }
             composable(
-                ROUTER.FORGOTPASS.name + "/{email}",
+                ROUTER.PREFORGOT.name + "/{email}/{navigationType}",
                 arguments = listOf(
-                    navArgument("email") { type = NavType.StringType }
+                    navArgument("email") { type = NavType.StringType },
+                    navArgument("navigationType") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 val email = backStackEntry.arguments?.getString("email") ?: ""
-                ForgotPasswordScreen(navController, email)
+                val navigationType = backStackEntry.arguments?.getString("navigationType") ?: ""
+                PreForgotPass(navController, email = email, navigationType = navigationType)
+            }
+            composable(
+                ROUTER.FORGOTPASS.name + "/{email}/{navigationType}",
+                arguments = listOf(
+                    navArgument("email") { type = NavType.StringType },
+                    navArgument("navigationType") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val email = backStackEntry.arguments?.getString("email") ?: ""
+                val navigationType = backStackEntry.arguments?.getString("navigationType") ?: ""
+                ForgotPasswordScreen(navController, email, navigationType)
             }
 
             composable(ROUTER.BottomTest.name) {
                 BottomNavigation(navController)
             }
-
+            //ggmap
+            composable(
+                ROUTER.ROOMMAP.name + "/{latitude},{longitude}",
+                arguments = listOf(
+                    navArgument("latitude") { type = NavType.FloatType },
+                    navArgument("longitude") { type = NavType.FloatType }
+                )
+            ) { backStackEntry ->
+                val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble() ?: 0.0
+                val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble() ?: 0.0
+                SurroundingRoomScreen(
+                    navController = navController,
+                    latitude = latitude,
+                    longitude = longitude
+                )
+            }
+            composable(ROUTER.BottomTest.name) {
+                BottomNavigation(navController)
+            }
+            composable(ROUTER.SEARCHMAP.name) {
+                SearchMapScreen(navController = navController)
+            }
         }
     }
 
@@ -470,9 +507,11 @@ class MainActivity : ComponentActivity() {
         ADDCONTRAC_STAFF,
         ListSupportByRoom,
         QuanLiDichVuUser,
-        PREFORGOT,
         BottomTest,
         SaleRoomScreen,
+        PREFORGOT,
+        ROOMMAP,
+        SEARCHMAP
     }
 }
 

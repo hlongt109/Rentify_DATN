@@ -74,6 +74,9 @@ class SupportViewModel(
 
     private val _successMessage = MutableLiveData<String?>()
     val successMessage: LiveData<String?> = _successMessage
+
+    private val _successMessageAdd = MutableLiveData<String?>()
+    val successMessageAdd: LiveData<String?> = _successMessageAdd
     //loi
     private val _errorRoom = MutableLiveData<String?>()
     val errorRoom: LiveData<String?> = _errorRoom
@@ -84,17 +87,25 @@ class SupportViewModel(
 
     fun getListSupport(userId: String) {
         viewModelScope.launch {
+            _uiState.value = SupportUiState.Loading
+            _isLoading.postValue(true)
             repository.getSupportsByUserId(userId).fold(
                 onSuccess = { response ->
                     if (response.status == 200) {
+                        _isLoading.postValue(false)
                         _uiState.value = SupportUiState.Success(response.data)
                         //chua xu ly
                         _processed.value = response.data.filter { it.status == 0 }
                         //da xu ly
                         _unprocessed.value = response.data.filter { it.status == 1 }
+                    }else{
+                        _isLoading.postValue(false)
+                        _uiState.value = SupportUiState.Error(response.message)
+                        _errorMessage.postValue(response.message)
                     }
                 },
                 onFailure = { exception ->
+                    _isLoading.postValue(false)
                     _uiState.value = SupportUiState.Error(exception.message ?: "Lỗi không xác định")
                     _errorMessage.postValue(exception.message ?: "Lỗi không xác định")
                 }
@@ -172,7 +183,8 @@ class SupportViewModel(
         titleSupport: String,
         contentSupport: String,
         status: Int,
-        imagePaths: List<String?>
+        imagePaths: List<String?>,
+        onSuccess: () -> Unit
     ) {
 
         if (roomId.isBlank()) {
@@ -198,10 +210,11 @@ class SupportViewModel(
             result.onSuccess { response ->
                 // Cập nhật thông báo thành công
                 _isLoading.postValue(false)
-                _successMessage.postValue("Tạo báo cáo thành công:")
-                getListSupport(userId) // Lấy danh sách mới sau khi thêm
+                _successMessageAdd.postValue("Tạo báo cáo thành công:")
+                onSuccess()
             }.onFailure { error ->
                 // Cập nhật thông báo lỗi
+                _isLoading.postValue(false)
                 _errorMessage.postValue(error.message ?: "Lỗi không xác định khi tạo báo cáo")
             }
         }

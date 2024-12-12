@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -54,6 +56,7 @@ import com.rentify.user.app.ui.theme.colorInput
 import com.rentify.user.app.ui.theme.colorText
 import com.rentify.user.app.ui.theme.greenInput
 import com.rentify.user.app.ui.theme.textFieldBackgroundColor
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.auth.components.GoToRegister
 import com.rentify.user.app.view.auth.components.HeaderComponent
@@ -86,7 +89,8 @@ fun LoginScreenApp(navigator: NavController) {
     val errorMessage by loginViewModel.errorMessage.observeAsState()
     val isLoading by loginViewModel.isLoading.observeAsState()
     val successRole by loginViewModel.successRole.observeAsState()
-
+    val type = "forgotPass"
+    val email = ""
     // Hiển thị thông báo khi đăng nhập thành công
     LaunchedEffect(successRole) {
         successRole?.let {
@@ -109,14 +113,16 @@ fun LoginScreenApp(navigator: NavController) {
         modifier = Modifier
             .background(color = Color.White)
             .fillMaxSize()
+            .navigationBarsPadding()
+            .statusBarsPadding()
     ) {
+        HeaderBar(navigator)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp)
         ) {
             Spacer(modifier = Modifier.padding(top = 30.dp))
-            HeaderComponent(backgroundColor = Color.White, title = "", navController = navigator)
             Spacer(modifier = Modifier.padding(top = 50.dp))
             //text chao mung
             TextLoginContent()
@@ -178,7 +184,7 @@ fun LoginScreenApp(navigator: NavController) {
                         color = colorText,
                         modifier = Modifier
                             .clickable {
-                                navigator.navigate(MainActivity.ROUTER.PREFORGOT.name)
+                                navigator.navigate(MainActivity.ROUTER.PREFORGOT.name+"/$email/$type")
                             }
                     )
                 }
