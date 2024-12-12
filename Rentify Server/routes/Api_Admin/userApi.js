@@ -53,4 +53,42 @@ router.put("/user/update/:id", async (req, res) => {
     }
 });
 
+// doi mat khau
+router.put("/account/pass/update/:id", async (req, res) => {
+    const userId = req.params.id; // Lấy userId từ URL
+    const { currentPassword, newPassword } = req.body;
+
+    if (!userId || !currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'Thiếu thông tin yêu cầu' });
+    }
+
+    try {
+        // Tìm người dùng theo userId
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Người dùng không tồn tại' });
+        }
+
+        // Kiểm tra mật khẩu hiện tại
+        if (user.password !== currentPassword) {
+            return res.status(401).json({ message: 'Mật khẩu hiện tại không chính xác' });
+        }
+
+        // Cập nhật mật khẩu mới
+        const updateResult = await User.updateOne(
+            { _id: userId }, // Sử dụng filter là đối tượng { _id: userId }
+            { $set: { password: newPassword } } // Cập nhật mật khẩu mới
+        );
+
+        if (updateResult.nModified === 0) {
+            return res.status(500).json({ message: 'Cập nhật mật khẩu thất bại' });
+        }
+
+        res.status(200).json({ message: 'Đổi mật khẩu thành công' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Có lỗi xảy ra khi đổi mật khẩu' });
+    }
+});
+
 module.exports = router

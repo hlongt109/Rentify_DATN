@@ -145,26 +145,7 @@
 
         /////////////////////////////////////////////////////
 
-        const likeButton = document.getElementById('like-button');
 
-        likeButton.addEventListener('click', () => {
-            // Tạo một trái tim
-            const heart = document.createElement('span');
-            heart.classList.add('heart');
-            heart.innerHTML = '❤️';
-
-            // Đặt vị trí trái tim ngẫu nhiên trong button
-            heart.style.left = `${Math.random() * 100}%`;
-            heart.style.top = '50%';
-
-            // Thêm trái tim vào button
-            likeButton.appendChild(heart);
-
-            // Xóa trái tim sau khi hoạt ảnh kết thúc
-            setTimeout(() => {
-                heart.remove();
-            }, 1000); // thời gian trùng với thời gian của animation (1s)
-        });
     </script>
 
 </body>

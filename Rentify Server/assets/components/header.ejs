@@ -7,6 +7,131 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../../assets/style/header.css">
     <title>Document</title>
+    <style>
+        /* Đặt nền cho modal */
+        .modal {
+            display: none;
+            /* Ẩn modal mặc định */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            /* Màu nền mờ */
+            z-index: 9999;
+            /* Đảm bảo modal nổi bật lên trên */
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Nội dung của modal */
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            /* Giới hạn chiều rộng tối đa */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Đóng modal */
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        /* Tiêu đề */
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* Nhóm các trường nhập liệu */
+        .input-group {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #333;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #5c9dff;
+            outline: none;
+        }
+
+        /* Nút xác nhận */
+        button {
+            padding: 12px 25px;
+            background-color: #5c9dff;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4a8dd1;
+        }
+
+        button:active {
+            background-color: #3c7bb1;
+        }
+
+        /* Hiệu ứng cho modal khi mở */
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Hiệu ứng fade-in khi mở modal */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -15,35 +140,117 @@
             <input type="text" placeholder="Tìm kiếm..." />
             <i class="fas fa-search search-icon"></i>
         </div>
-        <div class="right">
-
-            <!-- Biểu tượng chuông với số lượng thông báo chưa đọc -->
-            <div class="notification-bell" onclick="toggleNotificationList()">
+        <!-- views/components/header.ejs -->
+        <header class="header">
+            <div class="search-container">
+                <input type="text" placeholder="Tìm kiếm..." />
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="right">
                 <i class="fas fa-bell icon"></i>
-                <span class="notification-count" id="notification-count">0</span> <!-- Số lượng thông báo chưa đọc -->
+                <i class="fas fa-envelope icon"></i>
+                <i class="fas fa-user-circle avatar" id="avatarIcon"></i>
             </div>
+        </header>
 
-            <!-- Danh sách thông báo khi nhấn vào chuông -->
-            <div id="notification-list" class="notification-list">
-                <!-- Danh sách thông báo sẽ được hiển thị tại đây -->
-            </div>
-            <!-- Modal chi tiết thông báo -->
-            <div id="notification-detail-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeNotificationDetail()">&times;</span>
-                    <h2 id="notification-detail-title"></h2>
-                    <p id="notification-detail-content"></p>
-                    <p id="notification-detail-time"></p>
+        <!-- Hộp thoại đổi mật khẩu -->
+        <div class="modal" id="passwordModal">
+            <div class="modal-content">
+                <span class="close-button" id="closeModal">&times;</span>
+                <h2>Đổi mật khẩu</h2>
+
+                <div class="input-group">
+                    <label for="currentPassword">Mật khẩu hiện tại</label>
+                    <input type="password" id="currentPassword" required />
                 </div>
+
+                <div class="input-group">
+                    <label for="newPassword">Mật khẩu mới</label>
+                    <input type="password" id="newPassword" required />
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirmPassword" required />
+                </div>
+
+                <button id="submitPasswordChange">Xác nhận</button>
             </div>
-
-
-
-            <i class="fas fa-envelope icon"></i>
-            <i class="fas fa-user-circle avatar"></i>
         </div>
+
     </header>
-    <script src="../../assets/js/header.js"></script>
+
+    <script>
+
+        // Lấy các phần tử
+        const passwordModal = document.getElementById('passwordModal');
+        const currentPasswordInput = document.getElementById('currentPassword');
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const submitButton = document.getElementById('submitPasswordChange');
+        const closeModal = document.getElementById('closeModal');
+
+        // Hiển thị hộp thoại khi nhấn vào avatar
+        document.getElementById('avatarIcon').addEventListener('click', () => {
+            passwordModal.style.display = 'flex';
+        });
+
+        // Đóng hộp thoại khi nhấn vào nút đóng
+        closeModal.addEventListener('click', () => {
+            passwordModal.style.display = 'none';
+        });
+
+        // Đóng hộp thoại khi nhấn ra ngoài
+        window.addEventListener('click', (event) => {
+            if (event.target === passwordModal) {
+                passwordModal.style.display = 'none';
+            }
+        });
+
+        // Xử lý sự kiện nhấn nút "Xác nhận"
+        submitButton.addEventListener('click', async () => {
+            const currentPassword = currentPasswordInput.value;
+            const newPassword = newPasswordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            // Kiểm tra mật khẩu mới và xác nhận mật khẩu
+            if (newPassword !== confirmPassword) {
+                alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+                return;
+            }
+
+            // ID người dùng (thay bằng giá trị thật từ ứng dụng của bạn)
+            const userId = localStorage.getItem('user_id');
+
+            try {
+                // Gửi yêu cầu đổi mật khẩu đến API
+                const response = await fetch(`/api/account/pass/update/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const result = await response.json();
+
+                // Xử lý kết quả từ API
+                if (response.ok) {
+                    alert(result.message || 'Đổi mật khẩu thành công!');
+                    passwordModal.style.display = 'none'; // Đóng modal
+                    currentPasswordInput.value = ''; // Reset các trường nhập liệu
+                    newPasswordInput.value = '';
+                    confirmPasswordInput.value = '';
+                } else {
+                    alert(result.message || 'Có lỗi xảy ra!');
+                }
+            } catch (error) {
+                console.error('Lỗi khi gọi API:', error);
+                alert('Không thể kết nối đến máy chủ!');
+            }
+        });
+
+    </script>
 </body>
 
 </html>
