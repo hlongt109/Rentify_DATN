@@ -103,8 +103,7 @@ fun FeetReportyeucau(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(10.dp),
             horizontalAlignment = Alignment.Start
         ) {
             if (buildingWithRooms.isNotEmpty()) {
@@ -115,7 +114,7 @@ fun FeetReportyeucau(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                            .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
                             .clip(RoundedCornerShape(12.dp))
                     ) {
                         Column {

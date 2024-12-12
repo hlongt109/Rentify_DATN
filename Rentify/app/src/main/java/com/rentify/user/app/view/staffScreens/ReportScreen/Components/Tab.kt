@@ -53,8 +53,8 @@ fun CustomTab(
                     Modifier.tabIndicatorOffset(tabPositions[selectedIndex]),
                     height = 4.dp,
                     color = when {
-                        selectedIndex == 1 -> Color(0xFFc24b2a) // Màu cho tab "Đang yêu cầu"
-                        selectedIndex == 0 -> Color(0xFF79bb75) // Màu cho tab "Đã hoàn thành"
+                        selectedIndex == 0 -> Color(0xFFc24b2a) // Màu cho tab "Đang yêu cầu"
+                        selectedIndex == 1 -> Color(0xFF79bb75) // Màu cho tab "Đã hoàn thành"
                         else -> Color(0xFFd8d8d8) // Màu cho các tab khác (mặc định)
                     }
                 )

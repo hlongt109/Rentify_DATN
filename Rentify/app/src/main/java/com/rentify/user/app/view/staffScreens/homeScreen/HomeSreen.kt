@@ -176,8 +176,8 @@ data class Slice(val value: Float, val color: Int, val label: String)
 @Composable
 fun ClickablePieChartDemo() {
     val slices = arrayListOf(
-        Slice(40f, 0xFF6200EE.toInt(), "Hoá đơn đã thu"),
-        Slice(30f, 0xFF03DAC5.toInt(), "Hoá đơn chưa thu"),
+        Slice(10f, 0xFF6200EE.toInt(), "Phongf trong"),
+        Slice(15f, 0xFF03DAC5.toInt(), "Da cho thue"),
     )
 
     AndroidView(

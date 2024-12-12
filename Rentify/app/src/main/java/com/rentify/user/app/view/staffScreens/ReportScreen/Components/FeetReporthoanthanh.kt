@@ -115,9 +115,9 @@ fun ListSupportByRoom(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
-                        .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                        .clip(RoundedCornerShape(12.dp))
+                        .padding(10.dp)
+                        .shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(10.dp))
 
                 ) {
                     Column {
@@ -142,8 +142,8 @@ fun ListSupportByRoom(
                                     .weight(1f)
                             ) {
                                 Text(
-                                    text ="Phòng:${support?.room_id?.room_name!!}" ,  // Hiển thị tên phòng
-                                    fontSize = 16.sp,
+                                    text ="Phòng : ${support?.room_id?.room_name!!}" ,  // Hiển thị tên phòng
+                                    fontSize = 12.sp,
                                     color = Color.Black,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -405,8 +405,7 @@ fun FeetReporthoanthanh(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                    .padding(10.dp),
                 horizontalAlignment = Alignment.Start
             ) {
                 if (buildingWithRooms.isNotEmpty()) {
@@ -416,7 +415,7 @@ fun FeetReporthoanthanh(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp)
-                                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                                .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
                                 .clip(RoundedCornerShape(12.dp))
                         ) {
                             Column {
