@@ -548,4 +548,8 @@ interface APIService {
         @Path("id") id: String,
         @Body updateUser: ResponseUser?
     ):Response<ResponseUser>
+
+    //list phong trong map
+    @GET("room/get-map-list-room")
+    suspend fun getListRoomMap():Response<com.rentify.user.app.repository.ListRoomMap.RoomResponse>
 }

@@ -3,6 +3,7 @@ var router = express.Router()
 
 var room = require('../../models/Room')
 var building = require('../../models/Building')
+var Post = require("../../models/Post")
 const fetch = require('node-fetch');
 
 // ====================Room api=========================
@@ -317,7 +318,7 @@ router.get('/get-empty-rooms/:building_id', async (req, res) => {
     }
 });
 
-// Route để lấy tất cả các quận của Hà Nội
+// Route để lấy tất cả các qu��n của Hà Nội
 const districtsData = {
     "Hà Nội": [
         "Ba Đình",
@@ -366,6 +367,52 @@ router.get('/get-districts/:city', (req, res) => {
 
     // Trả về danh sách các quận của thành phố
     res.status(200).json(districtsData[city]);
+});
+
+
+//lay danh sach phong voi toa đo cu toa 
+router.get("/get-map-list-room", async (req, res) => {
+    try {
+        // Lấy danh sách các phòng có status = 0 và populate thông tin tòa nhà
+        const rooms = await room.find({ status: 0 })
+            .populate({
+                path: 'building_id', // Giả sử trường building_id trong Room chứa ID của tòa nhà
+                select: '_id nameBuilding address toaDo' // Chỉ lấy các trường cần thiết
+            });
+
+        // Kiểm tra nếu không tìm thấy phòng nào
+        if (rooms.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy phòng nào' });
+        }
+
+        // Nhóm các phòng theo building_id
+        const groupedRooms = rooms.reduce((acc, room) => {
+            const buildingId = room.building_id._id.toString();
+            if (!acc[buildingId]) {
+                acc[buildingId] = {
+                    building: room.building_id,
+                    room: room // Lưu phòng đầu tiên làm đại diện
+                };
+            }
+            return acc;
+        }, {});
+
+        // Chuyển đổi đối tượng thành mảng
+        const result = Object.values(groupedRooms).map(item => ({
+            building: item.building,
+            representativeRoom: item.room // Phòng đại diện cho tòa nhà
+        }));
+
+        // Trả về danh sách tòa nhà cùng phòng đại diện
+        res.status(200).json({
+            status: 200,
+            message: 'Lấy danh sách phòng thành công',
+            data: result
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi hệ thống', error: error.message });
+    }
 });
 
 module.exports = router;

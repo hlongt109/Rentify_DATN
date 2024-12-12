@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mapbox.geojson.Point
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
@@ -54,6 +55,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.SeachRoomateDetailScreen
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
+import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SearchMapScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SurroundingRoomScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
@@ -192,14 +194,25 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("building_id") ?: ""
                 val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
                 val roomId = backStackEntry.arguments?.getString("room_id") ?: ""
-                PaymentConfirmationScreen(invoiceId = invoiceId ,amount = amount, buildingId = buildingId, roomId = roomId, navController = navController)
+                PaymentConfirmationScreen(
+                    invoiceId = invoiceId,
+                    amount = amount,
+                    buildingId = buildingId,
+                    roomId = roomId,
+                    navController = navController
+                )
             }
 
             composable("Payments/{amount}/{buildingId}/{_id}") { backStackEntry ->
                 val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
                 val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
                 val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
-                PaymentScreen( invoiceId = invoiceId ,amount = amount, buildingId = buildingId, navController = navController)
+                PaymentScreen(
+                    invoiceId = invoiceId,
+                    amount = amount,
+                    buildingId = buildingId,
+                    navController = navController
+                )
             }
 
             composable(ROUTER.ConTract.name) {
@@ -391,16 +404,30 @@ class MainActivity : ComponentActivity() {
             }
 
             //ggmap
-            composable(ROUTER.ROOMMAP.name) {
-                SurroundingRoomScreen(navController = navController)
+            composable(
+                ROUTER.ROOMMAP.name + "/{latitude},{longitude}",
+                arguments = listOf(
+                    navArgument("latitude") { type = NavType.FloatType },
+                    navArgument("longitude") { type = NavType.FloatType }
+                )
+            ) { backStackEntry ->
+                val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble() ?: 0.0
+                val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble() ?: 0.0
+                SurroundingRoomScreen(
+                    navController = navController,
+                    latitude = latitude,
+                    longitude = longitude
+                )
             }
-            composable(ROUTER.BottomTest.name){
+            composable(ROUTER.BottomTest.name) {
                 BottomNavigation(navController)
             }
-
+            composable(ROUTER.SEARCHMAP.name) {
+                SearchMapScreen(navController = navController)
+            }
         }
     }
-    
+
 
     enum class ROUTER {
         HOME,
@@ -460,6 +487,7 @@ class MainActivity : ComponentActivity() {
         BottomTest,
         PREFORGOT,
         ROOMMAP,
+        SEARCHMAP
     }
 }
 

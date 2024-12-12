@@ -61,6 +61,9 @@ fun LayoutSearch(navController: NavHostController) {
         TypeProduct("Vận chuyển", R.drawable.vanchuyen)
     )
 
+    val latitude = 0.0
+    val longitude = 0.0
+
     var statusType by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
     var isBottomSheetVisible by remember { mutableStateOf(false) }
@@ -204,7 +207,7 @@ fun LayoutSearch(navController: NavHostController) {
                             }
 
                             if (type.type == "Tìm phòng xung quanh") {
-                                navController.navigate(MainActivity.ROUTER.ROOMMAP.name) // Điều hướng đến TogetherScreen
+                                navController.navigate(MainActivity.ROUTER.ROOMMAP.name+"/$latitude,$longitude") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }

@@ -114,6 +114,8 @@ object LocationUntil {
         return distance <= radius // Kiểm tra nếu khoảng cách nhỏ hơn hoặc bằng bán kính vòng tròn
     }
 
+
+
     // Modify search location to return Mapbox Point
 //    fun searchLocation(
 //        query: String,

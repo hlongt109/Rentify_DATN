@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.SurroundingRoomsScreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,14 +13,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.Component.MapboxMapView
+import com.rentify.user.app.viewModel.UserViewmodel.AutofillViewModel
+import com.rentify.user.app.viewModel.UserViewmodel.MapViewModel
 
 @Composable
-fun SurroundingRoomScreen(navController: NavController){
+fun SurroundingRoomScreen(
+    navController: NavController,
+    latitude: Double = 0.0,
+    longitude: Double = 0.0,
+    viewModel: AutofillViewModel = viewModel(),
+    listViewModel: MapViewModel = viewModel(),
+) {
+    Log.d("TestToaDo", "SurroundingRoomScreen: $longitude,$latitude")
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -27,19 +38,19 @@ fun SurroundingRoomScreen(navController: NavController){
             .background(Color.White)
             .statusBarsPadding()
             .navigationBarsPadding()
-    ){
+    ) {
         Column(
             modifier = Modifier.fillMaxSize()
-        ){
+        ) {
             HeaderBar(navController, title = "Phòng trọ xung quanh")
-            MapboxMapView()
+            MapboxMapView(
+                navController,
+                viewModel,
+                listViewModel,
+                longitude,
+                latitude,
+                )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SurroundingRoomScreenPreview(){
-    SurroundingRoomScreen(navController = rememberNavController())
 }
 

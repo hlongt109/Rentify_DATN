@@ -33,3 +33,5 @@ val avatar = R.drawable.default_avatar
 val location_permission = R.drawable.location_permission
 val homeMarker = R.drawable.icon_home_map
 val reset_password = R.drawable.reset_password
+val map_layer = R.drawable.map_layer
+val home_marker = R.drawable.home_marker

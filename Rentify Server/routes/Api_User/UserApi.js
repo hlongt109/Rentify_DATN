@@ -1,11 +1,13 @@
 var express = require("express");
 var router = express.Router();
+const mongoose = require("mongoose");
 // model
 const Account = require("../../models/User");
 //Post
 const Post = require("../../models/Post");
 //room
 const Room = require("../../models/Room");
+const Building = require("../../models/Building");
 // send email service
 // const transporter = require("../cSDonfig/common/mailer");
 // upload file (image, video)
@@ -340,6 +342,38 @@ router.put("/updateAccountUser/:id", async (req, res) => {
       message: "Đã xảy ra lỗi khi chỉnh sửa thông tin người dùng",
       error: error.message,
     });
+  }
+});
+
+router.get("/landlord/:building_id", async (req, res) => {
+  try {
+    const { building_id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(building_id)) {
+      return res.status(400).json({ message: "ID tòa nhà không hợp lệ" });
+    }
+    const building = await Building.findById(building_id)
+      .populate("landlord_id")
+      .populate("manager_id");
+    if (!building) {
+      return res.status(404).json({ message: "Không tìm thấy tòa nhà" });
+    }
+    const landlord = building.landlord_id;
+    const manager = building.manager_id;
+    if (!landlord) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin landlord" });
+    }
+    res.status(200).json({
+      landlord,
+      manager,
+    });
+  } catch (error) {
+    console.error(
+      "Lỗi khi lấy thông tin landlord và danh sách người dùng:",
+      error.message
+    );
+    res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 });
 
