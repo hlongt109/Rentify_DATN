@@ -132,7 +132,6 @@ router.post("/register-user", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-const Building = require('../../models/Building')
 // đoạn này thiên code
 router.get("/landlord/:building_id", async (req, res) => {
   try {
@@ -258,6 +257,22 @@ router.get("/landlord/:building_id", async (req, res) => {
       error.message
     );
     res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
+router.get("/get-user-infor/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findOne({ _id: userId });
+    res.status(200).json({
+      status: 200,
+      message: "Lấy thông tin thành công",
+      data: user,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ status: 500, message: "Lỗi hệ thống", error: error.message });
   }
 });
 
