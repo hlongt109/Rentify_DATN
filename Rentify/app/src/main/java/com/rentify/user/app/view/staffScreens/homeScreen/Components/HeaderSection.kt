@@ -81,7 +81,8 @@ fun HeaderSection(navController: NavHostController) {
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(start = 25.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Ảnh từ API

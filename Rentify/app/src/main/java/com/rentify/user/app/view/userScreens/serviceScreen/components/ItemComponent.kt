@@ -55,13 +55,17 @@ fun ItemComponent(navController: NavHostController) {
 
     // Check if service data is available
     serviceDeltai?.data?.let { services ->
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier
+               .fillMaxSize()
+               .background(Color(0xfff7f7f7))
+        ) {
             items(services.chunked(2)) { chunk ->  // Chia mảng thành các phần tử 2 dịch vụ
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp) // Tạo khoảng cách giữa các Box
+                        .padding(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp) // Tạo khoảng cách giữa các Box
                 ) {
                     // Duyệt qua các phần tử trong chunk (tối đa 2 dịch vụ)
                     chunk.forEach { service ->
