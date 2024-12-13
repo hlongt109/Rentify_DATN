@@ -276,7 +276,7 @@ fun RoomDetailScreen(
 
                         val roomStatus = if(roomDetail?.status == 0) "Chưa cho thuê" else "Đã cho thuê"
                         CustomTextField(
-                            label = "Giá phòng",
+                            label = "Trạng thái",
                             value = roomStatus ?: "",
                             onValueChange = { newValue ->
                                 println("New Value: $newValue")
