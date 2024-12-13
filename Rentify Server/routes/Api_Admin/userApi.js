@@ -90,5 +90,55 @@ router.put("/account/pass/update/:id", async (req, res) => {
         res.status(500).json({ message: 'Có lỗi xảy ra khi đổi mật khẩu' });
     }
 });
+//nhảy màn đổi mật khẩukhẩu
+router.get("/login/get_pass", async (req, res) => {
+    res.render("Auth/Pass");
+})
+
+const nodemailer = require('nodemailer');
+
+// Cấu hình Nodemailer
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', // Hoặc SMTP của dịch vụ bạn đang sử dụng
+    port: 587,
+    secure: false, // Thường là false cho port 587
+    auth: {
+        user: 'rentify66668888@gmail.com', // Địa chỉ email gửi
+        pass: 'nreg uwuz rwvl xbux', // Mật khẩu hoặc App password của Gmail
+    },
+});
+
+// Route: Gửi mật khẩu qua email
+router.post("/send_password", async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required!' });
+    }
+
+    try {
+        // Tìm người dùng trong MongoDB theo email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found!' });
+        }
+
+        // Gửi email với mật khẩu của người dùng    
+        await transporter.sendMail({
+            from: '"Support" <rentify66668888@gmail.com>', // Địa chỉ email gửi
+            to: user.email, // Địa chỉ người nhận
+            subject: 'Rentify gửi bạn password',
+            html: `<p>Hi ${user.name},</p>
+               <p>Your password is: <strong>${user.password}</strong></p>`,
+        });
+
+        res.status(200).json({ message: 'Password sent to your email!' });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
 
 module.exports = router
