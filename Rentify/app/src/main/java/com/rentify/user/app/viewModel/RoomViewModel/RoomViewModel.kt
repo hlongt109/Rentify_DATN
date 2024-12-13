@@ -165,6 +165,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         amenities: Any,
         limit_person: Int,
         status: String,
+        sale: Double,
         photoUris: List<Uri>,
         videoUris: List<Uri>
     ) {
@@ -201,6 +202,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                 val sizeBody = createPartFromString(size)
                 val limitPersonBody = createPartFromString(limit_person.toString())
                 val statusBody = createPartFromString(status.toString())
+                val saleBody = createPartFromString(sale.toString())
                 val serviceBody = createPartFromString(parsedService)
                 val amenitiesBody = createPartFromString(parsedAmenities)
                 // Xử lý các URI hình ảnh và video thành MultipartBody.Part
@@ -225,6 +227,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     amenities = amenitiesBody,
                     limit_person = limitPersonBody,
                     status = statusBody,
+                    sale = saleBody,
                     photos_room = photoParts,
                     video_room = videoParts
                 )
@@ -306,6 +309,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         amenities: Any,
         limit_person: String,
         status: String,
+        sale: String,
         photoUris: List<Uri>,
         videoUris: List<Uri>
     ) {
@@ -340,6 +344,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     "room_type" to createPartFromString(roomType),
                     "description" to createPartFromString(description),
                     "price" to createPartFromString(price.toString()),
+                    "sale" to createPartFromString(sale.toString()),
                     "size" to createPartFromString(size),
                     "limit_person" to createPartFromString(limit_person.toString()),
                     "status" to createPartFromString(status.toString()),

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Room(
     @SerializedName("_id") val id: String = "",
-    @SerializedName("building_id")val buildingId: String,         // ID của tòa nhà
+    @SerializedName("building_id") val buildingId: String,         // ID của tòa nhà
     val room_name: String?,          // Tên phòng
     val room_type: String,           // Loại phòng
     val description: String,        // Mô tả phòng
@@ -20,7 +20,8 @@ data class Room(
     val limit_person: Int,           // Giới hạn số người
     val status: Int,                // 0: Chưa cho thuê, 1: Đã cho thuê
     val createdAt: String? = null,  // Ngày tạo
-    val updatedAt: String? = null   // Ngày cập nhật
+    val updatedAt: String? = null,   // Ngày cập nhật
+    @SerializedName("sale") val sale: Int,
 )
 
 data class ServiceOfRoom(
@@ -49,6 +50,7 @@ data class RoomDetail(
     val amenities: List<String> = emptyList(),
     val limit_person: Int,
     val status: Int,
+    val sale: Int,
     val created_at: String,
     val updated_at: String
 )

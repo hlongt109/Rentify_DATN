@@ -16,21 +16,33 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import com.rentify.user.app.R
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.font.FontWeight
 import com.google.accompanist.flowlayout.FlowRow
-
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.ComfortableOption
 
 
 @Composable
@@ -59,22 +71,98 @@ fun ComfortableLabel() {
 }
 
 @Composable
-fun ComfortableOptions(
+fun ComfortableLabelAdd(
+    onAddComfortable: (String) -> Unit, // Callback khi người dùng muốn thêm tiện nghi mới
+) {
+    var newComfortable by remember { mutableStateOf("") }
+    var isAdding by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            modifier = Modifier
+                .border(
+                    width = 2.dp, color = Color(0xFFeeeeee), shape = RoundedCornerShape(9.dp)
+                )
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.comfortable),
+                contentDescription = null,
+                modifier = Modifier.size(25.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = "Tiện nghi",
+                color = Color.Black,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+        IconButton(
+            onClick = { isAdding = true }, // Bật chế độ nhập tiện nghi
+            modifier = Modifier.size(25.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add",
+                tint = Color.Black
+            )
+        }
+    }
+
+    // Hộp thoại thêm tiện nghi mới
+    if (isAdding) {
+        AlertDialog(
+            onDismissRequest = { isAdding = false },
+            title = { Text("Thêm tiện nghi mới") },
+            text = {
+                OutlinedTextField(
+                    value = newComfortable,
+                    onValueChange = { newComfortable = it },
+                    placeholder = { Text("Nhập tên tiện nghi") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (newComfortable.isNotBlank()) {
+                        onAddComfortable(newComfortable.trim()) // Gửi tiện nghi mới qua callback
+                        newComfortable = ""
+                        isAdding = false
+                    }
+                }) {
+                    Text("Thêm")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { isAdding = false }) {
+                    Text("Hủy")
+                }
+            }
+        )
+    }
+}
+
+
+@Composable
+fun ComfortableOptionsAdd(
     selectedComfortable: List<String>,
-    onComfortableSelected: (String) -> Unit
+    allComfortable: List<String>, // Danh sách tiện nghi đầy đủ
+    onComfortableSelected: (String) -> Unit,
 ) {
     FlowRow(
         modifier = Modifier.padding(5.dp),
         mainAxisSpacing = 10.dp,
         crossAxisSpacing = 10.dp
     ) {
-        listOf(
-            "Vệ sinh khép kín",
-            "Gác xép",
-            "Ra vào vân tay",
-            "Nuôi pet",
-            "Không chung chủ"
-        ).forEach { option ->
+        allComfortable.forEach { option ->
             ComfortableOption(
                 text = option,
                 isSelected = selectedComfortable.contains(option),
@@ -88,11 +176,14 @@ fun ComfortableOptions(
 
 @Composable
 fun ComfortableOption(
-    text: String, isSelected: Boolean, onClick: () -> Unit
+    text: String, isSelected: Boolean, onClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
-            .clickable(onClick = onClick, indication = null, interactionSource = remember { MutableInteractionSource() })
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() })
             .shadow(3.dp, shape = RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
@@ -136,5 +227,6 @@ fun ComfortableOption(
         }
     }
 }
+
 
 

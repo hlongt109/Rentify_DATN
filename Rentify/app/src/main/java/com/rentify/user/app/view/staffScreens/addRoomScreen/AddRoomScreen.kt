@@ -65,7 +65,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabelAdd
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptionsAdd
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMedia
@@ -97,11 +98,24 @@ fun AddRoomScreen(
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
+    var roomSale by remember { mutableStateOf("") }
     var Status by remember { mutableStateOf("") }
 
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>()) }
     var selectedVideos by remember { mutableStateOf(listOf<Uri>()) }
+
+    var allComfortable by remember {
+        mutableStateOf(
+            listOf(
+                "Vệ sinh khép kín",
+                "Gác xép",
+                "Ra vào vân tay",
+                "Nuôi pet",
+                "Không chung chủ"
+            )
+        )
+    }
 
     // Observe states
     val isLoading by viewModel.isLoading.observeAsState(false)
@@ -216,6 +230,24 @@ fun AddRoomScreen(
                     isReadOnly = false
                 )
 
+                val formattedRoomSale = roomSale.replace(",", "").toDoubleOrNull()?.let {
+                    decimalFormat.format(it)
+                } ?: roomSale
+                CustomTextField(
+                    label = "Giảm giá",
+                    value = formattedRoomSale,
+                    onValueChange = { input ->
+                        // Remove commas before storing the raw value
+                        val rawInput = input.replace(",", "")
+                        roomSale = rawInput
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    placeholder = "Giảm giá...",
+                    isReadOnly = false
+                )
+
                 StatusDropdown(
                     label = "Trạng thái",
                     currentStatus = when (Status) {
@@ -246,17 +278,23 @@ fun AddRoomScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Column(modifier = Modifier.padding(horizontal = 5.dp)) {
-                    ComfortableLabel()
+                    ComfortableLabelAdd { newComfortable ->
+                        if (newComfortable !in allComfortable) {
+                            allComfortable = allComfortable + newComfortable
+                        }
+                    }
                     Spacer(modifier = Modifier.height(5.dp))
-                    ComfortableOptions(
+                    ComfortableOptionsAdd(
                         selectedComfortable = selectedComfortable,
+                        allComfortable = allComfortable,
                         onComfortableSelected = { comfortable ->
                             selectedComfortable = if (selectedComfortable.contains(comfortable)) {
                                 selectedComfortable - comfortable
                             } else {
                                 selectedComfortable + comfortable
                             }
-                        })
+                        }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -326,6 +364,12 @@ fun AddRoomScreen(
                                 return@Button
                             }
 
+                            val roomSaleValue = roomSale.takeIf { it.isNotBlank() }?.toDoubleOrNull()
+                            if (roomSale.isNotBlank() && roomSaleValue == null) {
+                                errorMessage = "Giảm giá phải là số."
+                                return@Button
+                            }
+
                             val roomStatusValue = Status.toIntOrNull()
                             if (roomStatusValue != 0 && roomStatusValue != 1) {
                                 errorMessage = "Trạng thái chỉ được nhập 0 hoặc 1."
@@ -346,7 +390,8 @@ fun AddRoomScreen(
                                     photoUris = selectedImages,
                                     service = selectedService,
                                     amenities = selectedComfortable,
-                                    limit_person = limitPerson
+                                    limit_person = limitPerson,
+                                    sale = roomSaleValue ?: 0.0
                                 )
                             }
                         }

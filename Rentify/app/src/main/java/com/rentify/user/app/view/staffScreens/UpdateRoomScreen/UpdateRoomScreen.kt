@@ -75,6 +75,8 @@ import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.RoomTy
 import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceLabelUpdate
 import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceOptionsUpdate
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabelAdd
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptionsAdd
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMedia
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
@@ -116,10 +118,23 @@ fun UpdateRoomScreen(
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
+    var roomSale by remember { mutableStateOf("") }
     var Status by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>())}
     var selectedVideos by remember {mutableStateOf(listOf<Uri>())}
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
+
+    var allComfortable by remember {
+        mutableStateOf(
+            listOf(
+                "Vệ sinh khép kín",
+                "Gác xép",
+                "Ra vào vân tay",
+                "Nuôi pet",
+                "Không chung chủ"
+            )
+        )
+    }
 
     val successMessage by viewModel.successMessage.observeAsState()
     LaunchedEffect(successMessage) {
@@ -143,6 +158,7 @@ fun UpdateRoomScreen(
             currentPeopleCount = room.limit_person.toString() ?: ""
             area = room.size.toString() ?: ""
             roomPrice = room.price.toString() ?: ""
+            roomSale = room.sale.toString() ?: ""
             Status = room.status.toString() ?: ""
             selectedComfortable = roomDetail?.amenities ?: emptyList()
             selectedService = room.service.map { it._id } ?: emptyList()
@@ -254,6 +270,24 @@ fun UpdateRoomScreen(
                         isReadOnly = false
                     )
 
+                    val formattedRoomSale = roomSale.replace(",", "").toDoubleOrNull()?.let {
+                        decimalFormat.format(it)
+                    } ?: roomSale
+                    CustomTextField(
+                        label = "Giá phòng",
+                        value = formattedRoomSale,
+                        onValueChange = { input ->
+                            // Remove commas before storing the raw value
+                            val rawInput = input.replace(",", "")
+                            roomSale = rawInput
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        placeholder = "Giá phòng...",
+                        isReadOnly = false
+                    )
+
                     StatusDropdown(
                         label = "Trạng thái",
                         currentStatus = when (Status) {
@@ -282,16 +316,27 @@ fun UpdateRoomScreen(
                     // tiện nghi cũ
                     Spacer(modifier = Modifier.height(10.dp))
                     Column(modifier = Modifier.padding(horizontal = 5.dp)) {
-                        ComfortableLabel()
+                        ComfortableLabelAdd { newComfortable ->
+                            if (newComfortable !in allComfortable) {
+                                allComfortable = allComfortable + newComfortable
+                            }
+                        }
                         Spacer(modifier = Modifier.height(5.dp))
-                        ComfortableOptionsFromApi(
-                            selectedComfortables = selectedComfortable,
-                            onComfortableChange = { updatedAmenities ->
-                                selectedComfortable = updatedAmenities
 
+                        // Gộp hai danh sách và loại bỏ trùng lặp
+                        val combinedComfortables = (allComfortable + selectedComfortable).distinct()
+
+                        ComfortableOptionsAdd(
+                            selectedComfortable = selectedComfortable,
+                            allComfortable = combinedComfortables, // Danh sách đã loại bỏ trùng lặp
+                            onComfortableSelected = { comfortable ->
+                                selectedComfortable = if (selectedComfortable.contains(comfortable)) {
+                                    selectedComfortable - comfortable
+                                } else {
+                                    selectedComfortable + comfortable
+                                }
                             }
                         )
-                        println("Selected Comfortables: $selectedComfortable")
                     }
 
                     // dịch vụ cũ
@@ -358,7 +403,8 @@ fun UpdateRoomScreen(
                             limit_person = currentPeopleCount,
                             status = Status,
                             photoUris = selectedImages,
-                            videoUris = selectedVideos
+                            videoUris = selectedVideos,
+                            sale = roomSale
                         )
                     },
                     modifier = Modifier

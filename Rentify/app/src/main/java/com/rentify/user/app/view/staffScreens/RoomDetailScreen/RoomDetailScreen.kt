@@ -263,6 +263,17 @@ fun RoomDetailScreen(
                             isReadOnly = true
                         )
 
+                        val formattedSale = DecimalFormat("#,###,###").format(roomDetail?.sale)
+                        CustomTextField(
+                            label = "Giảm giá",
+                            value = "$formattedSale VND" ?: "",
+                            onValueChange = { newValue ->
+                                println("New Value: $newValue")
+                            },
+                            modifier = Modifier.padding(5.dp),
+                            isReadOnly = true
+                        )
+
                         val roomStatus = if(roomDetail?.status == 0) "Chưa cho thuê" else "Đã cho thuê"
                         CustomTextField(
                             label = "Giá phòng",
@@ -293,7 +304,8 @@ fun RoomDetailScreen(
                                     selectedComfortables = amenities,
                                     onComfortableChange = { updatedAmenities ->
                                         println("Selected amenities: $updatedAmenities")
-                                    }
+                                    },
+                                    databaseComfortables = amenities
                                 )
                             } ?: run {
                                 Text(
