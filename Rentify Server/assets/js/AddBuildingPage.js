@@ -48,30 +48,45 @@ const fetchStaffs = async () => {
 
 const renderServices = (selectedServices = []) => {
     const container = document.getElementById("services-container");
-    container.innerHTML = ""; // Xóa nội dung cũ
-
+    container.innerHTML = "";
     services.forEach((service) => {
-        const serviceItem = document.createElement("div");
-        serviceItem.className = "service-item";
-        serviceItem.textContent = service.name;
-        serviceItem.dataset.id = service._id;
+        const checkboxWrapper = document.createElement("div");
+        checkboxWrapper.className = "checkbox-wrapper-13";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `service-${service._id}`;
+        checkbox.dataset.id = service._id;
 
-        // Đánh dấu các dịch vụ đã chọn
+        // Nếu dịch vụ này đã được chọn, đánh dấu checkbox là checked
         if (selectedServices.some((selected) => selected._id === service._id)) {
-            serviceItem.classList.add("active");
+            checkbox.checked = true;
         }
 
-        // Thêm sự kiện click để chọn/bỏ chọn
-        serviceItem.addEventListener("click", () => {
-            serviceItem.classList.toggle("active");
+        const label = document.createElement("label");
+        label.htmlFor = `service-${service._id}`;
+        label.textContent = service.name;
+
+        // Lắng nghe sự thay đổi của checkbox
+        checkbox.addEventListener("change", () => {
+            const isChecked = checkbox.checked;
+
+            // Cập nhật selectedServices khi checkbox được chọn hoặc bỏ chọn
+            if (isChecked) {
+                selectedServices.push(service);
+            } else {
+                const index = selectedServices.findIndex(
+                    (selected) => selected._id === service._id
+                );
+                if (index !== -1) {
+                    selectedServices.splice(index, 1);
+                }
+            }
         });
 
-        container.appendChild(serviceItem);
+        checkboxWrapper.appendChild(checkbox);
+        checkboxWrapper.appendChild(label);
+        container.appendChild(checkboxWrapper);
     });
-
-    // Ghi log kiểm tra container sau khi render
-    console.log("Dịch vụ đã render:", container.innerHTML);
-    console.log("Dịch vụ đã chọn:", selectedServices);
 };
 
 const renderStaffs = () => {
@@ -184,8 +199,9 @@ document.getElementById("addBuildingForm").addEventListener("submit", async (eve
     const address = document.getElementById("address").value.trim();
     const number_of_floors = parseInt(document.getElementById("number_of_floors").value);
     const description = document.getElementById("description").value.trim();
-    const serviceElements = document.querySelectorAll(".service-item.active"); // Dịch vụ được chọn
-    const service = Array.from(serviceElements).map((item) => item.dataset.id); // Lấy mảng ID dịch vụ
+    const selectedCheckboxes = document.querySelectorAll("#services-container input[type='checkbox']:checked");
+    const service = Array.from(selectedCheckboxes).map((checkbox) => checkbox.dataset.id);
+    console.log("Danh sách ID dịch vụ:", service);
 
     const serviceElementss = document.querySelectorAll(".service-item input[type='checkbox']:checked");
     const serviceFees = Array.from(serviceElementss).map((checkbox) => {
