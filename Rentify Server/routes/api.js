@@ -56,6 +56,8 @@ const request_staffApi = require("./Api_Staff/Request");
 const login_staffApi = require("./Api_Staff/login");
 const User_staffApi = require("./Api_Staff/User");
 const building_staff = require("./Api_Staff/Building");
+const Support_staffApi = require("./Api_Staff/Support");
+const bookingApiStaff = require("./Api_Staff/BookingApi")
 
 
 // nối
@@ -99,12 +101,14 @@ router.use("/staff/rooms", room_staffApi); // Đổi đường dẫn cho contrac
 router.use("/staff/invoices", invoice_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/requests", request_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/logins", login_staffApi); // Đổi đường dẫn cho contract_staffApi
-router.use("/staff/users", User_staffApi); // Đổi đường dẫn cho contract_staffApi
-router.use("/staff/buildings", building_staff);
+router.use("/staff/users", User_staffApi); // Đổi đường dẫn cho User_staffApi
+router.use("/staff/SOS", Support_staffApi); // Đổi đường dẫn cho Support_staffApi
+router.use("/staff/buildings", building_staff)
 router.use("/", UserManage);
 router.use("/", PostManage);
 router.use("/", PaymentManage);
 router.use("/", ContractManage);
 router.use("/", BuildingManage);
+router.use("/", bookingApiStaff)
 
 module.exports = router;

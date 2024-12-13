@@ -13,9 +13,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,16 +26,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.view.userScreens.cancelContract.components.HeaderSection
@@ -63,107 +72,114 @@ fun ListRoomScreen(
     val viewModel: RoomViewModel = viewModel(
         factory = RoomViewModel.RoomViewModeFactory(context)
     )
-    // Gọi hàm fetchRoomsForBuilding khi buildingId không null
+
     LaunchedEffect(buildingId) {
         buildingId?.let {
             viewModel.fetchRoomsForBuilding(it)
         }
     }
 
-
-    // Sử dụng observeAsState để lấy danh sách phòng
     val rooms by viewModel.rooms.observeAsState(initial = emptyList())
+    val isLoading by viewModel.isLoading.observeAsState(false)
 
-
-    Column(
-        modifier = Modifier.padding(top = 20.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .statusBarsPadding()
     ) {
-        HeaderSection(
-            backgroundColor = Color.White,
-            title = "Danh sách phòng",
-            navController = navController
-        )
-        rooms.forEach { room ->
-            RoomItem(room = room,navController)
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(R.drawable.loading)
+                        .decoderFactory(GifDecoder.Factory())
+                        .build(),
+                    contentDescription = "Loading GIF",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+            ) {
+                ListRoomTopBar(navController = navController)
+                rooms.forEach { room ->
+                    RoomItem(room = room, navController)
+                }
+            }
         }
 
-
-        Row(
+        FloatingActionButton(
+            onClick = {
+                navController.navigate("ADDROOM/${buildingId}")
+            },
             modifier = Modifier
-                .height(50.dp)
-                .fillMaxWidth()
-                .padding(start = 15.dp, end = 15.dp, top = 10.dp)
-                .background(color = Color(0xFF84d8ff))
-                .border(width = 1.dp, color = Color(0xFF84d8ff), shape = RoundedCornerShape(20.dp))
-                .clickable(
-                    onClick = {
-                        navController.navigate("ADDROOM/${buildingId}")
-                    },
-                    indication = null, // Tắt hiệu ứng gợn sóng
-                    interactionSource = remember { MutableInteractionSource() }
-                ),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            backgroundColor = Color(0xFFFB6B53),
+            contentColor = Color.White
         ) {
-            androidx.compose.material3.Text(
-                text = "Thêm phòng",
-                modifier = Modifier.padding(5.dp),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold, // Đậm chữ
-                color = Color.White, // Màu chữ trắng
-                lineHeight = 24.sp // Khoảng cách giữa các dòng
+            Icon(
+                painter = painterResource(id = R.drawable.add),
+                contentDescription = "Thêm phòng",
+                modifier = Modifier.size(24.dp)
             )
         }
     }
 }
 
-
 @Composable
-fun RoomItem(room: Room,navController: NavHostController) {
-    Log.d("UpdatePostScreen", "Post Detail: ${room.room_name}")
+fun RoomItem(room: Room, navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(9.dp)
-            .border(width = 1.dp, color = Color(0xffdddddd), shape = RoundedCornerShape(20.dp))
+            .padding(10.dp)
+            .shadow(3.dp, RoundedCornerShape(10.dp))
+            .border(
+                width = if (room.status == 1) 1.dp else 0.dp, // Kiểm tra trạng thái phòng
+                color = if (room.status == 1) Color(0xFFFF0000) else Color.Transparent, // Màu đỏ nếu status = 1
+                shape = RoundedCornerShape(10.dp)
+            )
+            .clickable {
+                val id = room.id
+                navController.navigate("RoomDetailScreen/${id}")
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(70.dp)
+                .height(60.dp)
                 .background(color = Color.White)
-                .border(
-                    width = 1.dp,
-                    color = Color(0xFFfafafa),
-                    shape = RoundedCornerShape(12.dp)
-                )
                 .padding(start = 20.dp)
-                .clickable {
-                    val id=room.id
-                    navController.navigate("RoomDetailScreen/${id}")
-                }
         ) {
             Image(
-                painter = painterResource(id = R.drawable.roomm),
+                painter = painterResource(id = R.drawable.listroom),
                 contentDescription = null,
                 modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp)
-                    .padding(top = 5.dp)
-                    .clip(CircleShape)
+                    .width(30.dp)
+                    .height(30.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Column(
                 modifier = Modifier
-                    .padding(top = 10.dp)
                     .weight(1f) // Cho phép cột chiếm không gian còn lại
             ) {
                 Text(
                     text = "${room.room_name}",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     color = Color.Black,
                     modifier = Modifier.padding(start = 5.dp),
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -178,5 +194,37 @@ fun RoomItem(room: Room,navController: NavHostController) {
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+fun ListRoomTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(
+            onClick = { navController.popBackStack() }
+        ) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew,
+                contentDescription = "Back"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        androidx.compose.material.Text(
+            text = "Danh sách phòng",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
     }
 }

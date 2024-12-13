@@ -58,6 +58,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemPost
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.ItemTypeRoom
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.SearchRoomComponent.LocationComponent
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.PostListRoomateScreen
 
 import kotlinx.coroutines.launch
 
@@ -68,7 +69,7 @@ enum class LocationLevel {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PostRoomScreen(navController: NavController) {
-    val list = FakeData().rooms
+//    val list = FakeData().rooms
     val listPost = FakeData().listPost
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -265,12 +266,12 @@ fun PostRoomScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        items(list) { item ->
-                            ItemTypeRoom(
-                                item,
-                                isSelected = item == selectedRoom,
-                                onClick = { selectedRoom = item })
-                        }
+//                        items(list) { item ->
+//                            ItemTypeRoom(
+//                                item,
+//                                isSelected = item == selectedRoom,
+//                                onClick = { selectedRoom = item })
+//                        }
                     }
 
                     Spacer(modifier = Modifier.padding(top = 15.dp))
@@ -294,14 +295,7 @@ fun PostRoomScreen(navController: NavController) {
                     Divider(color = colorInput, thickness = 1.dp)
                     Spacer(modifier = Modifier.padding(top = 10.dp))
 
-//                    LazyColumn(
-//                        modifier = Modifier.fillMaxSize(),
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//                        items(listPost) { item ->
-//                            ItemPost(item)
-//                        }
-//                    }
+                    PostListRoomateScreen( navController, postType = "rent" )
                 }
             }
         }

@@ -40,7 +40,7 @@ fun BodyReport(navController: NavHostController) {
         // Nội dung của mỗi tab
         when (selectedTabIndex) {
             0 -> DangYeuCau(navController)
-            1 -> DaHoanThanh()
+            1 -> DaHoanThanh(navController)
         }
     }
 }

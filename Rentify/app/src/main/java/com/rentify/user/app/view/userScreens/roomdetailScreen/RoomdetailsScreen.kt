@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.roomdetailScreen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,8 @@ import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.BookingRequest
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.ImageComponent
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutComfort
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutInterior
@@ -48,6 +51,7 @@ import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutS
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.baidangPreview
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.datLichXemPhong
 import com.rentify.user.app.viewModel.BookingViewModel
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomDetailViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -87,7 +91,22 @@ fun LayoutRoomdetails(
 
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
-    val userId = "67453db554300d0f1c2b16c8"
+
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
+    var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
+
+    var staffId by remember { mutableStateOf("") }
+    var staffName by remember { mutableStateOf("") }
+    landlordDetail.value.let {
+         staffId = it?.landlord?._id?:""
+         staffName = it?.landlord?.name?:""
+    }
 
     val imageUrls = roomDetail.value?.photos_room?.map { photoPath ->
         "http://10.0.2.2:3000/$photoPath"
@@ -143,9 +162,12 @@ fun LayoutRoomdetails(
         sheetState = bottomSheetState,
         sheetContent = {
             roomDetail.value?.let { detail ->
+                val userId = userDetail.value?._id?:""
                 val userName = userDetail.value?.name ?: ""
                 val phoneNumber = userDetail.value?.phoneNumber ?: ""
+
                 datLichXemPhong(
+                    staffId = userId,
                     userName = userName,  // Thay thế bằng giá trị thích hợp
                     phoneNumber = phoneNumber,  // Thay thế bằng giá trị thích hợp
                     staffName = when {
@@ -173,6 +195,7 @@ fun LayoutRoomdetails(
                             val bookingRequest = BookingRequest(
                                 user_id = userId,
                                 room_id = roomIds!!,
+                                building_id = buildingId!!,
                                 manager_id = when {
                                     true -> detail.building_id.manager_id._id
                                     true -> detail.building_id.landlord_id._id
@@ -252,6 +275,7 @@ fun LayoutRoomdetails(
                 Spacer(modifier = Modifier.padding(5.dp))
                 landlordDetail.value?.totalRooms?.let {
                     LayoutRoom(
+                        landlordId = landlordDetail.value?.landlord?._id ?: "",
                         landlordName = landlordDetail.value?.landlord?.name ?: "khong ac dinh",
                         totalRooms = it,
                         listEmptyRoom = emptyRoom.value ?: emptyList(),
@@ -275,7 +299,7 @@ fun LayoutRoomdetails(
                 Spacer(modifier = Modifier.padding(5.dp))
                 LayoutInterior(listAmenities = roomDetail.value?.service ?: emptyList())
                 Spacer(modifier = Modifier.padding(5.dp))
-                baidangPreview(navController)
+                baidangPreview(navController, staffId, staffName)
             }
         }
     }

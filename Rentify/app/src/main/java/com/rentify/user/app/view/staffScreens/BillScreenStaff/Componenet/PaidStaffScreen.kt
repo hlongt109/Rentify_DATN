@@ -92,7 +92,7 @@ fun PaidStaffScreen(
 
                 is InvoiceUiState.Error -> {
                     Text(
-                        text = "Lỗi lấy dữ liệu",
+                        text = (uiState as InvoiceUiState.Error).message,
                         modifier = Modifier.align(Alignment.Center),
                         color = Color.Red
                     )

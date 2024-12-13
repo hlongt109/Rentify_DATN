@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -26,17 +25,16 @@ fun DangYeuCau(navController: NavHostController) {
             .fillMaxSize()
     ) {
         FeetReportyeucau(navController)
-
     }
 }
 
 @Composable
-fun DaHoanThanh() {
+fun DaHoanThanh(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        FeetReporthoanthanh()
+        FeetReporthoanthanh(navController)
     }
 }
 @Composable
@@ -82,16 +80,5 @@ fun CustomTab(
                 )
             }
         }
-    }
-}
-@Composable
-fun FeetReporthoanthanh() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(
-            text = "Ok, hiểu rồi",
-            textAlign = TextAlign.Center
-        )
     }
 }

@@ -215,6 +215,7 @@ fun GradientButton(
 
 @Composable
 fun datLichXemPhong(
+    staffId: String,
     userName: String = "",
     phoneNumber: String = "",
     staffName: String = "",
@@ -257,6 +258,7 @@ fun datLichXemPhong(
         ) {
             // UserInfoCard bên trái
             UserInfoCard(
+                staffId,
                 userName = userName,
                 phoneNumber = phoneNumber,
                 role = "Khách thuê",
@@ -320,6 +322,7 @@ fun datLichXemPhong(
 
             // UserInfoCard bên phải
             UserInfoCard(
+                staffId,
                 userName = staffName,
                 phoneNumber = staffPhoneNumber,
                 role = "Nhân viên",
@@ -510,6 +513,7 @@ fun TimePickerDialog(
 
 @Composable
 fun UserInfoCard(
+    staffId: String,
     userName: String? = null, // Cho phép null
     phoneNumber: String? = null, // Cho phép null
     role: String,

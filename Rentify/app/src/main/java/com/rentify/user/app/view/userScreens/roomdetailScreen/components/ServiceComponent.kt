@@ -95,7 +95,7 @@ fun getFormattedText(name: String, price: String): String {
         "Điện" -> "${price}đ/kW"
         "Nước" -> "${price}đ/khối"
         "Wifi" -> "${price}đ/phòng"
-        else -> "$name: ${price}đ" // Trường hợp khác
+        else -> "${price}đ" // Trường hợp khác
     }
 }
 

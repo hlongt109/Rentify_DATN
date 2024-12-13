@@ -24,4 +24,4 @@ const Contract = new Schema({
   status: { type: Number, default: 0 }, //0 con hop dong, 1 het hop dong
   created_at: { type: String },
 });
-module.exports = mongoose.model("Contract", Contract);
+module.exports = mongoose.model("Contract", Contract)

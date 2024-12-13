@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+// mongoose library
+const mongoose = require("mongoose");
 // model
 const Account = require("../../models/User");
 //Post
@@ -67,7 +69,7 @@ router.post("/login-user", async (req, res) => {
         return res.status(400).send("Tài khoản của bạn chưa được xác minh");
       }
     } else {
-      return res.status(400).send("Tài khoản không tồn tại");
+      return res.status(404).send("Tài khoản không tồn tại");
     }
   } catch (error) {
     console.error(error);
@@ -107,7 +109,6 @@ router.post("/register-user", async (req, res) => {
     const hashPassword = await bcrypt.hash(data.password, 10);
     user = Account({
       email: data.email,
-      username: data.username,
       password: hashPassword,
       name: data.name,
     });
@@ -126,4 +127,31 @@ router.post("/register-user", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+const Building = require('../../models/Building')
+// đoạn này thiên code
+router.get("/landlord/:building_id", async (req, res) => {
+  try {
+    const { building_id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(building_id)) {
+      return res.status(400).json({ message: "ID tòa nhà không hợp lệ" });
+    }
+    const building = await Building.findById(building_id).populate("landlord_id").populate("manager_id");
+    if (!building) {
+      return res.status(404).json({ message: "Không tìm thấy tòa nhà" });
+    }
+    const landlord = building.landlord_id;
+    const manager = building.manager_id;
+    if (!landlord) {
+      return res.status(404).json({ message: "Không tìm thấy thông tin landlord" });
+    }
+    res.status(200).json({
+      landlord,
+      manager
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin landlord và danh sách người dùng:", error.message);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
 module.exports = router;

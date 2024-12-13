@@ -92,13 +92,13 @@ fun LayoutMenu(navController: NavHostController) {
                         .clickable {
                             statusType = type.type
                             if (type.type == "Tìm người ở ghép") {
-                                navController.navigate("TogeTher") // Điều hướng đến TogetherScreen
+                                navController.navigate("Search_roommate") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }
 
                             if (type.type == "Tin đăng cho thuê") {
-                                navController.navigate("Search_room") // Điều hướng đến TogetherScreen
+                                navController.navigate("RENTAL_POST") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }

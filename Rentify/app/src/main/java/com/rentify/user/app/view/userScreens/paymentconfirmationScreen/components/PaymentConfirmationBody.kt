@@ -42,18 +42,14 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PaymentConfirmationBodyPreview() {
-    PaymentConfirmationBody(navController = rememberNavController())
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun PaymentConfirmationBody(navController: NavHostController) {
-    var isChecked by remember { mutableStateOf(false) }
-    var isBankTransferSelected by remember { mutableStateOf(false) }
-    var isCashSelected by remember { mutableStateOf(false) }
+fun PaymentConfirmationBody(
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    isBankTransferSelected: Boolean,
+    isCashSelected: Boolean,
+    onPaymentMethodSelected: (Boolean, Boolean) -> Unit
+) {
 
     Column {
         Row {
@@ -64,13 +60,12 @@ fun PaymentConfirmationBody(navController: NavHostController) {
             )
         }
 
-        // Phương thức Chuyển khoản
+        // Phương thức chuyển khoản
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
+                .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -78,14 +73,8 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                     .fillMaxWidth()
                     .height(80.dp)
                     .background(color = Color.White)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFF0F0F0),
-                        shape = RoundedCornerShape(12.dp)
-                    )
                     .clickable {
-                        isBankTransferSelected = true
-                        isCashSelected = false
+                        onPaymentMethodSelected(true, false)
                     }
             ) {
                 Image(
@@ -123,13 +112,12 @@ fun PaymentConfirmationBody(navController: NavHostController) {
             }
         }
 
-        // Phương thức Tiền mặt
+        // Phương thức tiền mặt
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
+                .padding(horizontal = 16.dp)
+                .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -137,14 +125,8 @@ fun PaymentConfirmationBody(navController: NavHostController) {
                     .fillMaxWidth()
                     .height(80.dp)
                     .background(color = Color.White)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFF0F0F0),
-                        shape = RoundedCornerShape(12.dp)
-                    )
                     .clickable {
-                        isBankTransferSelected = false
-                        isCashSelected = true
+                        onPaymentMethodSelected(false, true)
                     }
             ) {
                 Image(
@@ -182,14 +164,15 @@ fun PaymentConfirmationBody(navController: NavHostController) {
             }
         }
 
-
+        // CustomCheckbox ở đây
+        Spacer(modifier = Modifier.padding(15.dp))
         Row(
             modifier = Modifier.padding(start = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CustomCheckbox(
                 isChecked = isChecked,
-                onCheckedChange = { isChecked = it }
+                onCheckedChange = onCheckedChange  // Truyền onCheckedChange từ parent
             )
             Spacer(modifier = Modifier.width(8.dp))
             Row(
@@ -217,6 +200,7 @@ fun PaymentConfirmationBody(navController: NavHostController) {
         }
     }
 }
+
 
 @Composable
 fun CustomCheckbox(

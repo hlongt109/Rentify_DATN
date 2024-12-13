@@ -66,7 +66,7 @@ fun HeaderComponent(navController: NavController) {
             }
 
             Text(
-                text = "Bài đăng tìm phòng",
+                text = "Báo cáo sự cố",
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp

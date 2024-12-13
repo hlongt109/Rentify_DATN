@@ -18,12 +18,10 @@ router.get("/list", async (req, res) => {
 // Lấy danh sách bài viết theo user_id
 router.get("/list/:user_id", async (req, res) => {
     const { user_id } = req.params;
-
     // Kiểm tra user_id có hợp lệ hay không
     if (!mongoose.Types.ObjectId.isValid(user_id)) {
         return res.status(400).json({ message: "ID người dùng không hợp lệ" });
     }
-
     try {
         // Tìm bài viết liên kết với user_id, đồng thời populate thông tin từ các bảng khác
         const posts = await Post.find({ user_id })
@@ -66,81 +64,60 @@ router.get("/list/:user_id", async (req, res) => {
         res.status(500).json({ message: "Đã xảy ra lỗi khi lấy danh sách bài viết.", error: error.message });
     }
 });
-// API lấy danh sách các tòa nhà theo user_id
-router.get('/buildings', async (req, res) => {
+
+
+
+
+// Lấy danh sách bài viết theo post_type
+
+router.get('/list/type/:post_type', async (req, res) => {
+    const { post_type } = req.params;
+
+    // Kiểm tra post_type có hợp lệ hay không
+    if (!["roomate", "rent", "seek"].includes(post_type)) {
+        return res.status(400).json({ message: "Loại bài đăng không hợp lệ" });
+    }
+
     try {
-        const { user_id } = req.query; // Lấy user_id từ query params
-
-        if (!user_id) {
-            return res.status(400).json({ message: "user_id không hợp lệ" });
+        // Tìm bài viết theo post_type
+        const posts = await Post.find({ post_type })
+          .populate("user_id", "email name") // Lấy thông tin người dùng
+            .populate("building_id", "address") // Lấy địa chỉ tòa nhà
+            .populate("room_id", "price room_type") // Lấy giá phòng
+            .sort({ created_at: -1 }); // Sắp xếp theo thời gian tạo mới nhất
+            const formattedPosts = posts.map(post => ({
+                _id: post._id,
+                title: post.title,
+                content: post.content,
+                address: post.address,
+                status: post.status,
+                videos: post.video,
+                photos: post.photo,
+                post_type: post.post_type,
+                created_at: post.created_at,
+                updated_at: post.updated_at,
+                room_type: post.room_id ? post.room_id.room_type : null,
+                price: post.room_id ? post.room_id.price : null, // Giá phòng từ Room
+             //   address: post.building_id ? post.building_id.address : null, // Địa chỉ từ Building
+                user: post.user_id ? {
+                    name: post.user_id.name,
+                    email: post.user_id.email
+                    
+                } : null
+            }));
+        // Kiểm tra nếu không có bài viết nào
+        if (!posts.length) {
+            return res.status(404).json({ message: "Không có bài đăng nào thuộc loại này." });
         }
 
-        // Tìm tất cả các tòa nhà mà người dùng quản lý (giả sử có quan hệ giữa User và Building)
-        const buildings = await building.find({ user_id: user_id });
-
-        if (!buildings.length) {
-            return res.status(404).json({ message: "Không tìm thấy tòa nhà" });
-        }
-
-        res.status(200).json({ status: 200, data: buildings });
+        res.status(200).json({formattedPosts});
     } catch (error) {
-        res.status(500).json({ message: "Lỗi khi lấy tòa nhà", error: error.message });
+        console.error("Lỗi server:", error.message);
+        res.status(500).json({ message: "Đã xảy ra lỗi khi lấy danh sách bài viết.", error: error.message });
     }
 });
-// API lấy danh sách phòng trong một tòa nhà theo building_id
-router.get('/rooms', async (req, res) => {
-    try {
-        const { building_id } = req.query; // Lấy building_id từ query params
 
-        if (!building_id) {
-            return res.status(400).json({ message: "building_id không hợp lệ" });
-        }
 
-        // Tìm tất cả các phòng trong tòa nhà theo building_id
-        const rooms = await Room.find({ building_id: building_id });
-
-        if (!rooms.length) {
-            return res.status(404).json({ message: "Không tìm thấy phòng trong tòa nhà" });
-        }
-
-        res.status(200).json({ status: 200, data: rooms });
-    } catch (error) {
-        res.status(500).json({ message: "Lỗi khi lấy phòng", error: error.message });
-    }
-});
-// API đăng bài với video, ảnh
-
-router.post('/add',  upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
-    try {
-        const { user_id, building_id, room_id, title, content, post_type, status } = req.body;
-
-        // Kiểm tra giá trị `post_type`
-        if (!["roomate", "rent", "seek"].includes(post_type)) {
-            return res.status(400).json({ message: "Loại bài đăng không hợp lệ" });
-        }
-
-        // Tạo bài đăng mới
-        const newPost = new Post({
-            user_id: new mongoose.Types.ObjectId(req.body.user_id),
-            building_id: building_id ?new mongoose.Types.ObjectId(building_id) : null, // Kiểm tra nếu có building_id
-            room_id: room_id ?new mongoose.Types.ObjectId(room_id) : null, // Kiểm tra nếu có room_id
-            title,
-            content,
-            post_type,
-            status: status || 0, // Mặc định là `0`
-           video: req.files['video'] ? req.files['video'].map(file => file.path.replace('public/', '')) : [],
-            photo: req.files['photo'] ? req.files['photo'].map(file => file.path.replace('public/', '')) : [],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-        });
-
-        // Lưu bài đăng vào database
-        const savedPost = await newPost.save();
-        res.status(201).json({ status: 201, data: savedPost });
-    } catch (error) {
-        res.status(400).json({ message: "Lỗi thêm bài đăng", error: error.message });
-    }
-});
 
 
 router.get('/detail/:id', async (req, res) => {
@@ -199,6 +176,202 @@ router.get('/detail/:id', async (req, res) => {
         res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+// router.get("/list/:user_id", async (req, res) => {
+//     const { user_id } = req.params;
+
+//     // Kiểm tra user_id có hợp lệ hay không
+//     if (!mongoose.Types.ObjectId.isValid(user_id)) {
+//         return res.status(400).json({ message: "ID người dùng không hợp lệ" });
+//     }
+
+//     try {
+//         // Tìm bài viết liên kết với user_id, đồng thời populate thông tin từ các bảng khác
+//         const posts = await Post.find({ user_id })
+//             .populate("user_id", "name email") // Lấy thông tin người dùng
+//             .populate("building_id", "address") // Lấy địa chỉ tòa nhà
+//             .populate("room_id", "price") // Lấy giá phòng
+//             .sort({ created_at: -1 }); // Sắp xếp theo thời gian tạo mới nhất
+
+//         // Kiểm tra nếu không có bài viết nào
+//         if (!posts.length) {
+//             return res.status(404).json({ message: "Không có bài đăng nào của người dùng này." });
+//         }
+
+//         // Định dạng dữ liệu trả về
+//         const formattedPosts = posts.map(post => ({
+//             _id: post._id,
+//             title: post.title,
+//             content: post.content,
+//             status: post.status,
+//             video: post.video,
+//             photo: post.photo,
+//             post_type: post.post_type,
+//             created_at: post.created_at,
+//             updated_at: post.updated_at,
+//             price: post.room_id ? post.room_id.price : null, // Giá phòng từ Room
+//             address: post.building_id ? post.building_id.address : null, // Địa chỉ từ Building
+//             user: post.user_id ? {
+//                 name: post.user_id.name,
+//                 email: post.user_id.email
+//             } : null
+//         }));
+
+//         res.status(200).json({
+//             status: 200,
+//             message: "Danh sách bài viết được lấy thành công.",
+//             data: formattedPosts
+//         });
+//     } catch (error) {
+//         console.error("Lỗi server:", error.message);
+//         res.status(500).json({ message: "Đã xảy ra lỗi khi lấy danh sách bài viết.", error: error.message });
+//     }
+// });
+// API lấy danh sách các tòa nhà theo user_id
+router.get('/buildings', async (req, res) => {
+    try {
+        const { user_id } = req.query; // Lấy user_id từ query params
+
+        if (!user_id) {
+            return res.status(400).json({ message: "user_id không hợp lệ" });
+        }
+
+        // Tìm tất cả các tòa nhà mà người dùng quản lý (giả sử có quan hệ giữa User và Building)
+        const buildings = await building.find({ user_id: user_id });
+
+        if (!buildings.length) {
+            return res.status(404).json({ message: "Không tìm thấy tòa nhà" });
+        }
+
+        res.status(200).json({ status: 200, data: buildings });
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi lấy tòa nhà", error: error.message });
+    }
+});
+// API lấy danh sách phòng trong một tòa nhà theo building_id
+router.get('/rooms', async (req, res) => {
+    try {
+        const { building_id } = req.query; // Lấy building_id từ query params
+
+        if (!building_id) {
+            return res.status(400).json({ message: "building_id không hợp lệ" });
+        }
+
+        // Tìm tất cả các phòng trong tòa nhà theo building_id
+        const rooms = await Room.find({ building_id: building_id });
+
+        if (!rooms.length) {
+            return res.status(404).json({ message: "Không tìm thấy phòng trong tòa nhà" });
+        }
+
+        res.status(200).json({ status: 200, data: rooms });
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi lấy phòng", error: error.message });
+    }
+});
+// API đăng bài với video, ảnh
+
+router.post('/add',  upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {
+    try {
+        const { user_id, building_id, room_id, title,address, content, post_type, status } = req.body;
+
+        // Kiểm tra giá trị `post_type`
+        if (!["roomate", "rent", "seek"].includes(post_type)) {
+            return res.status(400).json({ message: "Loại bài đăng không hợp lệ" });
+        }
+
+        // Tạo bài đăng mới
+        const newPost = new Post({
+            user_id: new mongoose.Types.ObjectId(req.body.user_id),
+            building_id: building_id ?new mongoose.Types.ObjectId(building_id) : null, // Kiểm tra nếu có building_id
+            room_id: room_id ?new mongoose.Types.ObjectId(room_id) : null, // Kiểm tra nếu có room_id
+            title,
+            address,
+            content,
+            post_type,
+            status: status || 0, // Mặc định là `0`
+           video: req.files['video'] ? req.files['video'].map(file => file.path.replace('public/', '')) : [],
+            photo: req.files['photo'] ? req.files['photo'].map(file => file.path.replace('public/', '')) : [],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        });
+
+        // Lưu bài đăng vào database
+        const savedPost = await newPost.save();
+        res.status(201).json({ status: 201, data: savedPost });
+    } catch (error) {
+        res.status(400).json({ message: "Lỗi thêm bài đăng", error: error.message });
+    }
+});
+
+
+// router.get('/detail/:id', async (req, res) => {
+//     try {
+//         const postId = req.params.id;
+
+//         // Kiểm tra ID có hợp lệ hay không
+//         if (!mongoose.Types.ObjectId.isValid(postId)) {
+//             return res.status(400).json({ message: 'ID không hợp lệ' });
+//         }
+
+//         // Tìm bài đăng và populate thông tin người dùng, building và room
+//         const post = await Post.findById(postId)
+//             .populate('user_id', 'name email')
+//             .populate('building_id', 'nameBuilding address')  // Populate thông tin từ bảng Building
+//             .populate('room_id', 'room_type room_name price') // Populate thông tin từ bảng Room
+
+//         if (!post) {
+//             return res.status(404).json({ message: 'Bài đăng không tìm thấy' });
+//         }
+
+//         // Tính số bài đăng trong tòa nhà có building_id giống
+//         const buildingPostCount = await Post.countDocuments({ building_id: post.building_id._id });
+
+//         // Định dạng dữ liệu phản hồi
+//         res.status(200).json({
+//             id: post._id,
+//             title: post.title,
+//             content: post.content,
+//             post_type: post.post_type,
+//             status: post.status,
+//             photos: post.photo,
+//             videos: post.video,
+//             created_at: post.created_at,
+//             updated_at: post.updated_at,
+//             user: post.user_id ? {
+//                 _id: post.user_id._id,
+//                 name: post.user_id.name,
+//                 email: post.user_id.email
+//             } : null,
+//             building: post.building_id ? {
+//                 _id: post.building_id._id,
+//                 nameBuilding: post.building_id.nameBuilding,
+//                 address: post.building_id.address,
+//                 post_count: buildingPostCount // Trả về số bài đăng trong tòa nhà
+//             } : null,
+//             room: post.room_id ? {
+//                 _id: post.room_id._id,
+//                 room_type: post.room_id.room_type,
+//                 room_name: post.room_id.room_name,
+//                 price: post.room_id.price
+//             } : null
+//         });
+//     } catch (error) {
+//         console.error('Lỗi khi lấy chi tiết bài đăng:', error);
+//         res.status(500).json({ message: 'Lỗi server', error: error.message });
+//     }
+// });
 
 // Cập nhật bài viết
 // router.put('/update/:id', upload.fields([{ name: 'video' }, { name: 'photo' }]), async (req, res) => {

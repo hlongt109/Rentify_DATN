@@ -16,9 +16,11 @@ import androidx.navigation.navArgument
 import com.rentify.user.app.view.auth.ForgotPasswordScreen
 import com.rentify.user.app.view.auth.LoginScreenApp
 import com.rentify.user.app.view.auth.RegisterScreen
+import com.rentify.user.app.view.auth.components.PreForgotPass
 import com.rentify.user.app.view.intro.IntroScreen
 import com.rentify.user.app.view.intro.SplashScreen
 import com.rentify.user.app.view.navigator.AppNavigation
+import com.rentify.user.app.view.navigator.BottomNavigation
 import com.rentify.user.app.view.navigator.ROUTER
 import com.rentify.user.app.view.staffScreens.ListRommScreen.ListRoomScreen
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
@@ -33,23 +35,36 @@ import com.rentify.user.app.view.staffScreens.personalScreen.PersonalScreen
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.UpdateBillStaff
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
+import com.rentify.user.app.view.staffScreens.ReportScreen.Components.ListSupportByRoom
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.UpdatePostScreen
+import com.rentify.user.app.view.staffScreens.addContractScreen.AddContractScreens
 import com.rentify.user.app.view.staffScreens.postingList.PostingListScreen
 import com.rentify.user.app.view.userScreens.AddPostScreen.AddPostScreen
 import com.rentify.user.app.view.userScreens.BillScreen.BillScreen
 
 import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
+import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractDetailScreen
+import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractImageScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
+import com.rentify.user.app.view.staffScreens.scheduleScreen.ScheduleDetails
+import com.rentify.user.app.view.staffScreens.scheduleScreen.ScheduleScreen
+import com.rentify.user.app.view.userScreens.BaiDangYeuThich.BaiDangYeuThich
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
+import com.rentify.user.app.view.userScreens.DieuKhoanChinhSach.DieuKhoanChinhSach
 import com.rentify.user.app.view.userScreens.IncidentReport.IncidentReportScreen
+import com.rentify.user.app.view.userScreens.QuanLiDichVu.QuanLiDichVu
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.FilterScreen
 import com.rentify.user.app.view.userScreens.SearchRoomScreen.PostRoomScreen
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.SeachRoomateDetailScreen
+import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
+import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
 import com.rentify.user.app.view.userScreens.cancelContract.CancelContractScreen
 import com.rentify.user.app.view.userScreens.chatScreen.TinnhanScreen
-import com.rentify.user.app.view.userScreens.contractScreen.ContractScreen
+import com.rentify.user.app.view.userScreens.contractScreen.ContractImageScreen
 import com.rentify.user.app.view.userScreens.laundryScreen.LaundryScreen
 import com.rentify.user.app.view.userScreens.laundrydetailScreen.LaundryDetailScreenScreen
 import com.rentify.user.app.view.userScreens.messengerScreen.LayoutMessenger
@@ -62,6 +77,7 @@ import com.rentify.user.app.view.userScreens.rentalPost.RentalPostScreen
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails
 import com.rentify.user.app.view.userScreens.roomdetailScreen.LayoutRoomdetails2
 import com.rentify.user.app.view.userScreens.searchPostRoomScreen.SearchPostRoonmScreen
+import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.Component.PostDetailUserScreen
 import com.rentify.user.app.view.userScreens.searchPostRoomateScreen.SearchPostRoomateScreen
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.view.userScreens.togetherScreen.TogetherScreen
@@ -82,7 +98,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainNavigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ROUTER.HOME.name) {
+        NavHost(navController = navController, startDestination = ROUTER.SPLASH.name) {
             composable(ROUTER.SPLASH.name) {
                 SplashScreen(navController = navController)
             }
@@ -94,9 +110,6 @@ class MainActivity : ComponentActivity() {
             }
             composable(ROUTER.RESGITER.name) {
                 RegisterScreen(navController = navController)
-            }
-            composable(ROUTER.FORGOTPASS.name) {
-                ForgotPasswordScreen(navController = navController)
             }
             composable(ROUTER.HOME.name) {
                 AppNavigation(navController)
@@ -125,13 +138,24 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.CATEGORYPOST.name) {
                 CategoryPostScreen(navController)
             }
+            composable(ROUTER.QuanLiDichVuUser.name) {
+                QuanLiDichVu(navController)
+            }
             composable(ROUTER.SEARCHPOSTROOMATE.name) {
                 SearchPostRoomateScreen(navController = navController)
             }
             composable(ROUTER.SEARCHPOSTROOM.name) {
                 SearchPostRoonmScreen(navController = navController)
             }
-            composable(ROUTER.ADDPOST.name) {
+            composable(
+                route = "${ROUTER.ADDPOST.name}?postType={postType}",
+                arguments = listOf(
+                    navArgument("postType") {
+                        type = NavType.StringType
+                        defaultValue = "default" // Giá trị mặc định nếu không truyền
+                    }
+                )
+            ) {
                 AddPostScreen(navController = navController)
             }
             composable(ROUTER.INCIDENTREPORT.name) {
@@ -140,29 +164,67 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.ADDINCIDENTREPORT.name) {
                 AddIncidentReportScreen(navController = navController)
             }
-            composable(ROUTER.CONTRACT.name) {
-                ContractScreen(navController = navController)
+
+            composable(
+                route = "CONTRACT/{imageUrls}",
+                arguments = listOf(navArgument("imageUrls") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val imageUrlsJson = backStackEntry.arguments?.getString("imageUrls") ?: "[]"
+                ContractImageScreen(navController, imageUrlsJson)
             }
+
             composable(ROUTER.CANCELCONTRACT.name) {
                 CancelContractScreen(navController = navController)
             }
             composable(ROUTER.TogeTher.name) {
                 TogetherScreen(navController = navController)
             }
-            composable(ROUTER.TINNHAN.name) {
-                TinnhanScreen(navController = navController)
+            composable(
+                "TINNHAN/{userId}/{userName}",
+                arguments = listOf(
+                    navArgument("userId") { type = NavType.StringType },
+                    navArgument("userName") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val receiverId = backStackEntry.arguments?.getString("userId") ?: ""
+                val receiverName = backStackEntry.arguments?.getString("userName") ?: ""
+                TinnhanScreen(navController = navController, receiverId, name = receiverName)
             }
-            composable(ROUTER.PaymentConfirmation.name) {
-                PaymentConfirmationScreen(navController = navController)
+
+            composable("PaymentConfirmation/{amount}/{building_id}/{_id}/{room_id}") { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
+                val buildingId = backStackEntry.arguments?.getString("building_id") ?: ""
+                val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
+                val roomId = backStackEntry.arguments?.getString("room_id") ?: ""
+                PaymentConfirmationScreen(
+                    invoiceId = invoiceId,
+                    amount = amount,
+                    buildingId = buildingId,
+                    roomId = roomId,
+                    navController = navController
+                )
             }
-            composable(ROUTER.Payments.name) {
-                PaymentScreen(navController = navController)
+
+            composable("Payments/{amount}/{buildingId}/{_id}") { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount")?.toInt() ?: 0
+                val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
+                val invoiceId = backStackEntry.arguments?.getString("_id") ?: ""
+                PaymentScreen(
+                    invoiceId = invoiceId,
+                    amount = amount,
+                    buildingId = buildingId,
+                    navController = navController
+                )
             }
+
             composable(ROUTER.ConTract.name) {
                 com.rentify.user.app.view.userScreens.contract.ContractScreen(navController = navController)
             }
             composable(ROUTER.Search_room.name) {
                 PostRoomScreen(navController = navController)
+            }
+            composable(ROUTER.Search_roommate.name) {
+                SearchRoommateScreen(navController = navController)
             }
             composable(ROUTER.Filter_room.name) {
                 FilterScreen(navController = navController)
@@ -190,6 +252,13 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.HOME_STAFF.name) {
                 HomeScreen(navController = navController)
             }
+            composable(ROUTER.BaiDangYeuThich.name) {
+                BaiDangYeuThich(navController = navController)
+            }
+            composable(ROUTER.DieuKhoanChinhSach.name) {
+                DieuKhoanChinhSach(navController = navController)
+            }
+
             composable(ROUTER.BUILDING.name) {
                 BuildingScreen(navController = navController)
             }
@@ -202,13 +271,36 @@ class MainActivity : ComponentActivity() {
                 val buildingId = backStackEntry.arguments?.getString("buildingId")
                 ListRoomScreen(navController = navController, buildingId = buildingId)
             }
-            composable("UpdateRoomScreen/{id}") { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("id")
-                UpdateRoomScreen(navController = navController, id = id ?: "")
+            composable("ListSupportByRoom/{buildingId}") { backStackEntry ->
+                val buildingId = backStackEntry.arguments?.getString("buildingId")
+                ListSupportByRoom(navController = navController, buildingId = buildingId)
             }
+            composable("UpdateRoomScreen/{id}/{buildingId}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id") ?: ""
+                val buildingId = backStackEntry.arguments?.getString("buildingId") ?: ""
+                UpdateRoomScreen(navController = navController, id = id, buildingId = buildingId)
+            }
+
+            composable("UpdateBillStaff/{invoiceId}") { backStackEntry ->
+                val invoiceId = backStackEntry.arguments?.getString("invoiceId")
+                UpdateBillStaff(navController = navController, invoiceId = invoiceId)
+            }
+
             composable(ROUTER.RENTAL_POST.name) {
-                RentalPostScreen(navController = navController)
+                RentalPostScreen(navController = navController, title = null)
             }
+
+            composable(
+                route = "RENTAL_POST/{title}",
+                arguments = listOf(navArgument("title") {
+                    type = NavType.StringType
+                    nullable = true
+                })
+            ) { backStackEntry ->
+                val title = backStackEntry.arguments?.getString("title")
+                RentalPostScreen(navController = navController, title = title)
+            }
+
             composable(ROUTER.CONTRACT_STAFF.name) {
                 com.rentify.manager.app.view.contract.ContractScreen(navController = navController)
             }
@@ -230,7 +322,19 @@ class MainActivity : ComponentActivity() {
             composable("post_detail/{postId}") { backStackEntry ->
                 val postId = backStackEntry.arguments?.getString("postId")
                 if (postId != null) {
-                    PostDetailScreen( navController = navController,postId = postId)
+                    PostDetailScreen(navController = navController, postId = postId)
+                }
+            }
+            composable("SearchRoomate_detail/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    SeachRoomateDetailScreen(navController = navController, postId = postId)
+                }
+            }
+            composable("post_user_detail/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    PostDetailUserScreen(navController = navController, postId = postId)
                 }
             }
             composable("update_post_screen/{postId}") { backStackEntry ->
@@ -238,10 +342,46 @@ class MainActivity : ComponentActivity() {
                 if (postId != null) {
                     UpdatePostScreen(navController = navController, postId = postId)
                 }
+            }
+            composable("update_post_user_screen/{postId}") { backStackEntry ->
+                val postId = backStackEntry.arguments?.getString("postId")
+                if (postId != null) {
+                    UpdatePostUserScreen(navController = navController, postId = postId)
+                }
+            }
+            composable(ROUTER.ADDBILL_STAFF.name) {
+                AddBillStaff(navController = navController)
+            }
+            composable(ROUTER.ADDCONTRAC_STAFF.name) {
+                AddContractScreens(navController = navController)
+            }
+            composable("contract_detail/{postId}") { backStackEntry ->
+                val contractId = backStackEntry.arguments?.getString("postId")
+                if (contractId != null) {
+                    ContractDetailScreen(navController = navController, contractId = contractId)
+                }
 
             }
-            composable(ROUTER.ADDBILL_STAFF.name){
-                AddBillStaff(navController = navController)
+            composable("contract_image_detail/{postId}") { backStackEntry ->
+                val contractId = backStackEntry.arguments?.getString("postId")
+                if (contractId != null) {
+                    ContractImageScreen(navController = navController, contractId = contractId)
+                }
+
+            }
+            //
+            composable(ROUTER.Schedule.name) {
+                ScheduleScreen(navController)
+            }
+
+            composable(
+                "${ROUTER.ScheduleDetails.name}/{id}",
+                arguments = listOf(navArgument("id") {type = NavType.StringType})
+            ) {backStackEntry ->
+                val idBooking = backStackEntry.arguments?.getString("id")
+                idBooking?.let{
+                    ScheduleDetails(id = idBooking, navController)
+                }
             }
 
             //những màn hình thiên thêm
@@ -262,10 +402,30 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.AppointmentScreen.name) {
                 AppointmentScreen(navController = navController)
             }
+
+            //phong forgot
+            composable(ROUTER.PREFORGOT.name) {
+                PreForgotPass(navController)
+            }
+            composable(
+                ROUTER.FORGOTPASS.name + "/{email}",
+                arguments = listOf(
+                    navArgument("email") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val email = backStackEntry.arguments?.getString("email") ?: ""
+                ForgotPasswordScreen(navController, email)
+            }
+
+            composable(ROUTER.BottomTest.name) {
+                BottomNavigation(navController)
+            }
+
         }
     }
 
-enum class ROUTER {
+
+    enum class ROUTER {
         HOME,
         HOME_STAFF,
         SERVICE,
@@ -313,8 +473,19 @@ enum class ROUTER {
         POSTING_STAFF,
         REPORT_STAFF,
         ADDPOST_staff,
-    //những màn hình thiên thêm
-    RoomDetails2,
-    AppointmentScreen
+        Search_roommate,
+        AppointmentScreen,
+        BaiDangYeuThich,
+        DieuKhoanChinhSach,
+        //
+        Schedule,
+        ScheduleDetails,
+        //những màn hình thiên thêm
+        ADDCONTRAC_STAFF,
+        ListSupportByRoom,
+        QuanLiDichVuUser,
+        PREFORGOT,
+        BottomTest,
     }
 }
+

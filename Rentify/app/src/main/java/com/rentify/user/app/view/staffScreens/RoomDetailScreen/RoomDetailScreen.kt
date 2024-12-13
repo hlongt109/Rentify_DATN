@@ -4,7 +4,10 @@ package com.rentify.user.app.view.staffScreens.RoomDetailScreen
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,17 +24,28 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,14 +65,24 @@ import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
+import com.rentify.user.app.R
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ServiceOptionschitiet
+import java.text.DecimalFormat
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -81,361 +105,413 @@ fun RoomDetailScreen(
     )
     // Lấy thông tin chi tiết phòng từ ViewModel
     val roomDetail by viewModel.roomDetail.observeAsState()
-    val error by viewModel.error.observeAsState()
     val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp
     val scrollState = rememberScrollState()
-    // Gọi API để lấy thông tin phòng chi tiết, chỉ khi id thay đổi
-    LaunchedEffect(id) {
-        // Kiểm tra xem đã có dữ liệu phòng chưa, nếu chưa thì gọi API
+
+    LaunchedEffect(key1 = id) {
+        viewModel.fetchRoomDetailById(id)
+    }
+
+    LaunchedEffect(roomDetail) {
         if (roomDetail == null) {
             viewModel.fetchRoomDetailById(id)
         }
     }
 
+    var isFullScreen by remember { mutableStateOf(false) }
+    val isLoading by viewModel.isLoading.observeAsState(false)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xfff7f7f7))
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
                 .background(color = Color(0xfff7f7f7))
-                .padding(bottom = screenHeight.dp / 7f)
+                .padding(bottom = 15.dp)
 
         ) {
-
-
-            HeaderComponent(
-                backgroundColor = Color(0xffffffff),
-                title = "Hiển thị chi tiết phòng ",
-                navController = navController
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-                    .background(color = Color(0xfff7f7f7))
-                    .padding(15.dp)
-            ) {
-                // if ở đây
-                if (roomDetail != null) {
-                    val room = roomDetail!!
-                    Column(
+            RoomDetailManagerTopBar(navController = navController)
+            if (isLoading){
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Transparent),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(R.drawable.loading)
+                            .decoderFactory(GifDecoder.Factory())
+                            .build(),
+                        contentDescription = "Loading GIF",
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        Text(
-                            text = "Tên tòa nhà*", color = Color(0xFF7c7b7b), fontSize = 13.sp
-                        )
-                        Column {
-                            Text(
-                                text = "${roomDetail?.room_name}",
-                                color = Color(0xFF7c7b7b),
-                                fontSize = 13.sp,
-                                modifier = Modifier.padding(20.dp)
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(color = Color(0xFFcccccc))
-                            )
-                        }
-                    }
-                    // tên phòng
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        Text(
-                            text = "Mô tả phòng*", color = Color(0xFF7c7b7b), fontSize = 13.sp
-                        )
-                        Column {
-                            Text(
-                                text = "${roomDetail?.description}",
-                                color = Color(0xFF7c7b7b),
-                                fontSize = 13.sp,
-                                modifier = Modifier.padding(20.dp)
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(color = Color(0xFFcccccc))
-                            )
-                        }
-                    }
-                    Column {
-                        RoomTypeLabel()
+                            .size(150.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+            }else{
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(scrollState)
+                        .background(color = Color(0xfff7f7f7))
+                        .padding(10.dp)
+                ) {
+                    // if ở đây
+                    if (roomDetail != null) {
+                        val room = roomDetail!!
 
-                        // Gọi RoomTypeOptions với danh sách từ roomDetail
-                        RoomTypeOptionschitiet(
-                            apiSelectedRoomTypes = listOfNotNull(roomDetail?.room_type), // Chuyển loại phòng từ roomDetail thành danh sách
-                            onRoomTypeSelected = { selectedRoomType ->
-                                println("Selected Room Type: $selectedRoomType")
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(room.photos_room ?: emptyList()) { photoUrl ->
+                                val urianh: String = "http://10.0.2.2:3000/${photoUrl}"
+                                AsyncImage(
+                                    model = urianh,
+                                    contentDescription = "Room Photo",
+                                    modifier = Modifier
+                                        .size(150.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(Color.LightGray),
+                                    contentScale = ContentScale.Crop
+                                )
                             }
+                        }
+
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp)
+                        ) {
+                            items(room.video_room ?: emptyList()) { videoUrl ->
+                                val urivideo: String = "http://10.0.2.2:3000/${videoUrl}"
+                                Box(
+                                    modifier = Modifier
+                                        .fillParentMaxWidth() // Đảm bảo item chiếm đủ chiều rộng trong LazyRow
+                                        .clickable { isFullScreen = !isFullScreen } // Thêm sự kiện nhấn để phóng to
+                                ) {
+                                    ExoPlayerView(
+                                        context = context,
+                                        videoUri = Uri.parse(urivideo),
+                                        isFullScreen = isFullScreen
+                                    )
+                                }
+                            }
+                        }
+
+
+                        CustomTextField(
+                            label = "Tên nhà",
+                            value = roomDetail?.room_name ?: "",
+                            onValueChange = { newValue ->
+                                println("New Value: $newValue")
+                            },
+                            modifier = Modifier.padding(5.dp),
+                            isReadOnly = true
                         )
-                    }
 
+                        CustomTextField(
+                            label = "Mô tả",
+                            value = roomDetail?.description ?: "",
+                            onValueChange = { newValue ->
+                                println("New Value: $newValue")
+                            },
+                            modifier = Modifier.padding(5.dp),
+                            isReadOnly = true
+                        )
 
-                    Text(text = "Hình ảnh:", fontSize = 16.sp, color = Color.Black)
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(room.photos_room ?: emptyList()) { photoUrl ->
-                            val urianh: String = "http://10.0.2.2:3000/${photoUrl}"
+                        CustomTextField(
+                            label = "Giới hạn người",
+                            value = if (roomDetail?.limit_person?.let { it > 0 } == true) {
+                                "${roomDetail!!.limit_person} người"
+                            } else {
+                                "Không giới hạn người ở"
+                            },
+                            onValueChange = { newValue ->
+                                println("New Value: $newValue")
+                            },
+                            modifier = Modifier.padding(5.dp),
+                            isReadOnly = true
+                        )
+
+                        CustomTextField(
+                            label = "Diện tích",
+                            value = "${roomDetail?.size}m2" ?: "",
+                            onValueChange = { newValue ->
+                                println("New Value: $newValue")
+                            },
+                            modifier = Modifier.padding(5.dp),
+                            isReadOnly = true
+                        )
+
+                        val formattedPrice = DecimalFormat("#,###,###").format(roomDetail?.price)
+                        CustomTextField(
+                            label = "Giá phòng",
+                            value = "$formattedPrice VND" ?: "",
+                            onValueChange = { newValue ->
+                                println("New Value: $newValue")
+                            },
+                            modifier = Modifier.padding(5.dp),
+                            isReadOnly = true
+                        )
+
+                        val roomStatus = if(roomDetail?.status == 0) "Chưa cho thuê" else "Đã cho thuê"
+                        CustomTextField(
+                            label = "Giá phòng",
+                            value = roomStatus ?: "",
+                            onValueChange = { newValue ->
+                                println("New Value: $newValue")
+                            },
+                            modifier = Modifier.padding(5.dp),
+                            isReadOnly = true
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Column(modifier = Modifier.padding(horizontal = 5.dp)) {
+                            RoomTypeLabel()
+                            Spacer(modifier = Modifier.padding(5.dp))
+                            RoomTypeOptionschitiet(apiSelectedRoomTypes = listOfNotNull(roomDetail?.room_type),
+                                onRoomTypeSelected = { selectedRoomType ->
+                                    println("Selected Room Type: $selectedRoomType")
+                                })
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Column(modifier = Modifier.padding(horizontal = 5.dp)) {
+                            ComfortableLabel()
+                            Spacer(modifier = Modifier.padding(5.dp))
+                            roomDetail?.amenities?.let { amenities ->
+                                ComfortableOptionsFromApi(
+                                    selectedComfortables = amenities,
+                                    onComfortableChange = { updatedAmenities ->
+                                        println("Selected amenities: $updatedAmenities")
+                                    }
+                                )
+                            } ?: run {
+                                Text(
+                                    text = "Không có tiện nghi nào được cung cấp.",
+                                    color = Color(0xFF7c7b7b),
+                                    fontSize = 13.sp
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Column(modifier = Modifier.padding(horizontal = 5.dp)) {
+                            ServiceLabel()
+                            Spacer(modifier = Modifier.padding(5.dp))
+                            roomDetail?.service?.let { service ->
+                                ServiceOptionschitiet(
+                                    selectedServices = service
+                                )
+                            } ?: run {
+                                Text(
+                                    text = "Không có dịch vụ nào được cung cấp.",
+                                    color = Color(0xFF7c7b7b),
+                                    fontSize = 13.sp
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(50.dp))
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Transparent),
+                            contentAlignment = Alignment.Center
+                        ) {
                             AsyncImage(
-                                model = urianh,
-                                contentDescription = "Room Photo",
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(R.drawable.loading)
+                                    .decoderFactory(GifDecoder.Factory())
+                                    .build(),
+                                contentDescription = "Loading GIF",
                                 modifier = Modifier
                                     .size(150.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(Color.LightGray),
-                                contentScale = ContentScale.Crop
+                                    .align(Alignment.Center)
                             )
                         }
                     }
-
-                    // Display videos
-                    Text(text = "Videos:", fontSize = 16.sp, color = Color.Black)
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(room.video_room ?: emptyList()) { videoUrl ->
-                            val urivideo: String = "http://10.0.2.2:3000/${videoUrl}"
-                            ExoPlayerView(context = context, videoUri = Uri.parse(urivideo))
-                        }
-                    }
-
-                    Log.d("TAG", "RoomDetailScreen:${room.video_room} ")
-                    // giới hạn người
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        Text(
-                            text = "Giới hạn người *",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xFF7c7b7b),
-                            //  fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-
-                            )
-                        Column {
-                            Text(
-                                text = "${roomDetail?.limit_person}",
-                                color = Color(0xFF7c7b7b),
-                                fontSize = 13.sp,
-                                modifier = Modifier.padding(20.dp)
-                            )
-                            Log.d("TAG", "RoomDetailScreen:${roomDetail?.limit_person} ")
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(color = Color(0xFFcccccc))
-                            )
-                        }
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        Text(
-                            text = "Diện tích (m2)*",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xFF7c7b7b),
-                            //  fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-
-                            )
-                        Column {
-                            Text(
-                                text = "${roomDetail?.size}",
-                                color = Color(0xFF7c7b7b),
-                                fontSize = 13.sp,
-                                modifier = Modifier.padding(20.dp)
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(color = Color(0xFFcccccc))
-                            )
-                        }
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        Text(
-                            text = "Giá phòng*",
-                            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                            color = Color(0xFF7c7b7b),
-                            //  fontWeight = FontWeight(700),
-                            fontSize = 13.sp,
-
-                            )
-                        Column {
-                            Text(
-                                text = "${roomDetail?.price}",
-                                color = Color(0xFF7c7b7b),
-                                fontSize = 13.sp,
-                                modifier = Modifier.padding(20.dp)
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(color = Color(0xFFcccccc))
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(3.dp))
-                    Column {
-                        ComfortableLabel()
-                        roomDetail?.amenities?.let { amenities ->
-                            ComfortableOptionsFromApi(
-                                apiSelectedComfortable = amenities
-                            )
-                        } ?: run {
-                            Text(
-                                text = "Không có tiện nghi nào được cung cấp.",
-                                color = Color(0xFF7c7b7b),
-                                fontSize = 13.sp
-                            )
-                        }
-                    }
-                    Log.d("amenities", "tiện nghi :${roomDetail?.amenities} ")
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Column {
-                        ServiceLabel()
-
-                        roomDetail?.service?.let { serviceList ->
-                            ServiceOptionschitiet(
-                                selectedServices = serviceList
-                            )
-                        } ?: run {
-                            Text(
-                                text = "Không có dịch vụ nào được cung cấp.",
-                                color = Color(0xFF7c7b7b),
-                                fontSize = 13.sp
-                            )
-                        }
-                    }
-                    Log.d("service", "dịch vụ :${roomDetail?.service}")
-                    Row(
-                        modifier = Modifier
-                            .height(50.dp)
-                            .fillMaxWidth()
-                            .padding(start = 15.dp, end = 15.dp, top = 10.dp)
-                            .background(color = Color(0xFF84d8ff))
-                            .border(
-                                width = 1.dp,
-                                color = Color(0xFF84d8ff),
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                            .clickable(
-                                onClick = {
-                                    val id=room.id
-                                    navController.navigate("UpdateRoomScreen/${id}")
-                                },
-                                indication = null, // Tắt hiệu ứng gợn sóng
-                                interactionSource = remember { MutableInteractionSource() }
-                            ),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
-                    ) {
-                        Text(
-                            text = "Update Room",
-                            modifier = Modifier.padding(5.dp),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold, // Đậm chữ
-                            color = Color.White, // Màu chữ trắng
-                            lineHeight = 24.sp // Khoảng cách giữa các dòng
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .height(50.dp)
-                            .fillMaxWidth()
-                            .padding(start = 15.dp, end = 15.dp, top = 10.dp)
-                            .background(color = Color(0xFF84d8ff))
-                            .border(
-                                width = 1.dp,
-                                color = Color(0xFF84d8ff),
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                            .clickable(
-                                onClick = {
-                                    viewModel.deleteRoomById(id)
-                                    navController.popBackStack()
-                                },
-                                indication = null, // Tắt hiệu ứng gợn sóng
-                                interactionSource = remember { MutableInteractionSource() }
-                            ),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
-                    ) {
-                        Text(
-                            text = "Delete Room",
-                            modifier = Modifier.padding(5.dp),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold, // Đậm chữ
-                            color = Color.White, // Màu chữ trắng
-                            lineHeight = 24.sp // Khoảng cách giữa các dòng
-                        )
-                    }
-                } else {
-                    // Hiển thị trạng thái loading hoặc lỗi nếu không có thông tin
-                    Text(text = "Loading room details...")
                 }
+            }
+        }
 
-                // Hiển thị thông báo lỗi nếu có
-                if (error != null) {
-                    Log.d("PHUC", "thất bại: $error")
-                } else {
-                    Log.d("PHUC", "thành công")
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .height(70.dp)
+                    .padding(start = 15.dp, end = 15.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        val id = roomDetail?.id
+                        val buildingId = roomDetail?.buildingId
+                        Log.d("RoomDetailScreen", "$buildingId")
+                        navController.navigate("UpdateRoomScreen/${id}/${buildingId}")
+                    },
+                    modifier = Modifier
+                        .weight(1f) // Chia đều không gian ngang
+                        .height(50.dp)
+                        .background(color = Color(0xFF84d8ff), shape = RoundedCornerShape(10.dp))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFF84d8ff),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Update Room",
+                        modifier = Modifier
+                            .size(45.dp)
+                            .padding(10.dp),
+                        tint = Color.White
+                    )
                 }
-
+                Spacer(modifier = Modifier.padding(10.dp))
+                IconButton(
+                    onClick = {
+                        viewModel.deleteRoomById(roomDetail?.id!!)
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier
+                        .weight(1f) // Chia đều không gian ngang
+                        .height(50.dp)
+                        .background(color = Color.Red, shape = RoundedCornerShape(10.dp))
+                        .border(
+                            width = 1.dp, color = Color.Red, shape = RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Room",
+                        modifier = Modifier
+                            .size(45.dp)
+                            .padding(10.dp),
+                        tint = Color.White
+                    )
+                }
             }
         }
     }
 }
 
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
-fun ExoPlayerView(context: Context, videoUri: Uri) {
+fun ExoPlayerView(context: Context, videoUri: Uri, isFullScreen: Boolean) {
     AndroidView(
         factory = {
             val exoPlayer = ExoPlayer.Builder(context).build().apply {
                 setMediaItem(MediaItem.fromUri(videoUri))
                 prepare()
-                playWhenReady = false // Start playing when the user interacts
+                playWhenReady = false
             }
             PlayerView(context).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
                 player = exoPlayer
+                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
             }
         },
         modifier = Modifier
-            .size(200.dp)
+            .fillMaxWidth()
+            .height(if (isFullScreen) LocalConfiguration.current.screenHeightDp.dp else 200.dp) // Phóng to màn hình nếu isFullScreen là true
             .clip(RoundedCornerShape(10.dp))
             .background(Color.Black)
     )
+}
+
+@Composable
+fun RoomDetailManagerTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(onClick = { navController.popBackStack() }) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew, contentDescription = "Back"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        androidx.compose.material.Text(
+            text = "Chi tiết phòng",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
+    }
+}
+
+@Composable
+fun CustomTextField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    isReadOnly: Boolean = false
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = label,
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(
+                    color = Color.Transparent, shape = RoundedCornerShape(8.dp)
+                )
+                .border(
+                    width = 1.dp, color = Color(0xFF908b8b), shape = RoundedCornerShape(8.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            textStyle = TextStyle(
+                fontSize = 14.sp,
+                color = Color(0xFF989898),
+            ),
+            enabled = !isReadOnly,
+            decorationBox = { innerTextField ->
+                Box(
+                    contentAlignment = Alignment.CenterStart,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    innerTextField()
+                }
+            }
+        )
+    }
 }

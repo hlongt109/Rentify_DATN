@@ -220,6 +220,8 @@ router.put('/buildings/:id', async (req, res) => {
     }
 });
 
+module.exports = router;
+
 router.get('/get-room/:building_id', async (req, res) => {
     try {
         // Lấy building_id từ tham số URL

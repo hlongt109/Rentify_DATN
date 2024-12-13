@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,9 +22,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +34,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
+import com.rentify.user.app.R
 import com.rentify.user.app.view.userScreens.homeScreen.components.BannerComponent
 import com.rentify.user.app.view.userScreens.homeScreen.components.DoitacComponent
 import com.rentify.user.app.view.userScreens.homeScreen.components.KhamPhaComponent
@@ -52,6 +59,7 @@ fun LayoutHome(
     homeScreenViewModel: HomeScreenViewModel = viewModel()
 ) {
     val listRoom by homeScreenViewModel.roomList.observeAsState(emptyList())
+    val isLoading by homeScreenViewModel.isLoading.observeAsState(true)
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,18 +85,58 @@ fun LayoutHome(
             KhamPhaComponent()
         }
         item {
-            Spacer(modifier = Modifier.padding(2.dp))
-            VideoComponent()
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(R.drawable.loading)
+                            .decoderFactory(GifDecoder.Factory())
+                            .build(),
+                        contentDescription = "Loading GIF",
+                        modifier = Modifier.size(150.dp)
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.padding(2.dp))
+                VideoComponent(navController)
+            }
         }
         item {
-            DoitacComponent()
+            DoitacComponent(navController)
         }
-        items(listRoom.take(3)) { room ->
-            LayoutItemHome(navController = navController, room = room)
+
+        if (isLoading) {
+            items(3) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(R.drawable.loading)
+                            .decoderFactory(GifDecoder.Factory())
+                            .build(),
+                        contentDescription = "Loading GIF",
+                        modifier = Modifier.size(150.dp)
+                    )
+                }
+            }
+        } else {
+            items(listRoom.take(3)) { room ->
+                LayoutItemHome(navController = navController, room = room)
+            }
         }
 
         item {
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.padding(40.dp))
         }
+
     }
 }

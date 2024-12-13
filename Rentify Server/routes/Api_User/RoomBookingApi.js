@@ -8,20 +8,12 @@ const User = require("../../models/User")
 // Thêm lịch xem phòng (add booking)
 router.post('/add-booking', async (req, res) => {
   try {
-    const { user_id, room_id, manager_id, check_in_date } = req.body;
-
-    // Kiểm tra nếu phòng đã được đặt trước đó
-    const existingBooking = await Booking.findOne({ room_id, check_in_date });
-    if (existingBooking) {
-      return res.status(400).json({
-        message: "Phòng đã được đặt vào thời gian này"
-      });
-    }
-
-    // Tạo booking mới
+    const { user_id, room_id, building_id, manager_id, check_in_date } = req.body;
+    
     const newBooking = new Booking({
       user_id,
       room_id,
+      building_id,
       manager_id,
       check_in_date,
       status: 0 // Đang xử lý
