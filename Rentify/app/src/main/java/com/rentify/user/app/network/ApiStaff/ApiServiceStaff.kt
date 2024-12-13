@@ -1,7 +1,10 @@
 package com.rentify.user.app.network.ApiStaff
 
+import com.rentify.user.app.model.Model.BookingResponse
+import com.rentify.user.app.model.Model.BookingResponseStaff
 import com.rentify.user.app.model.Model.InvoiceUpdate
 import com.rentify.user.app.model.Model.InvoiceUpdateRequest
+import com.rentify.user.app.model.Model.StatusResponse
 import com.rentify.user.app.model.Model.UpdateInvoice
 import com.rentify.user.app.model.Model.UpdateStatus
 import com.rentify.user.app.repository.StaffRepository.BuildingRepository.BuildingStaffResponse
@@ -49,5 +52,17 @@ interface ApiServiceStaff{
         @Body invoice: InvoiceUpdateRequest
     ): Response<InvoiceUpdate>
 
+    // booking
+    @GET("bookings-list/{manager_id}")
+    suspend fun getBookingList(@Path("manager_id") managerId: String): Response<List<BookingResponseStaff>>
+
+    @PUT("bookings-status/{id}")
+    suspend fun updateBookingStatus(
+        @Path("id") id: String,
+        @Body status: Map<String, Int>
+    ): Response<StatusResponse>
+
+    @GET("bookings-details/{id}")
+    suspend fun getBookingById(@Path("id") id: String) : Response<BookingResponseStaff>
 
 }
