@@ -101,6 +101,7 @@ router.post(
         amenities,
         limit_person,
         status,
+        sale
       } = req.body;
 
       // Kiểm tra dữ liệu bắt buộc
@@ -149,6 +150,7 @@ router.post(
         amenities: parsedAmenities,
         limit_person,
         status,
+        sale,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
@@ -205,6 +207,7 @@ router.put(
         amenities,
         limit_person,
         status,
+        sale,
       } = req.body;
 
       // Kiểm tra nếu `id` không hợp lệ
@@ -251,6 +254,7 @@ router.put(
       room.amenities = parsedAmenities;
       room.limit_person = limit_person || room.limit_person;
       room.status = status !== undefined ? status : room.status;
+      room.sale = sale || room.sale;
       room.updated_at = new Date().toISOString();
 
       // Lưu thông tin đã cập nhật
