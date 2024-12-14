@@ -180,6 +180,7 @@ interface APIService {
         @Part("room_type") room_type: RequestBody,
         @Part("description") description: RequestBody,
         @Part("price") price: RequestBody,
+        @Part("sale") sale: RequestBody,
         @Part("size") size: RequestBody,
         @Part("service") service: RequestBody,  // Gửi dưới dạng JSON string
         @Part("amenities") amenities: RequestBody, // Gửi dưới dạng JSON string
