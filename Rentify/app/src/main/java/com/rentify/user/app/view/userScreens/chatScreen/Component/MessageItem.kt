@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,12 +57,12 @@ fun MessageItem(message: Message, isSentByCurrentUser: Boolean) {
         }
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.45f)
                 .background(
                     color = backgroundColor,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(12.dp)
+                .widthIn(max = (0.7f * LocalConfiguration.current.screenWidthDp).dp)
                 .wrapContentWidth(),
         ) {
             Text(

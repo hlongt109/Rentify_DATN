@@ -23,6 +23,11 @@ import java.util.TimeZone
 
 object CheckUnit {
 
+    fun formatTimeNoti(timestamp: Long, pattern: String = "HH:mm:ss dd/MM/yyyy"): String {
+        val sdf = SimpleDateFormat(pattern, Locale.getDefault())
+        return sdf.format(Date(timestamp))
+    }
+
     fun Uri.toFilePath(context: Context): String? {
         return try {
             val cursor = context.contentResolver.query(this, null, null, null, null)

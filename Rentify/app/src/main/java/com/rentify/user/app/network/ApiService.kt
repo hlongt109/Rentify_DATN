@@ -52,6 +52,8 @@ import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
+import com.rentify.user.app.repository.NotificationRepository.NotificationRequest
+import com.rentify.user.app.repository.NotificationRepository.NotificationResponse
 import com.rentify.user.app.repository.SupportRepository.APISupportResponse
 import com.rentify.user.app.repository.SupportRepository.AddSupport
 import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
@@ -590,4 +592,7 @@ interface APIService {
     //list phong trong map
     @GET("room/get-map-list-room")
     suspend fun getListRoomMap():Response<com.rentify.user.app.repository.ListRoomMap.RoomResponse>
+    //notification
+    @POST("notification/create-notification")
+    suspend fun createNotification(@Body notification: NotificationRequest): Response<NotificationResponse>
 }

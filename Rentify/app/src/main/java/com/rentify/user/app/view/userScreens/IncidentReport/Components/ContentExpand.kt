@@ -96,7 +96,7 @@ fun ContentExpand(
                     AsyncImage(
                         model = localUrl+image,
                         contentDescription = "Image support",
-                        modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp))
+                        modifier = Modifier.size(200.dp).clip(RoundedCornerShape(8.dp))
                     )
                 }
             }

@@ -4,6 +4,8 @@ import com.rentify.user.app.model.Model.InvoiceUpdate
 import com.rentify.user.app.model.Model.InvoiceUpdateRequest
 import com.rentify.user.app.model.Model.UpdateInvoice
 import com.rentify.user.app.model.Model.UpdateStatus
+import com.rentify.user.app.repository.NotificationRepository.NotificationRequest
+import com.rentify.user.app.repository.NotificationRepository.NotificationResponse
 import com.rentify.user.app.repository.StaffRepository.BuildingRepository.BuildingStaffResponse
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.InvoiceAdd
@@ -48,6 +50,6 @@ interface ApiServiceStaff{
         @Path("invoiceId") invoiceId: String,
         @Body invoice: InvoiceUpdateRequest
     ): Response<InvoiceUpdate>
-
+    //thong bao
 
 }

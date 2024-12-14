@@ -41,6 +41,7 @@ import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.utils.CheckUnit
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.ImageComponent
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutComfort
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.LayoutInterior
@@ -52,6 +53,7 @@ import com.rentify.user.app.view.userScreens.roomdetailScreen.components.baidang
 import com.rentify.user.app.view.userScreens.roomdetailScreen.components.datLichXemPhong
 import com.rentify.user.app.viewModel.BookingViewModel
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.RoomDetailViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -69,7 +71,8 @@ fun LayoutRoomdetails(
     navController: NavHostController,
     roomId: String?,
     roomDetailViewModel: RoomDetailViewModel = viewModel(),
-    bookingViewModel: BookingViewModel = viewModel()
+    bookingViewModel: BookingViewModel = viewModel(),
+    notiViewModel: NotificationViewModel = viewModel(),
 ) {
     val scrollState = rememberScrollState()
     val bottomSheetState =
@@ -104,8 +107,8 @@ fun LayoutRoomdetails(
     var staffId by remember { mutableStateOf("") }
     var staffName by remember { mutableStateOf("") }
     landlordDetail.value.let {
-         staffId = it?.landlord?._id?:""
-         staffName = it?.landlord?.name?:""
+        staffId = it?.landlord?._id ?: ""
+        staffName = it?.landlord?.name ?: ""
     }
 
     val imageUrls = roomDetail.value?.photos_room?.map { photoPath ->
@@ -162,9 +165,13 @@ fun LayoutRoomdetails(
         sheetState = bottomSheetState,
         sheetContent = {
             roomDetail.value?.let { detail ->
-                val userId = userDetail.value?._id?:""
+                val userId = userDetail.value?._id ?: ""
                 val userName = userDetail.value?.name ?: ""
                 val phoneNumber = userDetail.value?.phoneNumber ?: ""
+
+                val roomNumber = detail.room_name
+                val address = detail.building_id.address
+                val timeNoti = CheckUnit.formatTimeNoti(System.currentTimeMillis())
 
                 datLichXemPhong(
                     staffId = when {
@@ -208,6 +215,21 @@ fun LayoutRoomdetails(
                                 check_in_date = "$date $time"
                             )
                             bookingViewModel.addBooking(bookingRequest)
+                            notiViewModel.createNotification(
+                                userId = userId,
+                                title = "Đặt lịch xem phòng",
+                                content = "Bạn đã đặt lịch xem phòng $roomNumber, địa chỉ $address, vào lúc $timeNoti. Vui lòng chờ chủ nhà xác nhận lịch hẹn của bạn "
+                            )
+
+                            notiViewModel.createNotification(
+                                userId = when {
+                                    true -> detail.building_id.manager_id._id
+                                    true -> detail.building_id.landlord_id._id
+                                    else -> ""  // Nếu không có tên cả manager và landlord
+                                },
+                                title = "Lịch hẹn xem phòng",
+                                content = "Bạn có lịch hẹn xem phòng $roomNumber, địa chỉ $address, vào lúc $time ngày $date. Vui lòng xác nhận lịch hẹn của bạn"
+                            )
                         }
                     },
                     isLoading = isLoading

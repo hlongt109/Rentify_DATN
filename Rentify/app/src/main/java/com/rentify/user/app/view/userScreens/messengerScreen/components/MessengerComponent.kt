@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.ChatViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.chatUser
@@ -68,13 +71,15 @@ fun MessengerComponent(
     Log.d("MessageComponent", "Current User ID: $currentUserId")
     val usersList = remember { mutableStateOf<List<chatUser>>(emptyList()) }
     val chatList by viewModel.chatList.observeAsState(emptyList())
-
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    Log.d("TestChatList", "MessengerComponent: $chatList")
     LaunchedEffect(Unit) {
         viewModel.getChatList(
             userId = currentUserId,
         )
     }
     Column {
+        HeaderBar(navController = navController, title = "Tin nhắn")
         Spacer(modifier = Modifier.padding(5.dp))
         Box(
             modifier = Modifier
@@ -129,10 +134,19 @@ fun MessengerComponent(
         }
 
 //        van phuc
-        LazyColumn {
-            items(chatList){user ->
-                UserItem(user, navController)
-            }
-        }
+       if(isLoading){
+           Box(
+               modifier = Modifier.fillMaxSize(),
+               contentAlignment = Alignment.Center
+           ) {
+               CircularProgressIndicator()
+           }
+       }else{
+           LazyColumn {
+               items(chatList){user ->
+                   UserItem(user, navController)
+               }
+           }
+       }
     }
 }

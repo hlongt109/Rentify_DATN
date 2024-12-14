@@ -101,12 +101,14 @@ import com.rentify.user.app.repository.SupportRepository.ContractRoomData
 import com.rentify.user.app.repository.SupportRepository.SupportRepository
 import com.rentify.user.app.ui.theme.building_icon
 import com.rentify.user.app.ui.theme.colorLocation
+import com.rentify.user.app.utils.CheckUnit
 import com.rentify.user.app.utils.CheckUnit.toFilePath
 import com.rentify.user.app.utils.Component.HeaderBar
 import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.userScreens.IncidentReport.Components.ContentExpand
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.Components.HeaderComponent
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.RoomSupportUiState
 import com.rentify.user.app.viewModel.UserViewmodel.SupportViewModel
 
@@ -119,7 +121,10 @@ import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddIncidentReportScreen(navController: NavHostController) {
+fun AddIncidentReportScreen(
+    navController: NavHostController,
+    notiViewmodel: NotificationViewModel = viewModel()
+    ) {
     var isCheckedHigh by remember { mutableStateOf(false) }
     var isCheckedMedium by remember { mutableStateOf(false) }
     var isCheckedLow by remember { mutableStateOf(false) }
@@ -160,6 +165,8 @@ fun AddIncidentReportScreen(navController: NavHostController) {
             }
         }
     )
+
+    val formatTimeNoti = CheckUnit.formatTimeNoti(System.currentTimeMillis())
 
     selectedImages.forEach { uri ->
         val path = uri.toFilePath(context)
@@ -518,20 +525,20 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                                 items(selectedImages) { uri ->
                                     Box(
                                         modifier = Modifier
-                                            .size(100.dp)
+                                            .size(200.dp)
                                     ) {
                                         AsyncImage(
                                             model = uri,
                                             contentDescription = "Selected Image",
                                             modifier = Modifier
-                                                .size(100.dp)
+                                                .size(200.dp)
                                                 .clip(RoundedCornerShape(8.dp))
                                                 .border(
                                                     2.dp,
                                                     Color.Gray,
                                                     RoundedCornerShape(8.dp)
                                                 ),
-                                            contentScale = ContentScale.Crop
+                                            contentScale = ContentScale.Inside
                                         )
                                         Box(
                                             modifier = Modifier
@@ -578,9 +585,14 @@ fun AddIncidentReportScreen(navController: NavHostController) {
                             ) {
                                 Toast.makeText(
                                     context,
-                                    "Tạo báo cáo thành công",
+                                    "Báo cáo đã được gửi thành công!",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                notiViewmodel.createNotification(
+                                    userId =userId ,
+                                    title = "Báo cáo",
+                                    content = "Bạn đã gửi thành công một báo cáo vào lúc: $formatTimeNoti"
+                                )
                                 navController.navigate(MainActivity.ROUTER.INCIDENTREPORT.name)
                             }
                         },
