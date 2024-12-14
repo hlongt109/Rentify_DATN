@@ -60,6 +60,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateCo
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SearchMapScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SurroundingRoomScreen
+import com.rentify.user.app.view.userScreens.ThongBaoScreens.ThongBaoScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
@@ -139,6 +140,9 @@ class MainActivity : ComponentActivity() {
             }
             composable(ROUTER.CATEGORYPOST.name) {
                 CategoryPostScreen(navController)
+            }
+            composable(ROUTER.ThongBaoScreen.name) {
+                ThongBaoScreen(navController)
             }
             composable(ROUTER.QuanLiDichVuUser.name) {
                 QuanLiDichVu(navController)
@@ -511,7 +515,8 @@ class MainActivity : ComponentActivity() {
         SaleRoomScreen,
         PREFORGOT,
         ROOMMAP,
-        SEARCHMAP
+        SEARCHMAP,
+        ThongBaoScreen
     }
 }
 

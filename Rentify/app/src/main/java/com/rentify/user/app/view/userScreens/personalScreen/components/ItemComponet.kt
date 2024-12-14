@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,10 +46,12 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.repository.SupportRepository.SupportRepository
 import com.rentify.user.app.ui.theme.reset_password
 import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewmodel.NotificationViewmodel
 import com.rentify.user.app.viewModel.UserViewmodel.CheckContractUiState
 import com.rentify.user.app.viewModel.UserViewmodel.RoomSupportUiState
 import com.rentify.user.app.viewModel.UserViewmodel.SupportViewModel
@@ -64,6 +67,14 @@ fun ItemSComponent() {
 fun LayoutItems(
     navController: NavHostController
 ) {
+    val apiService = RetrofitService()
+
+    val notificationViewmodel: NotificationViewmodel = viewModel()
+
+    // Quan sát danh sách thông báo
+    val notificationsDetail by notificationViewmodel.notifications.observeAsState()
+    val error by notificationViewmodel.error.observeAsState()
+    //
     val supportService = RetrofitService()
     val supportRepository = SupportRepository(supportService.ApiService)
     val supportViewModel: SupportViewModel = viewModel(
@@ -77,9 +88,16 @@ fun LayoutItems(
     val contractState by supportViewModel.contractUiState.collectAsState()
     val email = loginViewModel.getUserData().email
     val navigationType = "changePassword"
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
     // Kiểm tra hợp đồng khi màn hình được tải
     LaunchedEffect(userId) {
         supportViewModel.checkUserContract(userId)
+    }
+    LaunchedEffect(Unit) {
+        notificationViewmodel.getByUserNotification(userId)
     }
     // buttom sheet
 
@@ -144,6 +162,11 @@ fun LayoutItems(
             Column(
 
             ) {
+                CustomRow(
+                    imageId = R.drawable.thongbao,
+                    text = "Bạn có ${notificationsDetail?.data?.size?:0} thông báo ",
+                    onClick = { navController.navigate("ThongBaoScreen") }
+                )
                 CustomRow(
                     imageId = R.drawable.qlbaidang,
                     text = "Quản lý bài đăng",

@@ -28,6 +28,7 @@ import com.rentify.user.app.model.Model.StatusBookingRequest
 import com.rentify.user.app.model.Model.UpdateAccUserResponse
 import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
+import com.rentify.user.app.model.Notification.Notification
 import com.rentify.user.app.model.PostListResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.ProfilePictureResponse
@@ -590,4 +591,10 @@ interface APIService {
     //list phong trong map
     @GET("room/get-map-list-room")
     suspend fun getListRoomMap():Response<com.rentify.user.app.repository.ListRoomMap.RoomResponse>
+
+    // VUVANPHUC : thông báo
+    @GET("notification/get-by-user/{userId}")
+    suspend fun GetNotification(
+        @Path("userId") userId: String
+    ): Response<Notification>
 }
