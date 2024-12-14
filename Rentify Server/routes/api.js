@@ -45,7 +45,7 @@ const personalContractApi = require("./Api_User/personalContractApi");
 const bookingApi = require("./Api_User/RoomBookingApi");
 const findPostApi = require("./Api_User/findPostApi");
 const post_UserApi = require("./Api_User/Post");
-const notification = require("./Api_User/NotificationApi");
+const notification = require("./Api_User/notificationApi");
 // staff
 const post_staffApi = require("./Api_Staff/Post");
 const contract_staffApi = require("./Api_Staff/Contract");

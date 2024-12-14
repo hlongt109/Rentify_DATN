@@ -25,7 +25,7 @@ data class Message(
     val receiverId: String = "",
     val content: String = "",
     val timestamp: Long = 0,
-    val status: String = "sent"
+    val status: String = "sent",
 )
 
 data class chatUser(
@@ -33,49 +33,50 @@ data class chatUser(
     val email: String = "",
     val isOnline: Boolean = false,
     val lastLogin: Long = 0,
-    val name: String = ""
+    val name: String = "",
 )
 
 class ChatViewModel() : ViewModel() {
     private val database = FirebaseDatabase.getInstance()
     private val _chatList = MutableLiveData<MutableList<String>>()
     val chatList: LiveData<MutableList<String>> = _chatList
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     //lay danh sach user
 
     fun getChatList(userId: String) {
-        // Truy cập vào thư mục chats
+        _isLoading.value = true // Bắt đầu loading
         database.getReference("chats")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val chatUsers = mutableSetOf<String>() // Dùng Set để tránh trùng lặp
+
                     for (chatSnapshot in dataSnapshot.children) {
-                        // Mỗi chatId là key của một cuộc trò chuyện
                         val chatId = chatSnapshot.key ?: continue
 
-                        // Kiểm tra xem senderId có phải là userId không
-                        // Kiểm tra tất cả các tin nhắn trong cuộc trò chuyện này
-                        val messagesSnapshot = chatSnapshot.child("messages")
-                        for (messageSnapshot in messagesSnapshot.children) {
-                            val senderId = messageSnapshot.child("senderId").getValue(String::class.java)
+                        val participants = chatId.split("_")
+                        if (participants.size < 2) continue // Đảm bảo định dạng chatId đúng (senderId_receiverId)
 
-                            if (senderId == userId) {
-                                // Nếu senderId là userId, tìm người nhận
-                                val participants = chatId.split("_") // Giả sử chatId có định dạng senderId_receiverId
-                                val otherUserId = participants.first { it != userId }
-                                chatUsers.add(otherUserId)
-                            }
+                        // Kiểm tra xem userId có tham gia cuộc trò chuyện không
+                        if (userId in participants) {
+                            val otherUserId = participants.first { it != userId }
+                            chatUsers.add(otherUserId)
                         }
                     }
 
-                    // Log danh sách ID người mà người dùng đã nhắn tin
+                    // Log danh sách ID những người đã nhắn tin cho userId và những người userId đã nhắn tin
                     Log.d("CheckList", "onDataChange: $chatUsers")
 
-                    // Xử lý danh sách chat users (ID của người đã nhắn tin)
+                    // Xử lý danh sách chat users
                     handleChatList(mutableListOf<String>().apply { addAll(chatUsers) })
+                    _isLoading.value = false // Kết thúc loading
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
                     Log.e("ChatViewModel", "Error getting chat list: ${databaseError.message}")
+                    _isLoading.value = false // Kết thúc loading
                 }
             })
     }
@@ -95,7 +96,8 @@ class ChatViewModel() : ViewModel() {
     fun sendMessage(
         chatId: String,
         senderId: String,
-        messageContent: String) {
+        messageContent: String,
+    ) {
         val database = FirebaseDatabase.getInstance()
         val messageRef = database.getReference("chats/$chatId/messages")
 
@@ -116,6 +118,7 @@ class ChatViewModel() : ViewModel() {
                 Log.e("Chat", "Failed to send message", exception)
             }
     }
+
     fun listenForMessages(chatId: String, onMessageReceived: (Message) -> Unit) {
         database.getReference("chats/$chatId/messages")
             .addChildEventListener(object : ChildEventListener {

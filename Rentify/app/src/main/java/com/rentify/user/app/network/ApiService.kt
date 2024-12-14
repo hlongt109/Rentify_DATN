@@ -184,7 +184,6 @@ interface APIService {
         @Part("amenities") amenities: RequestBody, // Gửi dưới dạng JSON string
         @Part("limit_person") limit_person: RequestBody,
         @Part("status") status: RequestBody,
-        @Part("sale") sale: RequestBody,
         @Part photos_room: List<MultipartBody.Part>,
         @Part video_room: List<MultipartBody.Part>
     ): Response<AddRoomResponse>
