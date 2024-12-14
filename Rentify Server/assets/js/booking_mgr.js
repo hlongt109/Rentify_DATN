@@ -43,26 +43,33 @@ document.addEventListener('DOMContentLoaded', function () {
                     const userName = userResult && userResult.data ? userResult.data : 'N/A'; // Lấy tên người hẹn từ API
                     const rowId = `roomName-${index}`; // Tạo ID duy nhất cho mỗi hàng
                     const buildingId = `buildingName-${index}`;
+
                     // Tạo hàng mới trong bảng với tên người hẹn
-                    // Tạo hàng mới trong bảng với tên người hẹn
+                    const formatDateString = (dateStr) => {
+                        const [day, month, yearAndTime] = dateStr.split('/');
+                        return `${month}/${day}/${yearAndTime}`; // Chuyển đổi thành MM/DD/YYYY HH:mm
+                    };
+
                     const row = document.createElement('tr');
                     row.classList.add('item'); // Thêm lớp 'item'
                     row.dataset.status = item.status; // Thêm thuộc tính 'data-status'
                     row.innerHTML = `
-    <td>${index + 1}</td> <!-- Thêm index vào bảng -->
-    <td>${userName}</td> 
-    <td id="${rowId}">Đang tải...</td> <!-- Tên phòng -->
-    <td id="${buildingId}">Đang tải...</td> <!-- Tên tòa nhà -->
-    <td id="phone-${item._id}">Đang tải...</td> <!-- Số điện thoại -->
-    <td class="check-in-date">
-        ${new Date(item.check_in_date).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
-    </td>
-    <td>${getStatusText(item.status)}</td>
-    <td>
-        <button class="btn btn-warning btn-sm" onclick="handleEdit('${item._id}', ${item.status})">Sửa</button>
-        <button class="btn btn-danger btn-sm" onclick="handleDelete('${item._id}')">Xóa</button>
-    </td>
-`;
+                        <td>${index + 1}</td> <!-- Thêm index vào bảng -->
+                        <td>${userName}</td> 
+                        <td id="${rowId}">Đang tải...</td> <!-- Tên phòng -->
+                        <td id="${buildingId}">Đang tải...</td> <!-- Tên tòa nhà -->
+                        <td id="phone-${item._id}">Đang tải...</td> <!-- Số điện thoại -->
+                        <td class="check-in-date">
+                            <div class="time">${new Date(formatDateString(item.check_in_date)).toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</div>
+                            <div class="date">${new Date(formatDateString(item.check_in_date)).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</div>
+                        </td>
+                        </td>
+                        <td>${getStatusText(item.status)}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="handleEdit('${item._id}', ${item.status})">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="handleDelete('${item._id}')">Xóa</button>
+                        </td>
+                    `;
 
                     reportTableBody.appendChild(row);
 
