@@ -361,5 +361,58 @@ router.get("/get-room-buildingId/:buildingId", async (req, res) => {
     res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
   }
 });
+////
+// API: Tổng số phòng theo manager_id
+router.get('/RoomsSummaryByManager/:manager_id', async (req, res) => {
+  try {
+    const { manager_id } = req.params;
 
+    // Bước 1: Lấy danh sách tòa nhà do manager quản lý
+    const buildings = await Building.find({ manager_id }).select('_id');
+    const buildingIds = buildings.map(building => building._id);
+
+    // Kiểm tra nếu không có tòa nhà nào
+    if (buildingIds.length === 0) {
+      return res.json({
+        totalRooms: 0,
+        available: 0,
+        rented: 0
+      });
+    }
+
+    // Bước 2: Lọc và tính toán tổng số phòng cho các tòa nhà này
+    const summary = await Room.aggregate([
+      {
+        $match: { building_id: { $in: buildingIds } } // Chỉ các phòng thuộc các building_id của manager
+      },
+      {
+        $group: {
+          _id: null, // Không nhóm theo building_id
+          totalRooms: { $sum: 1 }, // Tổng số phòng
+          available: { $sum: { $cond: [{ $eq: ["$status", 0] }, 1, 0] } }, // Số phòng status = 0
+          rented: { $sum: { $cond: [{ $eq: ["$status", 1] }, 1, 0] } } // Số phòng status = 1
+        }
+      },
+      {
+        $project: {
+          _id: 0, // Loại bỏ _id khỏi kết quả
+          totalRooms: 1,
+          available: 1,
+          rented: 1
+        }
+      }
+    ]);
+
+    // Trả về kết quả
+    return res.status(200).json(summary[0] || {
+      totalRooms: 0,
+      available: 0,
+      rented: 0
+    });
+  } catch (error) {
+    // Nếu có lỗi xảy ra
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+///
 module.exports = router
