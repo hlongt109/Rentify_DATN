@@ -69,21 +69,33 @@ router.put("/account/pass/update/:id", async (req, res) => {
             return res.status(404).json({ message: 'Người dùng không tồn tại' });
         }
 
+        let isPasswordValid = false;
+
         // Kiểm tra mật khẩu hiện tại
-        if (user.password !== currentPassword) {
+        if (user.password.startsWith('$2b$')) {
+            // Nếu mật khẩu là mã hóa, so sánh bằng bcrypt
+            isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+        } else {
+            // Nếu mật khẩu chưa mã hóa, so sánh trực tiếp
+            isPasswordValid = currentPassword === user.password;
+        }
+
+        if (!isPasswordValid) {
             return res.status(401).json({ message: 'Mật khẩu hiện tại không chính xác' });
         }
 
-        // Cập nhật mật khẩu mới
+        // Mã hóa mật khẩu mới
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Cập nhật mật khẩu mới vào cơ sở dữ liệu
         const updateResult = await User.updateOne(
             { _id: userId }, // Sử dụng filter là đối tượng { _id: userId }
-            { $set: { password: newPassword } } // Cập nhật mật khẩu mới
+            { $set: { password: hashedNewPassword } } // Cập nhật mật khẩu mới đã mã hóa
         );
 
         if (updateResult.nModified === 0) {
             return res.status(500).json({ message: 'Cập nhật mật khẩu thất bại' });
         }
-
         res.status(200).json({ message: 'Đổi mật khẩu thành công' });
     } catch (error) {
         console.error(error);
@@ -97,17 +109,18 @@ router.get("/login/get_pass", async (req, res) => {
 
 const nodemailer = require('nodemailer');
 
-// Cấu hình Nodemailer
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // Hoặc SMTP của dịch vụ bạn đang sử dụng
+    host: 'smtp.gmail.com',
     port: 587,
-    secure: false, // Thường là false cho port 587
+    secure: false,
     auth: {
-        user: 'rentify66668888@gmail.com', // Địa chỉ email gửi
-        pass: 'nreg uwuz rwvl xbux', // Mật khẩu hoặc App password của Gmail
+        user: 'rentify66668888@gmail.com',
+        pass: 'nreg uwuz rwvl xbux',
     },
 });
 
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 // Route: Gửi mật khẩu qua email
 router.post("/send_password", async (req, res) => {
     const { email } = req.body;
@@ -117,20 +130,25 @@ router.post("/send_password", async (req, res) => {
     }
 
     try {
-        // Tìm người dùng trong MongoDB theo email
         const user = await User.findOne({ email });
-
         if (!user) {
             return res.status(404).json({ message: 'User not found!' });
         }
+        // Tạo mật khẩu mới 
+        const newPassword = crypto.randomBytes(8).toString('hex');
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
 
         // Gửi email với mật khẩu của người dùng    
         await transporter.sendMail({
-            from: '"Support" <rentify66668888@gmail.com>', // Địa chỉ email gửi
+            from: '"Hỗ trợ mật khẩu" <rentify66668888@gmail.com>', // Địa chỉ email gửi
             to: user.email, // Địa chỉ người nhận
-            subject: 'Rentify gửi bạn password',
-            html: `<p>Hi ${user.name},</p>
-               <p>Your password is: <strong>${user.password}</strong></p>`,
+            subject: 'Rentify đã đến nơi đây',
+            html: `<p>Xin chào người dùng ${user.name},</p>
+                   <p>Đây sẽ là mật khẩu mới của bạn: <strong><h4>${newPassword}</h4></strong></p>
+                   <p>Hãy nhớ đổi mật khẩu mới nhé</p>
+                `,
         });
 
         res.status(200).json({ message: 'Password sent to your email!' });
@@ -139,6 +157,7 @@ router.post("/send_password", async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 });
+
 
 
 module.exports = router

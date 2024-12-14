@@ -7,7 +7,7 @@ var router = express.Router();
 
 //============================================
 //admin
-const adminApi = require("./Api_Admin/loginApi");
+
 const notificationAdmin = require("./Api_Admin/notificationApi");
 const postAdmin = require("./Api_Admin/postApi");
 const userAdmin = require("./Api_Admin/userApi");
@@ -25,7 +25,7 @@ const serviceManageApi = require("./Api_BuildingOwner/services_manage_api");
 const statisticApi = require("./Api_BuildingOwner/statistic_api");
 const paymentApi_BuildingOwner = require("./Api_BuildingOwner/payment_api");
 const notificationApi = require("./Api_BuildingOwner/notification_api");
-const UserManage = require("./Api_BuildingOwner/UserManageApi");
+
 const PostManage = require("./Api_BuildingOwner/PostManageApi");
 const PaymentManage = require("./Api_BuildingOwner/PaymentManageApi");
 const ContractManage = require("./Api_BuildingOwner/ContractManageApi");
@@ -79,13 +79,11 @@ router.use("", staffManageApi);
 router.use("/", serviceManageApi);
 router.use("", statisticApi);
 router.use("", paymentApi_BuildingOwner);
-router.use("", UserManage);
 router.use("/api", notificationApi);
 router.use("", apiUser);
 router.use("", personalContractApi);
 router.use("", bookingApi);
 router.use("", findPostApi);
-router.use("", adminApi);
 router.use("", postAdmin);
 router.use("", userAdmin);
 router.use("", nofAdmin);
@@ -101,7 +99,6 @@ router.use("/staff/requests", request_staffApi); // Đổi đường dẫn cho c
 router.use("/staff/logins", login_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/users", User_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/buildings", building_staff);
-router.use("/", UserManage);
 router.use("/", PostManage);
 router.use("/", PaymentManage);
 router.use("/", ContractManage);

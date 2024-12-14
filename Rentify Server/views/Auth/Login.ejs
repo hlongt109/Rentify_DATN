@@ -157,21 +157,29 @@
                     }
                 } else {
                     if (response.status === 401) {
+                        // Log thông báo lỗi vào console
+                        console.warn("Cảnh báo: Nhập sai tên đăng nhập hoặc mật khẩu");
+
                         // Kiểm tra và hiển thị thông báo từ `data.message`
-                        if (data.message === 'Tài khoản không tồn tại') {
+                        if (data.message === 'Tên đăng nhập hoặc mật khẩu không đúng') {
                             alert('Tên đăng nhập hoặc mật khẩu không đúng');
-                        } else if (data.message === 'Bạn không có quyền truy cập!') {
-                            alert('Bạn không có quyền truy cập!');
+                        } else if (data.message === 'Tài khoản không tồn tại') {
+                            alert('Tài khoản không tồn tại');
                         } else if (data.message === 'Tài khoản của bạn đã bị khóa bởi ADMIN') {
                             alert('Tài khoản của bạn đã bị khóa bởi ADMIN');
+                        } else {
+                            alert('Đăng nhập thất bại. Vui lòng kiểm tra thông tin và thử lại.');
                         }
                     } else if (response.status === 400) {
+                        console.warn("Lỗi từ phía người dùng: Thiếu thông tin đăng nhập.");
                         if (data.message === 'Thiếu username hoặc password') {
                             alert('Vui lòng nhập đủ thông tin đăng nhập');
                         }
                     } else if (response.status === 500) {
-                        alert("Lỗi kết nốu với máy chủ, vui lòng thử lại")
+                        console.error("Lỗi máy chủ: ", data);
+                        alert('Lỗi kết nối với máy chủ, vui lòng thử lại.');
                     }
+
                 }
             } catch (error) {
                 console.error("Lỗi khi đăng nhập: ", error);

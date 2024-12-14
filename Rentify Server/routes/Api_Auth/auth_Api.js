@@ -22,27 +22,38 @@ router.post("/rentify/login", async (req, res) => {
         if (!username || !password) {
             return res.status(400).json({ message: 'Thiếu username hoặc password' });
         }
-        // Tìm người dùng trong cơ sở dữ liệu
-        const user = await User.findOne({ username: username, password: password });
+
+        const user = await User.findOne({ username: username });
         if (!user) {
             return res.status(401).json({ message: 'Tài khoản không tồn tại' });
         }
-        if (user.role !== 'admin' && user.role !== "landlord") {
-            return res.status(401).json({ message: 'Bạn không có quyền truy cập!' });
-        }
-        if (user.role == 'ban') {
-            return res.status(401).json({ message: 'Tài khoản của bạn đã bị khóa bởi ADMIN' });
-        }
-        // Tạo JWT
-        const token = jwt.sign({ id: user._id, role: user.role }, 'hoan', { expiresIn: '1w' });
-        console.log("Generated token:", token); // Kiểm tra token được tạo
-        const userID = user._id;
-        console.log(user._id);
 
-        res.json({ message: "Đăng nhập thành công", token, data: user, userID });
+        let isPasswordValid = false;
+        if (user.password.startsWith('$2b$')) { //kiểm tra xem mật khẩu có phải dạng bcrypt hay không
+            isPasswordValid = await bcrypt.compare(password, user.password);//giải mã hóa nếu là dạng bcrypt
+        } else {
+            //sso sánh trực tiếp với mật khẩu không mã hóa
+            isPasswordValid = password === user.password;
+        }
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Tên đăng nhập hoặc mật khẩu không đúng' });
+        }
+
+        // Tạo JWT token nếu mật khẩu đúng
+        const token = jwt.sign({ landlord_id: user.landlord_id }, 'hoan', { expiresIn: '1h' });
+        return res.json({
+            token,
+            data: {
+                _id: user._id,
+                username: user.username,
+                role: user.role,
+                landlord_id: user.landlord_id,
+            }
+        });
     } catch (error) {
-        console.error(error, " Password: " + req.body.password);
-        return res.status(500).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
+        console.error("Error in login:", error);
+        return res.status(400).send({ error: 'Lỗi trong quá trình đăng nhập', details: error.message });
     }
 });
 
@@ -144,7 +155,7 @@ router.put("/rentify/user/:id", uploadFile.single('qr_bank'), async (req, res) =
         user.bankAccount = {
             bank_name,
             bank_number,
-            qr_bank: qrImage, 
+            qr_bank: qrImage,
             username,
         };
 
