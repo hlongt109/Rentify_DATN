@@ -1,8 +1,10 @@
 package com.rentify.user.app.view.staffScreens.UpdateRoomScreen
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -64,6 +66,8 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet
@@ -83,23 +87,28 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLa
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.CustomTextField
 import com.rentify.user.app.view.staffScreens.addRoomScreen.StatusDropdown
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun UpdateRoomScreenPreview(){
-    UpdateRoomScreen(
-        navController= rememberNavController(),
-        id = "",
-        buildingId = ""
-    )
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun UpdateRoomScreenPreview(){
+//    UpdateRoomScreen(
+//        navController= rememberNavController(),
+//        id = "",
+//        buildingId = ""
+//    )
+//}
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UpdateRoomScreen(
     navController: NavHostController,
     id: String,
     buildingId:String,
+    notificationViewModel: NotificationViewModel = viewModel()
 ){
     val context = LocalContext.current
     val viewModel: RoomViewModel = viewModel(
@@ -135,6 +144,10 @@ fun UpdateRoomScreen(
             )
         )
     }
+
+    val loginViewModel = getLoginViewModel(context)
+    val userData = loginViewModel.getUserData()
+    val staffId = userData.userId
 
     val successMessage by viewModel.successMessage.observeAsState()
     LaunchedEffect(successMessage) {
@@ -406,6 +419,17 @@ fun UpdateRoomScreen(
                             videoUris = selectedVideos,
                             sale = roomSale
                         )
+
+                        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                        val currentTime = LocalDateTime.now().format(formatter)
+
+                        val notificationRequest = NotificationRequest(
+                            user_id = staffId,
+                            title = "Chỉnh sửa phòng thành công",
+                            content = "Phòng ${postTitle} đã được chỉnh sửa thành công lúc: $currentTime",
+                        )
+
+                        notificationViewModel.createNotification(notificationRequest)
                     },
                     modifier = Modifier
                         .height(50.dp)

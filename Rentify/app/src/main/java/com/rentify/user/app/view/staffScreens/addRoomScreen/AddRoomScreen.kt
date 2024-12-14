@@ -1,8 +1,10 @@
 package com.rentify.user.app.view.staffScreens.addRoomScreen
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -63,6 +65,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabelAdd
@@ -72,14 +76,20 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeO
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMedia
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
+import com.stevdzasan.messagebar.rememberMessageBarState
 import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRoomScreen(
     navController: NavHostController,
-    buildingId: String?
+    buildingId: String?,
+    notificationViewModel: NotificationViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val viewModel: RoomViewModel = viewModel(
@@ -105,6 +115,12 @@ fun AddRoomScreen(
     var selectedImages by remember { mutableStateOf(listOf<Uri>()) }
     var selectedVideos by remember { mutableStateOf(listOf<Uri>()) }
 
+    val loginViewModel = getLoginViewModel(context)
+    val userData = loginViewModel.getUserData()
+    val staffId = userData.userId
+
+    val state = rememberMessageBarState()
+
     var allComfortable by remember {
         mutableStateOf(
             listOf(
@@ -125,13 +141,14 @@ fun AddRoomScreen(
         addRoomResponse?.let { response ->
             if (response.isSuccessful) {
                 Toast.makeText(context, "Thêm phòng thành công", Toast.LENGTH_SHORT).show()
-                // Navigate back
+                state.addSuccess("Thêm phòng thành công")
                 navController.popBackStack()
             }
         }
     }
     LaunchedEffect(error) {
         error?.let {
+            state.addError(exception = Exception("Thêm phòng không thành công"))
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
@@ -394,6 +411,18 @@ fun AddRoomScreen(
                                     sale = roomSaleValue ?: 0.0
                                 )
                             }
+
+                            val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                            val currentTime = LocalDateTime.now().format(formatter)
+
+                            val notificationRequest = NotificationRequest(
+                                user_id = staffId,
+                                title = "Thêm phòng thành công",
+                                content = "Phòng ${postTitle} đã được thêm thành công lúc: $currentTime",
+                            )
+
+                            notificationViewModel.createNotification(notificationRequest)
+
                         }
                     },
                     modifier = Modifier

@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.staffScreens.BillScreenStaff
 
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -64,6 +65,7 @@ import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.DescriptionItem
 import com.rentify.user.app.model.Model.DescriptionOfUpdateInvoice
 import com.rentify.user.app.model.Model.InvoiceUpdateRequest
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.network.ApiStaff.RetrofitStaffService
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
@@ -80,10 +82,13 @@ import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.ShowSer
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.TextFieldSmall
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.TextFiledComponent
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.BuildingStaffViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.InvoiceStaffViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.RoomStaffViewModel
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -93,6 +98,7 @@ import java.util.Locale
 fun UpdateBillStaff(
     navController: NavController,
     invoiceId: String ?= "",
+    notificationViewModel: NotificationViewModel = viewModel()
 ) {
     //lay thong tin user
     val context = LocalContext.current
@@ -653,6 +659,26 @@ fun UpdateBillStaff(
                             )
 
                             invoiceViewModel.updateInvoice(invoiceId!!, invoiceUpdateRequest)
+
+                            val formatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                            } else {
+                                TODO("VERSION.SDK_INT < O")
+                            }
+                            val currentTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                LocalDateTime.now().format(formatter)
+                            } else {
+                                TODO("VERSION.SDK_INT < O")
+                            }
+
+                            val notificationRequest = NotificationRequest(
+                                user_id = staffId,
+                                title = "Chỉnh sửa hoá đơn thành công",
+                                content = "Phòng ${room} đã được chỉnh sửa hoá đơn thành công lúc: $currentTime",
+                            )
+
+                            notificationViewModel.createNotification(notificationRequest)
+
                             successMessage?.let {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                             }

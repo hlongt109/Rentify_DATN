@@ -20,6 +20,7 @@ import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomPageSale
 import com.rentify.user.app.model.Model.RoomResponse
@@ -591,4 +592,7 @@ interface APIService {
     //list phong trong map
     @GET("room/get-map-list-room")
     suspend fun getListRoomMap():Response<com.rentify.user.app.repository.ListRoomMap.RoomResponse>
+
+    @POST("notification/create-notification")
+    suspend fun createNotification(@Body request: NotificationRequest): Response<NotificationRequest>
 }

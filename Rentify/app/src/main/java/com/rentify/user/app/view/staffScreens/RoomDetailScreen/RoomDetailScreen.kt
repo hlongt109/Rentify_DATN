@@ -1,13 +1,14 @@
 package com.rentify.user.app.view.staffScreens.RoomDetailScreen
 
-
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,8 +38,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,25 +82,31 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ServiceOptionschitiet
+import com.rentify.user.app.viewModel.NotificationViewModel
 import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun RoomDetailScreenPreview() {
+//    RoomDetailScreen(
+//        navController = rememberNavController(),
+//        id = "",
+//    )
+//}
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun RoomDetailScreenPreview() {
-    RoomDetailScreen(
-        navController = rememberNavController(),
-        id = "",
-    )
-}
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RoomDetailScreen(
     navController: NavHostController,
     id: String,
+    notificationViewModel: NotificationViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val viewModel: RoomViewModel = viewModel(
@@ -107,6 +116,8 @@ fun RoomDetailScreen(
     val roomDetail by viewModel.roomDetail.observeAsState()
     val configuration = LocalConfiguration.current
     val scrollState = rememberScrollState()
+
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = id) {
         viewModel.fetchRoomDetailById(id)
@@ -120,6 +131,10 @@ fun RoomDetailScreen(
 
     var isFullScreen by remember { mutableStateOf(false) }
     val isLoading by viewModel.isLoading.observeAsState(false)
+
+    val loginViewModel = getLoginViewModel(context)
+    val userData = loginViewModel.getUserData()
+    val staffId = userData.userId
 
     Box(
         modifier = Modifier
@@ -398,8 +413,7 @@ fun RoomDetailScreen(
                 Spacer(modifier = Modifier.padding(10.dp))
                 IconButton(
                     onClick = {
-                        viewModel.deleteRoomById(roomDetail?.id!!)
-                        navController.popBackStack()
+                        showDialog = true
                     },
                     modifier = Modifier
                         .weight(1f) // Chia đều không gian ngang
@@ -416,6 +430,38 @@ fun RoomDetailScreen(
                             .size(45.dp)
                             .padding(10.dp),
                         tint = Color.White
+                    )
+                }
+
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false }, // Đóng dialog nếu nhấn ra ngoài
+                        title = { Text(text = "Xác nhận xóa phòng") },
+                        text = { Text(text = "Bạn có chắc chắn muốn xóa phòng này không?") },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.deleteRoomById(roomDetail?.id!!)
+                                showDialog = false
+                                val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                                val currentTime = LocalDateTime.now().format(formatter)
+
+                                val notificationRequest = NotificationRequest(
+                                    user_id = staffId,
+                                    title = "Xoá phòng thành công",
+                                    content = "Phòng ${roomDetail?.room_name} đã được xoá thành công lúc: $currentTime",
+                                )
+
+                                notificationViewModel.createNotification(notificationRequest)
+                                navController.popBackStack()
+                            }) {
+                                Text("Xóa", color = Color.Red)
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDialog = false }) {
+                                Text("Hủy")
+                            }
+                        }
                     )
                 }
             }

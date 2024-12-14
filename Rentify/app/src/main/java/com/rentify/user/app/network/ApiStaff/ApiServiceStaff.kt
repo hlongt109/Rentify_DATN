@@ -2,6 +2,7 @@ package com.rentify.user.app.network.ApiStaff
 
 import com.rentify.user.app.model.Model.InvoiceUpdate
 import com.rentify.user.app.model.Model.InvoiceUpdateRequest
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.model.Model.UpdateInvoice
 import com.rentify.user.app.model.Model.UpdateStatus
 import com.rentify.user.app.repository.StaffRepository.BuildingRepository.BuildingStaffResponse
@@ -49,5 +50,6 @@ interface ApiServiceStaff{
         @Body invoice: InvoiceUpdateRequest
     ): Response<InvoiceUpdate>
 
-
+    @POST("notification/create-notification")
+    suspend fun createNotification(@Body request: NotificationRequest): Response<NotificationRequest>
 }
