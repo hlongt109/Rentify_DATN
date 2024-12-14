@@ -14,8 +14,10 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.ServiceOfBuilding
+import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
+import com.rentify.user.app.view.staffScreens.homeScreen.RoomSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,6 +57,12 @@ class RoomViewModel(private val context: Context) : ViewModel() {
 
     private val _services = MutableLiveData<List<ServiceOfBuilding>>()
     val services: LiveData<List<ServiceOfBuilding>> get() = _services
+    private val _managerId = MutableLiveData<String>()
+    val managerId: LiveData<String> get() = _managerId
+
+    fun setManagerId(id: String) {
+        _managerId.value = id
+    }
 
     fun fetchServiceOfBuilding(id: String){
         viewModelScope.launch {
@@ -235,6 +243,8 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         _addRoomResponse.value = response
+                        managerId.value?.let { fetchRoomSummary(it)
+                            Log.d("managerId", "addRoom: ${it}") }
                     } else {
                         _error.value = "Lỗi: ${response.message()}"
                     }
@@ -395,7 +405,9 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     if (response.isSuccessful) {
                         _updateRoomResponse.value = response.body()
                         _successMessage.postValue("Cập nhật phòng thành công.")
-                        fetchRoomDetailById(id)
+                        managerId.value?.let { fetchRoomSummary(it)
+                            Log.d("managerId", "addRoom: ${managerId}") }
+
                     } else {
                         _error.postValue("Lỗi cập nhật: ${response.message()}")
                     }
@@ -410,6 +422,23 @@ class RoomViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
+    private val _roomSummary = MutableLiveData<RoomSummary?>()
+    val roomSummary: LiveData<RoomSummary?> = _roomSummary
+
+    // Hàm để lấy tổng số phòng
+    fun fetchRoomSummary(managerId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getRoomsSummaryByManager(managerId)
+                _roomSummary.postValue(response)
+
+                Log.e(" _roomSummary.postValue(response)", "Error: ${ _roomSummary.postValue(response)}")
+            } catch (e: Exception) {
+                _error.postValue(e.message)
+            }
+        }
+    }
+
 }
 
 fun processUriImage(context: Context, uri: Uri, folderName: String, fileName: String): MultipartBody.Part {
@@ -435,5 +464,8 @@ fun processUriImage(context: Context, uri: Uri, folderName: String, fileName: St
 
     val requestBody = tempFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
     return MultipartBody.Part.createFormData(folderName, tempFile.name, requestBody)
+    /////
+
 }
+
 

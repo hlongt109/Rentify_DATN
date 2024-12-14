@@ -36,6 +36,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.UpdateBillStaff
+import com.rentify.user.app.view.staffScreens.NotificationScreen.Notification_staffScreen
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
 import com.rentify.user.app.view.staffScreens.ReportScreen.Components.DaHoanThanh
 import com.rentify.user.app.view.staffScreens.ReportScreen.Components.ListSupportByRoom
@@ -60,7 +61,6 @@ import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateCo
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SearchMapScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SurroundingRoomScreen
-import com.rentify.user.app.view.userScreens.ThongBaoScreens.ThongBaoScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
@@ -451,6 +451,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.SEARCHMAP.name) {
                 SearchMapScreen(navController = navController)
             }
+            composable(ROUTER.Notification_staffScreen.name) {
+                Notification_staffScreen(navController = navController)
+            }
         }
     }
 
@@ -516,7 +519,8 @@ class MainActivity : ComponentActivity() {
         PREFORGOT,
         ROOMMAP,
         SEARCHMAP,
-        ThongBaoScreen
+        ThongBaoScreen,
+        Notification_staffScreen
     }
 }
 

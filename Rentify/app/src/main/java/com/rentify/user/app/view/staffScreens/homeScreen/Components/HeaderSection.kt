@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,22 +31,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.StaffViewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.UserViewModel
 
 @Composable
 fun HeaderSection(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
+    val viewModel_noti: NotificationViewModel = viewModel()
     val userDetail by viewModel.user.observeAsState()  // Quan sát LiveData người dùng
     val errorMessage by viewModel.error.observeAsState()  // Quan sát LiveData lỗi
     val context = LocalContext.current
@@ -54,13 +59,16 @@ fun HeaderSection(navController: NavHostController) {
     val factory = remember(context) {
         LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
     }
+    val unreadCount by viewModel_noti.unreadCount.observeAsState(0)
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val userId = loginViewModel.getUserData().userId
     // Gọi API để lấy thông tin người dùng khi composable được gọi
     LaunchedEffect(Unit) {
         viewModel.getUserDetailById(userId)  // Gọi API với userId hợp lệ
     }
-
+    LaunchedEffect(Unit) {
+        viewModel_noti.getNotificationsByUser(userId)
+    }
     Row(
         modifier = Modifier
             .height(80.dp)
@@ -119,7 +127,7 @@ fun HeaderSection(navController: NavHostController) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = null,
-                modifier = Modifier.size(40.dp, 40.dp)
+                modifier = Modifier.size(60.dp, 60.dp)
             )
 
             androidx.compose.material.Text(
@@ -129,26 +137,58 @@ fun HeaderSection(navController: NavHostController) {
                 color = Color.Black
             )
         }
-
-        Row(
-            modifier = Modifier
-                .width(100.dp)
-                .padding(5.dp)
-                .clickable(
-                    onClick = { /**/ },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.noti),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(30.dp, 30.dp)
-                    .clickable { }
-            )
-        }
+        NotificationIconWithBadge(userId,unreadCount,navController)
 
     }
 }
+@Composable
+fun NotificationIconWithBadge(userId: String, unreadCount: Int, navController: NavController) {
+    val viewModel_noti: NotificationViewModel = viewModel()
+    Box(
+        modifier = Modifier
+            .width(100.dp)
+            .padding(5.dp)
+            .clickable(
+                onClick = {
+                    viewModel_noti.markAllAsRead(userId)
+                    navController.navigate(MainActivity.ROUTER.Notification_staffScreen.name)
+                },
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
+        contentAlignment = Alignment.Center // Canh chỉnh Image ở giữa Box
+    ) {
+        // Image notification
+        Image(
+            painter = painterResource(id = R.drawable.noti),
+            contentDescription = null,
+            modifier = Modifier.size(30.dp, 30.dp)
+        )
 
+        // Badge hiển thị số lượng thông báo
+        if (unreadCount > 0) {
+            Box(
+                modifier = Modifier
+                    .padding(end =20.dp )
+                    .size(18.dp) // Kích thước badge
+                    .clip(CircleShape)
+                    .background(Color.Red) // Màu nền đỏ
+                    .align(Alignment.TopEnd), // Căn badge vào góc trên bên phải của Box
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = unreadCount.toString(),
+                    color = Color.White, // Màu chữ
+                    fontSize = 12.sp, // Kích thước chữ
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun PreviewHeaderSection() {
+    // Sử dụng NavHostController giả lập (hoặc không dùng nếu không cần điều hướng)
+    HeaderSection(navController = rememberNavController())
+}

@@ -487,7 +487,7 @@ fun BuildingOptions(
                         onClick = {
                             selectedBuildingState.value = building._id
                             onBuildingSelected(building._id)
-                            Toast.makeText(context, "Bạn đã chọn tòa nhà: ${building.nameBuilding}", Toast.LENGTH_SHORT).show()
+                         //   Toast.makeText(context, "Bạn đã chọn tòa nhà: ${building.nameBuilding}", Toast.LENGTH_SHORT).show()
                         }
                     )
                 }
@@ -600,7 +600,7 @@ fun RoomOptions(
                         onClick = {
                             selectedRoomState.value = room._id
                             onRoomSelected(room._id)
-                            Toast.makeText(context, "Bạn đã chọn phòng: ${room.room_name}", Toast.LENGTH_SHORT).show()
+                          //  Toast.makeText(context, "Bạn đã chọn phòng: ${room.room_name}", Toast.LENGTH_SHORT).show()
                         }
                     )
                 }

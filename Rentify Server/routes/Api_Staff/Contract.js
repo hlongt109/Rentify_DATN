@@ -370,7 +370,7 @@ router.get('/search', async (req, res) => {
             };
         });
 
-        // Trả về kết quả hợp đồng đã tính duration
+        // Trả về kết quả hợp đồng đã tính uration
         res.status(200).json(contractsWithDuration);
     } catch (error) {
         console.error("Error fetching contracts:", error);

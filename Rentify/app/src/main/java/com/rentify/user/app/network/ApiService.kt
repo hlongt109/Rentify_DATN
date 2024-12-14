@@ -21,6 +21,9 @@ import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.model.Model.Notification
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.model.Model.NotificationResponse
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomPageSale
 import com.rentify.user.app.model.Model.RoomResponse
@@ -189,7 +192,11 @@ interface APIService {
         @Part photos_room: List<MultipartBody.Part>,
         @Part video_room: List<MultipartBody.Part>
     ): Response<AddRoomResponse>
-
+    // Lấy tổng số phòng theo manager_id
+    @GET("staff/rooms/RoomsSummaryByManager/{manager_id}")
+    suspend fun getRoomsSummaryByManager(
+        @Path("manager_id") managerId: String
+    ): RoomSummary
     @Multipart
     @POST("upload-file")
     suspend fun uploadFile(
@@ -602,4 +609,18 @@ interface APIService {
     suspend fun GetNotification(
         @Path("userId") userId: String
     ): Response<Notification>
+
+    // API lấy danh sách thông báo theo userId
+    @GET("staff/notifications/get-by-user/{userId}")
+    suspend fun getNotificationsByUser(
+        @Path("userId") userId: String
+    ): Response<NotificationResponse> // Trả về một object, không phải danh sách
+
+    @PUT("staff/notifications/mark-all-read/{userId}")
+    suspend fun markAllNotificationsAsRead(
+        @Path("userId") userId: String
+    ): Response<NotificationResponse> // Đổi từ Unit sang NotificationResponse
+
+
+
 }
