@@ -451,28 +451,44 @@ async function getCoordinatesFromAddress(address) {
 
 // Fetch coordinates when button is clicked
 document.getElementById("getCoordinates").addEventListener("click", async () => {
-    const address = document.getElementById("address").value;
-    if (address.trim() === "") {
-        const messageElement = document.getElementById("box-map");
-        messageElement.textContent = "Bạn chưa nhập địa chỉ";
-        messageElement.style.display = "block";
+    const address = document.getElementById("address").value.trim();
+    const mapContainer = document.getElementById("box-map");
+
+    // Kiểm tra xem ô nhập có trống hay không
+    if (address === "") {
+        mapContainer.textContent = "Bạn chưa nhập địa chỉ";
+        mapContainer.style.display = "block";
         return;
     }
+
+    // Xóa nội dung cũ và hiển thị lại box-map
+    mapContainer.style.display = "block";
+    mapContainer.innerHTML = '<div id="map" style="height: 300px;"></div>'; // Reset bản đồ
+    // Lấy tọa độ từ địa chỉ
     const location = await getCoordinatesFromAddress(address);
-    latAddress = location.lat;
-    lonAddress = location.lon;
-    document.getElementById("box-map").style.display = "block";
+
     if (location) {
         console.log("Coordinates:", location);
-        // document.getElementById("latitude").value = location.lat;
-        // document.getElementById("longitude").value = location.lon;
-        showMap(location.lat, location.lon);
+        latAddress = location.lat;
+        lonAddress = location.lon;
+        // Hiển thị bản đồ mới
+        showMap(latAddress, lonAddress);
     } else {
-        const messageElement = document.getElementById("box-map");
-        if (messageElement) {
-            messageElement.textContent = "Bạn chưa nhập địa chỉ";
-            messageElement.style.display = "block";
-        }
+        mapContainer.textContent = "Không thể tìm thấy vị trí của địa chỉ.";
+    }
+});
+
+document.getElementById("address").addEventListener("input", async (event) => {
+    const address = event.target.value.trim();
+    const mapContainer = document.getElementById("box-map");
+    
+    // Reset map nếu ô nhập trống
+    if (address === "") {
+        latAddress = null;
+        lonAddress = null;
+        mapContainer.style.display = "none";
+        mapContainer.innerHTML = ""; // Xóa nội dung của map
+        return;
     }
 });
 
