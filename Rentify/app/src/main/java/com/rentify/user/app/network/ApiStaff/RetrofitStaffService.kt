@@ -22,4 +22,13 @@ object RetrofitStaffService {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     val ApiService: ApiServiceStaff = retrofit.create(ApiServiceStaff::class.java)
+
+    private val retrofit_: Retrofit = Retrofit.Builder()
+        .baseUrl("http://10.0.2.2:3000/api/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val ApiService_ : ApiServiceStaff by lazy{
+        retrofit_.create(ApiServiceStaff::class.java)
+    }
 }

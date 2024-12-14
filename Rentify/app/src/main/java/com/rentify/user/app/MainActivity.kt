@@ -50,6 +50,8 @@ import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractDetailScreen
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractImageScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
+import com.rentify.user.app.view.staffScreens.scheduleScreen.ScheduleDetails
+import com.rentify.user.app.view.staffScreens.scheduleScreen.ScheduleScreen
 import com.rentify.user.app.view.userScreens.BaiDangYeuThich.BaiDangYeuThich
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.DieuKhoanChinhSach.DieuKhoanChinhSach
@@ -380,6 +382,20 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
+            //
+            composable(ROUTER.Schedule.name) {
+                ScheduleScreen(navController)
+            }
+
+            composable(
+                "${ROUTER.ScheduleDetails.name}/{id}",
+                arguments = listOf(navArgument("id") {type = NavType.StringType})
+            ) {backStackEntry ->
+                val idBooking = backStackEntry.arguments?.getString("id")
+                idBooking?.let{
+                    ScheduleDetails(id = idBooking, navController)
+                }
+            }
 
             //những màn hình thiên thêm
             composable(
@@ -511,6 +527,9 @@ class MainActivity : ComponentActivity() {
         AppointmentScreen,
         BaiDangYeuThich,
         DieuKhoanChinhSach,
+        //
+        Schedule,
+        ScheduleDetails,
         //những màn hình thiên thêm
         ADDCONTRAC_STAFF,
         ListSupportByRoom,
