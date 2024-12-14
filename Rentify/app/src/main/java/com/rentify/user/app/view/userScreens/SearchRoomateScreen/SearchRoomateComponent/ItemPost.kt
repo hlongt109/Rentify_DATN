@@ -296,7 +296,6 @@ fun PostMediaSection1(mediaList: List<String>) {
                     }
                 }
             }
-
             HorizontalPagerIndicator(
                 pagerState = pagerState,
                 modifier = Modifier
@@ -306,7 +305,6 @@ fun PostMediaSection1(mediaList: List<String>) {
                 inactiveColor = Color.Gray
             )
         }
-
         // Hiển thị dialog nếu người dùng nhấn vào media
         if (showDialog) {
             PostMediaDialog1(
@@ -357,41 +355,41 @@ fun PostMediaDialog1(
                     }
 
                     // Nội dung chính: ảnh/video với trạng thái xoay
-                    HorizontalPager(
-                        count = mediaList.size,
-                        state = pagerState,
-                        modifier = Modifier.weight(1f) // Chiếm phần lớn chiều cao màn hình
-                    ) { pageIndex ->
-                        val media = mediaList[pageIndex]
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (media.endsWith(".mp4")) {
-                                // Render video
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .rotate(if (isLandscape) 90f else 0f)
-                                ) {
-                                    VideoPlayer1(
-                                        videoUrl = "http://10.0.2.2:3000/$media",
-                                        isPlaying = currentPlayingIndex.value == pageIndex
-                                    )
-                                }
-                            } else {
-                                // Render ảnh
-                                Image(
-                                    painter = rememberImagePainter("http://10.0.2.2:3000/$media"),
-                                    contentDescription = "Post Image",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .rotate(if (isLandscape) 90f else 0f), // Xoay ảnh
-                                    contentScale = ContentScale.Fit
-                                )
-                            }
-                        }
-                    }
+//                    HorizontalPager(
+//                        count = mediaList.size,
+//                        state = pagerState,
+//                        modifier = Modifier.weight(1f) // Chiếm phần lớn chiều cao màn hình
+//                    ) { pageIndex ->
+//                        val media = mediaList[pageIndex]
+//                        Box(
+//                            modifier = Modifier.fillMaxSize(),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            if (media.endsWith(".mp4")) {
+//                                // Render video
+//                                Box(
+//                                    modifier = Modifier
+//                                        .fillMaxSize()
+//                                        .rotate(if (isLandscape) 90f else 0f)
+//                                ) {
+//                                    VideoPlayer1(
+//                                        videoUrl = "http://10.0.2.2:3000/$media",
+//                                        isPlaying = currentPlayingIndex.value == pageIndex
+//                                    )
+//                                }
+//                            } else {
+//                                // Render ảnh
+//                                Image(
+//                                    painter = rememberImagePainter("http://10.0.2.2:3000/$media"),
+//                                    contentDescription = "Post Image",
+//                                    modifier = Modifier
+//                                        .fillMaxSize()
+//                                        .rotate(if (isLandscape) 90f else 0f), // Xoay ảnh
+//                                    contentScale = ContentScale.Fit
+//                                )
+//                            }
+//                        }
+//                    }
 
                     // Cập nhật video đang phát khi trang thay đổi
                     LaunchedEffect(pagerState.currentPage) {

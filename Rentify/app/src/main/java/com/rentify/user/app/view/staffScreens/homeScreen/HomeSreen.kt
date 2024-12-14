@@ -81,6 +81,10 @@ fun HomeScreen(navController: NavHostController) {
         when (option) {
             "Tòa nhà & căn hộ" -> {
                 navController.navigate(MainActivity.ROUTER.BUILDING.name)
+//                {
+//                    popUpTo("HOME_STAFF") { inclusive = true }
+//
+//                }
             }
 
             "Hợp đồng" -> {
@@ -186,6 +190,11 @@ fun ClickablePieChartDemo(managerId: String) {
         factory = RoomViewModel.RoomViewModeFactory(context)
     )
 
+    LaunchedEffect(managerId) {
+        managerId?.let {
+            viewModel.setManagerId(it) // Thiết lập giá trị managerId trong RoomViewModel
+        }
+    }
 
     // Gọi hàm fetchRoomSummary để lấy dữ liệu khi managerId thay đổi
     LaunchedEffect(managerId) {

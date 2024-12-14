@@ -116,6 +116,7 @@ fun AddRoomScreen(
     val isLoading by viewModel.isLoading.observeAsState(false)
     val addRoomResponse by viewModel.addRoomResponse.observeAsState()
     val error by viewModel.error.observeAsState()
+
     LaunchedEffect(addRoomResponse) {
         addRoomResponse?.let { response ->
             if (response.isSuccessful) {
@@ -357,7 +358,6 @@ fun AddRoomScreen(
                                     amenities = selectedComfortable,
                                     limit_person = limitPerson
                                 )
-                                viewModel.fetchRoomSummary(userId)
                             }
                         }
                     },
