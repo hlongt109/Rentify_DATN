@@ -10,28 +10,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
 </head>
+
 <body>
-    
+
     <div class="containerhaha">
         <div class="table-container">
             <h4>Toà nhà & căn hộ</h4>
             <div class="search-input-container1 d-flex align-items-center justify-content-between">
                 <!-- Nút Thêm toà nhà nằm ở bên trái -->
-                <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;" onclick="window.location.href='/landlord/AddBuildingPage';">Thêm toà nhà</button>
+                <button class="btn btn-primary shadow-button" style="font-size: 0.85rem;"
+                    onclick="window.location.href='/landlord/AddBuildingPage';">Thêm toà nhà</button>
                 <!-- Ô tìm kiếm nằm ở bên phải -->
                 <div class="search-input-container">
                     <input type="text" id="search-input" placeholder="Tìm kiếm ..." class="search-input" />
                     <span class="search-icon">&#128269;</span>
                 </div>
             </div>
-            
+
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Tên toà nhà</th>
-                        <th>Nhân viên</th>
-                        <th>Số điện thoại</th>
-                        <th>Địa chỉ</th>
+                        <th style="text-align: left;">Nhân viên</th>
+                        <th style="text-align: left;">Số điện thoại</th>
+                        <th style="text-align: left;">Địa chỉ</th>
                         <th>Số tầng</th>
                         <th>Còn trống</th>
                         <th>Hàng động</th>
@@ -45,7 +47,8 @@
     </div>
 
     <!-- Modal Xác nhận Xoá Phòng -->
-    <div class="modal fade" id="deleteBuildingModal" tabindex="-1" role="dialog" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteBuildingModal" tabindex="-1" role="dialog" aria-labelledby="deleteRoomModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -70,4 +73,5 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="../../../../assets/js/BuildingPage.js"></script>
 </body>
+
 </html>
