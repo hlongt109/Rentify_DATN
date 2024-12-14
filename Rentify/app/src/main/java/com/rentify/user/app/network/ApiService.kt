@@ -182,6 +182,7 @@ interface APIService {
         @Part("size") size: RequestBody,
         @Part("service") service: RequestBody,  // Gửi dưới dạng JSON string
         @Part("amenities") amenities: RequestBody, // Gửi dưới dạng JSON string
+        @Part("sale") sale: RequestBody,
         @Part("limit_person") limit_person: RequestBody,
         @Part("status") status: RequestBody,
         @Part photos_room: List<MultipartBody.Part>,

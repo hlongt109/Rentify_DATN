@@ -5,8 +5,7 @@ import com.rentify.user.app.model.Model.InvoiceUpdateRequest
 import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.model.Model.UpdateInvoice
 import com.rentify.user.app.model.Model.UpdateStatus
-import com.rentify.user.app.repository.NotificationRepository.NotificationRequest
-import com.rentify.user.app.repository.NotificationRepository.NotificationResponse
+
 import com.rentify.user.app.repository.StaffRepository.BuildingRepository.BuildingStaffResponse
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.InvoiceAdd

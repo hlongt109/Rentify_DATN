@@ -39,6 +39,7 @@ import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.rentify.user.app.R
 import com.rentify.user.app.model.Model.BookingRequest
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.utils.CheckUnit
@@ -215,20 +216,29 @@ fun LayoutRoomdetails(
                                 check_in_date = "$date $time"
                             )
                             bookingViewModel.addBooking(bookingRequest)
-                            notiViewModel.createNotification(
-                                userId = userId,
+
+                            val notificationRequest = NotificationRequest(
+                                user_id = userId,
                                 title = "Đặt lịch xem phòng",
                                 content = "Bạn đã đặt lịch xem phòng $roomNumber, địa chỉ $address, vào lúc $timeNoti. Vui lòng chờ chủ nhà xác nhận lịch hẹn của bạn "
                             )
 
-                            notiViewModel.createNotification(
-                                userId = when {
+                            val notificationRequest1 = NotificationRequest(
+                                user_id = when {
                                     true -> detail.building_id.manager_id._id
                                     true -> detail.building_id.landlord_id._id
                                     else -> ""  // Nếu không có tên cả manager và landlord
                                 },
                                 title = "Lịch hẹn xem phòng",
                                 content = "Bạn có lịch hẹn xem phòng $roomNumber, địa chỉ $address, vào lúc $time ngày $date. Vui lòng xác nhận lịch hẹn của bạn"
+                            )
+
+                            notiViewModel.createNotification(
+                                notificationRequest
+                            )
+
+                            notiViewModel.createNotification(
+                                notificationRequest1
                             )
                         }
                     },
