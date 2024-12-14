@@ -29,6 +29,7 @@ import com.rentify.user.app.model.Model.StatusBookingRequest
 import com.rentify.user.app.model.Model.UpdateAccUserResponse
 import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
+import com.rentify.user.app.model.Notification.Notification
 import com.rentify.user.app.model.PostListResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.ProfilePictureResponse
@@ -182,7 +183,6 @@ interface APIService {
         @Part("size") size: RequestBody,
         @Part("service") service: RequestBody,  // Gửi dưới dạng JSON string
         @Part("amenities") amenities: RequestBody, // Gửi dưới dạng JSON string
-        @Part("sale") sale: RequestBody,
         @Part("limit_person") limit_person: RequestBody,
         @Part("status") status: RequestBody,
         @Part photos_room: List<MultipartBody.Part>,
@@ -595,4 +595,10 @@ interface APIService {
 
     @POST("notification/create-notification")
     suspend fun createNotification(@Body request: NotificationRequest): Response<NotificationRequest>
+
+    // VUVANPHUC : thông báo
+    @GET("notification/get-by-user/{userId}")
+    suspend fun GetNotification(
+        @Path("userId") userId: String
+    ): Response<Notification>
 }

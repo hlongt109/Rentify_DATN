@@ -94,6 +94,7 @@ router.use("", userAdmin);
 router.use("", nofAdmin);
 router.use("", spAdmin);
 router.use("", statAdmin);
+router.use("/notification", notification)
 router.use("/staff/posts", post_staffApi); // Đổi đường dẫn cho post_staffApi
 router.use("/staff/contracts", contract_staffApi); // Đổi đường dẫn cho contract_staffApi
 router.use("/staff/payments", payment_staffApi); // Đổi đường dẫn cho contract_staffApi

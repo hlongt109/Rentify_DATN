@@ -35,25 +35,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.rentify.user.app.R
 import com.rentify.user.app.viewModel.DistrictViewModel
-
-@Composable
-fun VideoComponent(navController: NavController) {
-    LayoutVideo(navController = navController)
-}
-
-
 @Composable
 fun LayoutVideo(
     districtViewModel: DistrictViewModel = viewModel(),
-    navController: NavController
+    navController: NavController,
+    city: String
 ) {
     val listNameDistrict = districtViewModel.districts.value
     val isLoading = districtViewModel.isLoading.value
     val hasMoreData by districtViewModel.hasMoreData.collectAsState()
-    val city = "Hồ Chí Minh"
     val lazyListState = rememberLazyListState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(city) {
         districtViewModel.fetchDistricts(city)
     }
 
