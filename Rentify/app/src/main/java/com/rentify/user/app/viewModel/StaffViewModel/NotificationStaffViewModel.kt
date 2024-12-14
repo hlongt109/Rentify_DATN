@@ -79,20 +79,4 @@ class NotificationViewModel() : ViewModel() {
     }
 
 
-
-    // Gọi API để tạo thông báo
-    fun createNotification(notificationRequest: NotificationRequest) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitClient.apiService.createNotification(notificationRequest)
-                if (response.isSuccessful) {
-                    _createNotificationResult.value = response.body()
-                } else {
-                    _errorMessage.value = "Lỗi: ${response.message()}"
-                }
-            } catch (e: Exception) {
-                _errorMessage.value = "Lỗi kết nối: ${e.message}"
-            }
-        }
-    }
 }

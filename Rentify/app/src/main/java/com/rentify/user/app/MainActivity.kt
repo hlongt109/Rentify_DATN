@@ -61,6 +61,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateCo
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SearchMapScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SurroundingRoomScreen
+import com.rentify.user.app.view.userScreens.ThongBaoScreens.ThongBaoScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen

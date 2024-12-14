@@ -10,11 +10,6 @@ data class Notification(
     val read_status: String,   // Trạng thái (unread, read)
     val created_at: String     // Thời gian tạo thông báo
 )
-data class NotificationRequest(
-    val user_id: String,       // ID người dùng
-    val title: String,         // Tiêu đề
-    val content: String        // Nội dung
-)
 
 // Response sau khi tạo thông báo
 data class NotificationResponse(

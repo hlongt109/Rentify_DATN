@@ -22,7 +22,6 @@ import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.model.Model.Notification
-import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.model.Model.NotificationResponse
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomPageSale
@@ -32,7 +31,6 @@ import com.rentify.user.app.model.Model.StatusBookingRequest
 import com.rentify.user.app.model.Model.UpdateAccUserResponse
 import com.rentify.user.app.model.Model.UpdateTaiKhoanResponse
 import com.rentify.user.app.model.Model.UserOfBooking
-import com.rentify.user.app.model.Notification.Notification
 import com.rentify.user.app.model.PostListResponse
 import com.rentify.user.app.model.PostingDetail
 import com.rentify.user.app.model.ProfilePictureResponse
@@ -60,6 +58,7 @@ import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.repository.SupportRepository.APISupportResponse
 import com.rentify.user.app.repository.SupportRepository.AddSupport
 import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
+import com.rentify.user.app.view.staffScreens.homeScreen.RoomSummary
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -608,7 +607,7 @@ interface APIService {
     @GET("notification/get-by-user/{userId}")
     suspend fun GetNotification(
         @Path("userId") userId: String
-    ): Response<Notification>
+    ): Response<com.rentify.user.app.model.Notification.Notification>
 
     // API lấy danh sách thông báo theo userId
     @GET("staff/notifications/get-by-user/{userId}")

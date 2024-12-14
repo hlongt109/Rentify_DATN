@@ -66,6 +66,8 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet

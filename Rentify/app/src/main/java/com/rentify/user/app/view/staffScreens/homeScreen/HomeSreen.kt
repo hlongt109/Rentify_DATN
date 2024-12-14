@@ -244,7 +244,7 @@ fun ClickablePieChartDemo(managerId: String) {
                 pieChart.data = pieData
                 pieChart.description.isEnabled = false
                 pieChart.setUsePercentValues(false)
-                pieChart.setDrawSliceText(true)
+                pieChart.setDrawSliceText(false)
                 pieChart.centerText = ""
                 pieChart.invalidate()
                 pieChart
@@ -252,53 +252,6 @@ fun ClickablePieChartDemo(managerId: String) {
         )
     }
 }
-//data class Slice(val value: Float, val color: Int, val label: String)
-//data class RoomSummary(
-//    val totalRooms: Int,
-//    val available: Int,
-//    val rented: Int,
-//    val color: Int, val label: String
-//)
-//@Composable
-//fun ClickablePieChartDemo() {
-//    val viewModel: RoomViewModel = viewModel()
-//    val slices = arrayListOf(
-//        Slice(10f, 0xFF6200EE.toInt(), "Phongf trong"),
-//        Slice(15f, 0xFF03DAC5.toInt(), "Da cho thue"),
-//    )
-//
-//    AndroidView(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(300.dp),
-//        factory = { context ->
-//            val pieChart = com.github.mikephil.charting.charts.PieChart(context)
-//            val entries = slices.map {
-//                com.github.mikephil.charting.data.PieEntry(it.value, it.label)
-//            }
-//            val dataSet = PieDataSet(entries, "")
-//            dataSet.colors = slices.map { it.color }
-//            dataSet.setDrawValues(true)
-//            dataSet.valueTextColor = 0xFFFFFFFF.toInt()
-//            dataSet.valueTextSize = 13f
-//            val valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
-//                override fun getFormattedValue(value: Float): String {
-//                    return value.toInt().toString()
-//                }
-//            }
-//            dataSet.valueFormatter = valueFormatter
-//            val pieData = PieData(dataSet)
-//            pieChart.data = pieData
-//            pieChart.description.isEnabled = false
-//            pieChart.setUsePercentValues(false)
-//            pieChart.setDrawSliceText(false)
-//            pieChart.centerText = ""
-//            pieChart.invalidate()
-//            pieChart
-//        }
-//    )
-//}
-//
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

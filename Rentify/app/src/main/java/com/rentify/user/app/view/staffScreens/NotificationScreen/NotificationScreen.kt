@@ -1,7 +1,9 @@
 package com.rentify.user.app.view.staffScreens.NotificationScreen
 
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.livedata.observeAsState
 import java.time.ZonedDateTime
 import java.time.Duration
@@ -62,6 +64,7 @@ import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.NotificationViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Notification_staffScreen(navController: NavController) {
     val context = LocalContext.current
@@ -80,22 +83,7 @@ fun Notification_staffScreen(navController: NavController) {
         viewModel.getNotificationsByUser(userId)
     }
     Scaffold(
-        floatingActionButton = {
-            androidx.compose.material3.FloatingActionButton(
-                onClick = {     navController.navigate("ADDCONTRAC_STAFF")  },
-                containerColor = Color(0xFF2196F3),
-                shape = RoundedCornerShape(50.dp),
-                modifier = Modifier.padding(bottom = 30.dp).padding(end = 20.dp)
-            ) {
-                // Icon bên trong FAB
-                androidx.compose.material3.Icon(
-                    imageVector = Icons.Default.Add, // Thay thế bằng icon của bạn
-                    contentDescription = "Add",
-                    tint = Color.White
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End, // Vị trí của FAB (có thể là Center)
+
         content = { paddingValues ->
             // Nội dung màn hình chính
             Box(
@@ -130,6 +118,7 @@ fun Notification_staffScreen(navController: NavController) {
     )
 
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NotificationItem(notification: Notification) {
     val formattedTime = remember(notification.created_at) {
@@ -186,6 +175,7 @@ fun NotificationItem(notification: Notification) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun formatTimeAgo(isoString: String): String {
     return try {
         // Chuyển chuỗi ISO thành đối tượng ZonedDateTime
