@@ -369,7 +369,6 @@ fun UpdateRoomScreen(
                             photoUris = selectedImages,
                             videoUris = selectedVideos
                         )
-                        viewModel.fetchRoomSummary(userId)
                     },
                     modifier = Modifier
                         .height(50.dp)

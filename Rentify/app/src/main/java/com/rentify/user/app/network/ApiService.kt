@@ -20,6 +20,9 @@ import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
+import com.rentify.user.app.model.Model.Notification
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.model.Model.NotificationResponse
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomPageSale
 import com.rentify.user.app.model.Model.RoomResponse
@@ -595,4 +598,22 @@ interface APIService {
     //list phong trong map
     @GET("room/get-map-list-room")
     suspend fun getListRoomMap():Response<com.rentify.user.app.repository.ListRoomMap.RoomResponse>
+    @POST("staff/notifications/create-notification")
+    suspend fun createNotification(
+        @Body notificationRequest: NotificationRequest
+    ): Response<NotificationResponse>
+
+    // API lấy danh sách thông báo theo userId
+    @GET("staff/notifications/get-by-user/{userId}")
+    suspend fun getNotificationsByUser(
+        @Path("userId") userId: String
+    ): Response<NotificationResponse> // Trả về một object, không phải danh sách
+
+    @PUT("staff/notifications/mark-all-read/{userId}")
+    suspend fun markAllNotificationsAsRead(
+        @Path("userId") userId: String
+    ): Response<NotificationResponse> // Đổi từ Unit sang NotificationResponse
+
+
+
 }

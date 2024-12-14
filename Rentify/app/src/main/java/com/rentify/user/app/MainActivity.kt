@@ -36,6 +36,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.UpdateBillStaff
+import com.rentify.user.app.view.staffScreens.NotificationScreen.Notification_staffScreen
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
 import com.rentify.user.app.view.staffScreens.ReportScreen.Components.DaHoanThanh
 import com.rentify.user.app.view.staffScreens.ReportScreen.Components.ListSupportByRoom
@@ -447,6 +448,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.SEARCHMAP.name) {
                 SearchMapScreen(navController = navController)
             }
+            composable(ROUTER.Notification_staffScreen.name) {
+                Notification_staffScreen(navController = navController)
+            }
         }
     }
 
@@ -511,7 +515,8 @@ class MainActivity : ComponentActivity() {
         SaleRoomScreen,
         PREFORGOT,
         ROOMMAP,
-        SEARCHMAP
+        SEARCHMAP,
+        Notification_staffScreen
     }
 }
 
