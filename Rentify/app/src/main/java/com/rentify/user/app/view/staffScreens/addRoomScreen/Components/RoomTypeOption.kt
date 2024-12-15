@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.text.font.FontWeight
 
 
 @Composable
@@ -40,23 +41,21 @@ fun RoomTypeLabel() {
             .border(
                 width = 2.dp, color = Color(0xFFeeeeee), shape = RoundedCornerShape(9.dp)
             )
-            .padding(5.dp),
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             painter = painterResource(id = R.drawable.roomtype),
             contentDescription = null,
-            modifier = Modifier.size(30.dp, 30.dp)
+            modifier = Modifier.size(25.dp)
         )
 
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = "Loại phòng",
-            //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
             color = Color.Black,
-            // fontWeight = FontWeight(700),
             fontSize = 13.sp,
-
+            fontWeight = FontWeight.Medium
             )
     }
 }

@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -26,17 +25,16 @@ fun DangYeuCau(navController: NavHostController) {
             .fillMaxSize()
     ) {
         FeetReportyeucau(navController)
-
     }
 }
 
 @Composable
-fun DaHoanThanh() {
+fun DaHoanThanh(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        FeetReporthoanthanh()
+        FeetReporthoanthanh(navController)
     }
 }
 @Composable
@@ -54,7 +52,11 @@ fun CustomTab(
                 TabRowDefaults.Indicator(
                     Modifier.tabIndicatorOffset(tabPositions[selectedIndex]),
                     height = 4.dp,
-                    color = colorTabBar
+                    color = when {
+                        selectedIndex == 0 -> Color(0xFFc24b2a) // Màu cho tab "Đang yêu cầu"
+                        selectedIndex == 1 -> Color(0xFF79bb75) // Màu cho tab "Đã hoàn thành"
+                        else -> Color(0xFFd8d8d8) // Màu cho các tab khác (mặc định)
+                    }
                 )
             },
             modifier = Modifier
@@ -71,7 +73,7 @@ fun CustomTab(
                             color = when {
                                 selectedIndex == index && index == 0 -> Color(0xFFc24b2a) // Đang yêu cầu
                                 selectedIndex == index && index == 1 -> Color(0xFF79bb75) // Đã hoàn thành
-                                else -> Color(0xFFd8d8d8)
+                                else -> Color(0xFFd8d8d8) // Màu cho tab không chọn
                             },
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
@@ -82,16 +84,5 @@ fun CustomTab(
                 )
             }
         }
-    }
-}
-@Composable
-fun FeetReporthoanthanh() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(
-            text = "Ok, hiểu rồi",
-            textAlign = TextAlign.Center
-        )
     }
 }

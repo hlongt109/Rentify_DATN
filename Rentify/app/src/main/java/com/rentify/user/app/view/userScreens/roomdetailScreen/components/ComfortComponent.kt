@@ -83,6 +83,15 @@ fun LayoutComfort(
                     "Ra vào vân tay" -> R.drawable.vantay
                     "Nuôi pet" -> R.drawable.pet
                     "Không chung chủ" -> R.drawable.khongchungchu
+                    "Điện" -> R.drawable.electronic // Thay bằng ID ảnh tương ứng
+                    "Nước" -> R.drawable.water
+                    "Wifi" -> R.drawable.wifi
+                    "Dịch vụ chung" -> R.drawable.home
+                    "Máy giặt" -> R.drawable.maygiat
+                    "Thang máy" -> R.drawable.elevator
+                    "Tủ lạnh" -> R.drawable.tulanh
+                    "Bảo trì" -> R.drawable.baotri
+                    "Bảo vệ" -> R.drawable.baove
                     else -> R.drawable.khac
                 }
                 IconWithTextButton(

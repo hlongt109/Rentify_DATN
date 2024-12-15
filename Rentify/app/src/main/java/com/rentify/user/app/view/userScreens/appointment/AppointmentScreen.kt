@@ -51,12 +51,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 
 import com.rentify.user.app.view.userScreens.serviceScreen.LayoutService
 import com.rentify.user.app.viewModel.BookingViewModel
+import com.rentify.user.app.viewModel.LoginViewModel
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -68,7 +72,14 @@ fun AppointmentScreenPreview() {
 
 @Composable
 fun AppointmentScreen(navController: NavHostController) {
-    val userId = "67453db554300d0f1c2b16c8"
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
     var searchText by remember { mutableStateOf("") } // Lưu trữ trạng thái tìm kiếm
 
     Column(

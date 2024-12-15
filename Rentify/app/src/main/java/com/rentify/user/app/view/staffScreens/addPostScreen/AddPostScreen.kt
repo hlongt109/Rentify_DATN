@@ -56,12 +56,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.CustomTextField
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
+import com.rentify.user.app.view.staffScreens.addPostScreen.Components.AppointmentAppBar
+
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingLabel
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.BuildingOptions
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomOptions
-import com.rentify.user.app.view.staffScreens.addPostScreen.Components.SelectMedia
+import com.rentify.user.app.view.userScreens.AddPostScreen.Components.SelectMedia
+import com.rentify.user.app.viewModel.LoginViewModel
 
 
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -109,13 +115,20 @@ fun AddPostScreens(navController: NavHostController) {
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-
+    var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    val userId = loginViewModel.getUserData().userId
 
     val viewModel: PostViewModel = viewModel()
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
     var title by remember { mutableStateOf("") }
-     var content by remember { mutableStateOf("") }
+    var content by remember { mutableStateOf("") }
 
     var selectedRoom by remember { mutableStateOf<String?>(null) }
 
@@ -137,7 +150,7 @@ fun AddPostScreens(navController: NavHostController) {
         selectedVideos: List<Uri>
     ): Boolean {
         // Chuẩn bị dữ liệu `RequestBody`
-        val userId = "67362213c6d421d3027fb5a7".toRequestBody("text/plain".toMediaTypeOrNull())
+        val userId = userId.toRequestBody("text/plain".toMediaTypeOrNull())
         val buildingId = viewModel.selectedBuilding.value?.toRequestBody("text/plain".toMediaTypeOrNull())
             ?: "".toRequestBody("text/plain".toMediaTypeOrNull())
 
@@ -179,8 +192,8 @@ fun AddPostScreens(navController: NavHostController) {
                 content = content,
                 postType = postType,
                 status = status,
-                videos = photoPart,
-                photos = videoPart
+                videos = videoPart,
+                photos =photoPart
             )
             if (response.isSuccessful) {
                 Log.d("AddPost", "Dư liệu vừa thêm xong: ${response.body()}")
@@ -201,205 +214,104 @@ fun AddPostScreens(navController: NavHostController) {
             .fillMaxSize()
             .background(color = Color(0xfff7f7f7))
     ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .background(color = Color(0xfff7f7f7))
-            .padding(bottom = screenHeight.dp/7f)
-
-    ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color(0xffffffff))
-                .padding(10.dp)
-
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-
-                    .background(color = Color(0xffffffff)), // Để IconButton nằm bên trái
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(onClick = {   navController.popBackStack()}) {
-                    Image(
-                        painter = painterResource(id = R.drawable.back),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp, 30.dp)
-                    )
-                }
-                Text(
-                    text = "Thêm bài đăng",
-                    //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                    color = Color.Black,
-                    fontWeight = FontWeight(700),
-                    fontSize = 17.sp,
-                    )
-                IconButton(onClick = { /*TODO*/ }) {
-                }
-            }
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(scrollState)
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .background(color = Color(0xfff7f7f7))
-                .padding(15.dp)
+                .padding(bottom = screenHeight.dp/7f)
+
         ) {
-            // tiêu đề
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp)
+                    .background(color = Color(0xffffffff))
+                    .padding(10.dp)
+
             ) {
-                Row {
-                    Text(
-                        text = "Tiêu đề bài đằng",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xff7f7f7f),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-                    )
-                    Text(
+                AppointmentAppBar( onBackClick = {
+                    // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                    navController.navigate("POSTING_STAFF")
+                    {
+                        popUpTo("ADDPOST_staff") { inclusive = true }
 
-                        text = " *",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffff1a1a),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 16.sp,
-
-                        )
-                }
-                TextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập tiêu đề bài đăng",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
-//video
-            SelectMedia { images, videos ->
-                selectedImages = images
-                selectedVideos = videos
-                Log.d("AddPost", "Received Images: $selectedImages")
-                Log.d("AddPost", "Received Videos: $selectedVideos")
-            }
-
-            //  Nội dung
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Nội dung",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xff7f7f7f),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 13.sp,
-                    )
-                    Text(
-                        text = " *",
-                        //     fontFamily = FontFamily(Font(R.font.cairo_regular)),
-                        color = Color(0xffff1a1a),
-                        // fontWeight = FontWeight(700),
-                        fontSize = 16.sp,
-                        )
-                }
-                TextField(
-                    value = content,
-                    onValueChange = { content = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(53.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFFcecece),
-                        unfocusedIndicatorColor = Color(0xFFcecece),
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Gray,
-                        unfocusedContainerColor = Color(0xFFf7f7f7),
-                        focusedContainerColor = Color(0xFFf7f7f7),
-                    ),
-                    placeholder = {
-                        Text(
-                            text = "Nhập nội dung",
-                            fontSize = 13.sp,
-                            color = Color(0xFF898888),
-                            fontFamily = FontFamily(Font(R.font.cairo_regular))
-                        )
-                    },
-                    shape = RoundedCornerShape(size = 8.dp),
-                    textStyle = TextStyle(
-                        color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.height(3.dp))
-            Column {
-                BuildingLabel()
-
-                BuildingOptions(
-                    userId = "67362213c6d421d3027fb5a7",
-                    selectedBuilding = viewModel.selectedBuilding.value,
-                    onBuildingSelected = { buildingId ->
-                        viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
                     }
-                )
+                })
+
             }
-            // dịch vụ
-            Spacer(modifier = Modifier.height(10.dp))
-            Column {
-            RoomLabel()
-                viewModel.selectedBuilding.value?.let {
-                    RoomOptions (
-                        buildingId = it,
-                        selectedRoom = selectedRoom,
-                        onRoomSelected = { roomId ->
-                            selectedRoom = roomId
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .background(color = Color(0xfff7f7f7))
+                    .padding(15.dp)
+            ) {
+
+//video
+                SelectMedia { images, videos ->
+                    selectedImages = images
+                    selectedVideos = videos
+                    Log.d("AddPost", "Received Images: $selectedImages")
+                    Log.d("AddPost", "Received Videos: $selectedVideos")
+                }
+                // tiêu đề
+                CustomTextField(
+                    label = "Tiêu đề bài đằng",
+                    value = title,
+                    onValueChange = { title = it  },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    placeholder = "Nhập tiêu đề bài đăng",
+                    isReadOnly = false
+                )
+                //  Nội dung
+                CustomTextField(
+                    label = "Nội dung",
+                    value = content,
+                    onValueChange = { content = it  },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    placeholder = "Nhập nội dung bài đăng",
+                    isReadOnly = false
+                )
+                Spacer(modifier = Modifier.height(3.dp))
+                Column {
+                    BuildingLabel()
+
+                    BuildingOptions(
+                        userId = userId,
+                        selectedBuilding = viewModel.selectedBuilding.value,
+                        onBuildingSelected = { buildingId ->
+                            viewModel.setSelectedBuilding(buildingId) // Cập nhật tòa nhà đã chọn
                         }
                     )
                 }
-                //673b57f7d24f9f5e94603b17
-//            ServiceOptions(
-//                selectedService = selectedService,
-//                onServiceSelected = { service ->
-//                    selectedService = if (selectedService.contains(service)) {
-//                        selectedService - service
-//                    } else {
-//                        selectedService + service
-//                    }
-//                }
-//            )
-        }
+                // dịch vụ
+                Spacer(modifier = Modifier.height(10.dp))
+                Column {
+                    RoomLabel()
+                    viewModel.selectedBuilding.value?.let { buildingId ->
+                        RoomOptions(
+                            buildingId = buildingId,
+                            selectedRoom = selectedRoom,
+                            onRoomSelected = { roomId ->
+                                selectedRoom = roomId
+                            }
+                        )
+                    } ?: run {
+                        Text(
+                            text = "Vui lòng chọn tòa nhà trước",
+                            color = Color.Red,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
 
+            }
         }
-    }
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -417,15 +329,43 @@ fun AddPostScreens(navController: NavHostController) {
 
                         if (selectedImages.isEmpty()) {
                             // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một ảnh!", Toast.LENGTH_SHORT).show()
-                       return@Button
+                            Toast.makeText(context, "Ảnh không được để trống", Toast.LENGTH_SHORT).show()
+                            return@Button
                         }
                         if (selectedVideos.isEmpty()) {
                             // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Bạn phải chọn ít nhất một video!", Toast.LENGTH_SHORT).show()
-                     return@Button
+                            Toast.makeText(context, "Video không được để trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        val maxPhotos = 10
+                        val maxVideos = 3
+                        if (selectedImages.size > maxPhotos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxPhotos ảnh!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
                         }
 
+                        if (selectedVideos.size > maxVideos) {
+                            Toast.makeText(
+                                context,
+                                "Chỉ cho phép tối đa $maxVideos video!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
+                        if (viewModel.selectedBuilding.value.isNullOrBlank()) {
+                            Toast.makeText(context, "Vui lòng chọn tòa", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+
+                        if (selectedRoom.isNullOrEmpty()) {
+                            Toast.makeText(context, "Vui lòng chọn phòng", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
                         if (isFieldEmpty(content)) {
                             // Hiển thị thông báo lỗi nếu content trống
                             Toast.makeText(context, "Nội dung không thể trống", Toast.LENGTH_SHORT).show()
@@ -438,6 +378,7 @@ fun AddPostScreens(navController: NavHostController) {
                             }
 
                             if (isSuccessful) {
+                                Toast.makeText(context, "Tạo bài đăng thành công!", Toast.LENGTH_SHORT).show()
                                 // Chuyển màn khi bài đăng được tạo thành công
                                 navController.navigate("POSTING_STAFF")
                             } else {

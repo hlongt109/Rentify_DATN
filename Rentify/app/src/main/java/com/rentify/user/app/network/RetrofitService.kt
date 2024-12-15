@@ -1,24 +1,11 @@
 package com.rentify.user.app.network
 
-import android.net.Uri
-import com.rentify.user.app.model.PostResponse
-import com.rentify.user.app.network.LocationService.ApiService
-import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
-
-import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
+
 
 class RetrofitService {
     // Tạo logging interceptor
@@ -31,7 +18,7 @@ class RetrofitService {
         .addInterceptor(logging)
         .build()
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.6.102:3000/api/") // 192.168.6.102
+        .baseUrl("http://10.0.2.2:3000/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

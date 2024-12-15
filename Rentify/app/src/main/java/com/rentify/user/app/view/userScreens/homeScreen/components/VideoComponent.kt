@@ -2,6 +2,7 @@ package com.rentify.user.app.view.userScreens.homeScreen.components
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,27 +32,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.rentify.user.app.R
 import com.rentify.user.app.viewModel.DistrictViewModel
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun VideoComponent() {
-    LayoutVideo()
-}
-
-
 @Composable
 fun LayoutVideo(
-    districtViewModel: DistrictViewModel = viewModel()
+    districtViewModel: DistrictViewModel = viewModel(),
+    navController: NavController,
+    city: String
 ) {
     val listNameDistrict = districtViewModel.districts.value
     val isLoading = districtViewModel.isLoading.value
     val hasMoreData by districtViewModel.hasMoreData.collectAsState()
-    val city = "Hà Nội"
     val lazyListState = rememberLazyListState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(city) {
         districtViewModel.fetchDistricts(city)
     }
 
@@ -62,7 +57,10 @@ fun LayoutVideo(
         state = lazyListState
     ) {
         items(listNameDistrict.size) { index ->
-            ImageThumbnail(title = listNameDistrict[index])
+            ImageThumbnail(
+                title = listNameDistrict[index],
+                navController = navController
+            )
         }
         if (isLoading && hasMoreData) {
             item {
@@ -96,11 +94,17 @@ fun LayoutVideo(
 }
 
 @Composable
-fun ImageThumbnail(title: String) {
+fun ImageThumbnail(
+    title: String,
+    navController: NavController
+) {
     Card(
         modifier = Modifier
             .padding(top = 8.dp, bottom = 8.dp, end = 8.dp)
             .width(150.dp)
+            .clickable {
+                navController.navigate("RENTAL_POST/${title ?: ""}")
+            }
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()

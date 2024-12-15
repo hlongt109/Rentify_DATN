@@ -81,18 +81,20 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
+ //   val isPostUpdated = remember { mutableStateOf(false) } // Trạng thái để kiểm tra khi nào cập nhật
 
-    // Chạy khi màn hình được hiển thị lại hoặc khi postId thay đổi
-    LaunchedEffect(postId, isPostUpdated.value) {
-        Log.d("detail", "RequestBody check: ")
+    LaunchedEffect(key1 = postId) {
         viewModel.getPostDetail(postId)
+    }
 
-        isPostUpdated.value = false  // Reset lại trạng thái sau khi tải dữ liệu
+    LaunchedEffect(postDetail) {
+        if (postDetail == null) {
+            viewModel.getPostDetail(postId)
+        }
     }
 
     postDetail?.let { detail ->
-        Log.d("detail", "RequestBody check:${detail} ")
+        Log.d("detail", "RequestBody check màn detail:${detail} ")
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -103,33 +105,18 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     .statusBarsPadding()
                     .navigationBarsPadding()
             ){
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = Color(0xfff7f7f7)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = { navController.navigate("POSTING_STAFF")}) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp, 30.dp)
-                        )
+                AppointmentAppBarc( onBackClick = {
+                    // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                    navController.navigate("POSTING_STAFF")
+                    {
+                        //    popUpTo("ADDCONTRAC_STAFF") { inclusive = true }
+
                     }
-                    Text(
-                        text = "Chi tiết bài đăng",
-                        color = Color.Black,
-                        fontWeight = FontWeight(700),
-                        fontSize = 17.sp,
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                    }
-                }
+                })
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .height(screenHeight.dp / 1.2f)
+                        .height(screenHeight.dp / 1.3f)
                         .verticalScroll(scrollState)
                 ) {
 
@@ -248,7 +235,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                     Spacer(modifier = Modifier.height(10.dp))
 // tên tòa và số bài dăng
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 15.dp),
 
                     ) {
                         Image(
@@ -279,7 +268,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 15.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 15.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -374,7 +365,9 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
                             popUpTo("post_detail/$postId") { inclusive = true }
                         }
                     },
-                    modifier = Modifier.height(50.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xff5dadff))
                 ) {
@@ -388,7 +381,19 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
             }
         }
     } ?: run {
-        Text("Đang tải chi tiết bài đăng...")
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White), // Màu nền nếu cần
+            contentAlignment = Alignment.Center // Căn giữa nội dung
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp), // Kích thước loading
+                color = Color(0xFF5DADFF), // Màu sắc hiệu ứng
+                strokeWidth = 4.dp // Độ dày của đường loading
+            )
+        }
+
     }
 }
 @Preview(showBackground = true)
@@ -422,7 +427,7 @@ fun PostImageSection(images: List<String>) {
             ) { pageIndex ->
                 val image = images[pageIndex]
                 Image(
-                    painter = rememberImagePainter("http://192.168.2.106:3000/$image"),
+                    painter = rememberImagePainter("http://192.168.2.104:3000/$image"),
                     contentDescription = "Post Image",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -467,7 +472,7 @@ fun PostVideoSection(videos: List<String>) {
                     .height(300.dp)
             ) { pageIndex ->
                 val videoUrl = videos[pageIndex]
-                VideoPlayer(videoUrl = "http://192.168.2.106:3000/$videoUrl")
+                VideoPlayer(videoUrl = "http://192.168.2.104:3000/$videoUrl")
             }
 
             // Dấu chấm chỉ số video
@@ -512,10 +517,10 @@ fun PostMediaDialog(mediaList: List<String>, currentIndex: Int, onDismiss: () ->
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         if (media.endsWith(".mp4")) {
-                            VideoPlayer(videoUrl = "http://192.168.2.106:3000/$media")
+                            VideoPlayer(videoUrl = "http://192.168.2.104:3000/$media")
                         } else {
                             Image(
-                                painter = rememberImagePainter("http://192.168.2.106:3000/$media"),
+                                painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
                                 contentDescription = "Post Image",
                                 modifier = Modifier.fillMaxWidth()
                             )

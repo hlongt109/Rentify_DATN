@@ -1,12 +1,15 @@
 package com.rentify.user.app.view.userScreens.rentalPost.rentalPostComponents
 
 
+import androidx.compose.foundation.clickable
 import com.rentify.user.app.R
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -16,6 +19,8 @@ import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,50 +29,88 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.rentify.user.app.model.Model.RoomResponse
-import com.rentify.user.app.viewModel.HomeScreenViewModel
+import com.rentify.user.app.model.Model.RoomSaleResponse
+import kotlinx.coroutines.delay
 import java.text.DecimalFormat
-
+import kotlin.math.ceil
 
 @Composable
 fun RentalPostList(
-    getRentalPostList: List<RoomResponse>,
+    getRentalPostList: List<RoomSaleResponse>,
+    totalRooms: Int,
+    currentPage: Int,
+    loadMoreRooms: () -> Unit,
+    isLoading: Boolean,
+    pageSize: Int,
+    navController: NavController
+
 ) {
+    val gridState = rememberLazyGridState()
+
+    val totalPages = ceil(totalRooms.toDouble() / pageSize.toDouble()).toInt() // Tính tổng số trang
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        state = gridState
     ) {
-
         items(getRentalPostList) { room ->
-            RentalPostCard(room)
+            RentalPostCard(room, navController)
         }
+
+        if (!isLoading && currentPage < totalPages && getRentalPostList.size < totalRooms) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(35.dp)
+                    )
+                }
+                LaunchedEffect(currentPage) {
+                    delay(1000)
+                    loadMoreRooms()
+                }
+            }
+        }
+
     }
 }
 
 
 @Composable
-fun RentalPostCard(room: RoomResponse) {
+fun RentalPostCard(
+    room: RoomSaleResponse,
+    navController: NavController
+) {
     val imageLoading = remember { mutableStateOf(true) }
     Card(
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(220.dp)
+            .clickable { navController.navigate("ROOMDETAILS/${room._id}") }
+        ,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         val imageUrl = "http://10.0.2.2:3000/" + room.photos_room[0]
-        val formattedPrice = DecimalFormat("#,###,###").format(room.price)
+        val discountedPrice = room.price - room.sale
+        val formattedDiscountedPrice = DecimalFormat("#,###,###").format(discountedPrice)
+        val formattedOriginalPrice = DecimalFormat("#,###,###").format(room.price)
         Column {
             // Hình ảnh phòng
             AsyncImage(
@@ -100,13 +143,37 @@ fun RentalPostCard(room: RoomResponse) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 // Giá phòng
-                Text(
-                    maxLines = 1,
-                    text = "Từ ${formattedPrice}đ /Tháng" ,
-                    color = Color.Red,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
-                )
+                Column {
+                    if (room.sale > 0) {
+                        // Nếu có giảm giá
+                        Text(
+                            text = "Từ ${formattedDiscountedPrice}đ /Tháng",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(2.dp)) // Khoảng cách giữa giá giảm và giá gốc
+                        Text(
+                            text = "${formattedOriginalPrice}đ",
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            textDecoration = TextDecoration.LineThrough,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        // Nếu không có giảm giá
+                        Text(
+                            text = "Từ ${formattedOriginalPrice}đ /Tháng",
+                            fontSize = 13.sp,
+                            color = Color.Red,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(3.dp))
 

@@ -95,15 +95,21 @@ fun getFormattedText(name: String, price: String): String {
         "Điện" -> "${price}đ/kW"
         "Nước" -> "${price}đ/khối"
         "Wifi" -> "${price}đ/phòng"
-        else -> "$name: ${price}đ" // Trường hợp khác
+        else -> "${price}đ" // Trường hợp khác
     }
 }
 
 fun getImageResource(name: String): Int {
     return when (name) {
-        "Điện" -> R.drawable.dien // Thay bằng ID ảnh tương ứng
-        "Nước" -> R.drawable.nuoc
+        "Điện" -> R.drawable.electronic // Thay bằng ID ảnh tương ứng
+        "Nước" -> R.drawable.water
         "Wifi" -> R.drawable.wifi
+        "Dịch vụ chung" -> R.drawable.home
+        "Máy giặt" -> R.drawable.maygiat
+        "Thang máy" -> R.drawable.elevator
+        "Tủ lạnh" -> R.drawable.tulanh
+        "Bảo trì" -> R.drawable.baotri
+        "Bảo vệ" -> R.drawable.baove
         else -> R.drawable.khac // Ảnh mặc định cho các tiện ích không xác định
     }
 }

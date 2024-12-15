@@ -1,8 +1,10 @@
 package com.rentify.user.app.view.staffScreens.BillScreenStaff
 
 import android.app.DatePickerDialog
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
@@ -18,13 +20,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Card
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
@@ -53,6 +58,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,6 +66,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity.ROUTER
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.network.ApiStaff.ApiServiceStaff
 import com.rentify.user.app.network.ApiStaff.RetrofitStaffService
 import com.rentify.user.app.network.RetrofitService
@@ -71,23 +78,31 @@ import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.calender
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.utils.CheckUnit
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.ShowService
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.TextFieldSmall
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.TextFiledComponent
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.BuildingStaffViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.InvoiceStaffViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.InvoiceUiState
 import com.rentify.user.app.viewModel.StaffViewModel.RoomStaffViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddBillStaff(navController: NavController) {
+fun AddBillStaff(
+    navController: NavController,
+    notificationViewModel: NotificationViewModel = viewModel()
+) {
 
     //lay thong tin user
     val context = LocalContext.current
@@ -117,6 +132,8 @@ fun AddBillStaff(navController: NavController) {
     )
     var isExpanded by remember { mutableStateOf(false) }
     var isExpandedRoom by remember { mutableStateOf(false) }
+    var isExpandedRoomNull by remember { mutableStateOf(false) }
+    var isExpandedBuildingNull by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         buildingStaffViewModel.getBuildingList(staffId)
     }
@@ -140,8 +157,6 @@ fun AddBillStaff(navController: NavController) {
     Log.d("ListBuilding", "AddBillStaff: $listBuilding")
 
     //khai bao 1 ty thu
-
-
     var building by remember { mutableStateOf("") }
     var room by remember { mutableStateOf("") }
     var priceRoom by remember { mutableStateOf(0.0) }
@@ -181,6 +196,7 @@ fun AddBillStaff(navController: NavController) {
     //ngay
     var showDatePicker by remember { mutableStateOf(false) }
     var dateBill by remember { mutableStateOf("") }
+    var dateBillText by remember { mutableStateOf("")}
     val calendar = Calendar.getInstance()
     //
     var isFocusBuilding by remember { mutableStateOf(false) }
@@ -190,6 +206,10 @@ fun AddBillStaff(navController: NavController) {
     //
     var totalBill = totalAmount + priceRoom + totalElec + totalWater
     var amountBill = CheckUnit.formattedPrice(totalBill.toFloat())
+
+    //
+    var describe by remember { mutableStateOf("") }
+    var isFocusDescribe by remember { mutableStateOf(false) }
 
     val uiState = invoiceViewModel.uiState.collectAsState()
     val isLoading = invoiceViewModel.isLoading.observeAsState(false)
@@ -202,6 +222,7 @@ fun AddBillStaff(navController: NavController) {
     val errorElec by invoiceViewModel.elecErrorMessage.observeAsState()
     val oldWater by invoiceViewModel.oldWaterErrorMessage.observeAsState()
     val oldElec by invoiceViewModel.oldElecErrorMessage.observeAsState()
+    val describeError by invoiceViewModel.describeErrorMessage.observeAsState()
 
     val successMessage by invoiceViewModel.successMessage.observeAsState()
     var showToast by remember { mutableStateOf(false) }
@@ -215,17 +236,13 @@ fun AddBillStaff(navController: NavController) {
             .verticalScroll(state = rememberScrollState())
             .padding(bottom = 20.dp)
     ) {
-        HeaderComponent(
-            title = "Thêm hóa đơn",
-            backgroundColor = Color.White,
-            navController = navController
-        )
+        AddBillManagerTopBar(navController = navController)
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(15.dp)
+                .padding(top = 0.dp, bottom = 15.dp, start = 15.dp, end = 15.dp)
         ) {
             //toa nha
             TextFiledComponent(
@@ -249,6 +266,9 @@ fun AddBillStaff(navController: NavController) {
                     room = ""
                     priceRoom = 0.0
                     formattedPriceRoom = ""
+                },
+                onExpandedBuildingNull = {
+                    isExpandedBuildingNull = it
                 }
             )
             errorBuilding?.let { ShowReport.ShowError(message = it) }
@@ -266,10 +286,17 @@ fun AddBillStaff(navController: NavController) {
                 isIcon = Icons.Filled.KeyboardArrowDown,
                 listRoom = listRoom,
                 enable = false,
-                onExpandedRoom = { isExpandedRoom = it },
+                onExpandedRoom = {
+                    isExpandedRoom = it
+                },
                 onRoomSelected = { selectedRoom ->
-                    priceRoom = selectedRoom.price.toDouble()
-                    formattedPriceRoom = CheckUnit.formattedPrice(selectedRoom.price.toFloat())
+                    val originalPrice = selectedRoom.price.toDouble()
+                    val saleDiscount = selectedRoom.sale.toDouble() ?: 0.0 // Nếu `sale` null thì mặc định là 0
+                    priceRoom = originalPrice - saleDiscount
+                    formattedPriceRoom = CheckUnit.formattedPrice(priceRoom.toFloat())
+                },
+                onExpandedRoomNull = {
+                    isExpandedRoomNull = it
                 }
             )
             errorRoom?.let { ShowReport.ShowError(message = it) }
@@ -379,7 +406,7 @@ fun AddBillStaff(navController: NavController) {
                 ) {
                     Column {
                         TextFieldSmall(
-                            value = if (oldWaterNumber == 0) "" else oldWaterText,
+                            value = if (oldWaterNumber == null) "" else oldWaterText,
                             onValueChange = { newText ->
                                 oldWaterText = newText
                                 oldWaterNumber = newText.toIntOrNull() ?: 0
@@ -486,11 +513,25 @@ fun AddBillStaff(navController: NavController) {
                 }
             }
 
-            // ngay chot
-            Spacer(modifier = Modifier.padding(top = 20.dp))
+            //mo ta
             TextFiledComponent(
-                value = dateBill,
+                value = describe,
                 onValueChange = { newText ->
+                    describe = newText
+                    invoiceViewModel.clearDescribeError()
+                },
+                placeHolder = "Mô tả hóa đơn",
+                isFocused = remember { mutableStateOf(isFocusDescribe) },
+                isShowIcon = false,
+                enable = true
+            )
+            describeError?.let { ShowReport.ShowError(message = it) }
+
+            // ngay chot
+            TextFiledComponent(
+                value = dateBillText,
+                onValueChange = { newText ->
+                    dateBillText = newText
                     dateBill = newText
                     invoiceViewModel.clearDateError()
                 },
@@ -552,6 +593,7 @@ fun AddBillStaff(navController: NavController) {
                             invoiceViewModel.addBill(
                                 userId = staffId,
                                 roomId = selectedRoom._id,
+                                buildingId = selectedBuildingId,
                                 consumeElec = consumeElec,
                                 totalElec = totalElec,
                                 consumeWater = consumeWater,
@@ -567,11 +609,32 @@ fun AddBillStaff(navController: NavController) {
                                 buildingName = building,
                                 roomName = room,
                                 oldElec = oldElecNumber,
-                                oldWater = oldWaterNumber
+                                oldWater = oldWaterNumber,
+                                describe = describe
                             )
                             successMessage?.let {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                             }
+
+                            val formatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                            } else {
+                                TODO("VERSION.SDK_INT < O")
+                            }
+                            val currentTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                LocalDateTime.now().format(formatter)
+                            } else {
+                                TODO("VERSION.SDK_INT < O")
+                            }
+
+                            val notificationRequest = NotificationRequest(
+                                user_id = staffId,
+                                title = "Thêm hoá đơn thành công",
+                                content = "Phòng ${room} đã được thêm hoá đơn thành công lúc: $currentTime",
+                            )
+
+                            notificationViewModel.createNotification(notificationRequest)
+
                             navController.navigate(ROUTER.BILL_STAFF.name)
                             invoiceViewModel.clearAll()
                         }
@@ -597,7 +660,6 @@ fun AddBillStaff(navController: NavController) {
                         modifier = Modifier.padding(vertical = 4.dp),
                         fontWeight = FontWeight.Medium
                     )
-//
                 }
             }
         }
@@ -624,7 +686,8 @@ fun AddBillStaff(navController: NavController) {
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             calendar.timeInMillis = millis
-                            dateBill = CheckUnit.formatDay(calendar.time)
+                            dateBillText = CheckUnit.formatDay(calendar.time)
+                            dateBill = CheckUnit.formatDay_2(calendar.time)
                         }
                         showDatePicker = false
                     }
@@ -644,13 +707,33 @@ fun AddBillStaff(navController: NavController) {
             )
         }
     }
-
-    //
-
 }
 
-@Preview(showBackground = true)
 @Composable
-fun PreviewAddBill() {
-    AddBillStaff(navController = rememberNavController())
+fun AddBillManagerTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(onClick = { navController.popBackStack() }) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew, contentDescription = "Back"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = "Thêm hoá đơn",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
+    }
 }

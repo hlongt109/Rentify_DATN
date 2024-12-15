@@ -1,5 +1,6 @@
 package com.rentify.user.app.view.userScreens.BillScreen.Component
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -49,29 +50,36 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.rentify.user.app.R
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
+import com.rentify.user.app.model.Model.InvoiceResponse
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2
 import com.rentify.user.app.utils.CheckUnit
+import com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet.PaymentSaleDetailRow
+import com.rentify.user.app.view.userScreens.paymentscreen.components.LoadingAsyncImage
 
 @Composable
 fun ItemUnPaid(
-    item: RoomPaymentInfo,
+    item: InvoiceResponse,
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    val amount = item.paymentDetails.calculateTotal()
+    val amount = item.amount
     val formatPrice = CheckUnit.formattedPrice(amount.toFloat())
     var isExpanded by remember { mutableStateOf(false) }
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp, vertical = 8.dp)
+            .padding(horizontal = 10.dp, vertical = 8.dp)
 
     ) {
         // Di chuyển animation vào Column bên trong Card thay vì Box
@@ -80,7 +88,7 @@ fun ItemUnPaid(
                 .fillMaxWidth()
                 .shadow(
                     elevation = 3.dp,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     spotColor = Color.Black
                 )
                 .clickable {
@@ -100,7 +108,7 @@ fun ItemUnPaid(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(15.dp)
+                    .padding(10.dp)
                     .animateContentSize(
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -123,25 +131,12 @@ fun ItemUnPaid(
                 ) {
                     Row {
                         Text(
-                            text = "Số phòng: ",
+                            text = "Tên phòng: ",
                             fontSize = 13.sp,
                             color = ColorBlack,
                         )
                         Text(
-                            text = item.roomInfo.roomNumber,
-                            fontSize = 13.sp,
-                            color = ColorBlack,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    Row {
-                        Text(
-                            text = "Số lượng người: ",
-                            fontSize = 13.sp,
-                            color = ColorBlack,
-                        )
-                        Text(
-                            text = item.roomInfo.numberOfPeople.toString(),
+                            text = "${item.room_id.room_name} - ${item.room_id.room_type}",
                             fontSize = 13.sp,
                             color = ColorBlack,
                             fontWeight = FontWeight.Medium
@@ -156,7 +151,7 @@ fun ItemUnPaid(
                 ) {
                     Row {
                         Text(
-                            text = "Tiền phòng: ",
+                            text = "Tổng tiền: ",
                             fontSize = 13.sp,
                             color = ColorBlack,
                         )
@@ -190,7 +185,7 @@ fun ItemUnPaid(
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
                         Divider(
                             color = Color.LightGray,
                             thickness = 1.dp,
@@ -202,43 +197,67 @@ fun ItemUnPaid(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            PaymentDetailRow(
-                                "Tiền phòng",
-                                CheckUnit.formattedPrice(item.paymentDetails.roomCharge.toFloat())
-                            )
-                            PaymentDetailRow(
-                                "Tiền điện",
-                                CheckUnit.formattedPrice(item.paymentDetails.electricityCharge.toFloat())
-                            )
-                            PaymentDetailRow(
-                                "Tiền nước",
-                                CheckUnit.formattedPrice(item.paymentDetails.waterCharge.toFloat())
-                            )
-                            PaymentDetailRow(
-                                "Tiền dịch vụ",
-                                CheckUnit.formattedPrice(item.paymentDetails.serviceCharge.toFloat())
-                            )
 
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Button(
-                                onClick = {},
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp)
-                                    .border(width = 1.dp, color = Color.Red, shape = RoundedCornerShape(8.dp)),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text(
-                                    text = "Chưa thanh toán",
-                                    color = Color.Red,
-                                    modifier = Modifier.padding(vertical = 4.dp),
-                                    fontWeight = FontWeight.Medium
+                            item.description.forEach { service ->
+                                PaymentDetailRow(
+                                    label = service.service_name,
+                                    value = CheckUnit.formattedPrice(service.total.toFloat())
                                 )
                             }
+
+                            PaymentDetailRow(
+                                label = "Tiền phòng",
+                                value = CheckUnit.formattedPrice(item.room_id.price.toFloat())
+                            )
+
+                            if (item.room_id.sale != null && item.room_id.sale != 0){
+                                PaymentSaleDetailRow(
+                                    "Giảm giá",
+                                    CheckUnit.formattedPrice(item.room_id.sale.toFloat())
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            if(item.image_paymentofuser != null && item.image_paymentofuser != ""){
+                                val imageUrls = "http://10.0.2.2:3000/${item.image_paymentofuser.replace("\\", "/")}"
+                                AsyncImage(
+                                    model = imageUrls,
+                                    contentDescription = "",
+                                    placeholder = painterResource(R.drawable.error), // Ảnh placeholder
+                                    error = painterResource(R.drawable.error), // Ảnh lỗi
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                            }
+
+                            if (item.payment_status == "unpaid") {
+                                Button(
+                                    onClick = { navController.navigate("PaymentConfirmation/${item.amount}/${item.building_id}/${item._id}/${item.room_id._id}") },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp)
+                                        .border(
+                                            width = 1.dp,
+                                            color = Color.Red,
+                                            shape = RoundedCornerShape(8.dp)
+                                        ),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = "Chưa thanh toán",
+                                        color = Color.Red,
+                                        modifier = Modifier.padding(vertical = 4.dp),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+
+
                         }
                     }
                 }
@@ -248,32 +267,21 @@ fun ItemUnPaid(
 }
 
 @Composable
-private fun PaymentDetailRow(label: String, value: String) {
+fun LabelValueRow(label: String, value: String) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .drawBehind {
-                drawLine(
-                    color = colorInput_2,
-                    start = Offset(0f,size.height),
-                    end = Offset(size.width,size.height),
-                    strokeWidth = 1.dp.toPx()
-                )
-            }
-            .padding(top = 10.dp, bottom = 10.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = label,
             fontSize = 13.sp,
-            color = ColorBlack,
-            fontWeight = FontWeight.Medium
+            color = Color.Gray
         )
         Text(
             text = value,
             fontSize = 13.sp,
-            color = ColorBlack,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Black
         )
     }
 }

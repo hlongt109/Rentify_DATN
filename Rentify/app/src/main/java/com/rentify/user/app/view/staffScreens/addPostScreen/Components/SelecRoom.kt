@@ -35,6 +35,7 @@ import com.rentify.user.app.R
 
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -74,7 +75,7 @@ fun RoomOptions(
     onRoomSelected: (String) -> Unit
 ) {
     val roomViewModel: PostViewModel = viewModel()
-    val rooms by roomViewModel.rooms
+    val rooms by roomViewModel.rooms.collectAsState(initial = emptyList())
 
     // Gọi API lấy tòa nhà theo user_id
     LaunchedEffect(buildingId) {

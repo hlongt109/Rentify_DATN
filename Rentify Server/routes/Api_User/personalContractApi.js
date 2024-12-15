@@ -90,4 +90,78 @@ router.post("/request-contract", async (req, res) => {
   }
 });
 
+// Lấy chi tiết hợp đồng và thông tin liên quan
+router.get("/contract-detail/:user_id", async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    if (!user_id) {
+      return res.status(404).json({
+        message: "Không tìm thấy người dùng",
+      });
+    }
+    const contracts = await Contract.find({ user_id })
+      .populate({
+        path: "room_id",
+        select: "room_name room_type price",
+      })
+      .populate({
+        path: "building_id",
+        select: "nameBuilding",
+      })
+      .populate({
+        path: "user_id",
+        select: "name",
+      });
+
+    if (contracts.length === 0) {
+      return res.status(404).json({
+        message: "Không tìm thấy hợp đồng nào",
+      });
+    }
+
+    res.status(200).json(contracts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+});
+
+// API kiểm tra hợp đồng của người dùng
+router.get("/check-contract/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Tìm hợp đồng của user với status = 1 (đang có hiệu lực)
+    const contract = await Contract.findOne({
+      user_id: userId,
+      status: 0, // Chỉ lấy hợp đồng đang có hiệu lực
+    });
+
+    // Kiểm tra nếu không tìm thấy hợp đồng
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: "Bạn không có hợp đồng hoặc hợp đồng đã hết hiệu lực",
+      });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: "Người dùng có hợp đồng còn hiệu lực",
+      data: [
+        {
+          contract,
+        },
+      ],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi server: " + error.message,
+    });
+  }
+});
+
 module.exports = router;

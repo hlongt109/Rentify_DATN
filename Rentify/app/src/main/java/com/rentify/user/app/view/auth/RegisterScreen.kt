@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,7 +33,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,6 +57,8 @@ import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
 import com.rentify.user.app.repository.RegisterRepository.RegisterRepository
+import com.rentify.user.app.utils.Component.HeaderBar
+import com.rentify.user.app.utils.ShowReport
 import com.rentify.user.app.viewModel.RegisterViewModel
 
 import retrofit2.Call
@@ -72,6 +78,7 @@ fun RegisterScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repassword by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
     // Biến trạng thái cho từng TextField
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isRepasswordVisible by remember { mutableStateOf(false) }
@@ -80,34 +87,40 @@ fun RegisterScreen(navController: NavHostController) {
     var isEmailFocused by remember { mutableStateOf(false) }
     var isPasswordFocused by remember { mutableStateOf(false) }
     var isRePasswordFocused by remember { mutableStateOf(false) }
+    var isPhoneNumber by remember { mutableStateOf(false) }
+    //khai bao cac loi
+    val errorEmail by registerViewModel.errorEmail.observeAsState()
+    val errorPass by registerViewModel.errorPass.observeAsState()
+    val errorPhone by registerViewModel.errorPhone.observeAsState()
+    val errorName by registerViewModel.errorName.observeAsState()
+    //
+    val successMessage by registerViewModel.successMessage.observeAsState()
+    val isLoading by registerViewModel.isLoading.observeAsState()
+
+    LaunchedEffect(successMessage) {
+        successMessage?.let {
+            navController.navigate(ROUTER.LOGIN.name)
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 color = Color(0xffffffff)
             )
-            .padding(15.dp),
+            .navigationBarsPadding()
+            .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         //icone
-        Row(
-            modifier = Modifier.fillMaxWidth(), // Để IconButton nằm bên trái
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = null,
-                    tint = Color.Black
-                )
-            }
-        }
-        //text
-        //Spacer(modifier = Modifier.fillMaxHeight(0.1f)) // Thêm khoảng cách giữa hai Text
+       HeaderBar(navController)
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            ) {
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, end = 15.dp),
+        ) {
             Text(
                 text = "Chào mừng bạn đến với Rentify",
                 fontFamily = FontFamily(Font(R.font.cairo_regular)),
@@ -133,6 +146,9 @@ fun RegisterScreen(navController: NavHostController) {
                 fontWeight = FontWeight(700),
                 fontSize = 24.sp,
             )
+            errorName?.let {
+                ShowReport.ShowError(message = it)
+            }
             Spacer(modifier = Modifier.fillMaxHeight(0.02f)) // Thêm khoảng cách giữa hai Text
         }
 
@@ -142,7 +158,7 @@ fun RegisterScreen(navController: NavHostController) {
         ) {
             TextField(
                 value = username,
-                onValueChange = {  username=it },
+                onValueChange = { username = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
@@ -173,7 +189,6 @@ fun RegisterScreen(navController: NavHostController) {
                     color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
                 )
             )
-
 
         }
         Spacer(modifier = Modifier.fillMaxHeight(0.02f)) // Thêm khoảng cách giữa hai Text
@@ -216,9 +231,55 @@ fun RegisterScreen(navController: NavHostController) {
                     color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
                 )
             )
-
-
+            errorEmail?.let {
+                ShowReport.ShowError(message = it)
+            }
         }
+        Spacer(modifier = Modifier.fillMaxHeight(0.02f))
+        //phoneNumber
+        Column(
+            modifier = Modifier.fillMaxWidth()
+
+        ) {
+
+            TextField(
+                value = phoneNumber,
+                onValueChange = { phoneNumber = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 2.dp,
+                        color = if (isPhoneNumber) Color(0xFF56b5bc) else Color.Transparent,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .onFocusChanged { focusState -> isPhoneNumber = focusState.isFocused },
+
+
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedPlaceholderColor = Color.Black,
+                    unfocusedPlaceholderColor = Color.Gray,
+                    unfocusedContainerColor = Color(0xFFfafafa),
+                    focusedContainerColor = Color.White
+                ),
+                placeholder = {
+                    Text(
+                        text = "Số điện thoại",
+                        fontSize = 15.sp,
+                        fontFamily = FontFamily(Font(R.font.cairo_regular))
+                    )
+                },
+                shape = RoundedCornerShape(size = 8.dp),
+                textStyle = TextStyle(
+                    color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
+                )
+            )
+            errorPass?.let {
+                ShowReport.ShowError(message = it)
+            }
+        }
+
         //pass
         Spacer(modifier = Modifier.fillMaxHeight(0.02f)) // Thêm khoảng cách giữa hai Text
 
@@ -262,6 +323,9 @@ fun RegisterScreen(navController: NavHostController) {
                     color = Color.Black, fontFamily = FontFamily(Font(R.font.cairo_regular))
                 )
             )
+            errorPass?.let {
+                ShowReport.ShowError(message = it)
+            }
         }
         //nhập lại pass
         Spacer(modifier = Modifier.fillMaxHeight(0.02f)) // Thêm khoảng cách giữa hai Text
@@ -325,11 +389,19 @@ fun RegisterScreen(navController: NavHostController) {
         Button(
             onClick = {
                 if (username.isBlank() || email.isBlank() || password.isBlank() || repassword.isBlank()) {
-                    Toast.makeText(context, "Vui lòng điền đầy đủ thông tin đăng ký.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Vui lòng điền đầy đủ thông tin đăng ký.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else if (password != repassword) {
-                    Toast.makeText(context, "Mật khẩu và mật khẩu nhập lại không khớp.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Mật khẩu và mật khẩu nhập lại không khớp.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    registerViewModel.register(username, email, password,repassword)
+                    registerViewModel.register(username, email, password, repassword, phoneNumber)
                 }
             },
             modifier = Modifier
@@ -358,18 +430,19 @@ fun RegisterScreen(navController: NavHostController) {
             )
 
             Text(
-                text = "Đăng nhập",
+                text = " Đăng nhập",
                 fontFamily = FontFamily(Font(R.font.cairo_regular)),
                 color = Color(0xff209FA8),
-                        modifier = Modifier
-                        .clickable {
+                modifier = Modifier
+                    .clickable {
                         navController.navigate(ROUTER.LOGIN.name)
-                }
+                    }
             )
 
         }
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingGetLayoutRegisterScreen() {

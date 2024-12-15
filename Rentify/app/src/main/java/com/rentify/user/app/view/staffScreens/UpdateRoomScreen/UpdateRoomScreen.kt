@@ -1,8 +1,10 @@
 package com.rentify.user.app.view.staffScreens.UpdateRoomScreen
 
-import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,12 +21,19 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -45,43 +54,61 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ServiceOptionschitiet
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ComfortableLabelUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ComfortableOptionsUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.RoomTypeLabelUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.RoomTypeOptionsUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceLabelUpdate
+import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceOptionsUpdate
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabelAdd
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptionsAdd
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMedia
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
+import com.rentify.user.app.view.staffScreens.addRoomScreen.CustomTextField
+import com.rentify.user.app.view.staffScreens.addRoomScreen.StatusDropdown
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
+import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun UpdateRoomScreenPreview(){
-    UpdateRoomScreen(
-        navController= rememberNavController(),
-        id = "",
-    )
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun UpdateRoomScreenPreview(){
+//    UpdateRoomScreen(
+//        navController= rememberNavController(),
+//        id = "",
+//        buildingId = ""
+//    )
+//}
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UpdateRoomScreen(
     navController: NavHostController,
     id: String,
+    buildingId:String,
+    notificationViewModel: NotificationViewModel = viewModel()
 ){
     val context = LocalContext.current
     val viewModel: RoomViewModel = viewModel(
@@ -93,56 +120,85 @@ fun UpdateRoomScreen(
     var selectedComfortable by remember { mutableStateOf(listOf<String>()) }
     var selectedService by remember { mutableStateOf(listOf<String>()) }
     val scrollState = rememberScrollState()
-    Log.d("TAG", " tiện nghi select : $selectedComfortable")
-    Log.d("TAG", "dịch vụ select: $selectedService")
+
     var postTitle by remember { mutableStateOf("") }
     var mota by remember { mutableStateOf("") }
     var numberOfRoommates by remember { mutableStateOf("") }
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
+    var roomSale by remember { mutableStateOf("") }
+    var Status by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>())}
     var selectedVideos by remember {mutableStateOf(listOf<Uri>())}
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
-    Log.d("TAG", " tiện nghi select : $selectedComfortable")
-    Log.d("TAG", "dịch vụ select: $selectedService")
-    Log.d("TAG", " tiện nghi select : $selectedComfortable")
-    Log.d("TAG", "Người select: $currentPeopleCount")
-    // Observe states
-    val isLoading by viewModel.isLoading.observeAsState(false)
-    val addRoomResponse by viewModel.addRoomResponse.observeAsState()
-    val updateRoomResponse by viewModel.updateRoomResponse.observeAsState()
-    val error by viewModel.error.observeAsState()
-    // Observe states
+
+    var allComfortable by remember {
+        mutableStateOf(
+            listOf(
+                "Vệ sinh khép kín",
+                "Gác xép",
+                "Ra vào vân tay",
+                "Nuôi pet",
+                "Không chung chủ"
+            )
+        )
+    }
+
+    val loginViewModel = getLoginViewModel(context)
+    val userData = loginViewModel.getUserData()
+    val staffId = userData.userId
+
+    val successMessage by viewModel.successMessage.observeAsState()
+    LaunchedEffect(successMessage) {
+        successMessage?.let {
+            Toast.makeText(context, "Update thành công ", Toast.LENGTH_SHORT).show()
+            viewModel.fetchRoomDetailById(id)
+            navController.popBackStack()
+        }
+    }
+
     LaunchedEffect(id) {
-        // Kiểm tra xem đã có dữ liệu phòng chưa, nếu chưa thì gọi API
         if (roomDetail == null) {
             viewModel.fetchRoomDetailById(id)
         }
     }
+
+    LaunchedEffect(roomDetail) {
+        roomDetail?.let { room ->
+            postTitle = room.room_name ?: ""
+            mota = room.description ?: ""
+            currentPeopleCount = room.limit_person.toString() ?: ""
+            area = room.size.toString() ?: ""
+            roomPrice = room.price.toString() ?: ""
+            roomSale = room.sale.toString() ?: ""
+            Status = room.status.toString() ?: ""
+            selectedComfortable = roomDetail?.amenities ?: emptyList()
+            selectedService = room.service.map { it._id } ?: emptyList()
+            // Chuyển đổi dữ liệu từ roomDetail
+            selectedImages = room.photos_room.map { photoUrl ->
+                Uri.parse("http://10.0.2.2:3000/$photoUrl")
+            } ?: emptyList()
+
+            selectedVideos = room.video_room.map { videoUrl ->
+                Uri.parse("http://10.0.2.2:3000/$videoUrl")
+            } ?: emptyList()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xfff7f7f7))
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
                 .background(color = Color(0xfff7f7f7))
-                .padding(bottom = screenHeight.dp / 7f)
-
         ) {
-
-
-            HeaderComponent(
-                backgroundColor = Color(0xffffffff),
-                title = "Update room",
-                navController = navController
-            )
-            Text("id : ${id}")
-            Spacer(modifier = Modifier.height(10.dp))
+            UpdateRoomTopBar(navController = navController)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,342 +209,274 @@ fun UpdateRoomScreen(
                 // if ở đây
                 if (roomDetail != null) {
                     val room = roomDetail!!
-                    Column(
+
+                    SelectMedia(
+                        onMediaSelected = { images, videos ->
+                            selectedImages = images
+                            selectedVideos = videos
+                        },
+                        existingImages = selectedImages,
+                        existingVideos = selectedVideos
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    CustomTextField(
+                        label = "Tên phòng",
+                        value = postTitle,
+                        onValueChange = { postTitle = it.uppercase() },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Tên phòng*",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
-                        TextField(
-                            value = postTitle,
-                            onValueChange = { postTitle = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(53.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color(0xFFcecece),
-                                unfocusedIndicatorColor = Color(0xFFcecece),
-                                focusedPlaceholderColor = Color.Black,
-                                unfocusedPlaceholderColor = Color.Gray,
-                                unfocusedContainerColor = Color(0xFFf7f7f7),
-                                focusedContainerColor = Color.White
-                            ),
-                            placeholder = {
-                                androidx.compose.material3.Text(
-                                    text = "${roomDetail?.room_name}",
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF898888),
-                                    fontFamily = FontFamily(Font(R.font.cairo_regular))
-                                )
-                            },
-                            shape = RoundedCornerShape(size = 8.dp),
-                            textStyle = TextStyle(
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        )
-                    }
-                    // mota
-                    Column(
+                            .padding(5.dp),
+                        placeholder = "Tên phòng... ( P201 )",
+                        isReadOnly = false
+                    )
+
+                    CustomTextField(
+                        label = "Mô tả",
+                        value = mota,
+                        onValueChange = { mota = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Mô tả phòng*",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
-                        TextField(
-                            value = mota,
-                            onValueChange = { mota = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(53.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color(0xFFcecece),
-                                unfocusedIndicatorColor = Color(0xFFcecece),
-                                focusedPlaceholderColor = Color.Black,
-                                unfocusedPlaceholderColor = Color.Gray,
-                                unfocusedContainerColor = Color(0xFFf7f7f7),
-                                focusedContainerColor = Color.White
-                            ),
-                            placeholder = {
-                                androidx.compose.material3.Text(
-                                    text = "${roomDetail?.description}",
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF898888),
-                                    fontFamily = FontFamily(Font(R.font.cairo_regular))
-                                )
-                            },
-                            shape = RoundedCornerShape(size = 8.dp),
-                            textStyle = TextStyle(
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        )
-                    }
-                    Column {
+                            .padding(5.dp),
+                        placeholder = "Mô tả...",
+                        isReadOnly = false
+                    )
+
+                    CustomTextField(
+                        label = "Giới hạn người ở",
+                        value = currentPeopleCount,
+                        onValueChange = { currentPeopleCount = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        placeholder = "Giới hạn người ở...",
+                        isReadOnly = false
+                    )
+
+                    CustomTextField(
+                        label = "Diện tích(m2)",
+                        value = area,
+                        onValueChange = { area = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        placeholder = "Diện tích...",
+                        isReadOnly = false
+                    )
+
+                    val decimalFormat = remember { DecimalFormat("#,###,###") }
+                    val formattedRoomPrice = roomPrice.replace(",", "").toDoubleOrNull()?.let {
+                        decimalFormat.format(it)
+                    } ?: roomPrice
+                    CustomTextField(
+                        label = "Giá phòng",
+                        value = formattedRoomPrice,
+                        onValueChange = { input ->
+                            // Remove commas before storing the raw value
+                            val rawInput = input.replace(",", "")
+                            roomPrice = rawInput
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        placeholder = "Giá phòng...",
+                        isReadOnly = false
+                    )
+
+                    val formattedRoomSale = roomSale.replace(",", "").toDoubleOrNull()?.let {
+                        decimalFormat.format(it)
+                    } ?: roomSale
+                    CustomTextField(
+                        label = "Giá phòng",
+                        value = formattedRoomSale,
+                        onValueChange = { input ->
+                            // Remove commas before storing the raw value
+                            val rawInput = input.replace(",", "")
+                            roomSale = rawInput
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        placeholder = "Giá phòng...",
+                        isReadOnly = false
+                    )
+
+                    StatusDropdown(
+                        label = "Trạng thái",
+                        currentStatus = when (Status) {
+                            "0" -> "Chưa cho thuê"
+                            "1" -> "Đã cho thuê"
+                            else -> ""
+                        },
+                        onStatusChange = { newStatus -> Status = newStatus },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 5.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Column(modifier = Modifier.padding(horizontal = 5.dp)) {
                         RoomTypeLabel()
-                        RoomTypeOptions(
-                            selectedRoomTypes = selectedRoomTypes,
-                            onRoomTypeSelected = { roomType ->
-                                selectedRoomTypes =
-                                    listOf(roomType)  // Ensure only one room type is selected at a time
+                        Spacer(modifier = Modifier.height(5.dp))
+                        RoomTypeOptionschitiet(
+                            apiSelectedRoomTypes = listOfNotNull(roomDetail?.room_type),
+                            onRoomTypeSelected = { selectedRoomType ->
+                                selectedRoomTypes = listOf(selectedRoomType)
                             }
                         )
                     }
-                    androidx.compose.material3.Text(
-                        text = "Hình ảnh:",
-                        fontSize = 16.sp,
-                        color = Color.Black
-                    )
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(room.photos_room ?: emptyList()) { photoUrl ->
-                            val urianh: String = "http://10.0.2.2:3000/${photoUrl}"
-                            AsyncImage(
-                                model = urianh,
-                                contentDescription = "Room Photo",
-                                modifier = Modifier
-                                    .size(150.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(Color.LightGray),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
 
-                    // Display videos
-                    androidx.compose.material3.Text(
-                        text = "Videos:",
-                        fontSize = 16.sp,
-                        color = Color.Black
-                    )
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(room.video_room ?: emptyList()) { videoUrl ->
-                            val urivideo: String = "http://10.0.2.2:3000/${videoUrl}"
-                            com.rentify.user.app.view.staffScreens.RoomDetailScreen.ExoPlayerView(context = context, videoUri = Uri.parse(urivideo))
+                    // tiện nghi cũ
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Column(modifier = Modifier.padding(horizontal = 5.dp)) {
+                        ComfortableLabelAdd { newComfortable ->
+                            if (newComfortable !in allComfortable) {
+                                allComfortable = allComfortable + newComfortable
+                            }
                         }
-                    }
-                    Log.d("TAG", "RoomDetailScreen:${room.video_room} ")
-                    SelectMedia { images, videos ->
-                        selectedImages = images
-                        selectedVideos = videos
-                    }
-                    // giới hạn người
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Giới hạn người *",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
-                        TextField(
-                            value = numberOfRoommates,
-                            onValueChange = { numberOfRoommates = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(53.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color(0xFFcecece),
-                                unfocusedIndicatorColor = Color(0xFFcecece),
-                                focusedPlaceholderColor = Color.Black,
-                                unfocusedPlaceholderColor = Color.Gray,
-                                unfocusedContainerColor = Color(0xFFf7f7f7),
-                                focusedContainerColor = Color.White
-                            ),
-                            placeholder = {
-                                androidx.compose.material3.Text(
-                                    text = "${roomDetail?.limit_person}",
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF898888),
-                                    fontFamily = FontFamily(Font(R.font.cairo_regular))
-                                )
-                            },
-                            shape = RoundedCornerShape(size = 8.dp),
-                            textStyle = TextStyle(
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        )
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Diện tích(m2) *",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
-                        TextField(
-                            value = area,
-                            onValueChange = { area = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(53.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color(0xFFcecece),
-                                unfocusedIndicatorColor = Color(0xFFcecece),
-                                focusedPlaceholderColor = Color.Black,
-                                unfocusedPlaceholderColor = Color.Gray,
-                                unfocusedContainerColor = Color(0xFFf7f7f7),
-                                focusedContainerColor = Color.White
-                            ),
-                            placeholder = {
-                                androidx.compose.material3.Text(
-                                    text = "${roomDetail?.size}",
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF898888),
-                                    fontFamily = FontFamily(Font(R.font.cairo_regular))
-                                )
-                            },
-                            shape = RoundedCornerShape(size = 8.dp),
-                            textStyle = TextStyle(
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        )
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Giá phòng *",
-                            color = Color(0xFF7c7b7b),
-                            fontSize = 13.sp
-                        )
-                        TextField(
-                            value = roomPrice,
-                            onValueChange = { roomPrice = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(53.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color(0xFFcecece),
-                                unfocusedIndicatorColor = Color(0xFFcecece),
-                                focusedPlaceholderColor = Color.Black,
-                                unfocusedPlaceholderColor = Color.Gray,
-                                unfocusedContainerColor = Color(0xFFf7f7f7),
-                                focusedContainerColor = Color.White
-                            ),
-                            placeholder = {
-                                androidx.compose.material3.Text(
-                                    text = "${roomDetail?.price}",
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF898888)
-                                )
-                            },
-                            shape = RoundedCornerShape(size = 8.dp),
-                            textStyle = TextStyle(
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.cairo_regular))
-                            )
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(3.dp))
-                    Spacer(modifier = Modifier.height(3.dp))
-                    Column {
-                        ComfortableLabel()
-                        ComfortableOptions(
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        // Gộp hai danh sách và loại bỏ trùng lặp
+                        val combinedComfortables = (allComfortable + selectedComfortable).distinct()
+
+                        ComfortableOptionsAdd(
                             selectedComfortable = selectedComfortable,
+                            allComfortable = combinedComfortables, // Danh sách đã loại bỏ trùng lặp
                             onComfortableSelected = { comfortable ->
                                 selectedComfortable = if (selectedComfortable.contains(comfortable)) {
                                     selectedComfortable - comfortable
                                 } else {
                                     selectedComfortable + comfortable
                                 }
-                            })
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Column {
-                        ServiceLabel()
-                        ServiceOptions(
-                            selectedService = selectedService,
-                            onServiceSelected = { service ->
-                                selectedService = if (selectedService.contains(service)) {
-                                    selectedService - service
-                                } else {
-                                    selectedService + service
-                                }
-                            })
-                    }
-                    Row(
-                        modifier = Modifier
-                            .height(50.dp)
-                            .fillMaxWidth()
-                            .padding(start = 15.dp, end = 15.dp, top = 10.dp)
-                            .background(color = Color(0xFF84d8ff))
-                            .border(
-                                width = 1.dp,
-                                color = Color(0xFF84d8ff),
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                            .clickable(
-                                onClick = {
-                                    viewModel.updateRoom(
-                                        id = id,
-                                        roomName = postTitle,
-                                        roomType = selectedRoomTypes.firstOrNull() ?: "Default",
-                                        description = mota,
-                                        price = roomPrice.toDoubleOrNull() ?: 0.0,
-                                        size = area,
-                                        service = selectedService,
-                                        amenities = selectedComfortable,
-                                        limit_person = numberOfRoommates.toIntOrNull() ?: 0,
-                                        photoUris = selectedImages,
-                                        videoUris = selectedVideos
-                                    )
-                                },
-                                indication = null, // Tắt hiệu ứng gợn sóng
-                                interactionSource = remember { MutableInteractionSource() }
-                            ),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Update Room",
-                            modifier = Modifier.padding(5.dp),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold, // Đậm chữ
-                            color = Color.White, // Màu chữ trắng
-                            lineHeight = 24.sp // Khoảng cách giữa các dòng
+                            }
                         )
                     }
-                } else {
-                    // Hiển thị trạng thái loading hoặc lỗi nếu không có thông tin
-                    androidx.compose.material3.Text(text = "Loading room details...")
-                }
 
-                // Hiển thị thông báo lỗi nếu có
-                if (error != null) {
-                    Log.d("PHUC", "thất bại: $error")
-                } else {
-                    Log.d("PHUC", "thành công")
-                }
+                    // dịch vụ cũ
+                    Spacer(modifier = Modifier.height(10.dp))
 
+                    Column(modifier = Modifier.padding(horizontal = 5.dp)) {
+                        ServiceLabel()
+                        Spacer(modifier = Modifier.height(5.dp))
+                        ServiceOptions(
+                            selectedService = selectedService,
+                            onServiceSelected = { serviceId ->
+                                selectedService = if (selectedService.contains(serviceId)) {
+                                    selectedService - serviceId // Bỏ chọn dịch vụ
+                                } else {
+                                    selectedService + serviceId // Chọn dịch vụ
+                                }
+                            },
+                            buildingId = buildingId
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(90.dp))
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Transparent),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(R.drawable.loading)
+                                .decoderFactory(GifDecoder.Factory())
+                                .build(),
+                            contentDescription = "Loading GIF",
+                            modifier = Modifier
+                                .size(150.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
             }
         }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(screenHeight.dp / 9.5f)
+                .background(color = Color.White)
+        ) {
+            Box(modifier = Modifier.padding(20.dp)) {
+                Button(
+                    onClick = {
+                        viewModel.updateRoom(
+                            id = id,
+                            roomName = postTitle,
+                            roomType = if (selectedRoomTypes.isNotEmpty()) selectedRoomTypes.first() else roomDetail?.room_type ?: "Default",
+                            description = mota,
+                            price = roomPrice,
+                            size = area,
+                            service = selectedService,
+                            amenities = selectedComfortable,
+                            limit_person = currentPeopleCount,
+                            status = Status,
+                            photoUris = selectedImages,
+                            videoUris = selectedVideos,
+                            sale = roomSale
+                        )
+
+                        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                        val currentTime = LocalDateTime.now().format(formatter)
+
+                        val notificationRequest = NotificationRequest(
+                            user_id = staffId,
+                            title = "Chỉnh sửa phòng thành công",
+                            content = "Phòng ${postTitle} đã được chỉnh sửa thành công lúc: $currentTime",
+                        )
+
+                        notificationViewModel.createNotification(notificationRequest)
+                    },
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xff5dadff),
+                        disabledContainerColor = Color(0xff5dadff).copy(alpha = 0.7f)
+                    ),
+                ) {
+                    Text(
+                        text = "Chỉnh sửa Phòng",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.cairo_regular)),
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun UpdateRoomTopBar(
+    navController: NavController
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material.IconButton(onClick = { navController.popBackStack() }) {
+            androidx.compose.material.Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew, contentDescription = "Back"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        androidx.compose.material.Text(
+            text = "Chỉnh sửa phòng",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.h6
+        )
     }
 }

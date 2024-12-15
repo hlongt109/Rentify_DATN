@@ -41,10 +41,9 @@ h4 {
     padding: 15px;
     border: none;
     width: 100%;
-    vertical-align: middle; /* Đảm bảo căn giữa theo chiều dọc */
-    align-items: center; /* Căn giữa theo chiều dọc */
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    text-align: center;
+ 
+   
+ 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

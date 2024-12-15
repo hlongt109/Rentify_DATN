@@ -48,14 +48,16 @@ import com.rentify.user.app.viewModel.HomeScreenViewModel
 import java.text.DecimalFormat
 
 @Composable
-fun baidangPreview(navController: NavController) {
-    Layoutbaidang(navController = navController)
+fun baidangPreview(navController: NavController, staffId: String, name: String) {
+    Layoutbaidang(navController = navController, userId = staffId, name = name)
 }
 
 @Composable
 fun Layoutbaidang(
     navController: NavController,
-    homeScreenViewModel: HomeScreenViewModel = viewModel()
+    homeScreenViewModel: HomeScreenViewModel = viewModel(),
+    userId: String,
+    name: String
 ) {
     val listRoom by homeScreenViewModel.roomList.observeAsState(emptyList())
 
@@ -93,7 +95,7 @@ fun Layoutbaidang(
                     area = "${room.size}m2",
                     peopleCount = person,
                     address = room.building_id.address,
-                    onClick = { navController.navigate("ROOMDETAILS2/${room._id}") }
+                    onClick = { navController.navigate("ROOMDETAILS/${room._id}") }
                 )
                 Spacer(modifier = Modifier.padding(10.dp))
             }
@@ -123,7 +125,9 @@ fun Layoutbaidang(
                 text = "Tin nhắn",
                 backgroundColor = Color(0xFFffffff),
                 borderColor = Color(0xff84D8FF),
-                onClick = { /* Thực hiện hành động tin nhắn */ }
+                onClick = {
+                    navController.navigate("TINNHAN/${userId}/${name}")
+                }
             )
 
             ActionButton(

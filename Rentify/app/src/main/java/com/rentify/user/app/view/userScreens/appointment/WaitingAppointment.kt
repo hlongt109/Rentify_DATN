@@ -180,19 +180,29 @@ fun BookingCard(
                         overflow = TextOverflow.Ellipsis
                     )
                     Row {
-                        Icon(
-                            imageVector = Icons.Default.Phone,
-                            contentDescription = "Location",
-                            tint = Color(0xFF37a6ee),
-                            modifier = Modifier.size(25.dp)
-                        )
+                       IconButton(
+                           onClick = {}
+                       ) {
+                           Icon(
+                               imageVector = Icons.Default.Phone,
+                               contentDescription = "Location",
+                               tint = Color(0xFF37a6ee),
+                               modifier = Modifier.size(25.dp)
+                           )
+                       }
                         Spacer(modifier = Modifier.padding(5.dp))
-                        Icon(
-                            imageVector = Icons.Default.Message,
-                            contentDescription = "Location",
-                            tint = Color(0xFFfd9900),
-                            modifier = Modifier.size(25.dp)
-                        )
+                        IconButton(
+                            onClick = {
+                                navController.navigate("TINNHAN/${bookingResponse.manager_id._id}/${bookingResponse.manager_id.name}")
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Message,
+                                contentDescription = "Location",
+                                tint = Color(0xFFfd9900),
+                                modifier = Modifier.size(25.dp)
+                            )
+                        }
                     }
                 }
 
@@ -205,7 +215,7 @@ fun BookingCard(
                         modifier = Modifier.size(20.dp)
                     )
                     Text(
-                        text = bookingResponse.manager_id.phoneNumber,
+                        text = bookingResponse.manager_id.phoneNumber ?: "",
                         color = Color(0xffcdccd1),
                         fontSize = 12.sp,
                         maxLines = 1,

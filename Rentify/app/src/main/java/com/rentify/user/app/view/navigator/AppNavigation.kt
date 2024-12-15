@@ -219,7 +219,7 @@ fun AppNavigation(navHostController: NavHostController) {
                     LayoutMessenger(navHostController)
                 }
                 composable(ROUTER.PERSONAL.name) {
-                    LayoutPersonal(navHostController)
+//                    LayoutPersonal(navHostController)
                 }
             }
         }

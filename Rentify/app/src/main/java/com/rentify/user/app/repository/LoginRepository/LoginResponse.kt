@@ -4,9 +4,11 @@ import com.google.gson.annotations.SerializedName
 import java.lang.Error
 
 data class RegisterRequest(
-    val username: String,
+    val name: String,
     var email: String,
-    var password: String
+    var password: String,
+    val phoneNumber: String,
+    val username: String,
 )
 data class LoginResponse(
     val _id: String,
@@ -19,7 +21,8 @@ data class LoginResponse(
     val dob: String, // Ngày sinh
     val gender: String, // Giới tính
     val address: String,
-    val profilePictureUrl: String,
+    val profile_picture_url: String,
+    val username: String,
     val createdAt: String,
     val updatedAt: String
 )

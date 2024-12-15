@@ -40,6 +40,7 @@ data class TypeProduct(val type: String, val id: String)
 
 @Composable
 fun LayoutRoom(
+    landlordId: String,
     landlordName: String,
     totalRooms: Int,
     listEmptyRoom: List<EmptyRoomResponse>,

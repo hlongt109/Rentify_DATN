@@ -87,12 +87,31 @@ router.post('/add-building', async (req, res) => {
         if (!landlord_id || !manager_id || !nameBuilding || !address || !number_of_floors) {
             return res.status(400).json({ message: 'Vui lòng điền đầy đủ thông tin!' });
         }
+        // Kiểm tra các trường bắt buộc
+        if (!landlord_id || !manager_id || !nameBuilding || !address || !number_of_floors) {
+            return res.status(400).json({ message: 'Vui lòng điền đầy đủ thông tin!' });
+        }
 
         // Kiểm tra tính hợp lệ của serviceFees (nếu có)
         if (serviceFees && !Array.isArray(serviceFees)) {
             return res.status(400).json({ message: 'Dữ liệu serviceFees không hợp lệ!' });
         }
+        // Kiểm tra tính hợp lệ của serviceFees (nếu có)
+        if (serviceFees && !Array.isArray(serviceFees)) {
+            return res.status(400).json({ message: 'Dữ liệu serviceFees không hợp lệ!' });
+        }
 
+        // Validate từng phí dịch vụ
+        if (serviceFees) {
+            for (const fee of serviceFees) {
+                if (!fee.name || typeof fee.name !== 'string') {
+                    return res.status(400).json({ message: 'Tên dịch vụ không hợp lệ!' });
+                }
+                if (!fee.price || typeof fee.price !== 'number') {
+                    return res.status(400).json({ message: `Giá dịch vụ ${fee.name} không hợp lệ!` });
+                }
+            }
+        }
         // Validate từng phí dịch vụ
         if (serviceFees) {
             for (const fee of serviceFees) {
@@ -150,6 +169,10 @@ router.put('/buildings/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid building ID.' });
     }
+    // Validate ID là ObjectId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid building ID.' });
+    }
 
     if (manager_id && !mongoose.Types.ObjectId.isValid(manager_id)) {
         return res.status(400).json({ error: 'Invalid manager ID.' });
@@ -160,6 +183,9 @@ router.put('/buildings/:id', async (req, res) => {
         return res.status(400).json({
             error: 'All fields (address, description, number_of_floors, nameBuilding) are required.'
         });
+        return res.status(400).json({
+            error: 'All fields (address, description, number_of_floors, nameBuilding) are required.'
+        });
     }
 
     // Kiểm tra service (nếu có)
@@ -167,6 +193,7 @@ router.put('/buildings/:id', async (req, res) => {
         return res.status(400).json({ error: 'Service should be an array of ObjectIds.' });
     }
 
+    if (service && !service.every((s) => mongoose.Types.ObjectId.isValid(s))) {
     if (service && !service.every((s) => mongoose.Types.ObjectId.isValid(s))) {
         return res.status(400).json({ error: 'Each service ID must be a valid ObjectId.' });
     }
@@ -179,6 +206,7 @@ router.put('/buildings/:id', async (req, res) => {
     if (serviceFees) {
         for (const fee of serviceFees) {
             if (!fee.name || typeof fee.name !== 'string') {
+                return res.status(400).json({ error: 'Each service fee must have a valid name.' });
                 return res.status(400).json({ error: 'Each service fee must have a valid name.' });
             }
             if (!fee.price || typeof fee.price !== 'number') {
@@ -218,11 +246,13 @@ router.put('/buildings/:id', async (req, res) => {
             message: 'Building updated successfully!',
             building: updatedBuilding,
         });
+        
     } catch (error) {
         console.error('Error updating building:', error.message);
         return res.status(500).json({ error: 'Failed to update building. Please try again later.' });
     }
-});
+}});
+
 
 router.get('/get-room/:building_id', async (req, res) => {
     try {

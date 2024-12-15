@@ -57,7 +57,7 @@ fun LayoutInterior(
                 modifier = Modifier.size(30.dp)
             )
             Text(
-                text = "Dịch vụ",
+                text = "Nội thất",
                 modifier = Modifier.padding(start = 5.dp),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
@@ -80,7 +80,10 @@ fun LayoutInterior(
                     "Điều hoà" -> R.drawable.dieuhoa
                     "Nóng lạnh" -> R.drawable.nonglanh
                     "Máy giặt" -> R.drawable.maygiat
-                    else -> R.drawable.khac
+                    "Dịch vụ chung" -> R.drawable.home
+                    "Thang máy" -> R.drawable.elevator
+                    "Tủ lạnh" -> R.drawable.tulanh
+                    else -> R.drawable.home
                 }
                 IconWithTextButton(
                     imageResId = imageResId, // Truyền ảnh theo tiện nghi

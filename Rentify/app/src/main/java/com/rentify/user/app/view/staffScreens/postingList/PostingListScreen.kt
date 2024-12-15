@@ -14,12 +14,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rentify.user.app.MainActivity
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.AppointmentAppBar
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
-import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingListTopBar
+
+import com.rentify.user.app.viewModel.LoginViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -29,6 +36,14 @@ fun PostingListScreenPreview() {
 
 @Composable
 fun PostingListScreen(navController: NavHostController) {
+    val context = LocalContext.current
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val factory = remember(context) {
+        LoginViewModel.LoginViewModelFactory(userRepository, context.applicationContext)
+    }
+    val loginViewModel: LoginViewModel = viewModel(factory = factory)
+    var userId = loginViewModel.getUserData().userId
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -55,8 +70,11 @@ fun PostingListScreen(navController: NavHostController) {
             ) {
                 // Gọi nội dung chính của màn hình
                 Column {
-                    PostingListTopBar(navController)
-                    PostListScreen(navController,userId = "67362213c6d421d3027fb5a7")
+                    AppointmentAppBar( onBackClick = {
+                        // Logic quay lại, ví dụ: điều hướng về màn hình trước
+                        navController.navigate("HOME_STAFF")
+                    })
+                    PostListScreen(navController,userId = userId)
                 }
             }
         }

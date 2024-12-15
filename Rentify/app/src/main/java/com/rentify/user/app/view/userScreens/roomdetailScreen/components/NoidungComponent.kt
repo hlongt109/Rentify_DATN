@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,13 +61,15 @@ import java.util.Calendar
 @Composable
 fun LayoutNoidung(
     roomName: String,
-    roomType: String,          // Loại phòng
-    priceRange: Int,        // Khoảng giá
-    buildingName: String,      // Tên tòa nhà
-    fullAddress: String,        // Địa chỉ chi tiết
+    roomType: String,
+    priceRange: Int,
+    buildingName: String,
+    fullAddress: String,
+    sale: Int?, // Thêm trường sale
     onClick: () -> Unit
 ) {
     val formattedPrice = DecimalFormat("#,###,###").format(priceRange)
+    val discountedPrice = sale?.let { priceRange - it } // Tính giá sau giảm (nếu có sale)
 
     Column(
         modifier = Modifier
@@ -113,13 +116,32 @@ fun LayoutNoidung(
                 .fillMaxWidth()
                 .padding(start = 15.dp, 5.dp)
         ) {
-            Text(
-                text = "${formattedPrice}đ / tháng",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 5.dp),
-                color = Color.Red,
-                fontSize = 16.sp
-            )
+            if (discountedPrice != null && discountedPrice < priceRange) {
+                // Hiển thị giá sau giảm và giá gốc
+                Text(
+                    text = "${DecimalFormat("#,###,###").format(discountedPrice)}đ / tháng",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 5.dp),
+                    color = Color.Red,
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "(${formattedPrice}đ gốc)",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    textDecoration = TextDecoration.LineThrough
+                )
+            } else {
+                // Hiển thị giá bình thường
+                Text(
+                    text = "${formattedPrice}đ / tháng",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 5.dp),
+                    color = Color.Red,
+                    fontSize = 16.sp
+                )
+            }
         }
         Row(
             modifier = Modifier
@@ -162,7 +184,6 @@ fun LayoutNoidung(
                 onClick()
             }
         )
-
     }
 }
 
@@ -215,6 +236,7 @@ fun GradientButton(
 
 @Composable
 fun datLichXemPhong(
+    staffId: String,
     userName: String = "",
     phoneNumber: String = "",
     staffName: String = "",
@@ -257,6 +279,7 @@ fun datLichXemPhong(
         ) {
             // UserInfoCard bên trái
             UserInfoCard(
+                staffId,
                 userName = userName,
                 phoneNumber = phoneNumber,
                 role = "Khách thuê",
@@ -320,6 +343,7 @@ fun datLichXemPhong(
 
             // UserInfoCard bên phải
             UserInfoCard(
+                staffId,
                 userName = staffName,
                 phoneNumber = staffPhoneNumber,
                 role = "Nhân viên",
@@ -510,6 +534,7 @@ fun TimePickerDialog(
 
 @Composable
 fun UserInfoCard(
+    staffId: String,
     userName: String? = null, // Cho phép null
     phoneNumber: String? = null, // Cho phép null
     role: String,

@@ -11,21 +11,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 
 
@@ -41,13 +43,11 @@ data class TypeProduct(val type: String, val icon: Int)
 
 @Composable
 fun SearchComponent(navController: NavHostController) {
-    LayoutSearch(navController = rememberNavController())
+    LayoutSearch(navController = rememberNavController(), onCitySelected = {})
 }
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayoutSearch(navController: NavHostController) {
+fun LayoutSearch(navController: NavHostController,onCitySelected: (String) -> Unit) {
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
     val listTypeProduct = listOf(
         TypeProduct("Săn phòng giảm giá", R.drawable.sanphong),
@@ -58,8 +58,50 @@ fun LayoutSearch(navController: NavHostController) {
         TypeProduct("Vận chuyển", R.drawable.vanchuyen)
     )
 
+    val latitude = 0.0
+    val longitude = 0.0
+
     var statusType by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
+    var isBottomSheetVisible by remember { mutableStateOf(false) }
+    var selectedCity by remember { mutableStateOf("Hà Nội") }
+
+    if (isBottomSheetVisible) {
+        ModalBottomSheet(
+            onDismissRequest = { isBottomSheetVisible = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            dragHandle = {}
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Chọn Thành Phố",
+                    style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Divider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
+                listOf("Hà Nội", "Hồ Chí Minh", "Đà Nẵng").forEach { city ->
+                    Text(
+                        text = city,
+                        style = TextStyle(fontSize = 16.sp, color = Color.Black),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                selectedCity = city
+                                onCitySelected(city)
+                                isBottomSheetVisible = false
+                            }
+                            .padding(vertical = 12.dp, horizontal = 16.dp)
+                    )
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -85,6 +127,9 @@ fun LayoutSearch(navController: NavHostController) {
                     .background(Color(0xFFD2F1FF), RoundedCornerShape(16.dp))
                     .padding(horizontal = 25.dp)
                     .height(50.dp)
+                    .clickable {
+                        isBottomSheetVisible = true // Hiển thị Bottom Sheet
+                    }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.iconhomeaddress), // Icon vị trí
@@ -92,11 +137,10 @@ fun LayoutSearch(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Hà Nội", fontSize = 14.sp, color = Color(0xFF1E88E5)
+                    text = selectedCity, fontSize = 14.sp, color = Color(0xFF1E88E5)
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-
 
             // TextField tìm kiếm
             BasicTextField(value = searchText.text,
@@ -127,7 +171,6 @@ fun LayoutSearch(navController: NavHostController) {
                     })
         }
 
-
         // Thanh cuộn ngang với các loại sản phẩm
         Row(
             modifier = Modifier
@@ -143,8 +186,14 @@ fun LayoutSearch(navController: NavHostController) {
                         .padding(top = 5.dp)
                         .clickable {
                             statusType = type.type
+                            if (type.type == "Săn phòng giảm giá") {
+                                navController.navigate("SaleRoomScreen") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+
                             if (type.type == "Tìm người ở ghép") {
-                                navController.navigate("TogeTher") // Điều hướng đến TogetherScreen
+                                navController.navigate("Search_roommate") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }
@@ -157,6 +206,12 @@ fun LayoutSearch(navController: NavHostController) {
 
                             if (type.type == "Tin đăng tìm phòng") {
                                 navController.navigate("Search_room") // Điều hướng đến TogetherScreen
+                            } else {
+                                statusType = type.type
+                            }
+
+                            if (type.type == "Tìm phòng xung quanh") {
+                                navController.navigate(MainActivity.ROUTER.ROOMMAP.name+"/$latitude,$longitude") // Điều hướng đến TogetherScreen
                             } else {
                                 statusType = type.type
                             }

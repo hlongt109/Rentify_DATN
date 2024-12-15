@@ -3,7 +3,10 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Building = require('../../models/Building');
 const Room = require('../../models/Room');
+const Service = require('../../models/Service');
 const upload = require('../../config/common/uploadImageRoom')
+
+const Invoice = require('../../models/Invoice')
 // api lấy danh sách tòa 😊
 router.get('/buildings-by-manager/:manager_id', async (req, res) => {
   const { manager_id } = req.params;
@@ -53,61 +56,10 @@ router.get('/RoomsForBuilding/:building_id', async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
-// Lấy danh sách phòng
-router.get('/list', async (req, res) => {
-  try {
-    // Lấy building_id từ tham số URL
-    const { building_id } = req.params;
-
-    // Tìm tất cả phòng trong tòa nhà đó
-    const rooms = await Room.find({ building_id }).select('room_name room_type price status');
-
-    // Kiểm tra nếu không có phòng nào
-    if (!rooms || rooms.length === 0) {
-      // Nếu không có phòng, trả về danh sách rỗng
-      return res.json([]);
-    }
-
-    // Trả về kết quả là danh sách các phòng với các trường được chọn
-    return res.status(200).json(rooms);
-  } catch (error) {
-    // Nếu có lỗi xảy ra
-    return res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
-
-// _vanphuc : Thêm phòng mới với video và hình ảnh: http://localhost:3000/api/staff/rooms/AddRoom
-router.post('/AddRoom', upload.fields([{ name: 'video_room' }, { name: 'photos_room' }]), async (req, res) => {
-  const room = new Room({
-    building_id: req.body.building_id,
-    room_name: req.body.room_name,
-    room_type: req.body.room_type,
-    description: req.body.description,
-    price: req.body.price,
-    size: req.body.size,
-    status: req.body.status,
-    availability_status: req.body.availability_status,
-    video_room: req.files['video_room'] ? req.files['video_room'][0].path.replace('public/', '') : '', // Lưu đường dẫn video
-    photos_room: req.files['photos_room'] ? req.files['photos_room'].map(file => file.path.replace('public/', '')) : [], // Lưu mảng đường dẫn hình ảnh
-    service_ids: req.body.service_ids || [],
-    amenities: req.body.amenities || [],
-    service_fees: req.body.service_fees || [],
-    limit_person: req.body.limit_person,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  });
-
-  try {
-    const savedRoom = await room.save();
-    res.status(201).json(savedRoom); // Trả về thông tin phòng đã được thêm
-  } catch (error) {
-    res.status(400).json({ message: error.message }); // Xử lý lỗi
-  }
-});
-
 // Hiển thị chi tiết phòng 🤷‍♂️
 const normalizePaths = (room) => {
   const removeUnnecessaryPath = (path) => path.replace(/^\/landlord\//, '');
+
   room.photos_room = room.photos_room.map(photo => removeUnnecessaryPath(photo.replace(/\\/g, '/')));
   room.video_room = room.video_room.map(video => removeUnnecessaryPath(video.replace(/\\/g, '/')));
   return room;
@@ -118,7 +70,7 @@ router.get('/RoomDetail/:id', async (req, res) => {
     return res.status(400).json({ error: 'Invalid room ID.' });
   }
   try {
-    const room = await Room.findById(id).lean();
+    const room = await Room.findById(id).lean().populate("service", "name");
     if (!room) {
       return res.status(404).json({ error: 'Room not found.' });
     }
@@ -149,6 +101,7 @@ router.post(
         amenities,
         limit_person,
         status,
+        sale
       } = req.body;
 
       // Kiểm tra dữ liệu bắt buộc
@@ -197,6 +150,7 @@ router.post(
         amenities: parsedAmenities,
         limit_person,
         status,
+        sale,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
@@ -253,6 +207,7 @@ router.put(
         amenities,
         limit_person,
         status,
+        sale,
       } = req.body;
 
       // Kiểm tra nếu `id` không hợp lệ
@@ -299,6 +254,7 @@ router.put(
       room.amenities = parsedAmenities;
       room.limit_person = limit_person || room.limit_person;
       room.status = status !== undefined ? status : room.status;
+      room.sale = sale || room.sale;
       room.updated_at = new Date().toISOString();
 
       // Lưu thông tin đã cập nhật
@@ -317,54 +273,150 @@ router.put(
   }
 );
 
+// API lấy danh sách dịch vụ của một tòa nhà cụ thể
+router.get('/building/:id/services', async (req, res) => {
+  const { id } = req.params;
 
-// router.get("/get-room-buildingId/:buildingId", async (req, res) => {
-//     try {
-//         const buildingId = req.params.buildingId;
-//         const rooms = await Room.find({ building_id: buildingId })
-//             .populate('service')  // thêm populate để lấy thông tin chi tiết của service
-//             .populate('building_id', "serviceFees"); // có thể thêm populate building nếu cần
-//         res.json({
-//             status: 200,
-//             message: "Lấy danh sách phòng thành công",
-//             data: rooms
-//         });
-//     } catch (error) {
-//         res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
-//     }
-// });
+  // Kiểm tra ID là ObjectId hợp lệ
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid building ID.' });
+  }
+
+  try {
+    // Tìm tòa nhà theo ID và chỉ lấy _id và name của dịch vụ
+    const building = await Building.findById(id)
+      .populate('service', 'name'); // Chỉ lấy name của service
+
+    // Nếu không tìm thấy tòa nhà
+    if (!building) {
+      return res.status(404).json({ error: 'Building not found.' });
+    }
+
+    // Trả về danh sách dịch vụ của tòa nhà
+    res.status(200).json(building.service);
+  } catch (error) {
+    console.error('Error fetching building services:', error.message);
+    res.status(500).json({ error: 'Failed to fetch building services. Please try again later.' });
+  }
+});
+
+router.get('/Listservices', async (req, res) => {
+  try {
+    // Find all services
+    const services = await Service.find().select('_id landlord_id name description price photos created_at updated_at');
+
+    // Modify the response structure to match the desired format
+    const formattedServices = services.map(service => ({
+      _id: service._id,
+      landlord_id: service.landlord_id, // Only return the ObjectId without populated data
+      name: service.name,
+      description: service.description,
+      price: service.price,
+      photos: service.photos,
+      created_at: service.created_at,
+      updated_at: service.updated_at,
+      __v: service.__v
+    }));
+
+    res.status(200).json(formattedServices); // Return the formatted list
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Failed to fetch the list of services',
+      error: error.message
+    });
+  }
+});
+
+router.get('/RoomsForBuilding/:building_id', async (req, res) => {
+  try {
+    // Lấy building_id từ tham số URL
+    const { building_id } = req.params;
+
+    // Tìm tất cả phòng trong tòa nhà đó
+    const rooms = await Room.find({ building_id }).select('room_name room_type price status');
+
+    // Kiểm tra nếu không có phòng nào
+    if (!rooms || rooms.length === 0) {
+      // Nếu không có phòng, trả về danh sách rỗng
+      return res.json([]);
+    }
+
+    // Trả về kết quả là danh sách các phòng với các trường được chọn
+    return res.status(200).json(rooms);
+  } catch (error) {
+    // Nếu có lỗi xảy ra
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 router.get("/get-room-buildingId/:buildingId", async (req, res) => {
   try {
     const buildingId = req.params.buildingId;
-    const currentMonth = new Date().getMonth() + 1; // Lấy tháng hiện tại
-    const currentYear = new Date().getFullYear(); // Lấy năm hiện tại
-
-    // Tìm các phòng thuộc building và chưa có hóa đơn trong tháng hiện tại
-    const rooms = await Room.find({
-      building_id: buildingId
-    }).populate('service').populate('building_id', "serviceFees").lean();
-
-    // Lọc các phòng chưa có hóa đơn
-    const roomsWithoutInvoice = await Promise.all(rooms.map(async (room) => {
-      const existingInvoice = await Invoice.findOne({
-        room_id: room._id,
-        month: currentMonth,
-        year: currentYear
-      });
-
-      return existingInvoice ? null : room;
-    }));
-
-    const filteredRooms = roomsWithoutInvoice.filter(room => room !== null);
-
+    const rooms = await Room.find({ building_id: buildingId })
+      .populate('service')  // thêm populate để lấy thông tin chi tiết của service
+      .populate('building_id', "serviceFees"); // có thể thêm populate building nếu cần
     res.json({
       status: 200,
-      message: "Lấy danh sách phòng chưa có hóa đơn thành công",
-      data: filteredRooms
+      message: "Lấy danh sách phòng thành công",
+      data: rooms
     });
   } catch (error) {
     res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
   }
 });
+////
+// API: Tổng số phòng theo manager_id
+router.get('/RoomsSummaryByManager/:manager_id', async (req, res) => {
+  try {
+    const { manager_id } = req.params;
 
+    // Bước 1: Lấy danh sách tòa nhà do manager quản lý
+    const buildings = await Building.find({ manager_id }).select('_id');
+    const buildingIds = buildings.map(building => building._id);
+
+    // Kiểm tra nếu không có tòa nhà nào
+    if (buildingIds.length === 0) {
+      return res.json({
+        totalRooms: 0,
+        available: 0,
+        rented: 0
+      });
+    }
+
+    // Bước 2: Lọc và tính toán tổng số phòng cho các tòa nhà này
+    const summary = await Room.aggregate([
+      {
+        $match: { building_id: { $in: buildingIds } } // Chỉ các phòng thuộc các building_id của manager
+      },
+      {
+        $group: {
+          _id: null, // Không nhóm theo building_id
+          totalRooms: { $sum: 1 }, // Tổng số phòng
+          available: { $sum: { $cond: [{ $eq: ["$status", 0] }, 1, 0] } }, // Số phòng status = 0
+          rented: { $sum: { $cond: [{ $eq: ["$status", 1] }, 1, 0] } } // Số phòng status = 1
+        }
+      },
+      {
+        $project: {
+          _id: 0, // Loại bỏ _id khỏi kết quả
+          totalRooms: 1,
+          available: 1,
+          rented: 1
+        }
+      }
+    ]);
+
+    // Trả về kết quả
+    return res.status(200).json(summary[0] || {
+      totalRooms: 0,
+      available: 0,
+      rented: 0
+    });
+  } catch (error) {
+    // Nếu có lỗi xảy ra
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+///
 module.exports = router

@@ -18,6 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.R
 
 
@@ -26,10 +28,9 @@ import com.rentify.user.app.R
 fun KhamPhaComponent() {
     LayotKhamPha()
 }
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun DoitacComponent() {
-    LayoutDoitac()
+fun DoitacComponent(navController: NavController) {
+    LayoutDoitac(navController = navController)
 }
 
 @Composable
@@ -49,7 +50,7 @@ fun LayotKhamPha() {
     }
 }
 @Composable
-fun LayoutDoitac() {
+fun LayoutDoitac( navController: NavController ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,7 +81,9 @@ fun LayoutDoitac() {
             fontSize = 14.sp,
             color = Color(0xFF6eafff), // Màu tím hoặc chỉnh theo chủ đề ứng dụng
             modifier = Modifier
-                .clickable{} // Hành động khi nhấn
+                .clickable{
+                    navController.navigate("RENTAL_POST")
+                } // Hành động khi nhấn
                 .padding(4.dp),
             fontWeight = FontWeight.Medium
         )
