@@ -1,8 +1,10 @@
 package com.rentify.user.app.view.staffScreens.addRoomScreen
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -63,22 +65,34 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.utils.Component.getLoginViewModel
+import com.rentify.user.app.network.RetrofitService
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
-import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptions
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabelAdd
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptionsAdd
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMedia
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
+import com.rentify.user.app.viewModel.NotificationViewModel
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
+import com.stevdzasan.messagebar.rememberMessageBarState
 import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRoomScreen(
     navController: NavHostController,
-    buildingId: String?
+    buildingId: String?,
+    notificationViewModel: NotificationViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val viewModel: RoomViewModel = viewModel(
@@ -97,11 +111,30 @@ fun AddRoomScreen(
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
+    var roomSale by remember { mutableStateOf("") }
     var Status by remember { mutableStateOf("") }
 
     var errorMessage by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>()) }
     var selectedVideos by remember { mutableStateOf(listOf<Uri>()) }
+
+    val loginViewModel = getLoginViewModel(context)
+    val userData = loginViewModel.getUserData()
+    val staffId = userData.userId
+
+    val state = rememberMessageBarState()
+
+    var allComfortable by remember {
+        mutableStateOf(
+            listOf(
+                "Vệ sinh khép kín",
+                "Gác xép",
+                "Ra vào vân tay",
+                "Nuôi pet",
+                "Không chung chủ"
+            )
+        )
+    }
 
     // Observe states
     val isLoading by viewModel.isLoading.observeAsState(false)
@@ -111,13 +144,14 @@ fun AddRoomScreen(
         addRoomResponse?.let { response ->
             if (response.isSuccessful) {
                 Toast.makeText(context, "Thêm phòng thành công", Toast.LENGTH_SHORT).show()
-                // Navigate back
+                state.addSuccess("Thêm phòng thành công")
                 navController.popBackStack()
             }
         }
     }
     LaunchedEffect(error) {
         error?.let {
+            state.addError(exception = Exception("Thêm phòng không thành công"))
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
@@ -216,6 +250,24 @@ fun AddRoomScreen(
                     isReadOnly = false
                 )
 
+                val formattedRoomSale = roomSale.replace(",", "").toDoubleOrNull()?.let {
+                    decimalFormat.format(it)
+                } ?: roomSale
+                CustomTextField(
+                    label = "Giảm giá",
+                    value = formattedRoomSale,
+                    onValueChange = { input ->
+                        // Remove commas before storing the raw value
+                        val rawInput = input.replace(",", "")
+                        roomSale = rawInput
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    placeholder = "Giảm giá...",
+                    isReadOnly = false
+                )
+
                 StatusDropdown(
                     label = "Trạng thái",
                     currentStatus = when (Status) {
@@ -246,17 +298,23 @@ fun AddRoomScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Column(modifier = Modifier.padding(horizontal = 5.dp)) {
-                    ComfortableLabel()
+                    ComfortableLabelAdd { newComfortable ->
+                        if (newComfortable !in allComfortable) {
+                            allComfortable = allComfortable + newComfortable
+                        }
+                    }
                     Spacer(modifier = Modifier.height(5.dp))
-                    ComfortableOptions(
+                    ComfortableOptionsAdd(
                         selectedComfortable = selectedComfortable,
+                        allComfortable = allComfortable,
                         onComfortableSelected = { comfortable ->
                             selectedComfortable = if (selectedComfortable.contains(comfortable)) {
                                 selectedComfortable - comfortable
                             } else {
                                 selectedComfortable + comfortable
                             }
-                        })
+                        }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -326,6 +384,12 @@ fun AddRoomScreen(
                                 return@Button
                             }
 
+                            val roomSaleValue = roomSale.takeIf { it.isNotBlank() }?.toDoubleOrNull()
+                            if (roomSale.isNotBlank() && roomSaleValue == null) {
+                                errorMessage = "Giảm giá phải là số."
+                                return@Button
+                            }
+
                             val roomStatusValue = Status.toIntOrNull()
                             if (roomStatusValue != 0 && roomStatusValue != 1) {
                                 errorMessage = "Trạng thái chỉ được nhập 0 hoặc 1."
@@ -346,9 +410,22 @@ fun AddRoomScreen(
                                     photoUris = selectedImages,
                                     service = selectedService,
                                     amenities = selectedComfortable,
-                                    limit_person = limitPerson
+                                    limit_person = limitPerson,
+                                    sale = roomSaleValue ?: 0.0
                                 )
                             }
+
+                            val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                            val currentTime = LocalDateTime.now().format(formatter)
+
+                            val notificationRequest = NotificationRequest(
+                                user_id = staffId,
+                                title = "Thêm phòng thành công",
+                                content = "Phòng ${postTitle} đã được thêm thành công lúc: $currentTime",
+                            )
+
+                            notificationViewModel.createNotification(notificationRequest)
+
                         }
                     },
                     modifier = Modifier

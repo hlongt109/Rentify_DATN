@@ -14,8 +14,10 @@ import com.rentify.user.app.model.AddRoomResponse
 import com.rentify.user.app.model.BuildingWithRooms
 import com.rentify.user.app.model.Room
 import com.rentify.user.app.model.ServiceOfBuilding
+import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.ApiResponse
+import com.rentify.user.app.view.staffScreens.homeScreen.RoomSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,6 +57,12 @@ class RoomViewModel(private val context: Context) : ViewModel() {
 
     private val _services = MutableLiveData<List<ServiceOfBuilding>>()
     val services: LiveData<List<ServiceOfBuilding>> get() = _services
+    private val _managerId = MutableLiveData<String>()
+    val managerId: LiveData<String> get() = _managerId
+
+    fun setManagerId(id: String) {
+        _managerId.value = id
+    }
 
     fun fetchServiceOfBuilding(id: String){
         viewModelScope.launch {
@@ -165,6 +173,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         amenities: Any,
         limit_person: Int,
         status: String,
+        sale: Double,
         photoUris: List<Uri>,
         videoUris: List<Uri>
     ) {
@@ -201,6 +210,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                 val sizeBody = createPartFromString(size)
                 val limitPersonBody = createPartFromString(limit_person.toString())
                 val statusBody = createPartFromString(status.toString())
+                val saleBody = createPartFromString(sale.toString())
                 val serviceBody = createPartFromString(parsedService)
                 val amenitiesBody = createPartFromString(parsedAmenities)
                 // Xử lý các URI hình ảnh và video thành MultipartBody.Part
@@ -225,6 +235,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     amenities = amenitiesBody,
                     limit_person = limitPersonBody,
                     status = statusBody,
+                    sale = saleBody,
                     photos_room = photoParts,
                     video_room = videoParts
                 )
@@ -232,6 +243,8 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         _addRoomResponse.value = response
+                        managerId.value?.let { fetchRoomSummary(it)
+                            Log.d("managerId", "addRoom: ${it}") }
                     } else {
                         _error.value = "Lỗi: ${response.message()}"
                     }
@@ -306,6 +319,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
         amenities: Any,
         limit_person: String,
         status: String,
+        sale: String,
         photoUris: List<Uri>,
         videoUris: List<Uri>
     ) {
@@ -340,6 +354,7 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     "room_type" to createPartFromString(roomType),
                     "description" to createPartFromString(description),
                     "price" to createPartFromString(price.toString()),
+                    "sale" to createPartFromString(sale.toString()),
                     "size" to createPartFromString(size),
                     "limit_person" to createPartFromString(limit_person.toString()),
                     "status" to createPartFromString(status.toString()),
@@ -390,7 +405,9 @@ class RoomViewModel(private val context: Context) : ViewModel() {
                     if (response.isSuccessful) {
                         _updateRoomResponse.value = response.body()
                         _successMessage.postValue("Cập nhật phòng thành công.")
-                        fetchRoomDetailById(id)
+                        managerId.value?.let { fetchRoomSummary(it)
+                            Log.d("managerId", "addRoom: ${managerId}") }
+
                     } else {
                         _error.postValue("Lỗi cập nhật: ${response.message()}")
                     }
@@ -405,6 +422,23 @@ class RoomViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
+    private val _roomSummary = MutableLiveData<RoomSummary?>()
+    val roomSummary: LiveData<RoomSummary?> = _roomSummary
+
+    // Hàm để lấy tổng số phòng
+    fun fetchRoomSummary(managerId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getRoomsSummaryByManager(managerId)
+                _roomSummary.postValue(response)
+
+                Log.e(" _roomSummary.postValue(response)", "Error: ${ _roomSummary.postValue(response)}")
+            } catch (e: Exception) {
+                _error.postValue(e.message)
+            }
+        }
+    }
+
 }
 
 fun processUriImage(context: Context, uri: Uri, folderName: String, fileName: String): MultipartBody.Part {
@@ -430,5 +464,8 @@ fun processUriImage(context: Context, uri: Uri, folderName: String, fileName: St
 
     val requestBody = tempFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
     return MultipartBody.Part.createFormData(folderName, tempFile.name, requestBody)
+    /////
+
 }
+
 

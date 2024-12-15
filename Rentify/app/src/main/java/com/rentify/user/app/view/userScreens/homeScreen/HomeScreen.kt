@@ -23,6 +23,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,8 +47,8 @@ import com.rentify.user.app.view.userScreens.homeScreen.components.DoitacCompone
 import com.rentify.user.app.view.userScreens.homeScreen.components.KhamPhaComponent
 import com.rentify.user.app.view.userScreens.homeScreen.components.LayoutItemHome
 import com.rentify.user.app.view.userScreens.homeScreen.components.LayoutSearch
+import com.rentify.user.app.view.userScreens.homeScreen.components.LayoutVideo
 import com.rentify.user.app.view.userScreens.homeScreen.components.SearchComponent
-import com.rentify.user.app.view.userScreens.homeScreen.components.VideoComponent
 import com.rentify.user.app.viewModel.HomeScreenViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -61,6 +64,7 @@ fun LayoutHome(
 ) {
     val listRoom by homeScreenViewModel.roomList.observeAsState(emptyList())
     val isLoading by homeScreenViewModel.isLoading.observeAsState(true)
+    var selectedCity by remember { mutableStateOf("Hà Nội") }
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -78,7 +82,9 @@ fun LayoutHome(
                 Box(
                     modifier = Modifier.offset(y = 143.dp)
                 ) {
-                    LayoutSearch(navController)
+                    LayoutSearch(navController) { city ->
+                        selectedCity = city
+                    }
                 }
             }
         }
@@ -105,7 +111,11 @@ fun LayoutHome(
                 }
             } else {
                 Spacer(modifier = Modifier.padding(2.dp))
-                VideoComponent(navController)
+                LayoutVideo(
+                    districtViewModel = viewModel(),
+                    navController = navController,
+                    city = selectedCity
+                )
             }
         }
         item {

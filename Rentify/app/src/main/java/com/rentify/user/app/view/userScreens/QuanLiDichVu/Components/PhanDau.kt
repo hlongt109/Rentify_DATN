@@ -30,7 +30,7 @@ fun PhanDauQuanLiDichVu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         androidx.compose.material.IconButton(
-            onClick = { navController.navigate("HOME") }
+            onClick = { navController.popBackStack() }
         ) {
             androidx.compose.material.Icon(
                 imageVector = Icons.Filled.ArrowBackIosNew,

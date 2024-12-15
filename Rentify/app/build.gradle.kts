@@ -190,6 +190,8 @@ dependencies {
     implementation("com.github.furkanaskin:ClickablePieChart:1.0.9")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
+    implementation("com.github.stevdza-san:MessageBarCompose:1.0.8")
+
 }
 // Allow references to generated code
 kapt {

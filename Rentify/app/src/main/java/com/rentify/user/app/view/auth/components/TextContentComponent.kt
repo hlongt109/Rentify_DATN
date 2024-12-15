@@ -19,7 +19,7 @@ fun TextLoginContent(){
             .padding()
     ) {
         Text(
-            text = "Chào mừng đến với Rentifi !",
+            text = "Chào mừng đến với Rentify !",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )

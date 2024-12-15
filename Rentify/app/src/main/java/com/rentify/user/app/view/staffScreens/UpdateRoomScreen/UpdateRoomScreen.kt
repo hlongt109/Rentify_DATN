@@ -1,8 +1,10 @@
 package com.rentify.user.app.view.staffScreens.UpdateRoomScreen
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -64,6 +66,8 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.ComfortableOptionsFromApi
 import com.rentify.user.app.view.staffScreens.RoomDetailScreen.components.RoomTypeOptionschitiet
@@ -75,29 +79,36 @@ import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.RoomTy
 import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceLabelUpdate
 import com.rentify.user.app.view.staffScreens.UpdateRoomScreen.components.ServiceOptionsUpdate
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabel
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableLabelAdd
+import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ComfortableOptionsAdd
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.RoomTypeLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.SelectMedia
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceLabel
 import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.ServiceOptions
 import com.rentify.user.app.view.staffScreens.addRoomScreen.CustomTextField
 import com.rentify.user.app.view.staffScreens.addRoomScreen.StatusDropdown
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun UpdateRoomScreenPreview(){
-    UpdateRoomScreen(
-        navController= rememberNavController(),
-        id = "",
-        buildingId = ""
-    )
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun UpdateRoomScreenPreview(){
+//    UpdateRoomScreen(
+//        navController= rememberNavController(),
+//        id = "",
+//        buildingId = ""
+//    )
+//}
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UpdateRoomScreen(
     navController: NavHostController,
     id: String,
     buildingId:String,
+    notificationViewModel: NotificationViewModel = viewModel()
 ){
     val context = LocalContext.current
     val viewModel: RoomViewModel = viewModel(
@@ -116,10 +127,27 @@ fun UpdateRoomScreen(
     var currentPeopleCount by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var roomPrice by remember { mutableStateOf("") }
+    var roomSale by remember { mutableStateOf("") }
     var Status by remember { mutableStateOf("") }
     var selectedImages by remember { mutableStateOf(listOf<Uri>())}
     var selectedVideos by remember {mutableStateOf(listOf<Uri>())}
     var selectedRoomTypes by remember { mutableStateOf(listOf<String>()) }
+
+    var allComfortable by remember {
+        mutableStateOf(
+            listOf(
+                "Vệ sinh khép kín",
+                "Gác xép",
+                "Ra vào vân tay",
+                "Nuôi pet",
+                "Không chung chủ"
+            )
+        )
+    }
+
+    val loginViewModel = getLoginViewModel(context)
+    val userData = loginViewModel.getUserData()
+    val staffId = userData.userId
 
     val successMessage by viewModel.successMessage.observeAsState()
     LaunchedEffect(successMessage) {
@@ -143,6 +171,7 @@ fun UpdateRoomScreen(
             currentPeopleCount = room.limit_person.toString() ?: ""
             area = room.size.toString() ?: ""
             roomPrice = room.price.toString() ?: ""
+            roomSale = room.sale.toString() ?: ""
             Status = room.status.toString() ?: ""
             selectedComfortable = roomDetail?.amenities ?: emptyList()
             selectedService = room.service.map { it._id } ?: emptyList()
@@ -254,6 +283,24 @@ fun UpdateRoomScreen(
                         isReadOnly = false
                     )
 
+                    val formattedRoomSale = roomSale.replace(",", "").toDoubleOrNull()?.let {
+                        decimalFormat.format(it)
+                    } ?: roomSale
+                    CustomTextField(
+                        label = "Giá phòng",
+                        value = formattedRoomSale,
+                        onValueChange = { input ->
+                            // Remove commas before storing the raw value
+                            val rawInput = input.replace(",", "")
+                            roomSale = rawInput
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        placeholder = "Giá phòng...",
+                        isReadOnly = false
+                    )
+
                     StatusDropdown(
                         label = "Trạng thái",
                         currentStatus = when (Status) {
@@ -282,16 +329,27 @@ fun UpdateRoomScreen(
                     // tiện nghi cũ
                     Spacer(modifier = Modifier.height(10.dp))
                     Column(modifier = Modifier.padding(horizontal = 5.dp)) {
-                        ComfortableLabel()
+                        ComfortableLabelAdd { newComfortable ->
+                            if (newComfortable !in allComfortable) {
+                                allComfortable = allComfortable + newComfortable
+                            }
+                        }
                         Spacer(modifier = Modifier.height(5.dp))
-                        ComfortableOptionsFromApi(
-                            selectedComfortables = selectedComfortable,
-                            onComfortableChange = { updatedAmenities ->
-                                selectedComfortable = updatedAmenities
 
+                        // Gộp hai danh sách và loại bỏ trùng lặp
+                        val combinedComfortables = (allComfortable + selectedComfortable).distinct()
+
+                        ComfortableOptionsAdd(
+                            selectedComfortable = selectedComfortable,
+                            allComfortable = combinedComfortables, // Danh sách đã loại bỏ trùng lặp
+                            onComfortableSelected = { comfortable ->
+                                selectedComfortable = if (selectedComfortable.contains(comfortable)) {
+                                    selectedComfortable - comfortable
+                                } else {
+                                    selectedComfortable + comfortable
+                                }
                             }
                         )
-                        println("Selected Comfortables: $selectedComfortable")
                     }
 
                     // dịch vụ cũ
@@ -358,8 +416,20 @@ fun UpdateRoomScreen(
                             limit_person = currentPeopleCount,
                             status = Status,
                             photoUris = selectedImages,
-                            videoUris = selectedVideos
+                            videoUris = selectedVideos,
+                            sale = roomSale
                         )
+
+                        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                        val currentTime = LocalDateTime.now().format(formatter)
+
+                        val notificationRequest = NotificationRequest(
+                            user_id = staffId,
+                            title = "Chỉnh sửa phòng thành công",
+                            content = "Phòng ${postTitle} đã được chỉnh sửa thành công lúc: $currentTime",
+                        )
+
+                        notificationViewModel.createNotification(notificationRequest)
                     },
                     modifier = Modifier
                         .height(50.dp)

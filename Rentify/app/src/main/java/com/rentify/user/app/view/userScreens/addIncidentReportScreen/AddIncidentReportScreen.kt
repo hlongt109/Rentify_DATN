@@ -95,6 +95,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 import com.rentify.user.app.MainActivity
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.SupportRepository.ContractRoom
 import com.rentify.user.app.repository.SupportRepository.ContractRoomData
@@ -588,10 +589,13 @@ fun AddIncidentReportScreen(
                                     "Báo cáo đã được gửi thành công!",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                notiViewmodel.createNotification(
-                                    userId =userId ,
+                                val notificationRequest = NotificationRequest(
+                                    user_id = userId ,
                                     title = "Báo cáo",
                                     content = "Bạn đã gửi thành công một báo cáo vào lúc: $formatTimeNoti"
+                                )
+                                notiViewmodel.createNotification(
+                                    notificationRequest
                                 )
                                 navController.navigate(MainActivity.ROUTER.INCIDENTREPORT.name)
                             }

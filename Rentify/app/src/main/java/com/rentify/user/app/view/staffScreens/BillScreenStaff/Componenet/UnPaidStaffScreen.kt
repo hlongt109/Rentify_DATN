@@ -1,6 +1,8 @@
 package com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +39,7 @@ import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.viewModel.StaffViewModel.InvoiceStaffViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.InvoiceUiState
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UnPaidStaffScreen(
     navController: NavController,

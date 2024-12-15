@@ -20,6 +20,9 @@ import com.rentify.user.app.model.Model.BookingRequest
 import com.rentify.user.app.model.Model.BookingResponse
 import com.rentify.user.app.model.Model.EmptyRoomResponse
 import com.rentify.user.app.model.Model.InvoiceOfUpdate
+import com.rentify.user.app.model.Model.NotificationRequest
+import com.rentify.user.app.model.Model.Notification
+import com.rentify.user.app.model.Model.NotificationResponse
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomPageSale
 import com.rentify.user.app.model.Model.RoomResponse
@@ -52,11 +55,10 @@ import com.rentify.user.app.repository.LoginRepository.ApiResponse
 import com.rentify.user.app.repository.LoginRepository.LoginRequest
 import retrofit2.Response
 import com.rentify.user.app.repository.LoginRepository.RegisterRequest
-import com.rentify.user.app.repository.NotificationRepository.NotificationRequest
-import com.rentify.user.app.repository.NotificationRepository.NotificationResponse
 import com.rentify.user.app.repository.SupportRepository.APISupportResponse
 import com.rentify.user.app.repository.SupportRepository.AddSupport
 import com.rentify.user.app.repository.SupportRepository.ContractRoomResponse
+import com.rentify.user.app.view.staffScreens.homeScreen.RoomSummary
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -180,6 +182,7 @@ interface APIService {
         @Part("room_type") room_type: RequestBody,
         @Part("description") description: RequestBody,
         @Part("price") price: RequestBody,
+        @Part("sale") sale: RequestBody,
         @Part("size") size: RequestBody,
         @Part("service") service: RequestBody,  // Gửi dưới dạng JSON string
         @Part("amenities") amenities: RequestBody, // Gửi dưới dạng JSON string
@@ -188,7 +191,11 @@ interface APIService {
         @Part photos_room: List<MultipartBody.Part>,
         @Part video_room: List<MultipartBody.Part>
     ): Response<AddRoomResponse>
-
+    // Lấy tổng số phòng theo manager_id
+    @GET("staff/rooms/RoomsSummaryByManager/{manager_id}")
+    suspend fun getRoomsSummaryByManager(
+        @Path("manager_id") managerId: String
+    ): RoomSummary
     @Multipart
     @POST("upload-file")
     suspend fun uploadFile(
@@ -592,7 +599,27 @@ interface APIService {
     //list phong trong map
     @GET("room/get-map-list-room")
     suspend fun getListRoomMap():Response<com.rentify.user.app.repository.ListRoomMap.RoomResponse>
-    //notification
+
     @POST("notification/create-notification")
-    suspend fun createNotification(@Body notification: NotificationRequest): Response<NotificationResponse>
+    suspend fun createNotification(@Body request: NotificationRequest): Response<NotificationRequest>
+
+    // VUVANPHUC : thông báo
+    @GET("notification/get-by-user/{userId}")
+    suspend fun GetNotification(
+        @Path("userId") userId: String
+    ): Response<com.rentify.user.app.model.Notification.Notification>
+
+    // API lấy danh sách thông báo theo userId
+    @GET("staff/notifications/get-by-user/{userId}")
+    suspend fun getNotificationsByUser(
+        @Path("userId") userId: String
+    ): Response<NotificationResponse> // Trả về một object, không phải danh sách
+
+    @PUT("staff/notifications/mark-all-read/{userId}")
+    suspend fun markAllNotificationsAsRead(
+        @Path("userId") userId: String
+    ): Response<NotificationResponse> // Đổi từ Unit sang NotificationResponse
+
+
+
 }

@@ -41,9 +41,10 @@ import com.rentify.user.app.viewModel.ServiceViewmodel.ServiceViewModel
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun ItemComponentPreview(){
-    ItemComponent(navController= rememberNavController())
+fun ItemComponentPreview() {
+    ItemComponent(navController = rememberNavController())
 }
+
 @Composable
 fun ItemComponent(navController: NavHostController) {
     val serviceViewmodel: ServiceViewModel = viewModel()
@@ -57,8 +58,8 @@ fun ItemComponent(navController: NavHostController) {
     serviceDeltai?.data?.let { services ->
         LazyColumn(
             modifier = Modifier
-               .fillMaxSize()
-               .background(Color(0xfff7f7f7))
+                .fillMaxSize()
+                .background(Color(0xfff7f7f7))
         ) {
             items(services.chunked(2)) { chunk ->  // Chia mảng thành các phần tử 2 dịch vụ
                 Row(
@@ -119,7 +120,7 @@ fun ItemComponent(navController: NavHostController) {
                                         modifier = Modifier
                                             .padding(end = 16.dp)
                                             .clickable {
-                                                navController.navigate("TINNHAN")
+                                                navController.navigate("MESSENGER")
                                             },
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {

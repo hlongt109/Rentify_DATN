@@ -31,20 +31,27 @@ import com.rentify.user.app.view.staffScreens.addRoomScreen.Components.TriangleS
 @Composable
 fun ComfortableOptionsFromApi(
     selectedComfortables: List<String>,
-    onComfortableChange: (List<String>) -> Unit
+    onComfortableChange: (List<String>) -> Unit,
+    databaseComfortables: List<String>
 ) {
+    // Danh sách cố định
+    val fixedComfortables = listOf(
+        "Vệ sinh khép kín",
+        "Gác xép",
+        "Ra vào vân tay",
+        "Nuôi pet",
+        "Không chung chủ"
+    )
+
+    // Gộp tiện nghi cố định với tiện nghi từ database và loại bỏ trùng lặp
+    val combinedComfortables = (fixedComfortables + databaseComfortables).distinct()
+
     FlowRow(
         modifier = Modifier.padding(5.dp),
         mainAxisSpacing = 10.dp,
         crossAxisSpacing = 10.dp
     ) {
-        listOf(
-            "Vệ sinh khép kín",
-            "Gác xép",
-            "Ra vào vân tay",
-            "Nuôi pet",
-            "Không chung chủ"
-        ).forEach { option ->
+        combinedComfortables.forEach { option ->
             ComfortableOptionFromApi(
                 text = option,
                 isSelected = selectedComfortables.contains(option),

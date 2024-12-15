@@ -1,7 +1,9 @@
 package com.rentify.user.app.view.staffScreens.BillScreenStaff.Componenet
 
 import android.app.Application
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -59,14 +61,20 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.rentify.user.app.R
 import com.rentify.user.app.model.FakeModel.RoomPaymentInfo
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.repository.StaffRepository.InvoiceRepository.Invoice
 import com.rentify.user.app.ui.theme.ColorBlack
 import com.rentify.user.app.ui.theme.colorHeaderSearch
 import com.rentify.user.app.ui.theme.colorInput_2
 import com.rentify.user.app.ui.theme.colorLocation
 import com.rentify.user.app.utils.CheckUnit
+import com.rentify.user.app.utils.Component.getLoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.InvoiceStaffViewModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ItemUnPaidStaff(
     modifier: Modifier = Modifier,
@@ -75,7 +83,8 @@ fun ItemUnPaidStaff(
     isExpanded: Boolean,
     onToggleExpand: () -> Unit,
     viewModel: InvoiceStaffViewModel = viewModel(),
-    staffId: String
+    staffId: String,
+    notificationViewModel: NotificationViewModel = viewModel()
 ) {
     val context = LocalContext.current
     var formatPrice = CheckUnit.formattedPrice(invoice.amount.toFloat())
@@ -280,6 +289,17 @@ fun ItemUnPaidStaff(
                                 {
                                     if(!isLoading.value){
                                         viewModel.confirmPaidInvoice(invoice._id, staffId)
+
+                                        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                                        val currentTime = LocalDateTime.now().format(formatter)
+
+                                        val notificationRequest = NotificationRequest(
+                                            user_id = staffId,
+                                            title = "Xác nhân thanh toán thành công",
+                                            content = "Phòng ${invoice.room_id.room_name} đã được Xác nhân thanh toán thành công lúc: $currentTime",
+                                        )
+
+                                        notificationViewModel.createNotification(notificationRequest)
                                         successMessage?.let {
                                             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                                         }

@@ -36,6 +36,7 @@ import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScre
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.AddBillStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.BillScreenStaff
 import com.rentify.user.app.view.staffScreens.BillScreenStaff.UpdateBillStaff
+import com.rentify.user.app.view.staffScreens.NotificationScreen.Notification_staffScreen
 import com.rentify.user.app.view.staffScreens.PersonalProfileScreen.PersonalProfileScreen
 import com.rentify.user.app.view.staffScreens.ReportScreen.Components.DaHoanThanh
 import com.rentify.user.app.view.staffScreens.ReportScreen.Components.ListSupportByRoom
@@ -49,6 +50,8 @@ import com.rentify.user.app.view.staffScreens.addPostScreen.AddPostScreens
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractDetailScreen
 import com.rentify.user.app.view.staffScreens.contract.contractComponents.ContractImageScreen
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostDetailScreen
+import com.rentify.user.app.view.staffScreens.scheduleScreen.ScheduleDetails
+import com.rentify.user.app.view.staffScreens.scheduleScreen.ScheduleScreen
 import com.rentify.user.app.view.userScreens.BaiDangYeuThich.BaiDangYeuThich
 import com.rentify.user.app.view.userScreens.CategoryPostScreen.CategoryPostScreen
 import com.rentify.user.app.view.userScreens.DieuKhoanChinhSach.DieuKhoanChinhSach
@@ -60,6 +63,7 @@ import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateCo
 import com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoommateScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SearchMapScreen
 import com.rentify.user.app.view.userScreens.SurroundingRoomsScreen.SurroundingRoomScreen
+import com.rentify.user.app.view.userScreens.ThongBaoScreens.ThongBaoScreen
 import com.rentify.user.app.view.userScreens.UpdatePostScreen.UpdatePostUserScreen
 import com.rentify.user.app.view.userScreens.addIncidentReportScreen.AddIncidentReportScreen
 import com.rentify.user.app.view.userScreens.appointment.AppointmentScreen
@@ -139,6 +143,9 @@ class MainActivity : ComponentActivity() {
             }
             composable(ROUTER.CATEGORYPOST.name) {
                 CategoryPostScreen(navController)
+            }
+            composable(ROUTER.ThongBaoScreen.name) {
+                ThongBaoScreen(navController)
             }
             composable(ROUTER.QuanLiDichVuUser.name) {
                 QuanLiDichVu(navController)
@@ -375,6 +382,20 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
+            //
+            composable(ROUTER.Schedule.name) {
+                ScheduleScreen(navController)
+            }
+
+            composable(
+                "${ROUTER.ScheduleDetails.name}/{id}",
+                arguments = listOf(navArgument("id") {type = NavType.StringType})
+            ) {backStackEntry ->
+                val idBooking = backStackEntry.arguments?.getString("id")
+                idBooking?.let{
+                    ScheduleDetails(id = idBooking, navController)
+                }
+            }
 
             //những màn hình thiên thêm
             composable(
@@ -447,6 +468,9 @@ class MainActivity : ComponentActivity() {
             composable(ROUTER.SEARCHMAP.name) {
                 SearchMapScreen(navController = navController)
             }
+            composable(ROUTER.Notification_staffScreen.name) {
+                Notification_staffScreen(navController = navController)
+            }
         }
     }
 
@@ -503,6 +527,9 @@ class MainActivity : ComponentActivity() {
         AppointmentScreen,
         BaiDangYeuThich,
         DieuKhoanChinhSach,
+        //
+        Schedule,
+        ScheduleDetails,
         //những màn hình thiên thêm
         ADDCONTRAC_STAFF,
         ListSupportByRoom,
@@ -511,7 +538,9 @@ class MainActivity : ComponentActivity() {
         SaleRoomScreen,
         PREFORGOT,
         ROOMMAP,
-        SEARCHMAP
+        SEARCHMAP,
+        ThongBaoScreen,
+        Notification_staffScreen
     }
 }
 

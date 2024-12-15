@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.rentify.user.app.R
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +48,7 @@ import com.rentify.user.app.ui.theme.location
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.HeaderSection
 import com.rentify.user.app.view.staffScreens.homeScreen.Components.ListFunction
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.RoomViewModel.RoomViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,6 +81,10 @@ fun HomeScreen(navController: NavHostController) {
         when (option) {
             "Tòa nhà & căn hộ" -> {
                 navController.navigate(MainActivity.ROUTER.BUILDING.name)
+//                {
+//                    popUpTo("HOME_STAFF") { inclusive = true }
+//
+//                }
             }
 
             "Hợp đồng" -> {
@@ -98,6 +105,10 @@ fun HomeScreen(navController: NavHostController) {
 
             "Bài đăng" -> {
                 navController.navigate(MainActivity.ROUTER.POSTING_STAFF.name)
+            }
+
+            "Lịch xem phòng" -> {
+                navController.navigate(MainActivity.ROUTER.Schedule.name)
             }
         }
     }
@@ -137,7 +148,7 @@ fun HomeScreen(navController: NavHostController) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ClickablePieChartDemo()
+                    ClickablePieChartDemo(userId)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -170,48 +181,81 @@ fun HomeScreen(navController: NavHostController) {
         }
     }
 }
-
-data class Slice(val value: Float, val color: Int, val label: String)
-
+data class RoomSummary(
+    val totalRooms: Int,
+    val available: Int,
+    val rented: Int,
+    val color: Int, val label: String
+)
 @Composable
-fun ClickablePieChartDemo() {
-    val slices = arrayListOf(
-        Slice(10f, 0xFF6200EE.toInt(), "Phongf trong"),
-        Slice(15f, 0xFF03DAC5.toInt(), "Da cho thue"),
+fun ClickablePieChartDemo(managerId: String) {
+    val context = LocalContext.current
+    val viewModel: RoomViewModel = viewModel(
+        factory = RoomViewModel.RoomViewModeFactory(context)
     )
 
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp),
-        factory = { context ->
-            val pieChart = com.github.mikephil.charting.charts.PieChart(context)
-            val entries = slices.map {
-                com.github.mikephil.charting.data.PieEntry(it.value, it.label)
-            }
-            val dataSet = PieDataSet(entries, "")
-            dataSet.colors = slices.map { it.color }
-            dataSet.setDrawValues(true)
-            dataSet.valueTextColor = 0xFFFFFFFF.toInt()
-            dataSet.valueTextSize = 13f
-            val valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return value.toInt().toString()
-                }
-            }
-            dataSet.valueFormatter = valueFormatter
-            val pieData = PieData(dataSet)
-            pieChart.data = pieData
-            pieChart.description.isEnabled = false
-            pieChart.setUsePercentValues(false)
-            pieChart.setDrawSliceText(false)
-            pieChart.centerText = ""
-            pieChart.invalidate()
-            pieChart
+    LaunchedEffect(managerId) {
+        managerId?.let {
+            viewModel.setManagerId(it) // Thiết lập giá trị managerId trong RoomViewModel
         }
-    )
-}
+    }
 
+    // Gọi hàm fetchRoomSummary để lấy dữ liệu khi managerId thay đổi
+    LaunchedEffect(managerId) {
+        viewModel.fetchRoomSummary(managerId)
+    }
+
+    val roomSummary by viewModel.roomSummary.observeAsState()
+
+    roomSummary?.let {
+        // Chúng ta tạo hai phần biểu đồ: 1 phần cho phòng chưa thuê và 1 phần cho phòng đã thuê
+        val slices = arrayListOf(
+            RoomSummary(it.totalRooms, it.available, it.rented, 0xFF6200EE.toInt(), "Phòng chưa thuê"),
+            RoomSummary(it.totalRooms, it.available, it.rented, 0xFF03DAC5.toInt(), "Phòng đã thuê")
+        )
+
+        // Tạo biểu đồ tròn với các phần slices
+        AndroidView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
+            factory = { context ->
+                val pieChart = com.github.mikephil.charting.charts.PieChart(context)
+                val entries = slices.map {
+                    // Thay vì sử dụng tổng số phòng, sử dụng các giá trị available và rented
+                    val value = when (it.label) {
+                        "Phòng chưa thuê" -> it.available.toFloat()
+                        "Phòng đã thuê" -> it.rented.toFloat()
+                        else -> 0f
+                    }
+                    com.github.mikephil.charting.data.PieEntry(value, it.label)
+                }
+
+                val dataSet = PieDataSet(entries, "")
+                dataSet.colors = slices.map { it.color }
+                dataSet.setDrawValues(true)
+                dataSet.valueTextColor = 0xFFFFFFFF.toInt()
+                dataSet.valueTextSize = 13f
+
+                val valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String {
+                        return value.toInt().toString()
+                    }
+                }
+
+                dataSet.valueFormatter = valueFormatter
+                val pieData = PieData(dataSet)
+                pieChart.data = pieData
+                pieChart.description.isEnabled = false
+                pieChart.setUsePercentValues(false)
+                pieChart.setDrawSliceText(false)
+                pieChart.centerText = ""
+                pieChart.invalidate()
+                pieChart
+            }
+        )
+    }
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -233,7 +277,9 @@ fun ComfortableOptionsDemo(
         ComfortableOptionData("Hoá đơn", R.drawable.bill1),
         ComfortableOptionData("Sự cố & bảo trì", R.drawable.inciden),
         ComfortableOptionData("Tin nhắn", R.drawable.mess),
-        ComfortableOptionData("Bài đăng", R.drawable.post)
+        ComfortableOptionData("Bài đăng", R.drawable.post),
+        ComfortableOptionData("Lịch xem phòng", R.drawable.schedule),
+
     )
 
     FlowRow(
