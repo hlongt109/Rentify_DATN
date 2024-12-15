@@ -83,6 +83,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.model.User
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
@@ -101,6 +102,7 @@ import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
 import com.rentify.user.app.view.userScreens.messengerScreen.components.UserItem
 
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewModel
 
 
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -117,6 +119,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -157,7 +160,6 @@ fun validateUserIds(userIds: List<String>): Boolean {
 // Hiển thị một người dùng trong danh sách
 @Composable
 fun UserItem(user: User, onDelete: () -> Unit) {
-   // val imageUrl = "http://192.168.2.104:3000/${user.profile_picture_url}"
     val imageUrl = "${user.profile_picture_url}"
     Log.d("UserItem", "Image URL: $imageUrl")
     val cardWidth = if (user.profile_picture_url.isNullOrEmpty()) 120.dp else 150.dp
@@ -203,7 +205,11 @@ fun UserItem(user: User, onDelete: () -> Unit) {
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddContractScreens(navController: NavHostController) {
+fun AddContractScreens(
+    navController: NavHostController,
+    notificationViewModel: NotificationViewModel = viewModel()
+
+) {
     var selectedImages by remember { mutableStateOf(emptyList<Uri>()) }
     var isLoading by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
@@ -591,6 +597,23 @@ fun AddContractScreens(navController: NavHostController) {
 
                             if (isSuccessful) {
                                 Toast.makeText(context, "Tạo hợp đồng thành công!", Toast.LENGTH_SHORT).show()
+                                val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                                val currentTime = LocalDateTime.now().format(formatter)
+
+                                val notificationRequest = NotificationRequest(
+                                    user_id = userId,
+                                    title = "Thêm hợp đồng thành công",
+                                    content = "Hợp đồng đã được thêm thành công lúc: $currentTime",
+                                )
+
+                                val notificationRequest1 = NotificationRequest(
+                                    user_id = manage_Id,
+                                    title = "Thêm hợp đồng thành công",
+                                    content = "Hợp đồng đã được thêm thành công lúc: $currentTime",
+                                )
+                                notificationViewModel.createNotification(notificationRequest)
+                                notificationViewModel.createNotification(notificationRequest1)
+
                                 // Chuyển màn khi bài đăng được tạo thành công
                                 navController.navigate("CONTRACT_STAFF")
                             } else {

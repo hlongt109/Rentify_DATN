@@ -3,8 +3,10 @@ package com.rentify.user.app.view.staffScreens.addPostScreen
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 
@@ -54,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
 import com.rentify.user.app.network.RetrofitService
@@ -68,6 +71,7 @@ import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomLabel
 import com.rentify.user.app.view.staffScreens.addPostScreen.Components.RoomOptions
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.SelectMedia
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewModel
 
 
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
@@ -82,6 +86,8 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun prepareMultipartBody(
     context: Context,
@@ -108,9 +114,14 @@ fun prepareMultipartBody(
         null
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPostScreens(navController: NavHostController) {
+fun AddPostScreens(
+    navController: NavHostController,
+    notificationViewModel: NotificationViewModel = viewModel()
+
+) {
     var selectedImages by remember { mutableStateOf(emptyList<Uri>()) }
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
     val configuration = LocalConfiguration.current
@@ -332,11 +343,7 @@ fun AddPostScreens(navController: NavHostController) {
                             Toast.makeText(context, "Ảnh không được để trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
-                        if (selectedVideos.isEmpty()) {
-                            // Hiển thị thông báo nếu không có ảnh nào được chọn
-                            Toast.makeText(context, "Video không được để trống", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
+
                         val maxPhotos = 10
                         val maxVideos = 3
                         if (selectedImages.size > maxPhotos) {
@@ -378,11 +385,20 @@ fun AddPostScreens(navController: NavHostController) {
                             }
 
                             if (isSuccessful) {
+                                val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                                val currentTime = LocalDateTime.now().format(formatter)
+
+                                val notificationRequest = NotificationRequest(
+                                    user_id = userId,
+                                    title = "Thêm bài đăng thành công",
+                                    content = "${title} đã được thêm thành công lúc: $currentTime",
+                                )
+
+                                notificationViewModel.createNotification(notificationRequest)
+
                                 Toast.makeText(context, "Tạo bài đăng thành công!", Toast.LENGTH_SHORT).show()
-                                // Chuyển màn khi bài đăng được tạo thành công
                                 navController.navigate("POSTING_STAFF")
                             } else {
-                                // Hiển thị thông báo lỗi nếu tạo bài thất bại
                                 Toast.makeText(context, "Failed to create post", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -399,17 +415,7 @@ fun AddPostScreens(navController: NavHostController) {
                         color = Color(0xffffffff)
                     )
                 }
-
             }
         }
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun GreetingLayoutAddPostScreen() {
-    AddPostScreens(navController = rememberNavController())
-}
-
-
-

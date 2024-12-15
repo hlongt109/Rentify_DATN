@@ -30,6 +30,7 @@ import com.rentify.user.app.view.contract.contractComponents.ContractRoomListScr
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostListScreen
 
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 
 
@@ -42,7 +43,10 @@ fun ContractScreenPreview() {
 }
 
 @Composable
-fun ContractScreen(navController: NavHostController) {
+fun ContractScreen(
+    navController: NavHostController,
+    notificationViewModel: NotificationViewModel = viewModel()
+) {
     val viewModel: ContractViewModel = viewModel()
 
     val context = LocalContext.current

@@ -431,7 +431,7 @@ fun PostImageSection(images: List<String>) {
             ) { pageIndex ->
                 val image = images[pageIndex]
                 Image(
-                    painter = rememberImagePainter("http://192.168.2.104:3000/$image"),
+                        painter = rememberImagePainter("http://10.0.2.2:3000/$image"),
                     contentDescription = "Post Image",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -592,14 +592,14 @@ fun PostMediaDialog(
                                         .rotate(if (isLandscape) 90f else 0f)
                                 ) {
                                     VideoPlayer(
-                                        videoUrl = "http://192.168.2.104:3000/$media",
+                                        videoUrl = "http://10.0.2.2:3000/$media",
                                         isPlaying = currentPlayingIndex.value == pageIndex
                                     )
                                 }
                             } else {
                                 // Ảnh
                                 Image(
-                                    painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
+                                    painter = rememberImagePainter("http://10.0.2.2:3000/$media"),
                                     contentDescription = "Post Image",
                                     modifier = Modifier
                                         .fillMaxSize()

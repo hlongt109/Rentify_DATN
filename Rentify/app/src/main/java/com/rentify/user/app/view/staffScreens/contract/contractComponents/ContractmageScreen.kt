@@ -69,7 +69,7 @@ fun ContractImageScreen(navController: NavHostController, contractId: String) {
             ) {
                 // Nếu có ảnh trong hợp đồng
                 items(contract.photos_contract!!) { photoUrl ->
-                    val imageUrl = "http://192.168.2.104:3000/$photoUrl" // Gắn "localhost" vào trước URL
+                    val imageUrl = "http://10.0.2.2:3000/$photoUrl" // Gắn "localhost" vào trước URL
 
                     Image(
                         painter = rememberImagePainter(imageUrl),
