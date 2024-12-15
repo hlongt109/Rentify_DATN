@@ -2,10 +2,12 @@ package com.rentify.user.app.view.staffScreens.contract.contractComponents
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -66,6 +68,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.rentify.user.app.R
+import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.model.User
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.CustomTextField
 import com.rentify.user.app.view.staffScreens.UpdatePostScreen.isFieldEmpty
@@ -76,26 +79,29 @@ import com.rentify.user.app.view.userScreens.cancelContract.components.ContractI
 import com.rentify.user.app.view.userScreens.cancelContract.components.CustomButton
 import com.rentify.user.app.view.userScreens.cancelContract.components.HeaderSection
 import com.rentify.user.app.view.userScreens.contract.components.ViewContractButton
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.StaffViewModel.ContractViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ContractDetailScreen(navController: NavController,contractId: String) {
+fun ContractDetailScreen(
+    navController: NavController,
+    contractId: String,
+    notificationViewModel: NotificationViewModel = viewModel()
+) {
     var context = LocalContext.current
     val contractViewModel: ContractViewModel = viewModel()
     val contractDetail by contractViewModel.contractDetail.observeAsState()
     var showDialog by remember { mutableStateOf(false) }
-
-    // State để hiển thị thông báo
     val snackbarHostState = remember { SnackbarHostState() }
-
-    // Khi dialog đóng, cần reset trạng thái của thông báo
     val onDismissDialog: () -> Unit = {
         showDialog = false
     }
-    // Lấy chi tiết hợp đồng
     LaunchedEffect(contractId) {
         contractViewModel.fetchContractDetail(contractId)
     }
@@ -223,11 +229,13 @@ fun ContractDetailScreen(navController: NavController,contractId: String) {
     }}
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditContractDialog(
     contractId: String?,
     onDismiss: () -> Unit,
     snackbarHostState: SnackbarHostState,
+    notificationViewModel: NotificationViewModel = viewModel()
 ) {
     val context = LocalContext.current
     var userId by remember { mutableStateOf("") }
@@ -314,17 +322,7 @@ fun EditContractDialog(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                // Sửa User ID
-//                CustomTextField(
-//                    label = "UserId",
-//                    value = userId,
-//                    onValueChange = { userId = it  },
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(5.dp),
-//                    placeholder = "userId1,userId2,...",
-//                    isReadOnly = false
-//                )
+
                 Spacer(modifier = Modifier.padding(5.dp))
                 Row(horizontalArrangement = Arrangement.Center) {
                     CustomTextField(
@@ -490,6 +488,19 @@ fun EditContractDialog(
                                     photos = photoParts
                                 )
                             }
+
+                            val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                            val currentTime = LocalDateTime.now().format(formatter)
+
+                            val notificationRequest = NotificationRequest(
+                                user_id = userId,
+                                title = "Chỉnh sửa phòng thành công",
+                                content = "Chỉnh sửa hợp đồng thành công lúc: $currentTime",
+                            )
+
+                            notificationViewModel.createNotification(notificationRequest)
+
+
                             Toast.makeText(context, "Sửa thành công", Toast.LENGTH_SHORT).show()
 
                             onDismiss() // Đóng Dialog

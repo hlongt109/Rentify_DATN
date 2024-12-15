@@ -2,12 +2,14 @@ package com.rentify.user.app.view.staffScreens.UpdatePostScreen
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.FrameLayout
 import android.widget.ListPopupWindow.MATCH_PARENT
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -84,6 +86,7 @@ import com.google.accompanist.flowlayout.FlowRow
 //import com.google.android.exoplayer2.MediaItem
 //import com.google.android.exoplayer2.ui.PlayerView
 import androidx.compose.material.CircularProgressIndicator
+import com.rentify.user.app.model.Model.NotificationRequest
 
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
@@ -96,6 +99,7 @@ import com.rentify.user.app.view.staffScreens.UpdatePostScreen.Components.Triang
 import com.rentify.user.app.view.staffScreens.postingList.PostingListComponents.PostingList
 import com.rentify.user.app.view.userScreens.AddPostScreen.Components.VideoThumbnail
 import com.rentify.user.app.viewModel.LoginViewModel
+import com.rentify.user.app.viewModel.NotificationViewModel
 import com.rentify.user.app.viewModel.PostViewModel.PostViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -109,6 +113,8 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okio.Buffer
 import java.io.File
 import java.io.IOException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun prepareMultipartBody(
     context: Context,
@@ -140,9 +146,14 @@ fun isFieldEmpty(field: String): Boolean {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpdatePostScreen(navController: NavHostController,postId: String) {
+fun UpdatePostScreen(
+    navController: NavHostController,
+    postId: String,
+    notificationViewModel: NotificationViewModel = viewModel()
+) {
     var selectedImages by remember { mutableStateOf(emptyList<Uri>()) }
     var selectedVideos by remember { mutableStateOf(emptyList<Uri>()) }
     val configuration = LocalConfiguration.current
@@ -377,18 +388,23 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                                         videoFile = videoParts,
                                         photoFile = photoParts
                                     )
-                                    // Sau khi cập nhật thành công, tải lại dữ liệu bài đăng
-//                                    val updatedPost = withContext(Dispatchers.IO) {
-//                                        viewModel.getPostDetail(postId) // Gọi API tải lại dữ liệu
-//                                    }
                                     Toast.makeText(context, "Sửa thành công", Toast.LENGTH_SHORT).show()
 
-                                    // Chuyển màn hình sau khi tải lại dữ liệu thành công
+                                    val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+                                    val currentTime = LocalDateTime.now().format(formatter)
+
+                                    val notificationRequest = NotificationRequest(
+                                        user_id = userId,
+                                        title = "Chỉnh sửa bài đăng thành công",
+                                        content = "${title} đã được chỉnh sửa thành công lúc: $currentTime",
+                                    )
+
+                                    notificationViewModel.createNotification(notificationRequest)
+
+                                    viewModel.getPostDetail(postId)
                                     navController.navigate("post_detail/$postId") {
                                         popUpTo("update_post_screen/$postId") { inclusive = true }
-
                                     }
-
                                 } catch (e: Exception) {
                                     isError = true
                                     Toast.makeText(
@@ -427,8 +443,6 @@ fun UpdatePostScreen(navController: NavHostController,postId: String) {
                     CircularProgressIndicator(color = Color.White)
                 }
             }
-
-            // Hiển thị thông báo lỗi nếu có lỗi
             if (isError) {
                 Box(
                     modifier = Modifier
@@ -694,7 +708,7 @@ fun SelectMedia(
 ) {
     val selectedImages = remember { mutableStateListOf<Uri>() }
     val selectedVideos = remember { mutableStateListOf<Uri>() }
-    val baseUrl = "http://192.168.2.104:3000/"
+    val baseUrl = "http://10.0.2.2:3000/"
 
 // Chuyển đổi các đường dẫn ảnh và video từ detail thành Uri, thêm base URL vào trước mỗi đường dẫn
     val imagesFromDetail = detail.photos?.map { Uri.parse( baseUrl+it) } ?: listOf()
@@ -798,38 +812,7 @@ fun SelectMedia(
                 }
             }
         }
-
-//        // Hiển thị ảnh đã chọn từ detail
-//        LazyRow {
-//            items(selectedImages) { uri ->
-//                Box(modifier = Modifier.padding(4.dp)) {
-//                    Image(
-//                        painter = rememberImagePainter(uri),
-//                        contentDescription = null,
-//                        modifier = Modifier.size(80.dp)
-//                    )
-//                    // Nút xóa
-//                    Box(
-//                        modifier = Modifier
-//                            .size(16.dp) // Kích thước nút nhỏ hơn
-//                            .background(Color.Red, shape = CircleShape)
-//                            .align(Alignment.TopEnd)
-//                            .clickable { selectedImages.remove(uri) }, // Xóa ảnh khi nhấn
-//                        contentAlignment = Alignment.Center
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Close,
-//                            contentDescription = "Xóa",
-//                            tint = Color.White,
-//                            modifier = Modifier.size(12.dp) // Kích thước biểu tượng nhỏ hơn
-//                        )
-//                    }
-//                }
-//            }
-//        }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Row(
             modifier = Modifier
                 .padding(5.dp)

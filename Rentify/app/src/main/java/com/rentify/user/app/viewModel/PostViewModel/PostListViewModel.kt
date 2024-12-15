@@ -114,8 +114,7 @@ class PostViewModel : ViewModel() {
 
     private val _updateStatus = MutableLiveData<Boolean?>() // Sử dụng Boolean? để kiểm tra null
     val updateStatus: LiveData<Boolean?> = _updateStatus
-private val _pendingUpdates = MutableLiveData(0) // Số lần cập nhật đang chờ xử lý
-
+    private val _pendingUpdates = MutableLiveData(0) // Số lần cập nhật đang chờ xử lý
     fun updatePost(
         postId: String,
         userId: String?,
@@ -164,11 +163,10 @@ private val _pendingUpdates = MutableLiveData(0) // Số lần cập nhật đan
                     getPostDetail(postId)
                     _errorMessage.postValue("Cập nhật bài viết thành công.")
                     Log.d("CheckUpdate", "updatePost: ${response.body()}")
-
+                    resetUpdateStatus()
                     if (userId != null) {
                         getPostingList_user(userId, postType = postType)
                     }
-                    resetUpdateStatus()
                 } else {
                     _updateStatus.value = false // Thất bại
                     _errorMessage.postValue("Cập nhật thất bại: ${response.message()}")
@@ -182,7 +180,7 @@ private val _pendingUpdates = MutableLiveData(0) // Số lần cập nhật đan
                 _pendingUpdates.value = pending
 
                 // Chỉ tải lại dữ liệu khi tất cả cập nhật hoàn tất
-                if (pending == 1) {
+                if (pending == 0) {
                     getPostDetail(postId) // Tải lại thông tin bài đăng
                     if (userId != null) {
                         getPostingList_user(userId, postType = postType)

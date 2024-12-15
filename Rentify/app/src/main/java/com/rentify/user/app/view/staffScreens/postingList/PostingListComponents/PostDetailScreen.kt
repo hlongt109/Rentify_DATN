@@ -93,6 +93,11 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.getPostDetail(postId)
+    }
+
+
     postDetail?.let { detail ->
         Log.d("detail", "RequestBody check màn detail:${detail} ")
         Box(
@@ -323,31 +328,6 @@ fun PostDetailScreen(navController: NavController, postId: String, viewModel: Po
 
                         }
                     }
-                    // Hiển thị thông tin người đăng
-//                    Text(
-//                        text = "Người đăng: ${detail.user?.name}",
-//                        fontSize = 16.sp,
-//                        modifier = Modifier.padding(horizontal = 10.dp)
-//                    )
-//                    Text(
-//                        text = "Email: ${detail.user?.email}",
-//                        fontSize = 14.sp,
-//                        modifier = Modifier.padding(horizontal = 10.dp)
-//                    )
-//                    Spacer(modifier = Modifier.height(16.dp))
-                    //                   Spacer(modifier = Modifier.height(16.dp))
-//                    // Hiển thị ngày tạo và cập nhật
-//                    Text(
-//                        text = "Ngày tạo: ${detail.created_at}",
-//                        fontSize = 14.sp,
-//                        modifier = Modifier.padding(horizontal = 10.dp)
-//                    )
-//                    Text(
-//                        text = "Ngày cập nhật: ${detail.updated_at}",
-//                        fontSize = 14.sp,
-//                        modifier = Modifier.padding(horizontal = 10.dp)
-//                    )
-
                 }
             }
 
@@ -427,7 +407,7 @@ fun PostImageSection(images: List<String>) {
             ) { pageIndex ->
                 val image = images[pageIndex]
                 Image(
-                    painter = rememberImagePainter("http://192.168.2.104:3000/$image"),
+                    painter = rememberImagePainter("http://10.0.2.2:3000/$image"),
                     contentDescription = "Post Image",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -472,7 +452,7 @@ fun PostVideoSection(videos: List<String>) {
                     .height(300.dp)
             ) { pageIndex ->
                 val videoUrl = videos[pageIndex]
-                VideoPlayer(videoUrl = "http://192.168.2.104:3000/$videoUrl")
+                VideoPlayer(videoUrl = "http://10.0.2.2:3000/$videoUrl")
             }
 
             // Dấu chấm chỉ số video
@@ -517,10 +497,10 @@ fun PostMediaDialog(mediaList: List<String>, currentIndex: Int, onDismiss: () ->
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         if (media.endsWith(".mp4")) {
-                            VideoPlayer(videoUrl = "http://192.168.2.104:3000/$media")
+                            VideoPlayer(videoUrl = "http://10.0.2.2:3000/$media")
                         } else {
                             Image(
-                                painter = rememberImagePainter("http://192.168.2.104:3000/$media"),
+                                painter = rememberImagePainter("http://10.0.2.2:3000/$media"),
                                 contentDescription = "Post Image",
                                 modifier = Modifier.fillMaxWidth()
                             )
