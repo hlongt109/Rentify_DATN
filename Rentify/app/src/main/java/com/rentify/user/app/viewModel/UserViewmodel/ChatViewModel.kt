@@ -70,7 +70,7 @@ class ChatViewModel() : ViewModel() {
                     Log.d("CheckList", "onDataChange: $chatUsers")
 
                     // Xử lý danh sách chat users
-                    handleChatList(mutableListOf<String>().apply { addAll(chatUsers) })
+                    handleChatList(ArrayList(chatUsers))
                     _isLoading.value = false // Kết thúc loading
                 }
 

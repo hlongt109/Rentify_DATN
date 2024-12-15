@@ -312,6 +312,9 @@ class LoginViewModel(
         val usename :String
     )
 
+    private val _userDataMap = MutableLiveData<Map<String, LoginResponse>>(emptyMap())
+    val userDataMap: LiveData<Map<String, LoginResponse>> get() = _userDataMap
+
     fun getInfoUser(userId: String){
         viewModelScope.launch {
             val response = userRepository.getInfoUser(userId)
@@ -321,7 +324,7 @@ class LoginViewModel(
                     val result = responseBody.data
                     Log.d("CheckResult", "getInfoUser: ${responseBody.data}")
                     if(result!= null){
-                        _userData.value = responseBody.data
+                        _userDataMap.value = _userDataMap.value.orEmpty() + (userId to result)
                     }
                 }
             }

@@ -42,12 +42,6 @@ fun LayoutMessenger(navController: NavHostController) {
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val currentUserId = loginViewModel.getUserData().userId
     val usersList = remember { mutableStateOf<List<chatUser>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-        chatViewModel.getChatList(
-            userId = currentUserId,
-        )
-    }
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -55,7 +49,9 @@ fun LayoutMessenger(navController: NavHostController) {
             .statusBarsPadding()
             .navigationBarsPadding()
     ){
-        MessengerComponent(navController, chatViewModel)
+        MessengerComponent(
+            navController,
+        )
     }
 
 }
