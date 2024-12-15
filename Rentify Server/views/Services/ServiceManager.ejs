@@ -120,6 +120,8 @@
 
         let html = `<h3></h3>`;
 
+        const url = "http://localhost:3000/"
+
         if (services.length === 0) {
             html += `<p>Không có dịch vụ nào.</p>`;
         } else {
@@ -131,7 +133,7 @@
                                 <div class="d-flex align-items-center">
                                      <!-- Hình ảnh -->
                                     <div class="image-container me-3">
-                                        <img src="${service.photos[0]}" alt="${service.name}" class="img-fluid" style="width: 86px; height: 86px; object-fit: cover; border-radius: 8px;">
+                                        <img src="${url+service.photos[0]}" alt="${service.name}" class="img-fluid" style="width: 86px; height: 86px; object-fit: cover; border-radius: 8px;">
                                     </div>
 
                                     <div class="flex-grow-1">

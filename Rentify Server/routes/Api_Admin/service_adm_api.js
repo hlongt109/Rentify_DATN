@@ -29,7 +29,7 @@ router.post("/service_adm", uploadFile.fields([{name: 'images', maxCount: 5}]) ,
         const data = req.body;
         const files = req.files;
 
-        const images = files.images ? files.images.map(file => `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`) : [];
+        const images = files.images ? files.images.map(file => `public/uploads/${file.filename}`) : [];
 
         const newService = new Service({
             admin_id: data.admin_id,
@@ -67,7 +67,7 @@ router.put("/service_adm/:id", uploadFile.fields([{name: 'images', maxCount: 5}]
         let images;
 
         if (files && files.images) {
-            images = files.images ? files.images.map(file => `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`) : [];
+            images = files.images ? files.images.map(file => `public/uploads/${file.filename}`) : [];
         }else{
             images = service.photos
         }

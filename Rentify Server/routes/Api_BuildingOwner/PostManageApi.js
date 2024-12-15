@@ -16,9 +16,9 @@ router.post('/posts_mgr', uploadFile.fields([
         const data = req.body;
         const files = req.files;
 
-        const video = files.video ? `${req.protocol}://${req.get("host")}/public/uploads/${files.video[0].filename}` : null;
+        const video = files.video ? `public/uploads/${files.video[0].filename}` : null;
 
-        const images = files.images ? files.images.map(file => `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`) : [];
+        const images = files.images ? files.images.map(file => `public/uploads/${file.filename}`) : [];
 
         const userObjectId = new mongoose.Types.ObjectId(data.user_id);
         const buildingObjectId = new mongoose.Types.ObjectId(data.building_id);
@@ -68,13 +68,13 @@ router.put("/posts_mgr/:id", uploadFile.fields([
         let images
         let video
         if (files && files.images) {
-            images = files.images ? files.images.map(file => `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`) : [];
+            images = files.images ? files.images.map(file => `public/uploads/${file.filename}`) : [];
         } else {
             images = post.photo
         }
 
         if (files && files.video) {
-            video = files.video ? `${req.protocol}://${req.get("host")}/public/uploads/${files.video[0].filename}` : null;
+            video = files.video ? `public/uploads/${files.video[0].filename}` : null;
         } else {
             video = post.video;
         }

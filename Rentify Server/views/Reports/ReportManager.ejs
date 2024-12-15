@@ -487,6 +487,7 @@
         }
 
         function showReportDetails(data, dataDetails, type, dataRoom4Service) {
+            const url = "http://localhost:3000/"
             let reportStatusUpdate = null;
 
             const roomDetail = type === "room" ? `
@@ -534,9 +535,9 @@
                 <span class="report-detail-label">Video:</span> 
                 <div class="d-flex flex-wrap">
                     ${dataDetails.video_room ? `
-                        <a href="${dataDetails.video_room}" data-lightbox="report-media" data-title="Video">
+                        <a href="${url + dataDetails.video_room}" data-lightbox="report-media" data-title="Video">
                             <video controls class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
-                                <source src="${dataDetails.video_room}" type="video/mp4">
+                                <source src="${url + dataDetails.video_room}" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
                         </a>
@@ -548,8 +549,8 @@
                 <span class="report-detail-label">Hình ảnh:</span> 
                 <div class="d-flex flex-wrap">
                     ${dataDetails.photos_room?.map((imageUrl, index) => `
-                        <a href="${imageUrl}" data-lightbox="report-media" data-title="Hình ảnh ${index + 1}">
-                            <img src="${imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
+                        <a href="${url+imageUrl}" data-lightbox="report-media" data-title="Hình ảnh ${index + 1}">
+                            <img src="${url + imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
                         </a>
                     `).join('')}
                 </div>    
@@ -568,8 +569,8 @@
                 <span class="report-detail-label">Hình ảnh:</span> 
                 <div class="d-flex flex-wrap">
                     ${dataDetails.photos?.map((imageUrl, index) => `
-                        <a href="${imageUrl}" data-lightbox="report-media" data-title="Hình ảnh ${index + 1}">
-                            <img src="${imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
+                        <a href="${url+imageUrl}" data-lightbox="report-media" data-title="Hình ảnh ${index + 1}">
+                            <img src="${url+imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
                         </a>
                     `).join('')}
                 </div>    
@@ -590,9 +591,9 @@
                 <div class="d-flex mb-3">
                     <span class="report-detail-label">Video:</span> 
                     <div class="d-flex flex-wrap">
-                        <a href="${dataDetails.video}" data-lightbox="report-media" data-title="Video">
+                        <a href="${url + dataDetails.video}" data-lightbox="report-media" data-title="Video">
                             <video controls class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
-                                <source src="${dataDetails.video}" type="video/mp4">
+                                <source src="${url + dataDetails.video}" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
                         </a>
@@ -605,8 +606,8 @@
                     <span class="report-detail-label">Hình ảnh:</span> 
                     <div class="d-flex flex-wrap">
                         ${dataDetails.photo.map((imageUrl, index) => `
-                            <a href="${imageUrl}" data-lightbox="report-media" data-title="Hình ảnh ${index + 1}">
-                                <img src="${imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
+                            <a href="${url + imageUrl}" data-lightbox="report-media" data-title="Hình ảnh ${index + 1}">
+                                <img src="${url + imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
                             </a>
                         `).join('')}
                     </div>    
@@ -656,8 +657,8 @@
                 <span class="report-detail-label">Hình ảnh:</span> 
                 <div class="d-flex flex-wrap">
                     ${data.image?.map((imageUrl, index) => `
-                        <a href="${imageUrl}" data-lightbox="report-media" data-title="Hình ảnh thêm ${index + 1}">
-                            <img src="${imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
+                        <a href="${url + imageUrl}" data-lightbox="report-media" data-title="Hình ảnh thêm ${index + 1}">
+                            <img src="${url + imageUrl}" alt="Image" class="img-thumbnail mr-2" style="max-height: 100px; max-width: 100px;">
                         </a>
                     `).join('')}
                 </div>

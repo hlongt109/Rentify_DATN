@@ -373,6 +373,7 @@
             posts.forEach(post => {
                 let postStatusClass = '';
                 let postStatusText = '';
+                const url = "http://localhost:3000/"
 
                 if (post.status === 0) {
                     postStatusClass = 'text-warning';
@@ -396,7 +397,7 @@
                                         <!-- Ô video -->
                                         <div class="video-container mt-2 mb-2">
                                             <video class="w-100 rounded" controls style="aspect-ratio: 16/9;">
-                                                <source src="${post.video}" type="video/mp4">
+                                                <source src="${url + post.video}" type="video/mp4">
                                                 Trình duyệt của bạn không hỗ trợ video.
                                             </video>
                                         </div>
@@ -420,7 +421,7 @@
                                                 <div class="carousel-inner rounded" style="aspect-ratio: 16/9;">
                                                     ${post.photo.map((photo, index) => `
                                                         <div class="carousel-item ${index === 0 ? 'active' : ''}">
-                                                            <img src="${photo}" class="d-block w-100" alt="Ảnh ${index + 1}">
+                                                            <img src="${url + photo}" class="d-block w-100" alt="Ảnh ${index + 1}">
                                                         </div>
                                                     `).join('')}
                                                 </div>
