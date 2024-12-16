@@ -23,6 +23,7 @@ import com.rentify.user.app.model.Model.InvoiceOfUpdate
 import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.model.Model.Notification
 import com.rentify.user.app.model.Model.NotificationResponse
+import com.rentify.user.app.model.Model.ReportRequest
 import com.rentify.user.app.model.Model.RoomDetailResponse
 import com.rentify.user.app.model.Model.RoomPageSale
 import com.rentify.user.app.model.Model.RoomResponse
@@ -620,6 +621,6 @@ interface APIService {
         @Path("userId") userId: String
     ): Response<NotificationResponse> // Đổi từ Unit sang NotificationResponse
 
-
-
+    @POST("add-report")
+    suspend fun createReport(@Body request: ReportRequest): Response<ReportRequest>
 }

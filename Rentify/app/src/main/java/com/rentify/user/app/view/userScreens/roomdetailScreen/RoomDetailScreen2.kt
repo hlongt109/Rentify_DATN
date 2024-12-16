@@ -287,7 +287,7 @@ fun LayoutRoomdetails2(
                 Spacer(modifier = Modifier.padding(5.dp))
                 LayoutInterior(listAmenities = roomDetail.value?.service ?: emptyList())
                 Spacer(modifier = Modifier.padding(5.dp))
-                baidangPreview(navController, staffId, staffName)
+//                baidangPreview(navController, staffId, staffName)
             }
         }
     }

@@ -4,6 +4,10 @@ const uploadFile = require("../../config/common/uploadImagReport");
 const Contract = require("../../models/Contract");
 const router = express.Router();
 
+const Report = require('../../models/Report');
+
+const mongoose = require('mongoose');
+
 // thực hiện đăng ký báo cáo hỗ trợ
 router.post('/create-report', uploadFile.array('image', 5), async (req, res) => {
   try {
@@ -107,6 +111,39 @@ router.get("/get-room-by-contract/:userId", async (req, res) => {
       success: false,
       message: "Lỗi server: " + error.message,
     });
+  }
+});
+
+router.post('/add-report', async (req, res) => {
+  try {
+    const { user_id, type, id_problem, title_support, content_support, status } = req.body;
+
+    // Kiểm tra user_id có hợp lệ không
+    if (!mongoose.Types.ObjectId.isValid(user_id)) {
+      return res.status(400).json({ message: 'Invalid user_id' });
+    }
+
+    // Kiểm tra các trường bắt buộc
+    if (!title_support || !content_support) {
+      return res.status(400).json({ message: 'Title and content are required' });
+    }
+
+    const newReport = new Report({
+      user_id,
+      type,
+      id_problem,
+      title_support,
+      content_support,
+      status,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    });
+
+    await newReport.save();
+    res.status(200).json({ message: 'Report created successfully', report: newReport });
+  } catch (error) {
+    console.error("Error creating report:", error); // Log lỗi chi tiết
+    res.status(500).json({ message: 'Error creating report', error: error.message });
   }
 });
 

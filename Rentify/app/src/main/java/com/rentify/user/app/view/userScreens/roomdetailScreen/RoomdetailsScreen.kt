@@ -348,7 +348,7 @@ fun LayoutRoomdetails(
                         else -> ""  // Nếu không có tên cả manager và landlord
                     }
                 }
-                baidangPreview(navController, staffId, staffName)
+                baidangPreview(navController, staffId, staffName, userId, roomId!!)
             }
         }
     }
