@@ -597,8 +597,40 @@ fun FeetPersonalProfile2(navController: NavHostController) {
                         contentScale = ContentScale.Crop
                     )
                 }
+            } else if (bankAccountDetail?.qr_bank.isNullOrEmpty()) {
+                // Nếu danh sách qr_bank rỗng, hiển thị Box thêm ảnh
+                item {
+                    Box(
+                        modifier = Modifier
+                            .width(250.dp)
+                            .height(250.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFFE0E0E0)) // Màu nền đẹp
+                            .clickable { pickImageLauncher.launch("image/*") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.image1), // Icon thêm ảnh
+                                contentDescription = "Thêm ảnh",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(50.dp)
+                            )
+                            Text(
+                                text = "Thêm ảnh",
+                                color = Color.Gray,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    }
+                }
             } else {
-                items(bankAccountDetail?.qr_bank ?: emptyList()) { qrUrl ->
+                // Nếu danh sách qr_bank không rỗng, hiển thị ảnh QR
+                items(bankAccountDetail?.qr_bank!!) { qrUrl ->
                     val qrImageUri = "http://10.0.2.2:3000/$qrUrl"
                     AsyncImage(
                         model = qrImageUri,
@@ -615,6 +647,7 @@ fun FeetPersonalProfile2(navController: NavHostController) {
             }
         }
 
+
         // Nút lưu ảnh mới
         Box(
             modifier = Modifier
@@ -630,10 +663,10 @@ fun FeetPersonalProfile2(navController: NavHostController) {
                     .clickable {
                         selectedImageUri?.let { uri ->
                             val updatedBank = Bank(
-                                bank_name = bankAccountDetail?.bank_name ?: "",
+                                bank_name = bankAccountDetail?.bank_name ?: "Chưa xác định",
                                 bank_number = bankAccountDetail?.bank_number ?: 0L,
                                 qr_bank = bankAccountDetail?.qr_bank ?: emptyList(),
-                                username = bankAccountDetail?.username ?: ""
+                                username = bankAccountDetail?.username ?: "Chưa xác định"
                             )
                             viewModel.updateBankAccountWithImage(userId, updatedBank, uri, context)
                         }
@@ -653,9 +686,30 @@ fun FeetPersonalProfile2(navController: NavHostController) {
                 onSave = {
                     showEditDialog = false
                     val updatedBankAccount = when (currentField) {
-                        "bank_name" -> bankAccountDetail?.copy(bank_name = newValue)
-                        "bank_number" -> bankAccountDetail?.copy(bank_number = newValue.toLong())
-                        "username" -> bankAccountDetail?.copy(username = newValue)
+                        "bank_name" -> bankAccountDetail?.copy(
+                            bank_name = newValue.ifEmpty { "Chưa xác định" }
+                        ) ?: Bank(
+                            bank_name = newValue.ifEmpty { "Chưa xác định" },
+                            bank_number = bankAccountDetail?.bank_number ?: 0L,
+                            qr_bank = bankAccountDetail?.qr_bank ?: emptyList(),
+                            username = bankAccountDetail?.username ?: "Chưa xác định"
+                        )
+                        "bank_number" -> bankAccountDetail?.copy(
+                            bank_number = newValue.toLongOrNull() ?: 0L
+                        ) ?: Bank(
+                            bank_name = bankAccountDetail?.bank_name ?: "Chưa xác định",
+                            bank_number = newValue.toLongOrNull() ?: 0L,
+                            qr_bank = bankAccountDetail?.qr_bank ?: emptyList(),
+                            username = bankAccountDetail?.username ?: "Chưa xác định"
+                        )
+                        "username" -> bankAccountDetail?.copy(
+                            username = newValue.ifEmpty { "Chưa xác định" }
+                        ) ?: Bank(
+                            bank_name = bankAccountDetail?.bank_name ?: "Chưa xác định",
+                            bank_number = bankAccountDetail?.bank_number ?: 0L,
+                            qr_bank = bankAccountDetail?.qr_bank ?: emptyList(),
+                            username = newValue.ifEmpty { "Chưa xác định" }
+                        )
                         else -> bankAccountDetail
                     }
                     updatedBankAccount?.let {
