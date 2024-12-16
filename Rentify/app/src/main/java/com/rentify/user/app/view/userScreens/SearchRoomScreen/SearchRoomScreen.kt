@@ -295,7 +295,7 @@ fun PostRoomScreen(navController: NavController) {
                     Divider(color = colorInput, thickness = 1.dp)
                     Spacer(modifier = Modifier.padding(top = 10.dp))
 
-                    PostListRoomateScreen( navController, postType = "rent" )
+                    PostListRoomateScreen( navController, postType = "seek" )
                 }
             }
         }

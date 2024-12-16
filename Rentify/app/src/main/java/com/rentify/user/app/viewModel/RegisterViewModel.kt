@@ -35,7 +35,7 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun register(name: String, email: String, password: String, repassword: String, phoneNumber: String) {
+    fun register(name: String, email: String, password: String, repassword: String, phoneNumber: String, onSucess:() -> Unit) {
         // Reset thông báo lỗi trước khi kiểm tra
         _errorMessage.value = null
 
@@ -67,6 +67,7 @@ class RegisterViewModel(private val userRepository: RegisterRepository) : ViewMo
                         if (result != null) {
                             Log.d("RegisterSuccess", "Username: ${result.name}, Role: ${result.role}")
                             _successMessage.postValue("Đăng ký thành công. Hãy xác nhận tài khoản email của bạn")
+                            onSucess()
                         } else {
                             Log.e("RegisterError", "Response data is null")
                             _isLoading.postValue(false)

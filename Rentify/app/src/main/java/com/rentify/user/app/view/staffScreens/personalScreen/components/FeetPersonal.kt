@@ -18,6 +18,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,7 @@ import com.rentify.user.app.MainActivity
 import com.rentify.user.app.R
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.LoginRepository.LoginRepository
+import com.rentify.user.app.utils.Component.getLoginViewModel
 import com.rentify.user.app.viewModel.LoginViewModel
 
 
@@ -59,6 +61,10 @@ fun FeetPersonal(navController: NavHostController){
         factory = LoginViewModel.LoginViewModelFactory(userRepository, context)
     )
     var showLogoutDialog by remember { mutableStateOf(false) }
+
+    val email = loginViewModel.getUserData().email
+    val navigationType = "changePassword"
+
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
@@ -194,7 +200,9 @@ fun FeetPersonal(navController: NavHostController){
                             color = Color(0xFFfafafa),
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .clickable { }
+                        .clickable {
+                            navController.navigate(MainActivity.ROUTER.PREFORGOT.name+"/$email/$navigationType")
+                        }
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.baomat),
@@ -205,7 +213,7 @@ fun FeetPersonal(navController: NavHostController){
                             .padding(5.dp)
                     )
                     Text(
-                        text = "Bảo mật",
+                        text = "Đổi mật khẩu",
                         fontSize = 15.sp,
                         color = Color.Black,
                         modifier = Modifier

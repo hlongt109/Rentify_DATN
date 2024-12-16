@@ -77,7 +77,7 @@ fun SearchPostRoonmScreen
     LaunchedEffect(userId) {
         postViewModel.getPostingList_user(userId, postType = "seek")
     }
-    val tabs = listOf("Đang chờ duyệt", "Đang hoạt động", "Đã bị ẩn")
+    val tabs = listOf("Đang hoạt động", "Đã bị ẩn")
 
     Scaffold(
         floatingActionButton = {
@@ -119,17 +119,12 @@ fun SearchPostRoonmScreen
                     )
 
                     when (selectedTabIndex) {
-                        0 -> PendingPostsScreen(
-                            navController = navController,
-                            posts = postViewModel.pendingPosts.value,
-                            onDeletePost = { postId -> postViewModel.deletePostWithFeedback_user(postId) }
-                        )
-                        1 -> ActivePostsScreen(
+                        0 -> ActivePostsScreen(
                             navController = navController,
                             posts = postViewModel.activePosts.value,
                             onDeletePost = { postId -> postViewModel.deletePostWithFeedback_user(postId) }
                         )
-                        2 -> HiddenPostsScreen(
+                        1 -> HiddenPostsScreen(
                             navController = navController,
                             posts = postViewModel.hiddenPosts.value,
                             onDeletePost = { postId -> postViewModel.deletePostWithFeedback_user(postId) }

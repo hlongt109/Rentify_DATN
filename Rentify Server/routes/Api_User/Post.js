@@ -329,7 +329,7 @@ router.post(
         address,
         content,
         post_type,
-        status: status || 0, // Mặc định là `0`
+        status: 1, // Mặc định là `0`
         video: req.files["video"]
           ? req.files["video"].map((file) => file.path.replace("public/", ""))
           : [],

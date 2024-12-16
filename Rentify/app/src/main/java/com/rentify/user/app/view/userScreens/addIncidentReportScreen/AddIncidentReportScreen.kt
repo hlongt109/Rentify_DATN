@@ -582,7 +582,7 @@ fun AddIncidentReportScreen(
                                 titleSupport = incident,
                                 contentSupport = incidentdescription,
                                 imagePaths = imagePaths,
-                                status = 1
+                                status = 0
                             ) {
                                 Toast.makeText(
                                     context,

@@ -127,7 +127,9 @@ fun PostingListCard(
                 .padding(15.dp),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(0.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -163,7 +165,9 @@ fun PostingListCard(
                 overflow = if (isExpanded) TextOverflow.Clip else TextOverflow.Ellipsis,
             )
             Row(
-                modifier = Modifier.fillMaxWidth().padding(0.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -205,11 +209,12 @@ fun PostingListCard(
                     // .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.Center,
                 ) {
-
-                    if (postlist.photos.isNotEmpty() && postlist.videos.isNotEmpty()) {
+                    Log.d("PostingListCard", "PostingListCard: ${postlist.photos + postlist.videos}")
+                    if (postlist.photos.isNotEmpty() || postlist.videos.isNotEmpty()) {
                         com.rentify.user.app.view.userScreens.SearchRoomateScreen.SearchRoomateComponent.PostMediaSection1(
                             mediaList = postlist.photos + postlist.videos
                         )
+
                     }
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -218,7 +223,9 @@ fun PostingListCard(
                             onClick = {
                                 showDialog = true
 
-                            }, modifier = Modifier.height(50.dp).fillMaxWidth(),
+                            }, modifier = Modifier
+                                .height(50.dp)
+                                .fillMaxWidth(),
                             shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xff5dadff)
                             )
@@ -298,7 +305,9 @@ fun PostListWithSwipe(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(cardHeights.value[post._id] ?: 157.dp) // Sử dụng chiều cao của card từ map
+                        .height(
+                            cardHeights.value[post._id] ?: 157.dp
+                        ) // Sử dụng chiều cao của card từ map
                         .padding(horizontal = 15.dp)
                         .shadow(elevation = 4.dp, shape = RoundedCornerShape(10.dp))
                         .clip(RoundedCornerShape(8.dp))

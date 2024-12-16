@@ -86,6 +86,7 @@ import com.google.accompanist.flowlayout.FlowRow
 //import com.google.android.exoplayer2.MediaItem
 //import com.google.android.exoplayer2.ui.PlayerView
 import androidx.compose.material.CircularProgressIndicator
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.model.Model.NotificationRequest
 
 import com.rentify.user.app.network.RetrofitService
@@ -402,9 +403,7 @@ fun UpdatePostScreen(
                                     notificationViewModel.createNotification(notificationRequest)
 
                                     viewModel.getPostDetail(postId)
-                                    navController.navigate("post_detail/$postId") {
-                                        popUpTo("update_post_screen/$postId") { inclusive = true }
-                                    }
+                                    navController.navigate(MainActivity.ROUTER.POSTING_STAFF.name)
                                 } catch (e: Exception) {
                                     isError = true
                                     Toast.makeText(

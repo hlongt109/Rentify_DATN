@@ -169,15 +169,15 @@ function openDetailModal(button) {
                 <td>${showList._id}</td>
             </tr>
             <tr>
-                <td class="fw-bold">Title:</td>
+                <td class="fw-bold">Tiêu đề:</td>
                 <td>${showList.title_support}</td>
             </tr>
             <tr class="table-light">
-                <td class="fw-bold">Content:</td>
+                <td class="fw-bold">Nội dung:</td>
                 <td>${showList.content_support}</td>
             </tr>
             <tr>
-                <td class="fw-bold">Address:</td>
+                <td class="fw-bold">Địa chỉ:</td>
                 <td>${building ? building.address : 'Không có địa chỉ'}</td>
             </tr>
             <tr class="table-light">

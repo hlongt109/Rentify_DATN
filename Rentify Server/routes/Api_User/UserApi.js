@@ -276,4 +276,101 @@ router.get("/get-user-infor/:userId", async (req, res) => {
   }
 });
 
+// Biến để lưu mã xác nhận tạm thời
+let confirmationStore = {};
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ status: 400, message: 'Email không tồn tại' });
+    }
+    // Tạo mã xác nhận
+    const confirmationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Lưu mã xác nhận với thời gian hết hạn 10 phút
+    confirmationStore[email] = {
+      code: confirmationCode,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 10 * 60 * 1000 // 10 phút
+    };
+    // Gửi email chứa mã xác nhận
+    await forgotEmail(email, confirmationCode)
+    res.status(200).json({ status: 200, message: 'Email xác nhận đã được gửi' });
+  } catch (error) {
+    res.status(500).json({ status: 500, message: 'Lỗi hệ thống', error: error.message });
+  }
+});
+// API xác nhận mã và cho phép cập nhật mật khẩu
+router.post('/confirm-code', async (req, res) => {
+  const { email, confirmationCode } = req.body;
+  try {
+    // Kiểm tra email và mã xác nhận không được để trống
+    if (!email || !confirmationCode) {
+      return res.status(400).json({
+        status: 400,
+        message: 'Email và mã xác nhận không được để trống'
+      });
+    }
+    // Lấy thông tin mã xác nhận đã lưu
+    const storedConfirmation = confirmationStore[email];
+    // Kiểm tra mã xác nhận tồn tại
+    if (!storedConfirmation) {
+      return res.status(400).json({
+        status: 400,
+        message: 'Mã xác nhận không tồn tại hoặc đã hết hạn'
+      });
+    }
+    // Kiểm tra thời gian hết hạn (10 phút)
+    const currentTime = Date.now();
+    const MAX_CONFIRMATION_TIME = 10 * 60 * 1000; // 10 phút
+    if (currentTime - storedConfirmation.timestamp > MAX_CONFIRMATION_TIME) {
+      // Xóa mã xác nhận đã hết hạn
+      delete confirmationStore[email];
+      return res.status(400).json({
+        status: 400,
+        message: 'Mã xác nhận đã hết hạn. Vui lòng yêu cầu mã mới'
+      });
+    }
+    // Kiểm tra mã xác nhận
+    if (storedConfirmation.code !== confirmationCode) {
+      return res.status(400).json({
+        status: 400,
+        message: 'Mã xác nhận không chính xác'
+      });
+    }
+    // Xóa mã xác nhận sau khi xác thực thành công
+    delete confirmationStore[email];
+    res.status(200).json({
+      status: 200,
+      message: 'Mã xác nhận hợp lệ. Bạn có thể cập nhật mật khẩu mới.',
+      canResetPassword: true
+    });
+  } catch (error) {
+    console.error('Lỗi xác nhận mã:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Lỗi hệ thống',
+      error: error.message
+    });
+  }
+});
+// API cập nhật mật khẩu
+router.put('/reset-password', async (req, res) => {
+  const { email, newPassword } = req.body;
+  try {
+    // Tìm người dùng
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ status: 404, message: 'Người dùng không tồn tại' });
+    }
+    // Mã hóa mật khẩu mới
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword; // Cập nhật mật khẩu
+    await user.save();
+    res.status(200).json({ status: 200, message: 'Mật khẩu đã được cập nhật thành công' });
+  } catch (error) {
+    res.status(500).json({ status: 500, message: 'Lỗi hệ thống', error: error.message });
+  }
+});
+
 module.exports = router;

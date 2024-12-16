@@ -148,7 +148,9 @@ fun ItemPost(post: PostResponse, navController: NavController) {
                     .padding(15.dp),
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(0.dp), // Căn đầy chiều rộng và padding cho đẹp
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(0.dp), // Căn đầy chiều rộng và padding cho đẹp
                     horizontalArrangement = Arrangement.SpaceBetween, // Căn giữa đầu và cuối
                     verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
                 ) {
@@ -189,7 +191,9 @@ fun ItemPost(post: PostResponse, navController: NavController) {
                     overflow = if (isExpanded) TextOverflow.Clip else TextOverflow.Ellipsis, // Hiển thị đầy đủ hoặc rút gọn
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(0.dp), // Căn đầy chiều rộng và padding cho đẹp
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(0.dp), // Căn đầy chiều rộng và padding cho đẹp
                     horizontalArrangement = Arrangement.SpaceBetween, // Căn giữa đầu và cuối
                     verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
                 ) {
@@ -227,7 +231,7 @@ fun ItemPost(post: PostResponse, navController: NavController) {
                             .fillMaxWidth()
                             .background(color = Color.White)
                             .padding(15.dp)
-                            .height( 270.dp),
+                            .height(270.dp),
                         verticalArrangement = Arrangement.Center,
                     ) {
                         PostMediaSection1(mediaList = (post.photos + (post.videos ?: emptyList())).filterIsInstance<String>())
@@ -282,8 +286,10 @@ fun PostMediaSection1(mediaList: List<String>) {
 
                     } else {
                         // Hiển thị ảnh
+                        Log.d("PostMediaSection1", "PostMediaSection1: http://10.0.2.2:3000/${media}")
                         Image(
-                            painter = rememberImagePainter("http://10.0.2.2:3000/$media"),
+                            painter = rememberImagePainter("http://10.0.2.2:3000/${media}"),
+
                             contentDescription = "Post Image",
                             modifier = Modifier
                                 .fillMaxWidth()

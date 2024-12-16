@@ -97,7 +97,7 @@ fun SearchPostRoomateScreen(navController: NavController) {
         postViewModel.getPostingList_user(userId, postType = "roomate")
     }
 
-    val tabs = listOf("Đang chờ duyệt", "Đang hoạt động", "Đã bị ẩn")
+    val tabs = listOf("Đang hoạt động", "Đã bị ẩn")
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -137,17 +137,12 @@ fun SearchPostRoomateScreen(navController: NavController) {
                     )
 
                     when (selectedTabIndex) {
-                        0 -> PendingPostsScreen(
-                            navController = navController,
-                            posts = postViewModel.pendingPosts.value,
-                            onDeletePost = { postId -> postViewModel.deletePostWithFeedback_user(postId) }
-                        )
-                        1 -> ActivePostsScreen(
+                        0 -> ActivePostsScreen(
                             navController = navController,
                             posts = postViewModel.activePosts.value,
                             onDeletePost = { postId -> postViewModel.deletePostWithFeedback_user(postId) }
                         )
-                        2 -> HiddenPostsScreen(
+                        1 -> HiddenPostsScreen(
                             navController = navController,
                             posts = postViewModel.hiddenPosts.value,
                             onDeletePost = { postId -> postViewModel.deletePostWithFeedback_user(postId) }

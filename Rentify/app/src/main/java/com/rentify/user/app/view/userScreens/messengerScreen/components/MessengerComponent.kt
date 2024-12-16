@@ -58,8 +58,8 @@ fun MessengerComponentPreview() {
 @Composable
 fun MessengerComponent(
     navController: NavHostController,
-    viewModel: ChatViewModel = viewModel()
-    ) {
+    viewModel: ChatViewModel = viewModel(),
+) {
     val context = LocalContext.current
     val apiService = RetrofitService()
     val userRepository = LoginRepository(apiService)
@@ -68,8 +68,6 @@ fun MessengerComponent(
     }
     val loginViewModel: LoginViewModel = viewModel(factory = factory)
     val currentUserId = loginViewModel.getUserData().userId
-    Log.d("MessageComponent", "Current User ID: $currentUserId")
-    val usersList = remember { mutableStateOf<List<chatUser>>(emptyList()) }
     val chatList by viewModel.chatList.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)
     Log.d("TestChatList", "MessengerComponent: $chatList")
@@ -132,21 +130,28 @@ fun MessengerComponent(
                 )
             }
         }
-
+        Spacer(modifier = Modifier.padding(top = 10.dp))
 //        van phuc
-       if(isLoading){
-           Box(
-               modifier = Modifier.fillMaxSize(),
-               contentAlignment = Alignment.Center
-           ) {
-               CircularProgressIndicator()
-           }
-       }else{
-           LazyColumn {
-               items(chatList){user ->
-                   UserItem(user, navController)
-               }
-           }
-       }
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Log.d("KiemTraLai", "MessengerComponent: $chatList")
+            LazyColumn {
+                items(chatList, key = {user -> user}) { user ->
+                    LaunchedEffect(user) {
+                        loginViewModel.getInfoUser(user)
+                    }
+                    val userDataMap by loginViewModel.userDataMap.observeAsState(emptyMap())
+                    val userData = userDataMap[user]
+                    Log.d("UserId", "MessengerComponent: $user")
+                    userData?.let { UserItem(it, navController) }
+                }
+            }
+        }
     }
 }

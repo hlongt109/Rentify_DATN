@@ -141,36 +141,6 @@ fun TinnhanScreen(
                     "Message from: ${message.senderId}, Content: ${message.content}"
                 )
 
-                // Nếu thời gian giữa tin nhắn hiện tại và tin nhắn trước đó lớn hơn 1 tiếng
-                if (lastMessageTime != null && (currentMessageTime - lastMessageTime!!) > 24 * 60 * 60 * 1000) {
-                    // Hiển thị ngày nếu thời gian giữa các tin nhắn hơn 1 ngày
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Divider(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .fillMaxWidth(0.4f),
-                            color = Color.Gray,
-                            thickness = 1.dp,
-                        )
-                        Text(
-                            text = CheckUnit.formatTimeMessage(message.timestamp),
-                            color = Color.Gray,
-                            fontSize = 12.sp,
-//                        modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                        Divider(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .fillMaxWidth(0.4f),
-                            color = Color.Gray,
-                            thickness = 1.dp
-                        )
-                    }
-                }
                 MessageItem(message = message, isSentByCurrentUser = message.senderId == senderId)
                 lastMessageTime = currentMessageTime
             }
@@ -181,7 +151,7 @@ fun TinnhanScreen(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth( )
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

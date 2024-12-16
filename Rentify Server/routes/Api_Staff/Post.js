@@ -371,7 +371,7 @@ const { id } = req.params;
         existingPost.title = title || existingPost.title;
         existingPost.address = address || existingPost.address;
         existingPost.content = content || existingPost.content;
-        existingPost.status = status || existingPost.status;
+        existingPost.status = 1;
         existingPost.post_type = post_type || existingPost.post_type;
 
         // Cập nhật video và ảnh nếu có

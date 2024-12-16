@@ -39,6 +39,7 @@ import androidx.navigation.compose.rememberNavController
 import com.rentify.user.app.MainActivity
 import com.rentify.user.app.network.RetrofitService
 import com.rentify.user.app.repository.ForgotRepository.ForgotRepository
+import com.rentify.user.app.repository.LoginRepository.LoginRepository
 import com.rentify.user.app.ui.theme.colorLocation
 import com.rentify.user.app.ui.theme.colorText
 import com.rentify.user.app.ui.theme.greenInput
@@ -48,6 +49,7 @@ import com.rentify.user.app.view.auth.components.GoToRegister
 import com.rentify.user.app.view.auth.components.HeaderComponent
 import com.rentify.user.app.view.auth.components.TextFieldComponent
 import com.rentify.user.app.view.auth.components.TextLoginContent
+import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.UserViewmodel.ForgotPasswordViewModel
 
 @Composable
@@ -61,6 +63,11 @@ fun ForgotPasswordScreen(
     val repository = ForgotRepository(RetrofitService().ApiService)
     val forgotViewModel: ForgotPasswordViewModel = viewModel(
         factory = ForgotPasswordViewModel.ForgotPasswordViewModelFactory(repository)
+    )
+    val apiService = RetrofitService()
+    val userRepository = LoginRepository(apiService)
+    val loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModel.LoginViewModelFactory(userRepository, context)
     )
 
     val errorMessage by forgotViewModel.errorMessage.observeAsState()
@@ -153,7 +160,8 @@ fun ForgotPasswordScreen(
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                                 when(typeTitle){
                                     "changePassword" -> {
-                                        navController.navigate(MainActivity.ROUTER.HOME.name)
+                                        navController.navigate(MainActivity.ROUTER.LOGIN.name)
+                                        loginViewModel.logout()
                                     }
 
                                     "resetPass" -> {

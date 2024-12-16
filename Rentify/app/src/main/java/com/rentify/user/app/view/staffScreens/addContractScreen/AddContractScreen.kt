@@ -396,23 +396,7 @@ fun AddContractScreens(
                                 Toast.makeText(context, "UserId phải có đúng 24 ký tự", Toast.LENGTH_SHORT).show()
                                 return@Button
                             }
-                            // Show error message if any
-                            CoroutineScope(Dispatchers.Main).launch {
-                                val result = viewModel.fetchUserByIdSuspend(userId)
-                                result.onSuccess { user ->
-                                    // Xử lý thành công: Thêm người dùng vào danh sách
-                                    if (user != null) {
-                                        userList = userList + user
-                                        Toast.makeText(context, "Người dùng đã được thêm thành công!", Toast.LENGTH_SHORT).show()
-                                        return@launch
-                                    }
-                                }.onFailure { error ->
-                                    // Hiển thị lỗi qua Toast
-                                    Toast.makeText(context,"Người dùng không tồn tại, hãy kiểm tra lại ", Toast.LENGTH_SHORT).show()
-                                    isFetching = false
-                                    return@launch
-                                }}
-                            // Nếu chưa có, thực hiện gọi API
+
                             isFetching = true
                             viewModel.fetchUserById(userId)
                             userId = ""

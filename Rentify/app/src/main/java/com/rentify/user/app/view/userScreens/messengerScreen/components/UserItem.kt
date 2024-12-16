@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.rentify.user.app.R
+import com.rentify.user.app.repository.LoginRepository.LoginResponse
 import com.rentify.user.app.utils.localUrl
 import com.rentify.user.app.viewModel.LoginViewModel
 import com.rentify.user.app.viewModel.RoomDetailViewModel
@@ -39,29 +40,13 @@ import com.rentify.user.app.viewModel.UserViewmodel.chatUser
 
 @Composable
 fun UserItem(
-    userId: String,
+    user: LoginResponse,
     navController: NavHostController,
-    viewModel: LoginViewModel = viewModel()
-){
-    val userData = viewModel.userData.observeAsState()
-    Log.d("CheckData", "UserItem: $userData")
-    var staffId = ""
-    var name = ""
-    var avatar = ""
-    userData.value.let {
-        staffId = it?._id?:""
-        name = it?.name?:""
-        avatar = it?.profile_picture_url?:""
-    }
-
-    LaunchedEffect(userId) {
-        viewModel.getInfoUser(userId)
-    }
-
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 7.dp)
             .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
     ) {
@@ -72,12 +57,12 @@ fun UserItem(
                 .height(80.dp)
                 .background(color = Color.White)
                 .clickable {
-                    navController.navigate("TINNHAN/${staffId}/${name}")
+                    navController.navigate("TINNHAN/${user._id}/${user.name}")
                 }
         ) {
             Image(
                 painter = rememberImagePainter(
-                    data = localUrl+avatar,
+                    data = localUrl + user.profile_picture_url,
                     builder = {
                         crossfade(true)
                         fallback(R.drawable.default_avatar)
@@ -96,14 +81,12 @@ fun UserItem(
                     .padding(horizontal = 10.dp)
                     .weight(1f)
             ) {
-                userData.value?.name?.let {
-                    Text(
-                        text = it,
-                        fontSize = 16.sp, // Font size giảm một chút
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Text(
+                    text = user.name,
+                    fontSize = 16.sp, // Font size giảm một chút
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

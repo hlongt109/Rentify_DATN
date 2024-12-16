@@ -53,11 +53,14 @@ class ChatViewModel() : ViewModel() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val chatUsers = mutableSetOf<String>() // Dùng Set để tránh trùng lặp
 
+
                     for (chatSnapshot in dataSnapshot.children) {
                         val chatId = chatSnapshot.key ?: continue
 
+
                         val participants = chatId.split("_")
                         if (participants.size < 2) continue // Đảm bảo định dạng chatId đúng (senderId_receiverId)
+
 
                         // Kiểm tra xem userId có tham gia cuộc trò chuyện không
                         if (userId in participants) {
@@ -66,13 +69,16 @@ class ChatViewModel() : ViewModel() {
                         }
                     }
 
+
                     // Log danh sách ID những người đã nhắn tin cho userId và những người userId đã nhắn tin
                     Log.d("CheckList", "onDataChange: $chatUsers")
 
+
                     // Xử lý danh sách chat users
-                    handleChatList(mutableListOf<String>().apply { addAll(chatUsers) })
+                    handleChatList(ArrayList(chatUsers))
                     _isLoading.value = false // Kết thúc loading
                 }
+
 
                 override fun onCancelled(databaseError: DatabaseError) {
                     Log.e("ChatViewModel", "Error getting chat list: ${databaseError.message}")
@@ -81,11 +87,11 @@ class ChatViewModel() : ViewModel() {
             })
     }
 
-
     private fun handleChatList(chatList: MutableList<String>) {
         // Ví dụ lưu danh sách chat IDs vào một biến LiveData
         _chatList.value = chatList
     }
+
 
     fun addChatRelation(senderId: String, receiverId: String): String {
         // Ví dụ logic tạo chatId

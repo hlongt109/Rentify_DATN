@@ -89,7 +89,7 @@ fun LoginScreenApp(navigator: NavController) {
     val errorMessage by loginViewModel.errorMessage.observeAsState()
     val isLoading by loginViewModel.isLoading.observeAsState()
     val successRole by loginViewModel.successRole.observeAsState()
-    val type = "forgotPass"
+    val type = "resetPass"
     val email = ""
     // Hiển thị thông báo khi đăng nhập thành công
     LaunchedEffect(successRole) {

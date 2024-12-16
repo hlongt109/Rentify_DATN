@@ -155,21 +155,21 @@ const renderTable1 = () => {
 
                             <div class="col">
                                 <div class="form-group">
-                                    <label for="edit-title_support" class="form-label">Title </label>
+                                    <label for="edit-title_support" class="form-label">Tiêu đề </label>
                                     <input type="Title" id="edit-title_support" class="form-control" value="${user.title_support ?? ''}" placeholder="Title" readonly />
                                 </div>
                             </div>
 
                             <div class="col">
                                 <div class="form-group">
-                                    <label for="edit-content_support" class="form-label">Content </label>
+                                    <label for="edit-content_support" class="form-label">Nội dung </label>
                                     <input type="content" id="edit-content_support" class="form-control" value="${user.content_support ?? ''}" placeholder="Content" readonly />
                                 </div>
                             </div>
 
                             <div class="col">
                                 <div class="form-group">
-                                    <label for="edit-role" class="form-label">Status</label>
+                                    <label for="edit-role" class="form-label">Trạng thái</label>
                                     <select id="edit-role" class="form-control" onchange="updateStatusColor1()">
                                         <option value= "0" ${user.status === 0 ? 'selected' : ''}>0</option>
                                         <option value= "1" ${user.status === 1 ? 'selected' : ''}>1</option>
@@ -178,8 +178,8 @@ const renderTable1 = () => {
                             </div>
                         </div>
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-secondary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="cancelEdit1()">Cancel</button>
-                            <button type="button" class="btn btn-primary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="showConfirmModal1('${user._id}')">Update</button>
+                            <button type="button" class="btn btn-secondary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="cancelEdit1()">Thoát</button>
+                            <button type="button" class="btn btn-primary shadow-button" style="font-size: 0.75rem; margin: 10px;" onclick="showConfirmModal1('${user._id}')">Cập nhật</button>
                         </div>
                     </form>
                 </td>

@@ -110,7 +110,8 @@ fun RegisterScreen(navController: NavHostController) {
                 color = Color(0xffffffff)
             )
             .navigationBarsPadding()
-            .statusBarsPadding(),
+            .statusBarsPadding()
+            .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         //icone
@@ -401,7 +402,10 @@ fun RegisterScreen(navController: NavHostController) {
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    registerViewModel.register(username, email, password, repassword, phoneNumber)
+                    registerViewModel.register(username, email, password, repassword, phoneNumber){
+                        Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
+                        navController.navigate(ROUTER.LOGIN.name)
+                    }
                 }
             },
             modifier = Modifier

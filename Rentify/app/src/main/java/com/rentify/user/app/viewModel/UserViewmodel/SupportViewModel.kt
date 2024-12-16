@@ -95,9 +95,9 @@ class SupportViewModel(
                         _isLoading.postValue(false)
                         _uiState.value = SupportUiState.Success(response.data)
                         //chua xu ly
-                        _processed.value = response.data.filter { it.status == 0 }
+                        _processed.value = response.data.filter { it.status == 1 }
                         //da xu ly
-                        _unprocessed.value = response.data.filter { it.status == 1 }
+                        _unprocessed.value = response.data.filter { it.status == 0 }
                     }else{
                         _isLoading.postValue(false)
                         _uiState.value = SupportUiState.Error(response.message)

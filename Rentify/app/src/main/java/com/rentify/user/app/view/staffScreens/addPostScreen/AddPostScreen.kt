@@ -56,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.rentify.user.app.MainActivity
 import com.rentify.user.app.model.Model.NotificationRequest
 import com.rentify.user.app.network.APIService
 import com.rentify.user.app.network.RetrofitClient
@@ -397,7 +398,7 @@ fun AddPostScreens(
                                 notificationViewModel.createNotification(notificationRequest)
 
                                 Toast.makeText(context, "Tạo bài đăng thành công!", Toast.LENGTH_SHORT).show()
-                                navController.navigate("POSTING_STAFF")
+                                navController.navigate(MainActivity.ROUTER.POSTING_STAFF.name)
                             } else {
                                 Toast.makeText(context, "Failed to create post", Toast.LENGTH_SHORT).show()
                             }
