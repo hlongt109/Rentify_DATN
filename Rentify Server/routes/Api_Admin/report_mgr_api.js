@@ -59,7 +59,7 @@ router.get("/get_report_details/:id", async (req, res) => {
         if (result.type === "post") {
             const post = await Post.findById(result.id_problem).populate("user_id")
             if (!post) {
-                return res.status(404).json({ message: "Post not found" })
+                return res.status(404).json({ message: "`Post` not found" })
             }
             res.status(200).json({ data: result, dataDetails: post, dataRoom4Service: infoContract })
         }
