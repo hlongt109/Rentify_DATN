@@ -149,7 +149,7 @@ router.put("/rentify/user/:id", uploadFile.single('qr_bank'), async (req, res) =
 
         let qrImage = "";
         if (file) {
-            qrImage = `${req.protocol}://${req.get("host")}/public/uploads/${file.filename}`;
+            qrImage = `public/uploads/${file.filename}`;
         }
 
         user.bankAccount = {
